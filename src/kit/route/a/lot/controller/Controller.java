@@ -3,9 +3,8 @@ package kit.route.a.lot.controller;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.gui.GUIHandler;
 
-public class Controller
+public class Controller {
 
-{
     /** Attributes */
     /**
      * 
@@ -15,174 +14,230 @@ public class Controller
      * 
      */
     private GUIHandler guiHandler;
+
     /**
      * Operation setView
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void setView (  ){}
+    public void setView() {
+    }
+
     /**
      * Operation setZoomLevel
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void setZoomLevel (  ){}
+    public void setZoomLevel() {
+    }
+
     /**
      * Operation toggle3D
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void toggle3D (  ){}
+    public void toggle3D() {
+    }
+
     /**
      * Operation loadMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void loadMap (  ){}
+    public void loadMap() {
+    }
+
     /**
      * Operation importMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void importMap (  ){}
+    public void importMap() {
+    }
+
     /**
      * Operation addNavNode
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addNavNode (  ){}
+    public void addNavNode() {
+    }
+
     /**
      * Operation deleteNavNode
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void deleteNavNode (  ){}
+    public void deleteNavNode() {
+    }
+
     /**
      * Operation switchNavNodes
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void switchNavNodes (  ){}
+    public void switchNavNodes() {
+    }
+
     /**
      * Operation orderNavNodes
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void orderNavNodes (  ){}
+    public void orderNavNodes() {
+    }
+
     /**
      * Operation addFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addFavorite (  ){}
+    public void addFavorite() {
+    }
+
     /**
      * Operation deleteFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void deleteFavorite (  ){}
+    public void deleteFavorite() {
+    }
+
     /**
      * Operation saveRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void saveRoute (  ){}
+    public void saveRoute() {
+    }
+
     /**
      * Operation loadRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void loadRoute (  ){}
+    public void loadRoute() {
+    }
+
     /**
      * Operation exportRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void exportRoute (  ){}
+    public void exportRoute() {
+    }
+
     /**
      * Operation printRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void printRoute (  ){}
+    public void printRoute() {
+    }
+
     /**
      * Operation typeAddress
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void typeAddress (  ){}
+    public void typeAddress() {
+    }
+
     /**
      * Operation searchAddress
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void searchAddress (  ){}
+    public void searchAddress() {
+    }
+
     /**
      * Operation searchPOI
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void searchPOI (  ){}
+    public void searchPOI() {
+    }
+
     /**
      * Operation searchFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void searchFavorite (  ){}
+    public void searchFavorite() {
+    }
+
     /**
      * Operation setSpeed
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void setSpeed (  ){}
+    public void setSpeed() {
+    }
+
     /**
      * Operation getPOIInfo
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void getPOIInfo (  ){}
+    public void getPOIInfo() {
+    }
+
     /**
      * Operation showTextRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void showTextRoute (  ){}
+    public void showTextRoute() {
+    }
+
     /**
      * Operation setHeightMalus
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void setHeightMalus (  ){}
+    public void setHeightMalus() {
+    }
+
     /**
      * Operation setHighwayMalus
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void setHighwayMalus (  ){}
+    public void setHighwayMalus() {
+    }
+
     /**
      * Operation importHeightMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void importHeightMap (  ){}
+    public void importHeightMap() {
+    }
+
     /**
      * Operation render
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void render (  ){}
+    public void render() {
+    }
+
     /**
      * Operation calculateRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void calculateRoute (  ){}
+    public void calculateRoute() {
+    }
+
     /**
      * Operation main
-     *
-     * @param args - 
-     * @return 
+     * 
+     * @param args
+     *            -
+     * @return
      */
-    public void main ( String[] args ){}
+    public void main(String[] args) {
+    }
 }
-

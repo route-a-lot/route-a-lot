@@ -4,26 +4,27 @@ import java.awt.Image;
 
 import kit.route.a.lot.common.Coordinates;
 
-public interface RenderCache
+public interface RenderCache {
 
-{
     /**
      * Operation queryCache
-     *
-     * @param topLeft - 
+     * 
+     * @param topLeft
+     *            -
      * @return Image
      */
-    Image queryCache ( Coordinates topLeft );
+    Image queryCache(Coordinates topLeft);
 
     /**
      * Operation addToCache
-     *
-     * @param topLeft - 
-     * @param image - 
-     * @return 
-     * @return 
+     * 
+     * @param topLeft
+     *            -
+     * @param image
+     *            -
+     * @return
+     * @return
      */
-    void addToCache ( Coordinates topLeft, Image image );
+    void addToCache(Coordinates topLeft, Image image);
 
 }
-

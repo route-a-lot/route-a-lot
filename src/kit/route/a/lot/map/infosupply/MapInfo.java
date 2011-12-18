@@ -10,151 +10,210 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 
-public class MapInfo
+public class MapInfo {
 
-{
     /** Associations */
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
+
     /**
      * Operation setBounds
-     *
-     * @param upLeft - 
-     * @param bottomRight - 
-     * @return 
-     * @return 
+     * 
+     * @param upLeft
+     *            -
+     * @param bottomRight
+     *            -
+     * @return
+     * @return
      */
-    public void setBounds ( Coordinates upLeft, Coordinates bottomRight ){}
+    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
+    }
+
     /**
-     * Operation addNode
-     * <	
-     *
-     * @param position - 
-     * @param id - 
-     * @return 
-     * @return 
+     * Operation addNode <
+     * 
+     * @param position
+     *            -
+     * @param id
+     *            -
+     * @return
+     * @return
      */
-    public void addNode ( Coordinates position, int id ){}
+    public void addNode(Coordinates position, int id) {
+    }
+
     /**
      * Operation addWay
-     *
-     * @param ids - 
-     * @param name - 
-     * @param type - 
-     * @return 
-     * @return 
+     * 
+     * @param ids
+     *            -
+     * @param name
+     *            -
+     * @param type
+     *            -
+     * @return
+     * @return
      */
-    public void addWay ( List<Integer> ids, String name, int type ){}
+    public void addWay(List<Integer> ids, String name, int type) {
+    }
+
     /**
      * Operation addPOI
-     *
-     * @param position - 
-     * @param id - 
-     * @param description - 
-     * @return 
-     * @return 
+     * 
+     * @param position
+     *            -
+     * @param id
+     *            -
+     * @param description
+     *            -
+     * @return
+     * @return
      */
-    public void addPOI ( Coordinates position, int id, POIDescription description ){}
+    public void
+            addPOI(Coordinates position, int id, POIDescription description) {
+    }
+
     /**
      * Operation addFavorite
-     *
-     * @param pos - 
-     * @param info - 
-     * @return 
-     * @return 
+     * 
+     * @param pos
+     *            -
+     * @param info
+     *            -
+     * @return
+     * @return
      */
-    public void addFavorite ( Coordinates pos, String info ){}
+    public void addFavorite(Coordinates pos, String info) {
+    }
+
     /**
      * Operation deleteFavorite
-     *
-     * @param position - 
-     * @return 
-     * @return 
+     * 
+     * @param position
+     *            -
+     * @return
+     * @return
      */
-    public void deleteFavorite ( Coordinates position ){}
+    public void deleteFavorite(Coordinates position) {
+    }
+
     /**
      * Operation getPOIDescription
-     *
-     * @param pos - 
+     * 
+     * @param pos
+     *            -
      * @return POIDescription
      */
-    public POIDescription getPOIDescription ( Coordinates pos ){
-		return null;}
+    public POIDescription getPOIDescription(Coordinates pos) {
+        return null;
+    }
+
     /**
      * Operation getNodePosition
-     *
-     * @param nodeID - 
+     * 
+     * @param nodeID
+     *            -
      * @return Coordinates
      */
-    public Coordinates getNodePosition ( int nodeID ){
-		return null;}
+    public Coordinates getNodePosition(int nodeID) {
+        return null;
+    }
+
     /**
      * Operation buildZoomlevels
-     * @return 
-     *
-     * @return 
+     * 
+     * @return
+     * 
+     * @return
      */
-    public void buildZoomlevels (  ){}
+    public void buildZoomlevels() {
+    }
+
     /**
      * Operation suggestCompletions
-     *
-     * @param expression - 
+     * 
+     * @param expression
+     *            -
      * @return List<String>
      */
-    public List<String> suggestCompletions ( String expression ){
-		return null;}
+    public List<String> suggestCompletions(String expression) {
+        return null;
+    }
+
     /**
      * Operation select
-     *
-     * @param address - 
+     * 
+     * @param address
+     *            -
      * @return Selection
      */
-    public Selection select ( String address ){
-		return null;}
+    public Selection select(String address) {
+        return null;
+    }
+
     /**
      * Operation select
-     *
-     * @param pos - 
+     * 
+     * @param pos
+     *            -
      * @return Selection
      */
-    public Selection select ( Coordinates pos ){
-		return null;}
+    public Selection select(Coordinates pos) {
+        return null;
+    }
+
     /**
      * Operation getBaseLayer
-     *
-     * @param zoomlevel - 
-     * @param upLeft - 
-     * @param bottomRight - 
+     * 
+     * @param zoomlevel
+     *            -
+     * @param upLeft
+     *            -
+     * @param bottomRight
+     *            -
      * @return Set<MapElement>
      */
-    public Set<MapElement> getBaseLayer ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight ){
-		return null;}
+    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+            Coordinates bottomRight) {
+        return null;
+    }
+
     /**
      * Operation getOverlay
-     *
-     * @param zoomlevel - 
-     * @param upLeft - 
-     * @param bottomRight - 
+     * 
+     * @param zoomlevel
+     *            -
+     * @param upLeft
+     *            -
+     * @param bottomRight
+     *            -
      * @return Set<MapElement>
      */
-    public Set<MapElement> getOverlay ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight ){
-		return null;}
+    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+            Coordinates bottomRight) {
+        return null;
+    }
+
     /**
      * Operation loadFromStream
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    public void loadFromStream ( InputStream stream ){}
+    public void loadFromStream(InputStream stream) {
+    }
+
     /**
      * Operation saveToStream
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    public void saveToStream ( OutputStream stream ){}
+    public void saveToStream(OutputStream stream) {
+    }
 }
-

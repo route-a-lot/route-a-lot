@@ -6,76 +6,83 @@ import java.io.OutputStream;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Coordinates;
 
-public abstract class MapElement
+public abstract class MapElement {
 
-{
     /** Attributes */
     /**
      * 
      */
     private int id;
+
     /**
      * Operation getName
-     *
+     * 
      * @return String
      */
-    abstract protected String getName (  );
+    abstract protected String getName();
 
     /**
      * Operation getSelection
-     *
+     * 
      * @return Selection
      */
-    abstract protected Selection getSelection (  );
+    abstract protected Selection getSelection();
 
     /**
      * Operation isInBounds
-     *
-     * @param topLeft - 
-     * @param bottomRight - 
+     * 
+     * @param topLeft
+     *            -
+     * @param bottomRight
+     *            -
      * @return boolean
      */
-    abstract protected boolean isInBounds ( Coordinates topLeft, Coordinates bottomRight );
+    abstract protected boolean isInBounds(Coordinates topLeft,
+            Coordinates bottomRight);
 
     /**
      * Operation loadFromStream
-     *
-     * @param stream - 
+     * 
+     * @param stream
+     *            -
      * @return MapElement
      */
-    protected static MapElement loadFromStream ( InputStream stream ) {
-		return null;
-	}
+    protected static MapElement loadFromStream(InputStream stream) {
+        return null;
+    }
 
     /**
      * Operation saveToStream
-     * 	
-     *
-     * @param stream - 
-     * @param element - 
-     * @return 
-     * @return 
+     * 
+     * 
+     * @param stream
+     *            -
+     * @param element
+     *            -
+     * @return
+     * @return
      */
-    protected static void saveToStream ( OutputStream stream, MapElement element ) {
-	}
+    protected static void saveToStream(OutputStream stream, MapElement element) {
+    }
 
     /**
      * Operation load
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    abstract protected void load ( InputStream stream );
+    abstract protected void load(InputStream stream);
 
     /**
      * Operation save
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    abstract protected void save ( OutputStream stream );
+    abstract protected void save(OutputStream stream);
 
 }
-

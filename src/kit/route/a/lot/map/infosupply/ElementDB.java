@@ -7,68 +7,73 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.MapElement;
 
-public interface ElementDB
+public interface ElementDB {
 
-{
     /**
      * Operation getNodePosition
-     *
-     * @param nodeID - 
+     * 
+     * @param nodeID
+     *            -
      * @return Coordinates
      */
-    Coordinates getNodePosition ( int nodeID );
+    Coordinates getNodePosition(int nodeID);
 
     /**
      * Operation addNode
-     *
-     * @param node - 
-     * @return 
-     * @return 
+     * 
+     * @param node
+     *            -
+     * @return
+     * @return
      */
-    void addNode ( Node node );
+    void addNode(Node node);
 
     /**
      * Operation getNode
-     *
-     * @param nodeID - 
+     * 
+     * @param nodeID
+     *            -
      * @return Node
      */
-    Node getNode ( int nodeID );
+    Node getNode(int nodeID);
 
     /**
      * Operation addMapElement
-     *
-     * @param element - 
-     * @return 
-     * @return 
+     * 
+     * @param element
+     *            -
+     * @return
+     * @return
      */
-    void addMapElement ( MapElement element );
+    void addMapElement(MapElement element);
 
     /**
      * Operation getMapElement
-     *
-     * @param id - 
+     * 
+     * @param id
+     *            -
      * @return MapElement
      */
-    MapElement getMapElement ( int id );
+    MapElement getMapElement(int id);
 
     /**
      * Operation loadFromStream
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    void loadFromStream ( InputStream stream );
+    void loadFromStream(InputStream stream);
 
     /**
      * Operation saveToStream
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    void saveToStream ( OutputStream stream );
+    void saveToStream(OutputStream stream);
 
 }
-

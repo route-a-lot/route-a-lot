@@ -11,80 +11,108 @@ import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.rendering.RenderCache;
 
-public class Renderer
+public class Renderer {
 
-{
     /** Associations */
     private RenderCache detailCaches;
+
     /**
      * Operation render
      * 
-    render holt sich die aktuelle Route aus dem State und zeichnet sie mit in das Overlay
-     *
-     * @param detail - 
-     * @param topLeft - 
-     * @param bottomRight - 
-     * @param renderingContext - 
-     * @return 
-     * @return 
+     * render holt sich die aktuelle Route aus dem State und zeichnet sie mit in
+     * das Overlay
+     * 
+     * @param detail
+     *            -
+     * @param topLeft
+     *            -
+     * @param bottomRight
+     *            -
+     * @param renderingContext
+     *            -
+     * @return
+     * @return
      */
-    public void render ( int detail, Coordinates topLeft, Coordinates bottomRight, Context renderingContext ){}
+    public void render(int detail, Coordinates topLeft,
+            Coordinates bottomRight, Context renderingContext) {
+    }
+
     /**
      * Operation prerenderIdle
-     *
+     * 
      * @return boolean
      */
-    public boolean prerenderIdle (  ){
-		return false;}
+    public boolean prerenderIdle() {
+        return false;
+    }
+
     /**
      * Operation inheritCache
-     *
-     * @param source - 
-     * @return 
-     * @return 
+     * 
+     * @param source
+     *            -
+     * @return
+     * @return
      */
-    public void inheritCache ( Renderer source ){}
+    public void inheritCache(Renderer source) {
+    }
+
     /**
      * Operation prerenderTile
-     *
-     * @param detail - 
-     * @param topLeft - 
-     * @return 
-     * @return 
+     * 
+     * @param detail
+     *            -
+     * @param topLeft
+     *            -
+     * @return
+     * @return
      */
-    private void prerenderTile ( int detail, Coordinates topLeft ){}
+    private void prerenderTile(int detail, Coordinates topLeft) {
+    }
+
     /**
      * Operation drawRoute
-     *
-     * @param route - 
-     * @param selection - 
-     * @return 
-     * @return 
+     * 
+     * @param route
+     *            -
+     * @param selection
+     *            -
+     * @return
+     * @return
      */
-    private void drawRoute ( List<Integer> route, List<Selection> selection ){}
-    /**
-     * Operation draw
-     *
-     * @param poi - 
-     * @return 
-     * @return 
-     */
-    private void draw ( POINode poi ){}
-    /**
-     * Operation draw
-     *
-     * @param area - 
-     * @return 
-     * @return 
-     */
-    private void draw ( Area area ){}
-    /**
-     * Operation draw
-     *
-     * @param edge - 
-     * @return 
-     * @return 
-     */
-    private void draw ( Edge edge ){}
-}
+    private void drawRoute(List<Integer> route, List<Selection> selection) {
+    }
 
+    /**
+     * Operation draw
+     * 
+     * @param poi
+     *            -
+     * @return
+     * @return
+     */
+    private void draw(POINode poi) {
+    }
+
+    /**
+     * Operation draw
+     * 
+     * @param area
+     *            -
+     * @return
+     * @return
+     */
+    private void draw(Area area) {
+    }
+
+    /**
+     * Operation draw
+     * 
+     * @param edge
+     *            -
+     * @return
+     * @return
+     */
+    private void draw(Edge edge) {
+    }
+}

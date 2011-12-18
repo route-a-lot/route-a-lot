@@ -1,15 +1,15 @@
 package kit.route.a.lot.routing;
 
 
-public class Precalculator
+public class Precalculator {
 
-{
     /**
      * Operation precalculate
-     * @return 
-     *
-     * @return 
+     * 
+     * @return
+     * 
+     * @return
      */
-    public void precalculate (  ){}
+    public void precalculate() {
+    }
 }
-

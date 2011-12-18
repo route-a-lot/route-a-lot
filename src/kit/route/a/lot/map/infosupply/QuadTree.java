@@ -8,9 +8,8 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 
-public class QuadTree
+public class QuadTree {
 
-{
     /** Attributes */
     /**
      * 
@@ -20,54 +19,73 @@ public class QuadTree
      * 
      */
     private Coordinates bottomRight;
+
     /**
      * Operation getLeafs
-     *
-     * @param upLeft - 
-     * @param bottomRight - 
+     * 
+     * @param upLeft
+     *            -
+     * @param bottomRight
+     *            -
      * @return Collection<QTLeaf>
      */
-    protected Collection<QTLeaf> getLeafs ( Coordinates upLeft, Coordinates bottomRight ){
-		return null;}
+    protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
+            Coordinates bottomRight) {
+        return null;
+    }
+
     /**
      * Operation select
-     *
-     * @param pos - 
+     * 
+     * @param pos
+     *            -
      * @return Selection
      */
-    protected Selection select ( Coordinates pos ){
-		return null;}
+    protected Selection select(Coordinates pos) {
+        return null;
+    }
+
     /**
      * Operation loadFromStream
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    protected void loadFromStream ( InputStream stream ){}
+    protected void loadFromStream(InputStream stream) {
+    }
+
     /**
      * Operation saveToStream
-     *
-     * @param stream - 
-     * @return 
-     * @return 
+     * 
+     * @param stream
+     *            -
+     * @return
+     * @return
      */
-    protected void saveToStream ( OutputStream stream ){}
+    protected void saveToStream(OutputStream stream) {
+    }
+
     /**
      * Operation addToOverlay
-     *
-     * @param element - 
-     * @return 
-     * @return 
+     * 
+     * @param element
+     *            -
+     * @return
+     * @return
      */
-    protected void addToOverlay ( MapElement element ){}
+    protected void addToOverlay(MapElement element) {
+    }
+
     /**
      * Operation addToBaseLayer
-     *
-     * @param element - 
-     * @return 
-     * @return 
+     * 
+     * @param element
+     *            -
+     * @return
+     * @return
      */
-    protected void addToBaseLayer ( MapElement element ){}
+    protected void addToBaseLayer(MapElement element) {
+    }
 }
-

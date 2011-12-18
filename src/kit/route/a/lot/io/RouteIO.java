@@ -3,32 +3,38 @@ package kit.route.a.lot.io;
 import java.io.File;
 
 
-public class RouteIO
+public class RouteIO {
 
-{
     /**
      * Operation loadCurrentRoute
-     *
-     * @param file - 
-     * @return 
-     * @return 
+     * 
+     * @param file
+     *            -
+     * @return
+     * @return
      */
-    public static void loadCurrentRoute ( File file ){}
+    public static void loadCurrentRoute(File file) {
+    }
+
     /**
      * Operation saveCurrentRoute
-     *
-     * @param file - 
-     * @return 
-     * @return 
+     * 
+     * @param file
+     *            -
+     * @return
+     * @return
      */
-    public static void saveCurrentRoute ( File file ){}
+    public static void saveCurrentRoute(File file) {
+    }
+
     /**
      * Operation exportCurrentRouteToKML
-     *
-     * @param file - 
-     * @return 
-     * @return 
+     * 
+     * @param file
+     *            -
+     * @return
+     * @return
      */
-    public static void exportCurrentRouteToKML ( File file ){}
+    public static void exportCurrentRouteToKML(File file) {
+    }
 }
-

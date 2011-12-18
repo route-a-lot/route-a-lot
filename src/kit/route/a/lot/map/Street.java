@@ -7,40 +7,43 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 
 
-public class Street extends MapElement
-{
+public class Street extends MapElement {
+
     /** Attributes */
     /**
      * 
      */
     private int type;
     /** Associations */
-    private Edge[] edges ;
-    
-	@Override
-	protected String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	protected Selection getSelection() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	protected boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	@Override
-	protected void load(InputStream stream) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	protected void save(OutputStream stream) {
-		// TODO Auto-generated method stub
-		
-	}
-}
+    private Edge[] edges;
 
+    @Override
+    protected String getName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected Selection getSelection() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    protected void load(InputStream stream) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void save(OutputStream stream) {
+        // TODO Auto-generated method stub
+
+    }
+}

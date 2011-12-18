@@ -2,231 +2,302 @@ package kit.route.a.lot.gui;
 
 import kit.route.a.lot.common.Context;
 
-public class GUIHandler
+public class GUIHandler {
 
-{
     /**
      * Operation createGUI
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void createGUI (  ){}
+    public void createGUI() {
+    }
+
     /**
      * Operation getContext
-     *
+     * 
      * @return Context
      */
-    public Context getContext (  ){
-		return null;}
+    public Context getContext() {
+        return null;
+    }
+
     /**
      * Operation updateGUI
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateGUI (  ){}
+    public void updateGUI() {
+    }
+
     /**
      * Operation updateMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateMap (  ){}
+    public void updateMap() {
+    }
+
     /**
      * Operation updateNavNodes
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateNavNodes (  ){}
+    public void updateNavNodes() {
+    }
+
     /**
      * Operation updateFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateFavorite (  ){}
+    public void updateFavorite() {
+    }
+
     /**
      * Operation updateRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateRoute (  ){}
+    public void updateRoute() {
+    }
+
     /**
      * Operation updateSearch
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateSearch (  ){}
+    public void updateSearch() {
+    }
+
     /**
      * Operation updateDuration
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateDuration (  ){}
+    public void updateDuration() {
+    }
+
     /**
      * Operation updateText
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateText (  ){}
+    public void updateText() {
+    }
+
     /**
      * Operation updateMalus
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateMalus (  ){}
+    public void updateMalus() {
+    }
+
     /**
      * Operation updateMapList
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void updateMapList (  ){}
+    public void updateMapList() {
+    }
+
     /**
      * Operation addListenerSetView
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSetView (  ){}
+    public void addListenerSetView() {
+    }
+
     /**
      * Operation addListenerSetZoomlevel
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSetZoomlevel (  ){}
+    public void addListenerSetZoomlevel() {
+    }
+
     /**
      * Operation addListenerToggle3D
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerToggle3D (  ){}
+    public void addListenerToggle3D() {
+    }
+
     /**
      * Operation addListenerLoadMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerLoadMap (  ){}
+    public void addListenerLoadMap() {
+    }
+
     /**
      * Operation addListenerImportMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerImportMap (  ){}
+    public void addListenerImportMap() {
+    }
+
     /**
      * Operation addListenerAddNavNode
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerAddNavNode (  ){}
+    public void addListenerAddNavNode() {
+    }
+
     /**
      * Operation addListenerDeleteNavNode
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerDeleteNavNode (  ){}
+    public void addListenerDeleteNavNode() {
+    }
+
     /**
      * Operation addListenerSwitchNavNodes
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSwitchNavNodes (  ){}
+    public void addListenerSwitchNavNodes() {
+    }
+
     /**
      * Operation addListenerOrderNavNodes
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerOrderNavNodes (  ){}
+    public void addListenerOrderNavNodes() {
+    }
+
     /**
      * Operation addListenerAddFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerAddFavorite (  ){}
+    public void addListenerAddFavorite() {
+    }
+
     /**
      * Operation addListenerDeleteFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerDeleteFavorite (  ){}
+    public void addListenerDeleteFavorite() {
+    }
+
     /**
      * Operation addListenerSaveRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSaveRoute (  ){}
+    public void addListenerSaveRoute() {
+    }
+
     /**
      * Operation addListenerLoadRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerLoadRoute (  ){}
+    public void addListenerLoadRoute() {
+    }
+
     /**
      * Operation addListenerExportRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerExportRoute (  ){}
+    public void addListenerExportRoute() {
+    }
+
     /**
      * Operation addListenerPrintRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerPrintRoute (  ){}
+    public void addListenerPrintRoute() {
+    }
+
     /**
      * Operation addListenerTypeAddress
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerTypeAddress (  ){}
+    public void addListenerTypeAddress() {
+    }
+
     /**
      * Operation addListenerSearchAddress
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSearchAddress (  ){}
+    public void addListenerSearchAddress() {
+    }
+
     /**
      * Operation addListenerSearchPOI
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSearchPOI (  ){}
+    public void addListenerSearchPOI() {
+    }
+
     /**
      * Operation addListenerSearchFavorite
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSearchFavorite (  ){}
+    public void addListenerSearchFavorite() {
+    }
+
     /**
      * Operation addListenerSetSpeed
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSetSpeed (  ){}
+    public void addListenerSetSpeed() {
+    }
+
     /**
      * Operation addListenerGetPOIInfo
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerGetPOIInfo (  ){}
+    public void addListenerGetPOIInfo() {
+    }
+
     /**
      * Operation addListenerShowTextRoute
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerShowTextRoute (  ){}
+    public void addListenerShowTextRoute() {
+    }
+
     /**
      * Operation addListenerSetHeightMalus
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSetHeightMalus (  ){}
+    public void addListenerSetHeightMalus() {
+    }
+
     /**
      * Operation addListenerSetHighwayMalus
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerSetHighwayMalus (  ){}
+    public void addListenerSetHighwayMalus() {
+    }
+
     /**
      * Operation addListenerImportHeightMap
-     *
-     * @return 
+     * 
+     * @return
      */
-    public void addListenerImportHeightMap (  ){}
+    public void addListenerImportHeightMap() {
+    }
 }
-

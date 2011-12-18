@@ -1,8 +1,5 @@
 package kit.route.a.lot.gui;
 
 
-public class OpenGL
-
-{
+public class OpenGL {
 }
-

@@ -3,17 +3,16 @@ package kit.route.a.lot.io;
 import java.io.File;
 
 
-public interface HeightLoader
+public interface HeightLoader {
 
-{
     /**
      * Operation load
-     *
-     * @param file - 
-     * @return 
-     * @return 
+     * 
+     * @param file
+     *            -
+     * @return
+     * @return
      */
-    public void load ( File file );
+    public void load(File file);
 
 }
-

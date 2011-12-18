@@ -1,9 +1,8 @@
 package kit.route.a.lot.common;
 
 
-public class Coordinates
+public class Coordinates {
 
-{
     /** Attributes */
     /**
      * 
@@ -14,4 +13,3 @@ public class Coordinates
      */
     public float longitude;
 }
-

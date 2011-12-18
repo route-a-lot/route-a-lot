@@ -1,9 +1,8 @@
 package kit.route.a.lot.common;
 
 
-public class Selection
+public class Selection {
 
-{
     /** Attributes */
     /**
      * 
@@ -26,4 +25,3 @@ public class Selection
      */
     public String name;
 }
-

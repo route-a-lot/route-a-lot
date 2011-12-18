@@ -1,9 +1,8 @@
 package kit.route.a.lot.common;
 
 
-public class RouteDescription
+public class RouteDescription {
 
-{
     /** Attributes */
     /**
      * 
@@ -18,4 +17,3 @@ public class RouteDescription
      */
     public int[] positionIDs;
 }
-

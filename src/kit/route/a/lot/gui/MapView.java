@@ -1,8 +1,5 @@
 package kit.route.a.lot.gui;
 
 
-public class MapView
-
-{
+public class MapView {
 }
-

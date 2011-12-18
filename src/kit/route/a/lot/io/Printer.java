@@ -1,15 +1,15 @@
 package kit.route.a.lot.io;
 
 
-public class Printer
+public class Printer {
 
-{
     /**
      * Operation printRouteDescription
-     * @return 
-     *
-     * @return 
+     * 
+     * @return
+     * 
+     * @return
      */
-    public static void printRouteDescription (  ){}
+    public static void printRouteDescription() {
+    }
 }
-

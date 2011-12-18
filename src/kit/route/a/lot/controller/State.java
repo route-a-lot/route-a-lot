@@ -9,9 +9,8 @@ import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.routing.RoutingGraph;
 
-public class State
+public class State {
 
-{
     /** Attributes */
     /**
      * 
@@ -69,12 +68,13 @@ public class State
      * 
      */
     public int heighwayMalus;
+
     /**
      * Operation getInstance
-     *
+     * 
      * @return State
      */
-    public static State getInstance (  ){
-		return null;}
+    public static State getInstance() {
+        return null;
+    }
 }
-

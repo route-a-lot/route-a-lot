@@ -1,9 +1,8 @@
 package kit.route.a.lot.common;
 
 
-public class POIDescription
+public class POIDescription {
 
-{
     /** Attributes */
     /**
      * 
@@ -18,4 +17,3 @@ public class POIDescription
      */
     public String description;
 }
-

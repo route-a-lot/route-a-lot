@@ -4,34 +4,37 @@ import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 
-public interface IHeightmap
+public interface IHeightmap {
 
-{
     /**
      * Operation getTiles
-     *
-     * @param upLeft - 
-     * @param bottomRight - 
+     * 
+     * @param upLeft
+     *            -
+     * @param bottomRight
+     *            -
      * @return Set<HeightTile>
      */
-    public Set<HeightTile> getTiles ( Coordinates upLeft, Coordinates bottomRight );
+    public Set<HeightTile>
+            getTiles(Coordinates upLeft, Coordinates bottomRight);
 
     /**
      * Operation getHeight
-     *
-     * @param pos - 
+     * 
+     * @param pos
+     *            -
      * @return float
      */
-    public float getHeight ( Coordinates pos );
+    public float getHeight(Coordinates pos);
 
     /**
      * Operation addHeightTile
-     *
-     * @param tile - 
-     * @return 
-     * @return 
+     * 
+     * @param tile
+     *            -
+     * @return
+     * @return
      */
-    public void addHeightTile ( HeightTile tile );
+    public void addHeightTile(HeightTile tile);
 
 }
-
