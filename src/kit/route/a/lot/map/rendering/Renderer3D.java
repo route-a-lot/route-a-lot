@@ -14,7 +14,8 @@ public class Renderer3D extends Renderer
      * @param bottomRight - 
      * @param renderingContext - 
      * @return 
+     * @return 
      */
-    public render ( int detail, Coordinates topLeft, Coordinates bottomRight, Context renderingContext ){}
+    public void render ( int detail, Coordinates topLeft, Coordinates bottomRight, Context renderingContext ){}
 }
 

@@ -1,5 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
@@ -13,15 +17,17 @@ public interface GeographicalOperator
      * @param upLeft - 
      * @param bottomRight - 
      * @return 
+     * @return 
      */
-    protected setBounds ( Coordinates upLeft, Coordinates bottomRight );
+    void setBounds ( Coordinates upLeft, Coordinates bottomRight );
 
     /**
      * Operation buildZoomlevels
+     * @return 
      *
      * @return 
      */
-    protected buildZoomlevels (  );
+    void buildZoomlevels (  );
 
     /**
      * Operation select
@@ -29,7 +35,7 @@ public interface GeographicalOperator
      * @param pos - 
      * @return Selection
      */
-    protected Selection select ( Coordinates pos );
+    Selection select ( Coordinates pos );
 
     /**
      * Operation getBaseLayer
@@ -39,7 +45,7 @@ public interface GeographicalOperator
      * @param bottomRight - 
      * @return Set<MapElement>
      */
-    protected Set<MapElement> getBaseLayer ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight );
+    Set<MapElement> getBaseLayer ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight );
 
     /**
      * Operation getOverlay
@@ -49,39 +55,43 @@ public interface GeographicalOperator
      * @param bottomRight - 
      * @return Set<MapElement>
      */
-    protected Set<MapElement> getOverlay ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight );
+    Set<MapElement> getOverlay ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight );
 
     /**
      * Operation addToBaseLayer
      *
      * @param element - 
      * @return 
+     * @return 
      */
-    protected addToBaseLayer ( MapElement element );
+    void addToBaseLayer ( MapElement element );
 
     /**
      * Operation addToOverlay
      *
      * @param element - 
      * @return 
+     * @return 
      */
-    protected addToOverlay ( MapElement element );
+    void addToOverlay ( MapElement element );
 
     /**
      * Operation loadFromStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected loadFromStream ( InputStream stream );
+    void loadFromStream ( InputStream stream );
 
     /**
      * Operation saveToStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected saveToStream ( OutputStream stream );
+    void saveToStream ( OutputStream stream );
 
 }
 

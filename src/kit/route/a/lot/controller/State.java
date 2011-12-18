@@ -1,9 +1,13 @@
 package kit.route.a.lot.controller;
 
+import java.util.List;
+
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.RouteDescription;
+import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.routing.RoutingGraph;
 
 public class State
 
@@ -20,7 +24,7 @@ public class State
     /**
      * 
      */
-    public Graph loadedGraph;
+    public RoutingGraph loadedGraph;
     /**
      * 
      */
@@ -32,7 +36,7 @@ public class State
     /**
      * 
      */
-    public List<int> currentRoute;
+    public List<Integer> currentRoute;
     /**
      * 
      */
@@ -70,6 +74,7 @@ public class State
      *
      * @return State
      */
-    public static State getInstance (  ){}
+    public static State getInstance (  ){
+		return null;}
 }
 

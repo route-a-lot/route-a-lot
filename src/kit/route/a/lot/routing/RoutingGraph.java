@@ -1,37 +1,41 @@
 package kit.route.a.lot.routing;
 
-import kit.route.a.lot.io.MapIO;
-import kit.route.a.lot.io.OSMLoader;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collection;
 
 public interface RoutingGraph
 
 {
     /**
      * Operation buildGraph
-     * bekommt ein 3-Tupel Ã¼bergeben, das aus ID, ID und Gewicht besteht
+     * bekommt ein 3-Tupel übergeben, das aus ID, ID und Gewicht besteht
      *
      * @param startID - 
      * @param endID - 
      * @param weight - 
      * @return 
+     * @return 
      */
-    public buildGraph ( int[] startID, int[] endID, int[] weight );
+    public void buildGraph ( int[] startID, int[] endID, int[] weight );
 
     /**
      * Operation loadFromStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    public loadFromStream ( InputStream stream );
+    public void loadFromStream ( InputStream stream );
 
     /**
      * Operation saveToStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    public saveToStream ( OutputStream stream );
+    public void saveToStream ( OutputStream stream );
 
     /**
      * Operation getRelevantNeighbors
@@ -40,7 +44,7 @@ public interface RoutingGraph
      * @param destArea - 
      * @return Collection<int>
      */
-    protected Collection<int> getRelevantNeighbors ( int node, byte destArea );
+    Collection<Integer> getRelevantNeighbors ( int node, byte destArea );
 
     /**
      * Operation getAreaID
@@ -48,7 +52,7 @@ public interface RoutingGraph
      * @param node - 
      * @return byte
      */
-    protected byte getAreaID ( int node );
+    byte getAreaID ( int node );
 
     /**
      * Operation setAreaID
@@ -56,8 +60,9 @@ public interface RoutingGraph
      * @param node - 
      * @param id - 
      * @return 
+     * @return 
      */
-    protected setAreaID ( int node, byte id );
+    void setAreaID ( int node, byte id );
 
     /**
      * Operation getArcFlags
@@ -66,7 +71,7 @@ public interface RoutingGraph
      * @param endID - 
      * @return int64
      */
-    protected int64 getArcFlags ( int startID, int endID );
+    long getArcFlags ( int startID, int endID );
 
     /**
      * Operation setArcFlags
@@ -75,8 +80,9 @@ public interface RoutingGraph
      * @param endID - 
      * @param flags - 
      * @return 
+     * @return 
      */
-    protected setArcFlags ( int startID, int endID, int flags );
+    void setArcFlags ( int startID, int endID, int flags );
 
 }
 

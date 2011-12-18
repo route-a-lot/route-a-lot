@@ -20,169 +20,169 @@ public class Controller
      *
      * @return 
      */
-    public setView (  ){}
+    public void setView (  ){}
     /**
      * Operation setZoomLevel
      *
      * @return 
      */
-    public setZoomLevel (  ){}
+    public void setZoomLevel (  ){}
     /**
      * Operation toggle3D
      *
      * @return 
      */
-    public toggle3D (  ){}
+    public void toggle3D (  ){}
     /**
      * Operation loadMap
      *
      * @return 
      */
-    public loadMap (  ){}
+    public void loadMap (  ){}
     /**
      * Operation importMap
      *
      * @return 
      */
-    public importMap (  ){}
+    public void importMap (  ){}
     /**
      * Operation addNavNode
      *
      * @return 
      */
-    public addNavNode (  ){}
+    public void addNavNode (  ){}
     /**
      * Operation deleteNavNode
      *
      * @return 
      */
-    public deleteNavNode (  ){}
+    public void deleteNavNode (  ){}
     /**
      * Operation switchNavNodes
      *
      * @return 
      */
-    public switchNavNodes (  ){}
+    public void switchNavNodes (  ){}
     /**
      * Operation orderNavNodes
      *
      * @return 
      */
-    public orderNavNodes (  ){}
+    public void orderNavNodes (  ){}
     /**
      * Operation addFavorite
      *
      * @return 
      */
-    public addFavorite (  ){}
+    public void addFavorite (  ){}
     /**
      * Operation deleteFavorite
      *
      * @return 
      */
-    public deleteFavorite (  ){}
+    public void deleteFavorite (  ){}
     /**
      * Operation saveRoute
      *
      * @return 
      */
-    public saveRoute (  ){}
+    public void saveRoute (  ){}
     /**
      * Operation loadRoute
      *
      * @return 
      */
-    public loadRoute (  ){}
+    public void loadRoute (  ){}
     /**
      * Operation exportRoute
      *
      * @return 
      */
-    public exportRoute (  ){}
+    public void exportRoute (  ){}
     /**
      * Operation printRoute
      *
      * @return 
      */
-    public printRoute (  ){}
+    public void printRoute (  ){}
     /**
      * Operation typeAddress
      *
      * @return 
      */
-    public typeAddress (  ){}
+    public void typeAddress (  ){}
     /**
      * Operation searchAddress
      *
      * @return 
      */
-    public searchAddress (  ){}
+    public void searchAddress (  ){}
     /**
      * Operation searchPOI
      *
      * @return 
      */
-    public searchPOI (  ){}
+    public void searchPOI (  ){}
     /**
      * Operation searchFavorite
      *
      * @return 
      */
-    public searchFavorite (  ){}
+    public void searchFavorite (  ){}
     /**
      * Operation setSpeed
      *
      * @return 
      */
-    public setSpeed (  ){}
+    public void setSpeed (  ){}
     /**
      * Operation getPOIInfo
      *
      * @return 
      */
-    public getPOIInfo (  ){}
+    public void getPOIInfo (  ){}
     /**
      * Operation showTextRoute
      *
      * @return 
      */
-    public showTextRoute (  ){}
+    public void showTextRoute (  ){}
     /**
      * Operation setHeightMalus
      *
      * @return 
      */
-    public setHeightMalus (  ){}
+    public void setHeightMalus (  ){}
     /**
      * Operation setHighwayMalus
      *
      * @return 
      */
-    public setHighwayMalus (  ){}
+    public void setHighwayMalus (  ){}
     /**
      * Operation importHeightMap
      *
      * @return 
      */
-    public importHeightMap (  ){}
+    public void importHeightMap (  ){}
     /**
      * Operation render
      *
      * @return 
      */
-    public render (  ){}
+    public void render (  ){}
     /**
      * Operation calculateRoute
      *
      * @return 
      */
-    public calculateRoute (  ){}
+    public void calculateRoute (  ){}
     /**
      * Operation main
      *
      * @param args - 
      * @return 
      */
-    public main ( String[] args ){}
+    public void main ( String[] args ){}
 }
 

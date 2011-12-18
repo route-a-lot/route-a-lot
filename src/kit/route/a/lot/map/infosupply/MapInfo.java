@@ -1,14 +1,14 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Set;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.io.MapIO;
-import kit.route.a.lot.io.OSMLoader;
-import kit.route.a.lot.map.rendering.Renderer;
-import kit.route.a.lot.map.infosupply.ElementDB;
-import kit.route.a.lot.map.infosupply.GeographicalOperator;
-import kit.route.a.lot.map.infosupply.AddressOperator;
+import kit.route.a.lot.map.MapElement;
 
 public class MapInfo
 
@@ -23,8 +23,9 @@ public class MapInfo
      * @param upLeft - 
      * @param bottomRight - 
      * @return 
+     * @return 
      */
-    public setBounds ( Coordinates upLeft, Coordinates bottomRight ){}
+    public void setBounds ( Coordinates upLeft, Coordinates bottomRight ){}
     /**
      * Operation addNode
      * <	
@@ -32,8 +33,9 @@ public class MapInfo
      * @param position - 
      * @param id - 
      * @return 
+     * @return 
      */
-    public addNode ( Coordinates position, int id ){}
+    public void addNode ( Coordinates position, int id ){}
     /**
      * Operation addWay
      *
@@ -41,8 +43,9 @@ public class MapInfo
      * @param name - 
      * @param type - 
      * @return 
+     * @return 
      */
-    public addWay ( List<int> ids, String name, int type ){}
+    public void addWay ( List<Integer> ids, String name, int type ){}
     /**
      * Operation addPOI
      *
@@ -50,64 +53,73 @@ public class MapInfo
      * @param id - 
      * @param description - 
      * @return 
+     * @return 
      */
-    public addPOI ( Coordinates position, int id, POIDescription description ){}
+    public void addPOI ( Coordinates position, int id, POIDescription description ){}
     /**
      * Operation addFavorite
      *
      * @param pos - 
      * @param info - 
      * @return 
+     * @return 
      */
-    public addFavorite ( Coordinates pos, String info ){}
+    public void addFavorite ( Coordinates pos, String info ){}
     /**
      * Operation deleteFavorite
      *
      * @param position - 
      * @return 
+     * @return 
      */
-    public deleteFavorite ( Coordinates position ){}
+    public void deleteFavorite ( Coordinates position ){}
     /**
      * Operation getPOIDescription
      *
      * @param pos - 
      * @return POIDescription
      */
-    public POIDescription getPOIDescription ( Coordinates pos ){}
+    public POIDescription getPOIDescription ( Coordinates pos ){
+		return null;}
     /**
      * Operation getNodePosition
      *
      * @param nodeID - 
      * @return Coordinates
      */
-    public Coordinates getNodePosition ( int nodeID ){}
+    public Coordinates getNodePosition ( int nodeID ){
+		return null;}
     /**
      * Operation buildZoomlevels
+     * @return 
      *
      * @return 
      */
-    public buildZoomlevels (  ){}
+    public void buildZoomlevels (  ){}
     /**
      * Operation suggestCompletions
      *
      * @param expression - 
      * @return List<String>
      */
-    public List<String> suggestCompletions ( String expression ){}
+    public List<String> suggestCompletions ( String expression ){
+		return null;}
     /**
      * Operation select
      *
      * @param address - 
      * @return Selection
      */
-    public Selection select ( String address ){}
+    public Selection select ( String address ){
+		return null;}
     /**
      * Operation select
      *
      * @param pos - 
      * @return Selection
      */
-    public Selection select ( Coordinates pos ){}
+    public Selection select ( Coordinates pos ){
+		return null;}
     /**
      * Operation getBaseLayer
      *
@@ -116,7 +128,8 @@ public class MapInfo
      * @param bottomRight - 
      * @return Set<MapElement>
      */
-    public Set<MapElement> getBaseLayer ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight ){}
+    public Set<MapElement> getBaseLayer ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight ){
+		return null;}
     /**
      * Operation getOverlay
      *
@@ -125,20 +138,23 @@ public class MapInfo
      * @param bottomRight - 
      * @return Set<MapElement>
      */
-    public Set<MapElement> getOverlay ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight ){}
+    public Set<MapElement> getOverlay ( int zoomlevel, Coordinates upLeft, Coordinates bottomRight ){
+		return null;}
     /**
      * Operation loadFromStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    public loadFromStream ( InputStream stream ){}
+    public void loadFromStream ( InputStream stream ){}
     /**
      * Operation saveToStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    public saveToStream ( OutputStream stream ){}
+    public void saveToStream ( OutputStream stream ){}
 }
 

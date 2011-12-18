@@ -1,5 +1,7 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.Image;
+
 import kit.route.a.lot.common.Coordinates;
 
 public interface RenderCache
@@ -11,7 +13,7 @@ public interface RenderCache
      * @param topLeft - 
      * @return Image
      */
-    protected Image queryCache ( Coordinates topLeft );
+    Image queryCache ( Coordinates topLeft );
 
     /**
      * Operation addToCache
@@ -19,8 +21,9 @@ public interface RenderCache
      * @param topLeft - 
      * @param image - 
      * @return 
+     * @return 
      */
-    protected addToCache ( Coordinates topLeft, Image image );
+    void addToCache ( Coordinates topLeft, Image image );
 
 }
 

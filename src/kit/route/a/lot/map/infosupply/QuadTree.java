@@ -1,5 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Collection;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
@@ -23,41 +27,47 @@ public class QuadTree
      * @param bottomRight - 
      * @return Collection<QTLeaf>
      */
-    protected Collection<QTLeaf> getLeafs ( Coordinates upLeft, Coordinates bottomRight ){}
+    protected Collection<QTLeaf> getLeafs ( Coordinates upLeft, Coordinates bottomRight ){
+		return null;}
     /**
      * Operation select
      *
      * @param pos - 
      * @return Selection
      */
-    protected Selection select ( Coordinates pos ){}
+    protected Selection select ( Coordinates pos ){
+		return null;}
     /**
      * Operation loadFromStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected loadFromStream ( InputStream stream ){}
+    protected void loadFromStream ( InputStream stream ){}
     /**
      * Operation saveToStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected saveToStream ( OutputStream stream ){}
+    protected void saveToStream ( OutputStream stream ){}
     /**
      * Operation addToOverlay
      *
      * @param element - 
      * @return 
+     * @return 
      */
-    protected addToOverlay ( MapElement element ){}
+    protected void addToOverlay ( MapElement element ){}
     /**
      * Operation addToBaseLayer
      *
      * @param element - 
      * @return 
+     * @return 
      */
-    protected addToBaseLayer ( MapElement element ){}
+    protected void addToBaseLayer ( MapElement element ){}
 }
 

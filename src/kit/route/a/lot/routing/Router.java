@@ -1,5 +1,7 @@
 package kit.route.a.lot.routing;
 
+import java.util.List;
+
 
 public class Router
 
@@ -9,13 +11,16 @@ public class Router
      *
      * @return List<int>
      */
-    public List<int> calculateRoute (  ){}
+    public List<Integer> calculateRoute (  ){
+		return null;
+		}
     /**
      * Operation calculateOptimizedRoute
      *
      * @param  - 
      * @return List<int>
      */
-    public List<int> calculateOptimizedRoute (   ){}
+    public List<Integer> calculateOptimizedRoute (   ){
+		return null;}
 }
 

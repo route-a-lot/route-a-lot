@@ -1,5 +1,8 @@
 package kit.route.a.lot.common;
 
+import java.awt.Color;
+import java.awt.Image;
+
 
 public class Context
 
@@ -10,7 +13,7 @@ public class Context
      * @param color - 
      * @return 
      */
-    public fillBackground ( Color color ){}
+    public void fillBackground ( Color color ){}
     /**
      * Operation drawImage
      *
@@ -19,6 +22,6 @@ public class Context
      * @param image - 
      * @return 
      */
-    public drawImage ( int x, int y, Image image ){}
+    public void drawImage ( int x, int y, Image image ){}
 }
 

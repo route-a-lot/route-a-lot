@@ -1,5 +1,7 @@
 package kit.route.a.lot.io;
 
+import java.io.File;
+
 
 public class RouteIO
 
@@ -9,21 +11,24 @@ public class RouteIO
      *
      * @param file - 
      * @return 
+     * @return 
      */
-    public static loadCurrentRoute ( File file ){}
+    public static void loadCurrentRoute ( File file ){}
     /**
      * Operation saveCurrentRoute
      *
      * @param file - 
      * @return 
+     * @return 
      */
-    public static saveCurrentRoute ( File file ){}
+    public static void saveCurrentRoute ( File file ){}
     /**
      * Operation exportCurrentRouteToKML
      *
      * @param file - 
      * @return 
+     * @return 
      */
-    public static exportCurrentRouteToKML ( File file ){}
+    public static void exportCurrentRouteToKML ( File file ){}
 }
 

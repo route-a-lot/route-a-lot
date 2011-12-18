@@ -1,5 +1,7 @@
 package kit.route.a.lot.io;
 
+import java.io.File;
+
 
 public interface HeightLoader
 
@@ -9,8 +11,9 @@ public interface HeightLoader
      *
      * @param file - 
      * @return 
+     * @return 
      */
-    public static load ( File file );
+    public void load ( File file );
 
 }
 

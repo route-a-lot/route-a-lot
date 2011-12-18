@@ -11,6 +11,8 @@ public class WeightCalculator
      * @param toID - 
      * @return int
      */
-    public int calcWeight ( int fromID, int toID ){}
+    public int calcWeight ( int fromID, int toID ) {
+		return 0;
+	}
 }
 

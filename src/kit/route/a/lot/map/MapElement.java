@@ -1,5 +1,8 @@
 package kit.route.a.lot.map;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Coordinates;
 
@@ -40,7 +43,9 @@ public abstract class MapElement
      * @param stream - 
      * @return MapElement
      */
-    protected static MapElement loadFromStream ( InputStream stream );
+    protected static MapElement loadFromStream ( InputStream stream ) {
+		return null;
+	}
 
     /**
      * Operation saveToStream
@@ -49,24 +54,28 @@ public abstract class MapElement
      * @param stream - 
      * @param element - 
      * @return 
+     * @return 
      */
-    protected static saveToStream ( OutputStream stream, MapElement element );
+    protected static void saveToStream ( OutputStream stream, MapElement element ) {
+	}
 
     /**
      * Operation load
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    abstract protected load ( InputStream stream );
+    abstract protected void load ( InputStream stream );
 
     /**
      * Operation save
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    abstract protected save ( OutputStream stream );
+    abstract protected void save ( OutputStream stream );
 
 }
 

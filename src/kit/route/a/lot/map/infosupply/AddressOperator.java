@@ -1,5 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 
@@ -12,7 +16,7 @@ public interface AddressOperator
      * @param expression - 
      * @return List<String>
      */
-    protected List<String> suggestCompletions ( String expression );
+    List<String> suggestCompletions ( String expression );
 
     /**
      * Operation select
@@ -20,31 +24,34 @@ public interface AddressOperator
      * @param address - 
      * @return Selection
      */
-    protected Selection select ( String address );
+    Selection select ( String address );
 
     /**
      * Operation add
      *
      * @param element - 
      * @return 
+     * @return 
      */
-    protected add ( MapElement element );
+    void add ( MapElement element );
 
     /**
      * Operation loadFromStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected loadFromStream ( InputStream stream );
+    void loadFromStream ( InputStream stream );
 
     /**
      * Operation saveToStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected saveToStream ( OutputStream stream );
+    void saveToStream ( OutputStream stream );
 
 }
 

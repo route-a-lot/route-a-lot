@@ -12,13 +12,17 @@ public class ComplexInfoSupplier
      * @param speed - 
      * @return int
      */
-    public int getDuration ( Route route, int speed ){}
+    public int getDuration ( int[] route, int speed ){
+		return 0;
+	}
     /**
      * Operation getRouteDescription
      *
      * @param route - 
      * @return RouteDescription
      */
-    public RouteDescription getRouteDescription ( Route route ){}
+    public RouteDescription getRouteDescription ( int[] route ){
+		return null;
+	}
 }
 

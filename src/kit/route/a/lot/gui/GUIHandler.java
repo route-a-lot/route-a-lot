@@ -1,7 +1,6 @@
 package kit.route.a.lot.gui;
 
 import kit.route.a.lot.common.Context;
-import kit.route.a.lot.controller.Controller;
 
 public class GUIHandler
 
@@ -11,222 +10,223 @@ public class GUIHandler
      *
      * @return 
      */
-    public createGUI (  ){}
+    public void createGUI (  ){}
     /**
      * Operation getContext
      *
      * @return Context
      */
-    public Context getContext (  ){}
+    public Context getContext (  ){
+		return null;}
     /**
      * Operation updateGUI
      *
      * @return 
      */
-    public updateGUI (  ){}
+    public void updateGUI (  ){}
     /**
      * Operation updateMap
      *
      * @return 
      */
-    public updateMap (  ){}
+    public void updateMap (  ){}
     /**
      * Operation updateNavNodes
      *
      * @return 
      */
-    public updateNavNodes (  ){}
+    public void updateNavNodes (  ){}
     /**
      * Operation updateFavorite
      *
      * @return 
      */
-    public updateFavorite (  ){}
+    public void updateFavorite (  ){}
     /**
      * Operation updateRoute
      *
      * @return 
      */
-    public updateRoute (  ){}
+    public void updateRoute (  ){}
     /**
      * Operation updateSearch
      *
      * @return 
      */
-    public updateSearch (  ){}
+    public void updateSearch (  ){}
     /**
      * Operation updateDuration
      *
      * @return 
      */
-    public updateDuration (  ){}
+    public void updateDuration (  ){}
     /**
      * Operation updateText
      *
      * @return 
      */
-    public updateText (  ){}
+    public void updateText (  ){}
     /**
      * Operation updateMalus
      *
      * @return 
      */
-    public updateMalus (  ){}
+    public void updateMalus (  ){}
     /**
      * Operation updateMapList
      *
      * @return 
      */
-    public updateMapList (  ){}
+    public void updateMapList (  ){}
     /**
      * Operation addListenerSetView
      *
      * @return 
      */
-    public addListenerSetView (  ){}
+    public void addListenerSetView (  ){}
     /**
      * Operation addListenerSetZoomlevel
      *
      * @return 
      */
-    public addListenerSetZoomlevel (  ){}
+    public void addListenerSetZoomlevel (  ){}
     /**
      * Operation addListenerToggle3D
      *
      * @return 
      */
-    public addListenerToggle3D (  ){}
+    public void addListenerToggle3D (  ){}
     /**
      * Operation addListenerLoadMap
      *
      * @return 
      */
-    public addListenerLoadMap (  ){}
+    public void addListenerLoadMap (  ){}
     /**
      * Operation addListenerImportMap
      *
      * @return 
      */
-    public addListenerImportMap (  ){}
+    public void addListenerImportMap (  ){}
     /**
      * Operation addListenerAddNavNode
      *
      * @return 
      */
-    public addListenerAddNavNode (  ){}
+    public void addListenerAddNavNode (  ){}
     /**
      * Operation addListenerDeleteNavNode
      *
      * @return 
      */
-    public addListenerDeleteNavNode (  ){}
+    public void addListenerDeleteNavNode (  ){}
     /**
      * Operation addListenerSwitchNavNodes
      *
      * @return 
      */
-    public addListenerSwitchNavNodes (  ){}
+    public void addListenerSwitchNavNodes (  ){}
     /**
      * Operation addListenerOrderNavNodes
      *
      * @return 
      */
-    public addListenerOrderNavNodes (  ){}
+    public void addListenerOrderNavNodes (  ){}
     /**
      * Operation addListenerAddFavorite
      *
      * @return 
      */
-    public addListenerAddFavorite (  ){}
+    public void addListenerAddFavorite (  ){}
     /**
      * Operation addListenerDeleteFavorite
      *
      * @return 
      */
-    public addListenerDeleteFavorite (  ){}
+    public void addListenerDeleteFavorite (  ){}
     /**
      * Operation addListenerSaveRoute
      *
      * @return 
      */
-    public addListenerSaveRoute (  ){}
+    public void addListenerSaveRoute (  ){}
     /**
      * Operation addListenerLoadRoute
      *
      * @return 
      */
-    public addListenerLoadRoute (  ){}
+    public void addListenerLoadRoute (  ){}
     /**
      * Operation addListenerExportRoute
      *
      * @return 
      */
-    public addListenerExportRoute (  ){}
+    public void addListenerExportRoute (  ){}
     /**
      * Operation addListenerPrintRoute
      *
      * @return 
      */
-    public addListenerPrintRoute (  ){}
+    public void addListenerPrintRoute (  ){}
     /**
      * Operation addListenerTypeAddress
      *
      * @return 
      */
-    public addListenerTypeAddress (  ){}
+    public void addListenerTypeAddress (  ){}
     /**
      * Operation addListenerSearchAddress
      *
      * @return 
      */
-    public addListenerSearchAddress (  ){}
+    public void addListenerSearchAddress (  ){}
     /**
      * Operation addListenerSearchPOI
      *
      * @return 
      */
-    public addListenerSearchPOI (  ){}
+    public void addListenerSearchPOI (  ){}
     /**
      * Operation addListenerSearchFavorite
      *
      * @return 
      */
-    public addListenerSearchFavorite (  ){}
+    public void addListenerSearchFavorite (  ){}
     /**
      * Operation addListenerSetSpeed
      *
      * @return 
      */
-    public addListenerSetSpeed (  ){}
+    public void addListenerSetSpeed (  ){}
     /**
      * Operation addListenerGetPOIInfo
      *
      * @return 
      */
-    public addListenerGetPOIInfo (  ){}
+    public void addListenerGetPOIInfo (  ){}
     /**
      * Operation addListenerShowTextRoute
      *
      * @return 
      */
-    public addListenerShowTextRoute (  ){}
+    public void addListenerShowTextRoute (  ){}
     /**
      * Operation addListenerSetHeightMalus
      *
      * @return 
      */
-    public addListenerSetHeightMalus (  ){}
+    public void addListenerSetHeightMalus (  ){}
     /**
      * Operation addListenerSetHighwayMalus
      *
      * @return 
      */
-    public addListenerSetHighwayMalus (  ){}
+    public void addListenerSetHighwayMalus (  ){}
     /**
      * Operation addListenerImportHeightMap
      *
      * @return 
      */
-    public addListenerImportHeightMap (  ){}
+    public void addListenerImportHeightMap (  ){}
 }
 

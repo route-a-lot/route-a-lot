@@ -1,7 +1,10 @@
 package kit.route.a.lot.map.rendering;
 
+import java.util.List;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Area;
@@ -23,57 +26,65 @@ public class Renderer
      * @param bottomRight - 
      * @param renderingContext - 
      * @return 
+     * @return 
      */
-    public render ( int detail, Coordinates topLeft, Coordinates bottomRight, Context renderingContext ){}
+    public void render ( int detail, Coordinates topLeft, Coordinates bottomRight, Context renderingContext ){}
     /**
      * Operation prerenderIdle
      *
      * @return boolean
      */
-    public boolean prerenderIdle (  ){}
+    public boolean prerenderIdle (  ){
+		return false;}
     /**
      * Operation inheritCache
      *
      * @param source - 
      * @return 
+     * @return 
      */
-    public inheritCache ( Renderer source ){}
+    public void inheritCache ( Renderer source ){}
     /**
      * Operation prerenderTile
      *
      * @param detail - 
      * @param topLeft - 
      * @return 
+     * @return 
      */
-    private prerenderTile ( int detail, Coordinates topLeft ){}
+    private void prerenderTile ( int detail, Coordinates topLeft ){}
     /**
      * Operation drawRoute
      *
      * @param route - 
      * @param selection - 
      * @return 
+     * @return 
      */
-    private drawRoute ( List<int> route, List<Selection> selection ){}
+    private void drawRoute ( List<Integer> route, List<Selection> selection ){}
     /**
      * Operation draw
      *
      * @param poi - 
      * @return 
+     * @return 
      */
-    private draw ( POINode poi ){}
+    private void draw ( POINode poi ){}
     /**
      * Operation draw
      *
      * @param area - 
      * @return 
+     * @return 
      */
-    private draw ( Area area ){}
+    private void draw ( Area area ){}
     /**
      * Operation draw
      *
      * @param edge - 
      * @return 
+     * @return 
      */
-    private draw ( Edge edge ){}
+    private void draw ( Edge edge ){}
 }
 

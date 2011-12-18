@@ -1,5 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.MapElement;
@@ -13,15 +16,16 @@ public interface ElementDB
      * @param nodeID - 
      * @return Coordinates
      */
-    protected Coordinates getNodePosition ( int nodeID );
+    Coordinates getNodePosition ( int nodeID );
 
     /**
      * Operation addNode
      *
      * @param node - 
      * @return 
+     * @return 
      */
-    protected addNode ( Node node );
+    void addNode ( Node node );
 
     /**
      * Operation getNode
@@ -29,15 +33,16 @@ public interface ElementDB
      * @param nodeID - 
      * @return Node
      */
-    protected Node getNode ( int nodeID );
+    Node getNode ( int nodeID );
 
     /**
      * Operation addMapElement
      *
      * @param element - 
      * @return 
+     * @return 
      */
-    protected addMapElement ( MapElement element );
+    void addMapElement ( MapElement element );
 
     /**
      * Operation getMapElement
@@ -45,23 +50,25 @@ public interface ElementDB
      * @param id - 
      * @return MapElement
      */
-    protected MapElement getMapElement ( int id );
+    MapElement getMapElement ( int id );
 
     /**
      * Operation loadFromStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected loadFromStream ( InputStream stream );
+    void loadFromStream ( InputStream stream );
 
     /**
      * Operation saveToStream
      *
      * @param stream - 
      * @return 
+     * @return 
      */
-    protected saveToStream ( OutputStream stream );
+    void saveToStream ( OutputStream stream );
 
 }
 

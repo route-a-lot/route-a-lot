@@ -1,5 +1,7 @@
 package kit.route.a.lot.io;
 
+import java.io.File;
+
 
 public class StateIO
 
@@ -9,14 +11,16 @@ public class StateIO
  *
  * @param file - 
  * @return 
+ * @return 
  */
-public static loadState ( File file ){}
+public static void loadState ( File file ){}
 /**
  * Operation saveState
  *
  * @param file - 
  * @return 
+ * @return 
  */
-public static saveState ( File file ){}
+public static void saveState ( File file ){}
 }
 

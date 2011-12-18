@@ -6,9 +6,10 @@ public class Precalculator
 {
     /**
      * Operation precalculate
+     * @return 
      *
      * @return 
      */
-    public precalculate (  ){}
+    public void precalculate (  ){}
 }
 

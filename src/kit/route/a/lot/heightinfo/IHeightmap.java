@@ -1,8 +1,8 @@
 package kit.route.a.lot.heightinfo;
 
+import java.util.Set;
+
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WeightCalculator;
-import kit.route.a.lot.map.rendering.Renderer3D;
 
 public interface IHeightmap
 
@@ -29,8 +29,9 @@ public interface IHeightmap
      *
      * @param tile - 
      * @return 
+     * @return 
      */
-    public addHeightTile ( HeightTile tile );
+    public void addHeightTile ( HeightTile tile );
 
 }
 

@@ -1,5 +1,7 @@
 package kit.route.a.lot.io;
 
+import java.io.File;
+
 
 public class MapIO
 
@@ -9,14 +11,16 @@ public class MapIO
  *
  * @param file - 
  * @return 
+ * @return 
  */
-public static loadMap ( File file ){}
+public static void loadMap ( File file ){}
 /**
  * Operation saveMap
  *
  * @param file - 
  * @return 
+ * @return 
  */
-public static saveMap ( File file ){}
+public static void saveMap ( File file ){}
 }
 

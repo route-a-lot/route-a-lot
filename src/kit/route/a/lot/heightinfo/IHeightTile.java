@@ -5,15 +5,6 @@ import kit.route.a.lot.common.Coordinates;
 public interface IHeightTile
 
 {
-    /**
-     * Operation IHeightTile
-     *
-     * @param width - 
-     * @param height - 
-     * @param origin - 
-     * @return 
-     */
-    public IHeightTile ( int width, int height, Coordinates origin );
 
     /**
      * Operation getHeight
@@ -31,8 +22,9 @@ public interface IHeightTile
      * @param y - 
      * @param height - 
      * @return 
+     * @return 
      */
-    public setHeight ( int x, int y, float height );
+    public void setHeight ( int x, int y, float height );
 
     /**
      * Operation getHeight
@@ -48,8 +40,9 @@ public interface IHeightTile
      * @param pos - 
      * @param height - 
      * @return 
+     * @return 
      */
-    public setHeight ( Coordinates pos, float height );
+    public void setHeight ( Coordinates pos, float height );
 
 }
 

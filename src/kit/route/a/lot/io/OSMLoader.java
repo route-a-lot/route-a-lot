@@ -1,5 +1,7 @@
 package kit.route.a.lot.io;
 
+import java.io.File;
+
 public class OSMLoader
 
 {
@@ -8,8 +10,9 @@ public class OSMLoader
  * lok. Variable idMapping: Map<int, int>
  *
  * @param file - 
+     * @return 
  * @return 
  */
-public static importMap ( File file ){}
+public static void importMap ( File file ){}
 }
 
