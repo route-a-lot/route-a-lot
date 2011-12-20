@@ -11,5 +11,6 @@ public class Precalculator {
      * @return
      */
     public void precalculate() {
+        return;
     }
 }
