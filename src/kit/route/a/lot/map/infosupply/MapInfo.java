@@ -1,7 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream;import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +8,9 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.Edge;
+import kit.route.a.lot.map.POINode;
 
 public class MapInfo {
 
@@ -17,6 +19,13 @@ public class MapInfo {
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
 
+    /**
+     * Constructor
+     */
+    public MapInfo(){
+        geographicalOperator = new QTGeographicalOperator();
+    }
+    
     /**
      * Operation setBounds
      * 
@@ -28,6 +37,7 @@ public class MapInfo {
      * @return
      */
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
+        geographicalOperator.setBounds(upLeft, bottomRight);
     }
 
     /**
@@ -41,6 +51,9 @@ public class MapInfo {
      * @return
      */
     public void addNode(Coordinates position, int id) {
+        Node newNode = new Node(id, position);
+        elementDB.addMapElement(newNode);
+        geographicalOperator.addToBaseLayer(newNode);
     }
 
     /**
@@ -56,6 +69,14 @@ public class MapInfo {
      * @return
      */
     public void addWay(List<Integer> ids, String name, int type) {
+        for(int i = 0; i < ids.size() - 1; i++) {
+            Node start = elementDB.getNode(ids.get(i));
+            Node end = elementDB.getNode(ids.get(i + 1));
+            Edge edge = new Edge(start, end);
+            elementDB.addMapElement(edge);
+            geographicalOperator.addToBaseLayer(edge);
+            //we have to build a street or area object here, but for that we've to know which type is a street and which is a area . . .
+        }
     }
 
     /**
@@ -71,7 +92,10 @@ public class MapInfo {
      * @return
      */
     public void
-            addPOI(Coordinates position, int id, POIDescription description) {
+        addPOI(Coordinates position, int id, POIDescription description) {
+            POINode newPOI = new POINode(id, position, description);
+            elementDB.addNode(newPOI);
+            geographicalOperator.addToOverlay(newPOI);
     }
 
     /**
@@ -117,7 +141,7 @@ public class MapInfo {
      * @return Coordinates
      */
     public Coordinates getNodePosition(int nodeID) {
-        return null;
+        return elementDB.getNodePosition(nodeID);
     }
 
     /**
@@ -160,7 +184,7 @@ public class MapInfo {
      * @return Selection
      */
     public Selection select(Coordinates pos) {
-        return null;
+        return geographicalOperator.select(pos);
     }
 
     /**
@@ -176,7 +200,7 @@ public class MapInfo {
      */
     public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        return null;
+        return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight);
     }
 
     /**
@@ -192,7 +216,7 @@ public class MapInfo {
      */
     public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        return null;
+        return geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight);
     }
 
     /**
