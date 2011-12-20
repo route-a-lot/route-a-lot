@@ -12,8 +12,8 @@ public abstract class MapElement {
     /**
      * 
      */
-    private int id;
-
+    protected int id;       //protected, cause childs need to set the id
+    
     /**
      * Operation getName
      * 
