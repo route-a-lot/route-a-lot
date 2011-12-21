@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.Image;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
@@ -13,106 +14,89 @@ import kit.route.a.lot.map.rendering.RenderCache;
 
 public class Renderer {
 
-    /** Associations */
-    private RenderCache detailCaches;
-
     /**
-     * Operation render
+     * Verwaltet für jede Detailstufe einen Cache, der bereits
+     * gezeichnete Kacheln speichert.
+     */
+    private RenderCache[] detailCaches;
+
+    public Renderer() {
+        detailCaches = null;
+    }
+    
+    /**
+     * Zeichnet einen Kartenausschnitt im übergebenenen Kontext.
      * 
-     * render holt sich die aktuelle Route aus dem State und zeichnet sie mit in
-     * das Overlay
-     * 
-     * @param detail
-     *            -
-     * @param topLeft
-     *            -
-     * @param bottomRight
-     *            -
-     * @param renderingContext
-     *            -
-     * @return
-     * @return
+     * @param detail Detailgrad, in dem gezeichnet werden soll
+     * @param topLeft nordwestliche Ecke des Kartenausschnitts
+     * @param bottomRight südöstliche Ecke des Kartenausschnitts
+     * @param renderingContext Ausgabekontext
      */
     public void render(int detail, Coordinates topLeft,
             Coordinates bottomRight, Context renderingContext) {
     }
 
     /**
-     * Operation prerenderIdle
+     * Wählt eine noch nicht gezeichnete Kachel in der Nähe des
+     * sichtbaren Kartenausschnitts aus und zeichnet diese in den Cache.
      * 
-     * @return boolean
+     * @return wahr, wenn eine Kachel gezeichnet wurde
      */
     public boolean prerenderIdle() {
         return false;
     }
 
-    /**
-     * Operation inheritCache
-     * 
-     * @param source
-     *            -
-     * @return
-     * @return
-     */
-    public void inheritCache(Renderer source) {
-    }
+    //public void inheritCache(Renderer source) {}
 
     /**
-     * Operation prerenderTile
+     * Zeichnet die bei topLeft beginnende Kachel im gegebenen
+     * Detailgrad und legt sie im Cache ab.
      * 
-     * @param detail
-     *            -
-     * @param topLeft
-     *            -
-     * @return
-     * @return
+     * @param detail Detailgrad, in dem gezeichnet werden soll
+     * @param topLeft nordwestliche Ecke der Kachel
      */
+    @SuppressWarnings("unused")
     private void prerenderTile(int detail, Coordinates topLeft) {
+        Image tile = detailCaches[detail].queryCache(topLeft);
+        if (tile == null) {
+        }
     }
 
     /**
-     * Operation drawRoute
+     * Zeichnet die übergebene Route auf den aktuellen Renderkontext.
      * 
-     * @param route
-     *            -
-     * @param selection
-     *            -
-     * @return
-     * @return
+     * @param route Node-IDs der Routenpunkte
+     * @param selection Navigationspunktliste
      */
+    @SuppressWarnings("unused")
     private void drawRoute(List<Integer> route, List<Selection> selection) {
     }
 
     /**
-     * Operation draw
+     * Zeichnet einen Point of Interest auf den aktuellen Renderkontext.
      * 
-     * @param poi
-     *            -
-     * @return
-     * @return
+     * @param poi der zu zeichnende POI
      */
+    @SuppressWarnings("unused")
     private void draw(POINode poi) {
     }
 
     /**
-     * Operation draw
+     * Zeichnet ein Gebiet auf den aktuellen Renderkontext.
      * 
-     * @param area
-     *            -
-     * @return
-     * @return
+     * @param area das zu zeichnende Gebiet
      */
+    @SuppressWarnings("unused")
     private void draw(Area area) {
     }
 
     /**
-     * Operation draw
+     * Zeichnet eine einzelne Straßenkante (unter Berücksichtigung
+     * des Straßentyps) auf den aktuellen Renderkontext.
      * 
-     * @param edge
-     *            -
-     * @return
-     * @return
+     * @param edge die zu zeichnende Kante
      */
+    @SuppressWarnings("unused")
     private void draw(Edge edge) {
     }
 }

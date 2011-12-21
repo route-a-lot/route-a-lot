@@ -9,25 +9,39 @@ import kit.route.a.lot.map.rendering.RenderCache;
 
 public class HashRenderCache implements RenderCache {
 
-    /** Attributes */
     /**
-     * 
+     * Maximale Anzahl an Kacheln, die im Cache gespeichert werden können.
      */
-    private Map<Coordinates, Image> map;
+    private static final int CACHE_SIZE = 20;
+    
     /**
-     * 
+     * Ermöglicht den Zugriff auf die Cacheeinträge über eine Hashmap.
+     */
+    // TODO: Map.get() und put() überschreiben (kein Speichern nach Objektreferenz)
+    private Map<Coordinates, Image> map;
+    
+    /**
+     * Verwaltet eine FIFO-Liste der hinzugefügten Einträge, 
+     * so dass die ältesten Einträge ggfs. entfernt werden können.
      */
     private List<Coordinates> leastRecentlyUsed;
 
-    @Override
-    public Image queryCache(Coordinates topLeft) {
-        // TODO Auto-generated method stub
-        return null;
+    public HashRenderCache() {
+        map = null;
+        leastRecentlyUsed = null;
     }
-
-    @Override
+    
+    // specified in interface RenderCache
+    public Image queryCache(Coordinates topLeft) {
+        return map.get(topLeft);
+    }
+    
+    // specified in interface RenderCache
     public void addToCache(Coordinates topLeft, Image image) {
-        // TODO Auto-generated method stub
-
+        map.put(topLeft, image);
+        leastRecentlyUsed.add(topLeft);
+        if (leastRecentlyUsed.size() > CACHE_SIZE) {
+            leastRecentlyUsed.remove(0);
+        }
     }
 }
