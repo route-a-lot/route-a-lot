@@ -5,6 +5,9 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.List;
+
+import kit.route.a.lot.common.IntTouple;
 
 
 public class AdjacentFieldsRoutingGraph implements RoutingGraph {
@@ -38,17 +41,17 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             // Get maxID = edgesPos.size = edgeList.size
             max = max(max, id);
         }
-        LinkedList<IntTouple>[] edgeLists = new LinkedList()[];
+        List<IntTuple>[] edgeLists = new LinkedList()[];
         Arrays.fill(edgesPos, 0);
         for (int i = 0; i < startID.length; i++) {
-            edgeLists[startID[i]].add(IntTouple(endID[i], weight[i]));
+            edgeLists[startID[i]].add(new IntTuple(endID[i], weight[i]));
             // Create Mapping from ID => edge
         }
         int j = 0;  // Index of edges and weights
         int i = 1;  // Index of edgeLists and edgesPos
-        for (LinkedList<IntTouple> edgeList: edgeLists) {
+        for (LinkedList<IntTuple> edgeList: edgeLists) {
             // Fill Arrays
-            for (IntTouple values: edgeList) {
+            for (IntTuple values: edgeList) {
                 edgesPos[i]++;
                 edges[j] = values.getFirst();
                 weights[j] = values.getLast();
@@ -72,10 +75,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
 
     @Override
-    public Collection<IntTouple> getRelevantNeighbors(int node, byte destArea) {
-        LinkedList<IntTouple> relevantEdges = new LinkedList();
+    public Collection<IntTuple> getRelevantNeighbors(int node, byte destArea) {
+        LinkedList<IntTuple> relevantEdges = new LinkedList();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
-            relevantEdges.add(new IntTouple(edges[edgesPos[node]+i], weights[edgesPos[node]+i]));
+            relevantEdges.add(new IntTuple(edges[edgesPos[node]+i], weights[edgesPos[node]+i]));
         }
         return relevantEdges;
     }

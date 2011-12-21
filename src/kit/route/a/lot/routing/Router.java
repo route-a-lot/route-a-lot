@@ -1,7 +1,13 @@
 package kit.route.a.lot.routing;
 
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+
+import kit.route.a.lot.common.IntTuple;
+import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.controller.State;
 
 
 public class Router {
@@ -12,10 +18,10 @@ public class Router {
      * @return List<int>
      */
     public List<Integer> calculateRoute() {
-        List<Integer> route = new List<Integer>;
+        List<Integer> route = new LinkedList<Integer>();
         Selection prev;
         for (Selection navPoint: State.getInstance().getNavigationNodes()) {
-            route.addAll(fromAtoB(prev, navPoint));
+            route.addAll(fromAToB(prev, navPoint));
         }
         return null;
     }
@@ -31,7 +37,7 @@ public class Router {
     }
 
     private List<Integer> fromAToB(Selection a, Selection b) {
-        PriorityQueue<Path> heap = new PriorityQueue(2, new RouteComperator());
+        PriorityQueue<Path> heap = new PriorityQueue<Path>(2, new RouteComparator());
         Route currentPath;
         if (a == null || b == null) {
             return new List<Integer>;
@@ -45,7 +51,7 @@ public class Router {
             if (currentPath.getNode() == b.getTo() || currentPath.getNode() == b.getFrom()) {
                 break;
             }
-            for (IntTouple edge: graph.getRelevantNeighbors(currentPath.getNode(), graph.getAreaId(currentPath.getNode()))) {
+            for (IntTuple edge: graph.getRelevantNeighbors(currentPath.getNode(), graph.getAreaId(currentPath.getNode()))) {
                 heap.add(new Route(edge.getLast(), graph.getWeight(edge.getFirst(), edge.getLast()), currentPath));
             }
         }
@@ -53,7 +59,7 @@ public class Router {
     }
 }
 
-class RouteComperator implements Comperator {
+class RouteComparator<T> implements Comparator<T> {
     public int compare(Route a, Route b) {
         return a.length() - b.length();
     }
