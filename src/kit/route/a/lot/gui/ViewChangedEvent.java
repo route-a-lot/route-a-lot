@@ -3,13 +3,13 @@ package kit.route.a.lot.gui;
 
 public class ViewChangedEvent extends java.util.EventObject {
     
-    /*describes the horizantal movement of an mapObject 
+    /*describes the vertical movement of an mapObject 
      *in a number between -1 (western movement) and one 1 (eastern movement)
      */ 
     private float longitude;
     
     /*
-     * describes the vertical movement of an mapObject 
+     * describes the horizontal movement of an mapObject 
      * in a number between -1 (norther movement) and one 1 (south movement)
     */ 
     private float laltitude;
