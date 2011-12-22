@@ -7,13 +7,13 @@ import kit.route.a.lot.map.rendering.Renderer;
 public class Renderer3D extends Renderer {
 
     /**
-     * Zeichnet einen Kartenausschnitt in dreidimensionaler Form 
-     * unter Verwendung von Höhendaten und perspektivischer Projektion.
+     * Renders a map viewing rectangle in three dimensional form,
+     * using height data and perspective projection in the process.
      * 
-     * @param detail Detailgrad, in dem gezeichnet werden soll
-     * @param topLeft nordwestliche Ecke des Kartenausschnitts
-     * @param bottomRight südöstliche Ecke des Kartenausschnitts
-     * @param renderingContext Ausgabekontext
+     * @param detail level of detail of the map view
+     * @param topLeft northwestern corner of the viewing rectangle
+     * @param bottomRight southeastern corner of the viewing rectangle
+     * @param renderingContext an OpenGL rendering context
      */
     public void render(int detail, Coordinates topLeft,
             Coordinates bottomRight, Context renderingContext) {

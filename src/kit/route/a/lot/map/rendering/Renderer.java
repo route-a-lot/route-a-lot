@@ -1,102 +1,89 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.Image;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.POINode;
-import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.Edge;
+import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.RenderCache;
 
 public class Renderer {
 
     /**
-     * Verwaltet für jede Detailstufe einen Cache, der bereits
-     * gezeichnete Kacheln speichert.
+     * A cache storing tiles that were previously drawn.
      */
-    private RenderCache[] detailCaches;
+    private RenderCache cache;
 
+    /**
+     * Creates a new renderer.
+     */
     public Renderer() {
-        detailCaches = null;
+        cache = null;
     }
     
     /**
-     * Zeichnet einen Kartenausschnitt im übergebenenen Kontext.
+     * Renders a map viewing rectangle using the given rendering context.
      * 
-     * @param detail Detailgrad, in dem gezeichnet werden soll
-     * @param topLeft nordwestliche Ecke des Kartenausschnitts
-     * @param bottomRight südöstliche Ecke des Kartenausschnitts
-     * @param renderingContext Ausgabekontext
+     * @param detail level of detail of the map view
+     * @param topLeft northwestern corner of the viewing rectangle
+     * @param bottomRight southeastern corner of the viewing rectangle
+     * @param renderingContext the output rendering context
      */
     public void render(int detail, Coordinates topLeft,
             Coordinates bottomRight, Context renderingContext) {
     }
 
     /**
-     * Wählt eine noch nicht gezeichnete Kachel in der Nähe des
-     * sichtbaren Kartenausschnitts aus und zeichnet diese in den Cache.
+     * Chooses an so far uncached tile in proximity of the visible map
+     * viewing rectangle, subsequently drawing and caching it.
      * 
-     * @return wahr, wenn eine Kachel gezeichnet wurde
+     * @return true if a tile was drawn
      */
     public boolean prerenderIdle() {
         return false;
     }
 
-    //public void inheritCache(Renderer source) {}
+    /**
+     * Adopts the cache from another renderer.
+     * @param source
+     */
+    public void inheritCache(Renderer source) {
+        this.cache = source.cache;
+    }
 
     /**
-     * Zeichnet die bei topLeft beginnende Kachel im gegebenen
-     * Detailgrad und legt sie im Cache ab.
+     * If necessary, draws (and caches) the given tile.
      * 
-     * @param detail Detailgrad, in dem gezeichnet werden soll
-     * @param topLeft nordwestliche Ecke der Kachel
+     * @param tile the given tile frame
      */
     @SuppressWarnings("unused")
-    private void prerenderTile(int detail, Coordinates topLeft) {
-        Image tile = detailCaches[detail].queryCache(topLeft);
-        if (tile == null) {
+    private void prerenderTile(Tile tile) {
+        if (!cache.queryCache(tile)) {
+            tile.prerender();
+            cache.addToCache(tile);
         }
     }
 
     /**
-     * Zeichnet die übergebene Route auf den aktuellen Renderkontext.
+     * Draws the given route on the current rendering context.
      * 
-     * @param route Node-IDs der Routenpunkte
-     * @param selection Navigationspunktliste
+     * @param route node ids of the route nodes
+     * @param selection navigation point list
      */
     @SuppressWarnings("unused")
     private void drawRoute(List<Integer> route, List<Selection> selection) {
     }
-
+    
     /**
-     * Zeichnet einen Point of Interest auf den aktuellen Renderkontext.
+     * Draws a point of interest on the current rendering context.
      * 
-     * @param poi der zu zeichnende POI
+     * @param poi the POI to be drawn
      */
     @SuppressWarnings("unused")
-    private void draw(POINode poi) {
+    private void drawPOI(POINode poi) {
     }
 
-    /**
-     * Zeichnet ein Gebiet auf den aktuellen Renderkontext.
-     * 
-     * @param area das zu zeichnende Gebiet
-     */
-    @SuppressWarnings("unused")
-    private void draw(Area area) {
-    }
 
-    /**
-     * Zeichnet eine einzelne Straßenkante (unter Berücksichtigung
-     * des Straßentyps) auf den aktuellen Renderkontext.
-     * 
-     * @param edge die zu zeichnende Kante
-     */
-    @SuppressWarnings("unused")
-    private void draw(Edge edge) {
-    }
 }

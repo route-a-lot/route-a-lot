@@ -1,10 +1,9 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.Image;
-import java.util.List;
-import java.util.Map;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.LinkedList;
 
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.rendering.RenderCache;
 
 public class HashRenderCache implements RenderCache {
@@ -17,31 +16,33 @@ public class HashRenderCache implements RenderCache {
     /**
      * Ermöglicht den Zugriff auf die Cacheeinträge über eine Hashmap.
      */
-    // TODO: Map.get() und put() überschreiben (kein Speichern nach Objektreferenz)
-    private Map<Coordinates, Image> map;
+    private HashMap<Tile, BufferedImage> map;
     
     /**
      * Verwaltet eine FIFO-Liste der hinzugefügten Einträge, 
      * so dass die ältesten Einträge ggfs. entfernt werden können.
      */
-    private List<Coordinates> leastRecentlyUsed;
+    private LinkedList<Tile> leastRecentlyUsed; // EXTEND: more elaborate aging algorithm
 
     public HashRenderCache() {
-        map = null;
-        leastRecentlyUsed = null;
+        map = new HashMap<Tile, BufferedImage>();
+        leastRecentlyUsed = new LinkedList<Tile>();
     }
     
     // specified in interface RenderCache
-    public Image queryCache(Coordinates topLeft) {
-        return map.get(topLeft);
+    public boolean queryCache(Tile tileFrame) {
+        BufferedImage result = map.get(tileFrame);
+        tileFrame.setData(result);
+        return (result != null);
     }
     
     // specified in interface RenderCache
-    public void addToCache(Coordinates topLeft, Image image) {
-        map.put(topLeft, image);
-        leastRecentlyUsed.add(topLeft);
-        if (leastRecentlyUsed.size() > CACHE_SIZE) {
-            leastRecentlyUsed.remove(0);
+    public void addToCache(Tile tile) {
+        map.put(tile, tile.getData());
+        if (leastRecentlyUsed.size() >= CACHE_SIZE) {
+            map.remove(leastRecentlyUsed.removeFirst());      
         }
+        leastRecentlyUsed.addLast(tile);
     }
+    
 }

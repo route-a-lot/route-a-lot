@@ -1,26 +1,20 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.Image;
-
-import kit.route.a.lot.common.Coordinates;
-
 public interface RenderCache {
 
     /**
-     * Gibt bei einem Cachetreffer die für die gegebenen Koordinaten
-     * gespeicherte Kachel zurück. Andernfalls wird null zurückgegeben.
+     * Fills tile data (in tileFrame) with the stored tile image on cache hit.
      * 
-     * @param topLeft nordwestliche Ecke der gesuchten Kachel
-     * @return die entsprechende im Cache gespeicherte Kachel
+     * @param tileFrame an empty tile, offering coordinates and a level of detail
+     * @return true on cache hit
      */
-    Image queryCache(Coordinates topLeft);
+    boolean queryCache(Tile tileFrame);
 
     /**
-     * Fügt dem Cache die gegebene Kachel für die angegebenen Koordinaten hinzu.
+     * Adds the given tile to the cache.
      * 
-     * @param topLeft nordwestliche Ecke der Kachel
-     * @param image die Kachel
+     * @param tile the given tile
      */
-    void addToCache(Coordinates topLeft, Image image);
+    void addToCache(Tile tile);
 
 }
