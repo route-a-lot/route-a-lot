@@ -12,7 +12,7 @@ public class WeightCalculator {
      *            -
      * @return int
      */
-    public int calcWeight(int fromID, int toID) {
+    public static int calcWeight(int fromID, int toID) {
         return 0;
     }
 }
