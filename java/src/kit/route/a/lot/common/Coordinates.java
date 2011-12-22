@@ -27,8 +27,8 @@ public class Coordinates {
     }
     
     //TODO why was this still here?
-    /*public float getLatitude() {
-        return latitude;
+    public float getLatitude() {
+        return (float)latitude;
     }
     
     public void setLatitude(float latitude) {
@@ -36,10 +36,10 @@ public class Coordinates {
     }
     
     public float getLongitude() {
-        return longitude;
+        return (float)longitude;
     }
     
     public void setLongitude(float longitude) {
         this.longitude = longitude;
-    }*/
+    }
 }
