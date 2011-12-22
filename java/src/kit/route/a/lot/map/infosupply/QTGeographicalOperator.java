@@ -2,6 +2,7 @@ package kit.route.a.lot.map.infosupply;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
@@ -34,14 +35,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
 
     @Override
-    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+    public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+    public ArrayList<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         // TODO Auto-generated method stub
         return null;

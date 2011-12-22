@@ -19,6 +19,15 @@ public abstract class MapElement {
      * 
      * @return String
      */
+    
+    public int getID(){
+        return id;
+    }
+    
+    public void setID(int id) {
+        this.id = id;
+    }
+    
     abstract protected String getName();
 
     /**
@@ -37,7 +46,7 @@ public abstract class MapElement {
      *            -
      * @return boolean
      */
-    abstract protected boolean isInBounds(Coordinates topLeft,
+    abstract public boolean isInBounds(Coordinates topLeft,
             Coordinates bottomRight);
 
     /**

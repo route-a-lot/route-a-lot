@@ -27,6 +27,7 @@ public class Node extends MapElement {
         return pos;
     }
     
+    
     public void addOutgoingEdge(Edge edge) {
         outgoingEdges.add(edge);
     }
@@ -39,7 +40,6 @@ public class Node extends MapElement {
 
     @Override
     protected String getName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -50,9 +50,13 @@ public class Node extends MapElement {
     }
 
     @Override
-    protected boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        return (this.pos.getLat() <= topLeft.getLat() 
+                && this.pos.getLat() >= bottomRight.getLat()                
+                && this.pos.getLon() >= topLeft.getLon()       
+                && this.pos.getLon() <= bottomRight.getLon());
+                
+        //TODO äquator, median
     }
 
     @Override

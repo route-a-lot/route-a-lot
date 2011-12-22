@@ -2,6 +2,7 @@ package kit.route.a.lot.map.infosupply;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
@@ -51,7 +52,7 @@ public interface GeographicalOperator {
      *            -
      * @return Set<MapElement>
      */
-    Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+    List<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight);
 
     /**
@@ -65,7 +66,7 @@ public interface GeographicalOperator {
      *            -
      * @return Set<MapElement>
      */
-    Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+    List<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight);
 
     /**

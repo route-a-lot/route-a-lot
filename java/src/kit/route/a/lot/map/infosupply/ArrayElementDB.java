@@ -1,7 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream;import java.io.OutputStream;
+import java.util.ArrayList;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
@@ -14,40 +14,46 @@ public class ArrayElementDB implements ElementDB {
     /**
      * 
      */
-    private Node[] nodes;
+    private ArrayList<Node> nodes;
     /**
      * 
      */
-    private MapElement[] mapElements;
+    private ArrayList<MapElement> mapElements;
+
+    private int mapEleID = 0;   //counts mapElemnts
+    
+    public ArrayElementDB() {
+        nodes = new ArrayList<Node>();
+        mapElements = new ArrayList<MapElement>();
+    }
 
     @Override
     public Coordinates getNodePosition(int nodeID) {
-        // TODO Auto-generated method stub
-        return null;
+        return nodes.get(nodeID).getPos();
     }
 
     @Override
     public void addNode(Node node) {
-        // TODO Auto-generated method stub
+        nodes.add(node.getID(), node);
 
     }
 
     @Override
     public Node getNode(int nodeID) {
-        // TODO Auto-generated method stub
-        return null;
+        return nodes.get(nodeID);
     }
 
     @Override
     public void addMapElement(MapElement element) {
-        // TODO Auto-generated method stub
+        mapElements.add(element);
+        element.setID(mapEleID);
+        mapEleID++;
 
     }
 
     @Override
     public MapElement getMapElement(int id) {
-        // TODO Auto-generated method stub
-        return null;
+        return mapElements.get(id);
     }
 
     @Override

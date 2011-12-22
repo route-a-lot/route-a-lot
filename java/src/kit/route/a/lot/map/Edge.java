@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream;import java.io.OutputStream;
+import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
@@ -14,10 +14,13 @@ public class Edge extends MapElement {
      */
     private Node start;
     private Node end;
+    private Street street;
     
-    public Edge(Node start, Node end){
+    
+    public Edge(Node start, Node end, Street street){
         this.start = start;
         this.end = end;
+        this.street = street;
     }
     
     public Node getStart() {
@@ -26,6 +29,10 @@ public class Edge extends MapElement {
 
     public Node getEnd() {
         return end;
+    }
+    
+    public Street geStreet(){
+        return street;
     }
 
     @Override
@@ -41,9 +48,9 @@ public class Edge extends MapElement {
     }
 
     @Override
-    protected boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO Auto-generated method stub
-        return false;
+    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        // TODO overlap
+        return (this.start.isInBounds(topLeft, bottomRight) || this.end.isInBounds(topLeft, bottomRight));
     }
 
     @Override

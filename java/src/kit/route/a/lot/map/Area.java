@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream;import java.io.OutputStream;
+import java.util.ArrayList;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
@@ -15,13 +15,34 @@ public class Area extends MapElement {
      */
     private int type;
     /** Associations */
-    private Node[] nodes;
+    private ArrayList<Node> nodes;
+    
+    private String name;
 
+    public Area(int type, String name) {
+        this.type = type;
+        this.name = name;
+        nodes = new ArrayList<Node>();
+    }
 
+    
+    
+    
+    public int getType() {
+        return type;
+    }
+    
+    public ArrayList<Node> getNodes() {
+        return nodes;
+    }
+
+    public void addNode(Node node) {
+        nodes.add(node);
+    }
+    
     @Override
     protected String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.name;
     }
 
     @Override
@@ -31,8 +52,13 @@ public class Area extends MapElement {
     }
 
     @Override
-    protected boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO Auto-generated method stub
+    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        // TODO overlap
+        for(Node node: nodes) {
+            if (node.isInBounds(topLeft, bottomRight)){
+                return true;
+            }
+        }
         return false;
     }
 

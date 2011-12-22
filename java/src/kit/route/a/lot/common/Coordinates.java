@@ -26,8 +26,8 @@ public class Coordinates {
         longitude = lon;
     }
     
-    
-    public float getLatitude() {
+    //TODO why was this still here?
+    /*public float getLatitude() {
         return latitude;
     }
     
@@ -41,5 +41,5 @@ public class Coordinates {
     
     public void setLongitude(float longitude) {
         this.longitude = longitude;
-    }
+    }*/
 }

@@ -1,16 +1,12 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;
-import java.util.List;
+import java.io.InputStream;import java.io.OutputStream;import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.Edge;
-import kit.route.a.lot.map.POINode;
+import kit.route.a.lot.map.*;
 
 public class MapInfo {
 
@@ -24,6 +20,8 @@ public class MapInfo {
      */
     public MapInfo(){
         geographicalOperator = new QTGeographicalOperator();
+        elementDB = new ArrayElementDB();
+        
     }
     
     /**
@@ -69,15 +67,28 @@ public class MapInfo {
      * @return
      */
     public void addWay(List<Integer> ids, String name, int type) {
-        for(int i = 0; i < ids.size() - 1; i++) {
-            Node start = elementDB.getNode(ids.get(i));
-            Node end = elementDB.getNode(ids.get(i + 1));
-            Edge edge = new Edge(start, end);
-            elementDB.addMapElement(edge);
-            geographicalOperator.addToBaseLayer(edge);
-            //we have to build a street or area object here, but for that we've to know which type is a street and which is a area . . .
+            
+        if(type > 0) {      //TODO define types
+            Street street = new Street(type, name);
+            elementDB.addMapElement(street);
+            for(int i = 0; i < ids.size() - 1; i++) {
+                Node start = elementDB.getNode(ids.get(i));
+                Node end = elementDB.getNode(ids.get(i + 1));
+                Edge edge = new Edge(start, end, street);
+                street.addEdge(edge);
+                elementDB.addMapElement(edge);
+                geographicalOperator.addToBaseLayer(edge);
+                }
+        } else {    
+            Area area = new Area(type, name);
+            elementDB.addMapElement(area);
+            geographicalOperator.addToBaseLayer(area);
+            for (int i = 0; i < ids.size(); i++) {
+                area.addNode(elementDB.getNode(ids.get(i)));
+            }    
         }
     }
+    
 
     /**
      * Operation addPOI
@@ -91,8 +102,7 @@ public class MapInfo {
      * @return
      * @return
      */
-    public void
-        addPOI(Coordinates position, int id, POIDescription description) {
+    public void addPOI(Coordinates position, int id, POIDescription description) {
             POINode newPOI = new POINode(id, position, description);
             elementDB.addNode(newPOI);
             geographicalOperator.addToOverlay(newPOI);
@@ -198,7 +208,7 @@ public class MapInfo {
      *            -
      * @return Set<MapElement>
      */
-    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+    public List<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight);
     }
@@ -214,7 +224,7 @@ public class MapInfo {
      *            -
      * @return Set<MapElement>
      */
-    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+    public List<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         return geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight);
     }
