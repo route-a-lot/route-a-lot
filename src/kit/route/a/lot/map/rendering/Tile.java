@@ -2,15 +2,20 @@ package kit.route.a.lot.map.rendering;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Edge;
+import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 
 
 public class Tile {
 
+    public static final double BASE_TILE_DIM = 0.001;
+    
     private Coordinates topLeft;
     private Coordinates bottomRight; // DISCUSS: keep or drop?
     private int detail;
@@ -33,8 +38,7 @@ public class Tile {
         this.detail = detail;
         this.width = width;
         this.height = height;
-        this.data = null;
-        
+        this.data = null;      
     }
     
     /**
@@ -50,7 +54,17 @@ public class Tile {
 
     public void prerender() {
         reset();
-        
+        Set<MapElement> map = State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight);
+        for (MapElement element: map) {
+            // TODO: find better alternative to conditional casting
+            if (element instanceof Edge) {
+                draw((Edge) element);
+            } else if (element instanceof Area) {
+                draw((Area) element);
+            } else if (element instanceof Node) {
+                draw((Node) element);
+            }
+        }
     }
     
     /**
@@ -122,6 +136,6 @@ public class Tile {
     @Override
     public int hashCode() {
         // EXTEND: better hash code derivation
-        return Math.round((topLeft.longitude + topLeft.latitude * 100) * 1000) + detail;
+        return (int) (Math.round((topLeft.getLon() + topLeft.getLat() * 100) * 1000) + detail);
     }
 }
