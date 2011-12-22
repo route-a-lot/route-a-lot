@@ -22,11 +22,19 @@ public class OSMLoader {
     
     private static Logger logger = Logger.getLogger(OSMLoader.class);
     
-    static ArrayList<Integer> startIds = new ArrayList<Integer>();
-    static ArrayList<Integer> endIds = new ArrayList<Integer>();
+    private ArrayList<Integer> startIds;
+    private ArrayList<Integer> endIds;
     
     public static final int HIGHWAY_UNCLASSIFIED = 1;
     public static final int HIGHWAY_CYCLEWAY = 2;
+    
+    State state;
+    
+    public OSMLoader() {
+        state = State.getInstance();
+        startIds = new ArrayList<Integer>();
+        endIds = new ArrayList<Integer>();
+    }
 
     /**
      * Operation importMap lok. Variable idMapping: Map<int, int>
@@ -36,7 +44,7 @@ public class OSMLoader {
      * @return
      * @return
      */
-    public static void importMap(File file) {
+    public void importMap(File file) {
         
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -47,8 +55,8 @@ public class OSMLoader {
                 Map<Integer, Integer> idMap = new HashMap<Integer, Integer>();
                 // ToDo lohnt es sich, noch eine ArrayList mitzuführen?
                 
-                boolean inWay = false;
-                boolean inPolyline = false;
+                boolean inWay;
+                boolean inPolyline;
                 int curPolylineNode;
                 List<Integer> curWayIds;
                 String curWayName;
@@ -60,7 +68,10 @@ public class OSMLoader {
                     if (inWay) {
                         if (inPolyline) {
                             if (qName.equalsIgnoreCase("nd")) {
-                                int newPolylineNode = idMap.get(Integer.parseInt(attributes.getValue("ref")));
+                                Integer newPolylineNode = idMap.get(Integer.parseInt(attributes.getValue("ref")));
+                                if (newPolylineNode == null) {
+                                    logger.error("Node id is not known: id = " + attributes.getValue("ref"));
+                                }
                                 startIds.add(curPolylineNode);
                                 endIds.add(newPolylineNode);
                                 curPolylineNode = newPolylineNode;
@@ -95,13 +106,15 @@ public class OSMLoader {
                             }
                         } else if (qName.equalsIgnoreCase("bounds")) {
                             Coordinates upLeft = new Coordinates();
-                            Coordinates bottomDown = new Coordinates();;
+                            Coordinates bottomRight = new Coordinates();;
                             
                             upLeft.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
                             upLeft.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
                             
-                            bottomDown.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
-                            bottomDown.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
+                            bottomRight.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
+                            bottomRight.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
+                            
+                            state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
                             
                         } else if (qName.equalsIgnoreCase("node")) {
                             Coordinates coordinates = new Coordinates();
@@ -112,11 +125,12 @@ public class OSMLoader {
                             int newId = idMap.size();
                             idMap.put(Integer.parseInt(attributes.getValue("id")), newId);
                             
-                            State.getInstance().getLoadedMapInfo().addNode(coordinates, newId);
+                            state.getLoadedMapInfo().addNode(coordinates, newId);
                             
                             // ToDo tags
                         } else if (qName.equalsIgnoreCase("way")) {
                             inWay = true;
+                            curWayIds = new ArrayList<Integer>();
                         } else if (qName.equalsIgnoreCase("relation")) {
                             // ToDo
                         }
@@ -125,11 +139,12 @@ public class OSMLoader {
                     
                 public void endElement(String uri, String localName, String qName)
                         throws SAXException {
-                    if (inWay) {
+                    if (inWay && qName.equalsIgnoreCase("way")) {
                         inWay = false;
                         inPolyline = false;
+                        curWayIds = null;
                         
-                        State.getInstance().getLoadedMapInfo().addWay(curWayIds, curWayName, curWayType);
+                        state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayType);
                     }
                 }
                 
@@ -151,7 +166,7 @@ public class OSMLoader {
                 weights[i] = WeightCalculator.calcWeight(startIDs[i], endIDs[i]);
             }
             
-            State.getInstance().getLoadedGraph().buildGraph(startIDs, endIDs, weights);
+            state.getLoadedGraph().buildGraph(startIDs, endIDs, weights);
             
             
         } catch (Exception e) {
