@@ -51,12 +51,12 @@ public class Node extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        return (this.pos.getLat() <= topLeft.getLat() 
-                && this.pos.getLat() >= bottomRight.getLat()                
-                && this.pos.getLon() >= topLeft.getLon()       
-                && this.pos.getLon() <= bottomRight.getLon());
+        return (this.pos.getLatitude() <= topLeft.getLatitude() 
+                && this.pos.getLatitude() >= bottomRight.getLatitude()                
+                && this.pos.getLongitude() >= topLeft.getLongitude()       
+                && this.pos.getLongitude() <= bottomRight.getLongitude());
                 
-        //TODO äquator, median
+      //TODO pos -> neg (e.g. -180° -> 180°)
     }
 
     @Override

@@ -19,7 +19,7 @@ public class MapInfo {
      * Constructor
      */
     public MapInfo(){
-        geographicalOperator = new QTGeographicalOperator();
+        geographicalOperator = new PrimitivArrayGeoOperator();
         elementDB = new ArrayElementDB();
         
     }
@@ -50,7 +50,7 @@ public class MapInfo {
      */
     public void addNode(Coordinates position, int id) {
         Node newNode = new Node(id, position);
-        elementDB.addMapElement(newNode);
+        elementDB.addNode(newNode);
         geographicalOperator.addToBaseLayer(newNode);
     }
 

@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;import java.io.OutputStream;
-import java.util.ArrayList;
+import java.io.InputStream;import java.io.OutputStream;import java.util.ArrayList;import java.awt.Polygon;
+import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
@@ -53,13 +53,32 @@ public class Area extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO overlap
-        for(Node node: nodes) {
-            if (node.isInBounds(topLeft, bottomRight)){
-                return true;
+        // TODO there is no float polygon, so I have to think about s.th. else
+        int x[] = new int[this.nodes.size()];
+        int y[] = new int[this.nodes.size()];
+        int i = 0;
+        for (Node node: nodes) {
+            x[i] = (int)node.getPos().getLongitude() * 100000;
+            i++;
+        }
+        i = 0;
+        for (Node node: nodes) {
+            x[i] = (int)node.getPos().getLatitude() * 100000;
+            i++;
+        }
+        Polygon area = new Polygon(x, y, nodes.size());
+        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude() * 100000, topLeft.getLatitude() * 100000, 
+                (bottomRight.getLongitude() - topLeft.getLongitude()) * 100000,
+                (topLeft.getLatitude() - bottomRight.getLatitude()) * 100000);
+        boolean inside = false;
+        for (Node node : nodes) {
+            if(node.isInBounds(topLeft, bottomRight)) {
+                inside = true;
             }
         }
-        return false;
+        return inside || area.contains(box) || area.intersects(box);
+        
+        
     }
 
     @Override

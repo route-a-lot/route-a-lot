@@ -1,6 +1,8 @@
 package kit.route.a.lot.map;
 
 import java.io.InputStream;import java.io.OutputStream;
+import java.awt.geom.Path2D.Float;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
@@ -49,8 +51,14 @@ public class Edge extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO overlap
-        return (this.start.isInBounds(topLeft, bottomRight) || this.end.isInBounds(topLeft, bottomRight));
+        Line2D.Float edge = new Line2D.Float(start.getPos().getLongitude(), start.getPos().getLatitude(),
+                                            end.getPos().getLongitude(), end.getPos().getLatitude());
+        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude(), topLeft.getLatitude(), 
+                                                bottomRight.getLongitude() - topLeft.getLongitude(),
+                                                topLeft.getLatitude() - bottomRight.getLatitude());
+        return box.intersectsLine(edge) || start.isInBounds(topLeft, bottomRight) || end.isInBounds(topLeft, bottomRight);
+        //TODO pos -> neg (e.g. -180° -> 180°)
+        
     }
 
     @Override
