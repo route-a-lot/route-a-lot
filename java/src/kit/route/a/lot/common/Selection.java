@@ -16,6 +16,11 @@ public class Selection {
      * 
      */
     public float ratio;
+    
+    public Selection(int node1, int node2, float ratio) {
+        
+    }
+    
     /**
      * 
      */

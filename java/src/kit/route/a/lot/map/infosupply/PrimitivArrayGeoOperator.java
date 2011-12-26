@@ -1,7 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;
-import java.util.Set;
+import java.io.InputStream;import java.io.OutputStream;import java.util.Set;
 import java.util.ArrayList;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -11,6 +10,7 @@ import java.awt.geom.Line2D.*;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.*;
+import kit.route.a.lot.common.Selection;
 
 
 public class PrimitivArrayGeoOperator implements GeographicalOperator {
@@ -37,7 +37,7 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
     @Override
     public Selection select(Coordinates pos) {
         Point2D.Double selectedPoint = new Point2D.Double(pos.getLon(), pos.getLat());
-        Edge currentClosest;
+        Edge currentClosest = null;
         double distance = -1;
         for(MapElement mapEle: baseLayer) {
             if (mapEle instanceof Edge) {
@@ -52,7 +52,7 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
                 }
             }
         }
-        return null;    //TODO SELECTION!
+        return new Selection(currentClosest.getStart().getID(), currentClosest.getEnd().getID(), 0.0f);    //TODO lot
     }
 
     @Override

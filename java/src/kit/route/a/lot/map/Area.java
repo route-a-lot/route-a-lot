@@ -53,12 +53,12 @@ public class Area extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO there is no float polygon, so I have to think about s.th. else
+        // TODO there is no float polygon, so I have to think about s.th. else (or leave it the way is is now)
         int x[] = new int[this.nodes.size()];
         int y[] = new int[this.nodes.size()];
         int i = 0;
         for (Node node: nodes) {
-            x[i] = (int)node.getPos().getLongitude() * 100000;
+            x[i] = (int)node.getPos().getLongitude() * 100000;  //100000 is a random factor, can be changed
             i++;
         }
         i = 0;
@@ -67,9 +67,9 @@ public class Area extends MapElement {
             i++;
         }
         Polygon area = new Polygon(x, y, nodes.size());
-        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude() * 100000, topLeft.getLatitude() * 100000, 
-                (bottomRight.getLongitude() - topLeft.getLongitude()) * 100000,
-                (topLeft.getLatitude() - bottomRight.getLatitude()) * 100000);
+        Rectangle2D.Float box = new Rectangle2D.Float((topLeft.getLongitude() - 1) * 100000, (bottomRight.getLatitude() - 1) * 100000, 
+                ((bottomRight.getLongitude() - topLeft.getLongitude()) + 1) * 100000,
+                ((topLeft.getLatitude() - bottomRight.getLatitude()) + 1) * 100000);
         boolean inside = false;
         for (Node node : nodes) {
             if(node.isInBounds(topLeft, bottomRight)) {
