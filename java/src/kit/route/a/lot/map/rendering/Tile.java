@@ -56,14 +56,7 @@ public class Tile {
         reset();
         Set<MapElement> map = State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight);
         for (MapElement element: map) {
-            // TODO: find better alternative to conditional casting
-            if (element instanceof Edge) {
-                draw((Edge) element);
-            } else if (element instanceof Area) {
-                draw((Area) element);
-            } else if (element instanceof Node) {
-                draw((Node) element);
-            }
+            draw(element);
         }
     }
     
@@ -100,6 +93,11 @@ public class Tile {
             this.width = data.getWidth();
             this.height = data.getHeight();
         }
+    }
+
+    protected void draw(MapElement element) {
+        throw new UnsupportedOperationException(
+                "Can't draw an element with type " + element.getClass().toString());
     }
     
     /**
