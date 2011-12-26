@@ -2,6 +2,7 @@ package kit.route.a.lot.map.rendering;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
@@ -54,7 +55,7 @@ public class Tile {
 
     public void prerender() {
         reset();
-        Set<MapElement> map = State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight);
+        List<MapElement> map = State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight);
         for (MapElement element: map) {
             draw(element);
         }
