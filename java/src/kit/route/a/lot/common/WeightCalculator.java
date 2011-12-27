@@ -11,7 +11,7 @@ public class WeightCalculator {
     
     private static WeightCalculator instance;
     
-    private WeightCalculator() { }
+    protected WeightCalculator() { }
     
     public static WeightCalculator getInstance() {
         if (instance == null) {

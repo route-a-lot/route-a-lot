@@ -32,6 +32,7 @@ public class OSMLoaderTest {
         loader = new OSMLoader();
         state = new StateMock();
         loader.state = state;
+        loader.weightCalculator = new WeightCalculatorMock();
     }
 
     @After
