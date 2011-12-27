@@ -219,12 +219,12 @@ public class State {
         this.heighwayMalus = heighwayMalus;
     }
     
-    public static RoutingGraph getRoutingGraph() {
+    public RoutingGraph getRoutingGraph() {
         return null;
     }
 
 
-    public static Heightmap getHeightMap() {
+    public Heightmap getHeightMap() {
         // TODO Auto-generated method stub
         return null;
     }

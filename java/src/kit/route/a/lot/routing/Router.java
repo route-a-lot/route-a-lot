@@ -40,7 +40,7 @@ public class Router {
 
     private static List<Integer> fromAToB(Selection a, Selection b) {
         Route bestPath = null;
-        RoutingGraph graph = State.getRoutingGraph();
+        RoutingGraph graph = State.getInstance().getRoutingGraph();
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator());
         Route currentPath = null;
         if (a == null || b == null) {
