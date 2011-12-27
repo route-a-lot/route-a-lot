@@ -98,4 +98,7 @@ public interface RoutingGraph {
      */
     void setArcFlags(int startID, int endID, int flags);
 
+
+    int getWeight(int first, int last);
+
 }

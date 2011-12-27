@@ -217,4 +217,8 @@ public class State {
     public void setHeighwayMalus(int heighwayMalus) {
         this.heighwayMalus = heighwayMalus;
     }
+    
+    public static RoutingGraph getRoutingGraph() {
+        return null;
+    }
 }

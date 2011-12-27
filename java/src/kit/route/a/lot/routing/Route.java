@@ -1,16 +1,18 @@
 package kit.route.a.lot.routing;
 
+import java.util.LinkedList;
+
 public class Route {
     private int to;
-    private float weight;
+    private int weight;
     private Route from;
     
-    public Route(int to, float weight) {
+    public Route(int to, int weight) {
         this.to = to;
         this.weight = weight;
     }
 
-    public Route(int to, float weight, Route route) {
+    public Route(int to, int weight, Route route) {
         this.to = to;
         this.weight = route.weight + weight;
         from = route;
@@ -20,8 +22,8 @@ public class Route {
         return to;
     }
 
-    public List<Integer> toList() {
-        LinkedList<Integer> result = new LinkedList();
+    public LinkedList<Integer> toList() {
+        LinkedList<Integer> result = new LinkedList<Integer>();
         result.add((Integer) to);
         if (from == null) {
             return result;
@@ -33,7 +35,7 @@ public class Route {
         }
     }
 
-    public float length() {
+    public int length() {
         if (from == null) {
             return weight;
         } else {

@@ -21,6 +21,18 @@ public class Selection {
         
     }
     
+    public int getFrom() {
+        return node1;
+    }
+    
+    public int getTo() {
+        return node2;
+    }
+    
+    public float getRatio() {
+        return ratio;
+    }
+    
     /**
      * 
      */

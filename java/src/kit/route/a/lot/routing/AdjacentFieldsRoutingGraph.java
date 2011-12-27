@@ -1,13 +1,15 @@
 package kit.route.a.lot.routing;
 
 import java.io.InputStream;
+import java.lang.Math;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedList;
 
-import kit.route.a.lot.common.IntTouple;
+import kit.route.a.lot.common.IntTuple;
 
 
 public class AdjacentFieldsRoutingGraph implements RoutingGraph {
@@ -39,12 +41,13 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         int max = 0;
         for (int id: startID) {
             // Get maxID = edgesPos.size = edgeList.size
-            max = max(max, id);
+            max = Math.max(max, id);
         }
-        List<IntTuple>[] edgeLists = new LinkedList()[];
+        // "You can't use generic array creation. It's a flaw/ feature of java generics." well, that sucks.
+        ArrayList<LinkedList<IntTuple>> edgeLists = new ArrayList<LinkedList<IntTuple>>();
         Arrays.fill(edgesPos, 0);
         for (int i = 0; i < startID.length; i++) {
-            edgeLists[startID[i]].add(new IntTuple(endID[i], weight[i]));
+            edgeLists.get(startID[i]).add(new IntTuple(endID[i], weight[i]));
             // Create Mapping from ID => edge
         }
         int j = 0;  // Index of edges and weights
@@ -75,10 +78,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
 
     @Override
-    public Collection<IntTuple> getRelevantNeighbors(int node, byte destArea) {
-        LinkedList<IntTuple> relevantEdges = new LinkedList();
+    public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
+        LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
-            relevantEdges.add(new IntTuple(edges[edgesPos[node]+i], weights[edgesPos[node]+i]));
+            relevantEdges.add(edges[edgesPos[node]+i]);
         }
         return relevantEdges;
     }
