@@ -8,6 +8,17 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 
 public class WeightCalculator {
+    
+    private static WeightCalculator instance;
+    
+    private WeightCalculator() { }
+    
+    public static WeightCalculator getInstance() {
+        if (instance == null) {
+            instance = new WeightCalculator();
+        }
+        return instance;
+    }
 
     /**
      * Operation calcWeight
@@ -18,7 +29,7 @@ public class WeightCalculator {
      *            -
      * @return int
      */
-    public static int calcWeight(int fromID, int toID) {
+    public int calcWeight(int fromID, int toID) {
         Coordinates from = MapInfo.getNodePosition(fromID);
         Coordinates to = MapInfo.getNodePosition(toID);
         Heightmap heightmap = State.getInstance().getHeightMap();
@@ -29,7 +40,7 @@ public class WeightCalculator {
                     Math.pow((State.getHeightMalus() * (heightmap.getHeight(from) - heightmap.getHeight(to))), 2));
     }
     
-    public static int calcWeight(Selection edge) {
+    public int calcWeight(Selection edge) {
         return calcWeight(edge.getFrom(), edge.getTo());
     }
 }
