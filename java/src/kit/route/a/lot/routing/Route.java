@@ -3,6 +3,12 @@ package kit.route.a.lot.routing;
 import java.util.LinkedList;
 
 public class Route {
+    /*
+     * 
+     * Basically, a "Route" is an inverted tree of nodes and weights with the start-id as the root.
+     * This greatly reduces Heap-size as a lot of routes share a great part of their way
+     * 
+     */
     private int to;
     private int weight;
     private Route from;

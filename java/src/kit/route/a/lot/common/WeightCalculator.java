@@ -22,6 +22,7 @@ public class WeightCalculator {
         Coordinates from = MapInfo.getNodePosition(fromID);
         Coordinates to = MapInfo.getNodePosition(toID);
         Heightmap heightmap = State.getHeightMap();
+        // Pythagoras.
         return (int) Math.sqrt(
                     Math.pow((from.getLatitude() - to.getLatitude()), 2) + 
                     Math.pow((from.getLongitude() - to.getLongitude()), 2) + 

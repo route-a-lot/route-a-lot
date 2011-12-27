@@ -46,14 +46,14 @@ public class Router {
         if (a == null || b == null) {
             return (List<Integer>) null;
         }
-        // intialize heap
+        // Initialize heap
         heap.add(new Route(a.getFrom(), (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio())));
         heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
         // start the lame calculating.
         while (heap.peek() != null) {
             // currentPath ALWAYS contains the shortest path to currentPath.getNode() (with regards to Arc-Flags).
             currentPath = heap.poll();
-            // the target requires a special node, since all pathes to it have to be put on the heap.
+            // the target requires a special node, since both paths to it have to be put on the heap.
             // (everything else would be a pain in the ass)
             if (currentPath.getNode() == b.getTo()) {
                 // We can't return now, as there might be a shorter way via b.getFrom().
@@ -64,6 +64,9 @@ public class Router {
                 return currentPath.toList();
             }
             for (Integer to: graph.getRelevantNeighbors(currentPath.getNode(), graph.getAreaID(currentPath.getNode()))) {
+                // Note: we don't check if for the given ID there already exists a (shorter) path to it,
+                // maybe we should, as it may greatly reduce the size of the heap.
+                // (I don't know how that scales with Arc-Flags)
                 heap.add(new Route(to, graph.getWeight(currentPath.getNode(), to), currentPath));
             }
         }
