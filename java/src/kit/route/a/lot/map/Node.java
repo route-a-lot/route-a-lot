@@ -9,12 +9,8 @@ import kit.route.a.lot.common.Selection;
 
 public class Node extends MapElement {
 
-    /** Attributes */
-    /**
-     * 
-     */
     private Coordinates pos;
-    /** Associations */
+    
     private ArrayList<Edge> outgoingEdges;
 
     public Node(int id, Coordinates pos) {
@@ -56,7 +52,7 @@ public class Node extends MapElement {
                 && this.pos.getLongitude() >= topLeft.getLongitude()       
                 && this.pos.getLongitude() <= bottomRight.getLongitude());
                 
-      //TODO pos -> neg (e.g. -180° -> 180°)
+      //TODO pos -> neg (e.g. -180° -> 180°), but this is to do for every isInBounds-Fkt. for the mapElements
     }
 
     @Override

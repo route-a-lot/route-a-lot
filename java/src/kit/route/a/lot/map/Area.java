@@ -9,24 +9,18 @@ import kit.route.a.lot.common.Selection;
 
 public class Area extends MapElement {
 
-    /** Attributes */
-    /**
-     * 
-     */
     private int type;
-    /** Associations */
+    
     private ArrayList<Node> nodes;
     
     private String name;
 
+    
     public Area(int type, String name) {
         this.type = type;
         this.name = name;
         nodes = new ArrayList<Node>();
     }
-
-    
-    
     
     public int getType() {
         return type;
@@ -53,23 +47,23 @@ public class Area extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        // TODO there is no float polygon, so I have to think about s.th. else (or leave it the way is is now)
+        // TODO there is no float polygon, so I have to think about s.th. else (or leave it the way it is now)
         int x[] = new int[this.nodes.size()];
         int y[] = new int[this.nodes.size()];
         int i = 0;
         for (Node node: nodes) {
-            x[i] = (int)node.getPos().getLongitude() * 100000;  //100000 is a random factor, can be changed
+            x[i] = (int)(node.getPos().getLongitude() * 100000000);  //100000000 is a random factor, can be changed
             i++;
         }
         i = 0;
         for (Node node: nodes) {
-            x[i] = (int)node.getPos().getLatitude() * 100000;
+            y[i] = (int)(node.getPos().getLatitude() * 100000000);
             i++;
         }
         Polygon area = new Polygon(x, y, nodes.size());
-        Rectangle2D.Float box = new Rectangle2D.Float((topLeft.getLongitude() - 1) * 100000, (bottomRight.getLatitude() - 1) * 100000, 
-                ((bottomRight.getLongitude() - topLeft.getLongitude()) + 1) * 100000,
-                ((topLeft.getLatitude() - bottomRight.getLatitude()) + 1) * 100000);
+        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude()  * 100000000 - 1, bottomRight.getLatitude() * 100000000 - 1, 
+                (bottomRight.getLongitude() - topLeft.getLongitude()) * 100000000 + 1,
+                (topLeft.getLatitude() - bottomRight.getLatitude())  * 100000000 + 1);
         boolean inside = false;
         for (Node node : nodes) {
             if(node.isInBounds(topLeft, bottomRight)) {

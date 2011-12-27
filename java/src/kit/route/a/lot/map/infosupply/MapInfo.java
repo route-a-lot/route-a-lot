@@ -10,7 +10,6 @@ import kit.route.a.lot.map.*;
 
 public class MapInfo {
 
-    /** Associations */
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
@@ -20,33 +19,26 @@ public class MapInfo {
      */
     public MapInfo(){
         geographicalOperator = new PrimitivArrayGeoOperator();
-        elementDB = new ArrayElementDB();
-        
+        elementDB = new ArrayElementDB(); 
     }
     
     /**
-     * Operation setBounds
+     * Sets the entire area of the map. 
      * 
-     * @param upLeft
-     *            -
-     * @param bottomRight
-     *            -
-     * @return
-     * @return
+     * @param upLeft the upper left corner of the map
+     *            
+     * @param bottomRight the bottom right corner of the area
      */
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         geographicalOperator.setBounds(upLeft, bottomRight);
     }
 
     /**
-     * Operation addNode <
+     * Adds a node to the data structures.
      * 
-     * @param position
-     *            -
-     * @param id
-     *            -
-     * @return
-     * @return
+     * @param position the position of the node
+     *            
+     * @param id the unique id of the node
      */
     public void addNode(Coordinates position, int id) {
         Node newNode = new Node(id, position);
@@ -55,23 +47,20 @@ public class MapInfo {
     }
 
     /**
-     * Operation addWay
+     * Adds a way the the data structures.
      * 
-     * @param ids
-     *            -
-     * @param name
-     *            -
-     * @param type
-     *            -
-     * @return
-     * @return
+     * @param ids the id's of the nodes in the Way (builds edges)
+     *            
+     * @param name the name of the street
+     *            
+     * @param type the type of the street
      */
     public void addWay(List<Integer> ids, String name, int type) {
             
         if(type > 0) {      //TODO define types
             Street street = new Street(type, name);
             elementDB.addMapElement(street);
-            for(int i = 0; i < ids.size() - 1; i++) {
+            for(int i = 0; i < ids.size() - 1; i++) {   //add edges
                 Node start = elementDB.getNode(ids.get(i));
                 Node end = elementDB.getNode(ids.get(i + 1));
                 Edge edge = new Edge(start, end, street);
@@ -91,16 +80,13 @@ public class MapInfo {
     
 
     /**
-     * Operation addPOI
+     * Adds a point of interest to the data structures.
      * 
-     * @param position
-     *            -
-     * @param id
-     *            -
-     * @param description
-     *            -
-     * @return
-     * @return
+     * @param position the position of the POI
+     *            
+     * @param id the unique id of the node
+     *            
+     * @param description the description of the POI
      */
     public void addPOI(Coordinates position, int id, POIDescription description) {
             POINode newPOI = new POINode(id, position, description);
@@ -144,11 +130,11 @@ public class MapInfo {
     }
 
     /**
-     * Operation getNodePosition
+     * Returns the coordinates of a given node id.
      * 
-     * @param nodeID
-     *            -
-     * @return Coordinates
+     * @param nodeID the id of the node
+     *            
+     * @return the coordinates of the node correspondenting to the give id.
      */
     public Coordinates getNodePosition(int nodeID) {
         return elementDB.getNodePosition(nodeID);
@@ -187,26 +173,26 @@ public class MapInfo {
     }
 
     /**
-     * Operation select
+     * Returns a selection to a given coordinate.
      * 
-     * @param pos
-     *            -
-     * @return Selection
+     * @param pos the given coordinate
+     *            
+     * @return the correspondenting selection
      */
     public Selection select(Coordinates pos) {
         return geographicalOperator.select(pos);
     }
 
     /**
-     * Operation getBaseLayer
+     * Return the, to given coordinates, belonging MapElements of the base layer.
      * 
-     * @param zoomlevel
-     *            -
-     * @param upLeft
-     *            -
-     * @param bottomRight
-     *            -
-     * @return Set<MapElement>
+     * @param zoomlevel the zoomlevel of the view
+     *            
+     * @param upLeft the coordinates of the upper left corner of the view
+     *            
+     * @param bottomRight the coordinates of the bottom right corner of the view
+     *            
+     * @return the correspondending mapElements
      */
     public List<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
@@ -214,15 +200,15 @@ public class MapInfo {
     }
 
     /**
-     * Operation getOverlay
+     * Return the, to given coordinates, belonging MapElements of the overlay.
      * 
-     * @param zoomlevel
-     *            -
-     * @param upLeft
-     *            -
-     * @param bottomRight
-     *            -
-     * @return Set<MapElement>
+     * @param zoomlevel the zoomlevel of the view
+     *            
+     * @param upLeft the coordinates of the upper left corner of the view
+     *            
+     * @param bottomRight the coordinates of the bottom right corner of the view
+     *            
+     * @return the correspondending mapElements
      */
     public List<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {

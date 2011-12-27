@@ -11,14 +11,14 @@ import kit.route.a.lot.common.Selection;
 
 public class Edge extends MapElement {
     
-    /**
-     * Constructor
-     */
+    
     private Node start;
     private Node end;
     private Street street;
     
-    
+    /**
+     * Constructor
+     */
     public Edge(Node start, Node end, Street street){
         this.start = start;
         this.end = end;

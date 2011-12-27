@@ -10,17 +10,13 @@ import kit.route.a.lot.map.Node;
 
 public class ArrayElementDB implements ElementDB {
 
-    /** Attributes */
-    /**
-     * 
-     */
+    
     private ArrayList<Node> nodes;
-    /**
-     * 
-     */
+   
     private ArrayList<MapElement> mapElements;
 
     private int mapEleID = 0;   //counts mapElemnts
+
     
     public ArrayElementDB() {
         nodes = new ArrayList<Node>();
@@ -35,7 +31,6 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public void addNode(Node node) {
         nodes.add(node.getID(), node);
-
     }
 
     @Override
