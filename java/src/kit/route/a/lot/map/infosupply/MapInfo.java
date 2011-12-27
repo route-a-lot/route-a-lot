@@ -1,11 +1,14 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.List;
-import java.util.Set;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
+import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.*;
 
 public class MapInfo {
@@ -40,7 +43,7 @@ public class MapInfo {
      *            
      * @param id the unique id of the node
      */
-    public void addNode(Coordinates position, int id) {
+    public void addNode(Coordinates position, int id, Address address) {
         Node newNode = new Node(id, position);
         elementDB.addNode(newNode);
         geographicalOperator.addToBaseLayer(newNode);
@@ -55,10 +58,10 @@ public class MapInfo {
      *            
      * @param type the type of the street
      */
-    public void addWay(List<Integer> ids, String name, int type) {
+    public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
             
-        if(type > 0) {      //TODO define types
-            Street street = new Street(type, name);
+        if(wayInfo.getType() > 0) {      //TODO define types
+            Street street = new Street(wayInfo.getType(), name);
             elementDB.addMapElement(street);
             for(int i = 0; i < ids.size() - 1; i++) {   //add edges
                 Node start = elementDB.getNode(ids.get(i));
@@ -69,7 +72,7 @@ public class MapInfo {
                 geographicalOperator.addToBaseLayer(edge);
                 }
         } else {    
-            Area area = new Area(type, name);
+            Area area = new Area(wayInfo.getType(), name);
             elementDB.addMapElement(area);
             geographicalOperator.addToBaseLayer(area);
             for (int i = 0; i < ids.size(); i++) {

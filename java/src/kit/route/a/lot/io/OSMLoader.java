@@ -9,7 +9,10 @@ import java.util.Map;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
 
@@ -26,214 +29,12 @@ public class OSMLoader {
     private ArrayList<Integer> endIds;
     
     
-    // for explanations see http://wiki.openstreetmap.org/wiki/Map_Features
-    
-    
-    
-    public static final int OFFSET_STREET_BICYCLE = 1;
-    public static final int OFFSET_STEET_NO_BICYCLE = 2;
-    public static final int OFFSET_STREET_ONEWAY = 3;
-    public static final int OFFSET_STREET_NO_ONEWAY = 4;
-    public static final int OFFSET_STREET_ONEWAY_OPPOSITE = 5;
-    public static final int OFFSET_STREET_BRIDGE = 6;
-    public static final int OFFSET_STREET_TUNNEL = 7;
-    
-    public static final int OFFSET_AREA_BUILDING = 1;
-    public static final int OFFSET_AREA = 2;
-    
-    public static final int OFFSET_ACCESS_PRIVATE = 1;
-    public static final int OFFSET_ACCESS_PERMISSIVE = 2;
-    
-    public static final int AEROWAY = 1000;
-    public static final int AMENITY_BAR = 1050;
-    public static final int AMENITY_BBQ = 1051;
-    public static final int AMENITY_BIERGARTEN = 1052;
-    public static final int AMENITY_CAFE = 1053;
-    public static final int AMENITY_DRINKING_WATER = 1054;
-    public static final int AMENITY_FAST_FOOD = 1055;
-    public static final int AMENITY_FOOD_COURT = 1056;
-    public static final int AMENITY_ICE_CREAM = 1057;
-    public static final int AMENITY_PUB = 1058;
-    public static final int AMENITY_RESTAURANT = 1059;
-    public static final int AMENITY_COLLEGE = 1060;
-    public static final int AMENITY_KINDERGARTEN = 1061;
-    public static final int AMENITY_LIBRARY = 1062;
-    public static final int AMENITY_SCHOOL = 1063;
-    public static final int AMENITY_UNIVERSITY = 1064;
-    public static final int AMENITY_BICYCLE_PARKING = 1065;
-    public static final int AMENITY_BICYCLE_RENTAL = 1066;
-    public static final int AMENITY_CAR_RENTAL = 1067;
-    public static final int AMENITY_CAR_SHARING = 1068;
-    public static final int AMENITY_CAR_WASH = 1069;
-    public static final int AMENITY_EV_CHARGING = 1070;
-    public static final int AMENITY_FERRY_TERMINAL = 1071;
-    public static final int AMENITY_FUEL = 1072;
-    public static final int AMENITY_GRIT_BIN = 1073;
-    public static final int AMENITY_PARKING = 1074;
-    public static final int AMENITY_PARKING_ENTRANCE = 1075;
-    public static final int AMENITY_PARKING_SPACE = 1076;
-    public static final int AMENITY_TAXI = 1077;
-    public static final int AMENITY_ATM = 1078;
-    public static final int AMENITY_BANK = 1079;
-    public static final int AMENITY_BUREAU_DE_CHANGE = 1080;
-    public static final int AMENITY_DENTIST = 1081;
-    public static final int AMENITY_DOCTORS = 1082;
-    public static final int AMENITY_HOSPITAL = 1083;
-    public static final int AMENITY_NURSING_HOME = 1084;
-    public static final int AMENITY_PHARMACY = 1085;
-    public static final int AMENITY_SOCIAL_FACILITY = 1086;
-    public static final int AMENITY_VETERINARY = 1087;
-    public static final int AMENITY_ARTS_CENTER = 1088;
-    public static final int AMENITY_CINEMA = 1089;
-    public static final int AMENITY_COMMUNITY_CENTRE = 1090;
-    public static final int AMENITY_FOUNTAIN = 1091;
-    public static final int AMENITY_NIGHTCLUB = 1092;
-    public static final int AMENITY_SOCIAL_CENTRE = 1093;
-    public static final int AMENITY_STRIPCLUB = 1094;
-    public static final int AMENITY_STUDIO = 1095;
-    public static final int AMENITY_THEATRE = 1096;
-    public static final int AMENITY_BENCH = 1097;
-    public static final int AMENITY_BROTHEL = 1098;
-    public static final int AMENITY_CLOCK = 1099;
-    public static final int AMENITY_COURTHOUSE = 1110;
-    public static final int AMENITY_CREMATORIUM = 1111;
-    public static final int AMENITY_EMBASSY = 1112;
-    public static final int AMENITY_FIRE_STATION = 1113;
-    public static final int AMENITY_GRAVE_YARD = 1114;
-    public static final int AMENITY_HUNTING_STAND = 1115;
-    public static final int AMENITY_MARKETPLACE = 1116;
-    public static final int AMENITY_PLACE_OF_WORSHIP = 1117;
-    public static final int AMENITY_POLICE = 1118;
-    public static final int AMENITY_POST_BOX = 1119;
-    public static final int AMENITY_POST_OFFICE = 1120;
-    public static final int AMENITY_PRISON = 1121;
-    public static final int AMENITY_PUBLIC_BUILDING = 1122;
-    public static final int AMENITY_RECYCLING = 1123;
-    public static final int AMENITY_SAUNA = 1124;
-    public static final int AMENITY_SHELTER = 1125;
-    public static final int AMENITY_TELEPHONE = 1126;
-    public static final int AMENITY_TOILETS = 1127;
-    public static final int AMENITY_TOWNHALL = 1128;
-    public static final int AMENITY_VENDING_MACHINE = 1129;
-    public static final int AMENITY_WASTE_BASKET = 1130;
-    public static final int AMENITY_WASTE_DISPOSAL = 1131;
-    public static final int AMENITY_WATERING_PLACE = 1132;
-    
-    public static final int BARRIER = 1150;
-
-    public static final int BUILDING = 1200;
-    
-    public static final int CRAFT = 1250;
-
-    public static final int CYCLEWAY_LANE = 1350;
-    public static final int CYCLEWAY_OPPOSITE = 1351;
-    public static final int CYCLEWAY_OPPOSITE_LANE = 1352;
-    public static final int CYCLEWAY_OPPOSITE_TRACK = 1353;
-    public static final int CYCLEWAY_TRACK = 1354;
-    
-    public static final int EMERGENCY = 1400;
-    
-    public static final int GEOLOGICAL = 1150;
-    
-    public static final int HIGHWAY_BRIDLEWAY = 1200;
-    public static final int HIGHWAY_BYWAY = 1201;
-    public static final int HIGHWAY_CYCLEWAY = 1202;
-    public static final int HIGHWAY_FOOTWAY = 1203;  // can be used with bicycle=yes
-    public static final int HIGHWAY_LIVING_STREET = 1204;
-    public static final int HIGHWAY_MOTORWAY = 1205; // i.e. Autobahn, ...
-    public static final int HIGHWAY_MOTORWAY_LINK = 1206;
-    public static final int HIGHWAY_PATH = 1207;
-    public static final int HIGHWAY_PEDESTRIAN = 1208;
-    public static final int HIGHWAY_PRIMARY = 1209;
-    public static final int HIGHWAY_PRIMARY_LINK = 1210;
-    public static final int HIGHWAY_RACEWAY = 1211;
-    public static final int HIGHWAY_RESIDENTIAL = 1212;
-    public static final int HIGHWAY_ROAD = 1213;
-    public static final int HIGHWAY_SECONDARY = 1214;
-    public static final int HIGHWAY_SECONDARY_LINK = 1215;
-    public static final int HIGHWAY_SERVICE = 1216;
-    public static final int HIGHWAY_STEPS = 1217;
-    public static final int HIGHWAY_STEPS_LARGE = 1218;
-    public static final int HIGHWAY_TERTIARY = 1219;
-    public static final int HIGHWAY_TERTIARY_LINK = 1220;
-    public static final int HIGHWAY_TRACK = 1221;
-    public static final int HIGHWAY_TRUNK = 1222;
-    public static final int HIGHWAY_TRUNK_LINK = 1223;
-    public static final int HIGHWAY_UNCLASSIFIED = 1224;
-    
-    public static final int HIGHWAY_GIVE_WAY = 1250;
-    public static final int HIGHWAY_MINI_ROUNDABOUT = 1251;
-    public static final int HIGHWAY_MOTORWAY_JUNCTION = 1252;
-    public static final int HIGHWAY_ROUNDABOUT = 1253;
-    public static final int HIGHWAY_STOP = 1254;
-    public static final int HIGHWAY_TRAFFIC_SIGNALS = 1255;
-    public static final int HIGHWAY_BUS_STOP = 1256;
-    public static final int HIGHWAY_CROSSING = 1257;
-    public static final int HIGHWAY_EMERGENCY_ACCESS_POINT = 1258;
-    public static final int HIGHWAY_FORD = 1259;
-    public static final int HIGHWAY_SPEED_CAMERA = 1260;
-    public static final int HIGHWAY_SERVICES = 1261;
-    public static final int HIGHWAY_TURNING_CIRCLE = 1262;
-    
-    public static final int HIGHWAY_IGNORED = 1299;
-    
-    public static final int TRAFFIC_CALMING = 1300;
-    
-    public static final int SERVICE = 1350;
-    
-    public static final int HISTORIC = 1400;
-
-    public static final int LANDUSE = 1450;
-    
-    public static final int LEISURE_COMMON = 1550;
-    public static final int LEISURE_DANCE = 1551;
-    public static final int LEISURE_DOG_PARK = 1552;
-    public static final int LEISURE_FISHING = 1553;
-    public static final int LEISURE_GARDEN = 1554;
-    public static final int LEISURE_GOLF_COURSE = 1555;
-    public static final int LEISURE_ICE_RINK = 1556;
-    public static final int LEISURE_MARINA = 1557;
-    public static final int LEISURE_MINIATURE_GOLF = 1558;
-    public static final int LEISURE_NATURE_RESERVE = 1559;
-    public static final int LEISURE_PARK = 1560;
-    public static final int LEISURE_PITCH = 1561;
-    public static final int LEISURE_PLAYGROUND = 1562;
-    public static final int LEISURE_SLIPWAY = 1563;
-    public static final int LEISURE_SPORTS_CENTRE = 1564;
-    public static final int LEISURE_STADIUM = 1565;
-    public static final int LEISURE_SWIMMING_POOL = 1566;
-    public static final int LEISURE_TRACK = 1567;
-    public static final int LEISURE_WATER_PARK = 1568;
-
-    public static final int MAN_MADE = 1600;
-    
-    public static final int MILITARY = 1630;
-
-    public static final int NATURAL = 1650;
-    
-    public static final int OFFICE = 1680;
-    
-    public static final int POWER = 1700;
-    
-    public static final int PUBLIC_TRANSPORT = 1750;
-    
-    public static final int RAILWAY = 1750;
-    
-    public static final int SHOP = 1800;
-    
-    public static final int TOURISM = 1900;
-    
-    public static final int TRACKTYPE = 1950;
-    
-    public static final int WATERWAY = 1970;
-    
-    public static final int NON_PHYSICAL = 2000;
-    
-    
     State state;
+    WeightCalculator weightCalculator;
     
     public OSMLoader() {
         state = State.getInstance();
+        weightCalculator = WeightCalculator.getInstance();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
     }
@@ -260,7 +61,8 @@ public class OSMLoader {
                 Integer curPolylineNode;
                 List<Integer> curWayIds;
                 String curWayName;
-                int curWayType;
+                WayInfo curWayInfo;
+                Address curAddress;
                 
                 long ignoredKeys = 0;
                 
@@ -285,169 +87,307 @@ public class OSMLoader {
                                     curWayName = value;
                                 } else if (key.equalsIgnoreCase("highway")) {
                                     if (value.equalsIgnoreCase("bridleway")) {
-                                        curWayType = HIGHWAY_BRIDLEWAY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_BRIDLEWAY);
                                     } else if (value.equalsIgnoreCase("crossing")) {
-                                        curWayType = HIGHWAY_CROSSING;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_CROSSING);
                                     } else if (value.equalsIgnoreCase("cycleway")) {
-                                        curWayType = HIGHWAY_CYCLEWAY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_CYCLEWAY);
                                     } else if (value.equalsIgnoreCase("footway")) {
-                                        curWayType = HIGHWAY_FOOTWAY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_FOOTWAY);
                                     } else if (value.equalsIgnoreCase("living_street")) {
-                                        curWayType = HIGHWAY_LIVING_STREET;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_LIVING_STREET);
                                     } else if (value.equalsIgnoreCase("motorway")) {
-                                        curWayType = HIGHWAY_MOTORWAY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_MOTORWAY);
                                     } else if (value.equalsIgnoreCase("motorway_link")) {
-                                        curWayType = HIGHWAY_MOTORWAY_LINK;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_MOTORWAY_LINK);
                                     } else if (value.equalsIgnoreCase("path")) {
-                                        curWayType = HIGHWAY_PATH;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_PATH);
                                     } else if (value.equalsIgnoreCase("pedestrian")) {
-                                        curWayType = HIGHWAY_PEDESTRIAN;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_PEDESTRIAN);
                                     } else if (value.equalsIgnoreCase("primary")) {
-                                        curWayType = HIGHWAY_PRIMARY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_PRIMARY);
                                     } else if (value.equalsIgnoreCase("primary_link")) {
-                                        curWayType = HIGHWAY_PRIMARY_LINK;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_PRIMARY_LINK);
                                     } else if (value.equalsIgnoreCase("residential")) {
-                                        curWayType = HIGHWAY_RESIDENTIAL;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_RESIDENTIAL);
                                     } else if (value.equalsIgnoreCase("secondary")) {
-                                        curWayType = HIGHWAY_SECONDARY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_SECONDARY);
                                     } else if (value.equalsIgnoreCase("secondary_link")) {
-                                        curWayType = HIGHWAY_SECONDARY_LINK;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_SECONDARY_LINK);
                                     } else if (value.equalsIgnoreCase("service")) {
-                                        curWayType = HIGHWAY_SERVICE;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_SERVICE);
                                     } else if (value.equalsIgnoreCase("steps")) {
-                                        curWayType = HIGHWAY_STEPS;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_STEPS);
                                     } else if (value.equalsIgnoreCase("steps_large")) {
-                                        curWayType = HIGHWAY_STEPS_LARGE;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_STEPS_LARGE);
                                     } else if (value.equalsIgnoreCase("tertiary")) {
-                                        curWayType = HIGHWAY_TERTIARY;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_TERTIARY);
                                     } else if (value.equalsIgnoreCase("track")) {
-                                        curWayType = HIGHWAY_TRACK;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_TRACK);
                                     } else if (value.equalsIgnoreCase("trunk")) {
-                                        curWayType = HIGHWAY_TRUNK;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_TRUNK);
                                     } else if (value.equalsIgnoreCase("trunk_link")) {
-                                        curWayType = HIGHWAY_TRUNK_LINK;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_TRUNK_LINK);
                                     } else if (value.equalsIgnoreCase("unclassified")) {
-                                        curWayType = HIGHWAY_UNCLASSIFIED;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_UNCLASSIFIED);
                                     } else {
-                                        curWayType = HIGHWAY_IGNORED;
+                                        curWayInfo.setType(WayInfo.HIGHWAY_IGNORED);
                                         logger.debug("Highway type ignored: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("bicycle")) {
                                     if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("designated")
                                             || value.equalsIgnoreCase("permissive")) {
-                                        curWayType += OFFSET_STREET_BICYCLE;
+                                        curWayInfo.setBicycle(WayInfo.BICYCLE);
                                     } else if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("private")) {
-                                        curWayType += OFFSET_STEET_NO_BICYCLE;
+                                        curWayInfo.setBicycle(WayInfo.NO_BICYCLE);
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("oneway")) {
                                     if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true")) {
-                                        curWayType += OFFSET_STREET_ONEWAY;
+                                        curWayInfo.setOneway(WayInfo.ONEWAY);
                                     } else if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("false")) {
-                                        curWayType += OFFSET_STREET_NO_ONEWAY;
+                                        curWayInfo.setOneway(WayInfo.NO_ONEWAY);
                                     } else if (value.equalsIgnoreCase("-1")) {
-                                        curWayType += OFFSET_STREET_ONEWAY_OPPOSITE;
+                                        curWayInfo.setOneway(WayInfo.ONEWAY_OPPOSITE);
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("amenity")) {
                                     if (value.equalsIgnoreCase("cafe")) {
-                                        curWayType = AMENITY_CAFE;
+                                        curWayInfo.setType(WayInfo.AMENITY_CAFE);
                                     } else if (value.equalsIgnoreCase("car_sharing")) {
-                                        curWayType = AMENITY_CAR_SHARING;
+                                        curWayInfo.setType(WayInfo.AMENITY_CAR_SHARING);
                                     } else if (value.equalsIgnoreCase("courthouse")) {
-                                        curWayType = AMENITY_COURTHOUSE;
+                                        curWayInfo.setType(WayInfo.AMENITY_COURTHOUSE);
                                     } else if (value.equalsIgnoreCase("fountain")) {
-                                        curWayType = AMENITY_FOUNTAIN;
+                                        curWayInfo.setType(WayInfo.AMENITY_FOUNTAIN);
                                     } else if (value.equalsIgnoreCase("hospital")) {
-                                        curWayType = AMENITY_HOSPITAL;
+                                        curWayInfo.setType(WayInfo.AMENITY_HOSPITAL);
                                     } else if (value.equalsIgnoreCase("kindergarten")) {
-                                        curWayType = AMENITY_KINDERGARTEN;
+                                        curWayInfo.setType(WayInfo.AMENITY_KINDERGARTEN);
                                     } else if (value.equalsIgnoreCase("library")) {
-                                        curWayType = AMENITY_LIBRARY;
+                                        curWayInfo.setType(WayInfo.AMENITY_LIBRARY);
                                     } else if (value.equalsIgnoreCase("parking")) {
-                                        curWayType = AMENITY_PARKING;
+                                        curWayInfo.setType(WayInfo.AMENITY_PARKING);
                                     } else if (value.equalsIgnoreCase("place_of_worship")) {
-                                        curWayType = AMENITY_PLACE_OF_WORSHIP;
+                                        curWayInfo.setType(WayInfo.AMENITY_PLACE_OF_WORSHIP);
                                     } else if (value.equalsIgnoreCase("police")) {
-                                        curWayType = AMENITY_POLICE;
+                                        curWayInfo.setType(WayInfo.AMENITY_POLICE);
                                     } else if (value.equalsIgnoreCase("public_building")) {
-                                        curWayType = AMENITY_PUBLIC_BUILDING;
+                                        curWayInfo.setType(WayInfo.AMENITY_PUBLIC_BUILDING);
                                     } else if (value.equalsIgnoreCase("restaurant")) {
-                                        curWayType = AMENITY_RESTAURANT;
+                                        curWayInfo.setType(WayInfo.AMENITY_RESTAURANT);
                                     } else if (value.equalsIgnoreCase("school")) {
-                                        curWayType = AMENITY_SCHOOL;
+                                        curWayInfo.setType(WayInfo.AMENITY_SCHOOL);
                                     } else if (value.equalsIgnoreCase("theatre")) {
-                                        curWayType = AMENITY_THEATRE;
+                                        curWayInfo.setType(WayInfo.AMENITY_THEATRE);
                                     } else if (value.equalsIgnoreCase("university")) {
-                                        curWayType = AMENITY_UNIVERSITY;
+                                        curWayInfo.setType(WayInfo.AMENITY_UNIVERSITY);
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("leisure")) {
                                     if (value.equalsIgnoreCase("garden")) {
-                                        curWayType = LEISURE_GARDEN;
+                                        curWayInfo.setType(WayInfo.LEISURE_GARDEN);
                                     } else if (value.equalsIgnoreCase("pitch")) {
-                                        curWayType = LEISURE_PITCH;
+                                        curWayInfo.setType(WayInfo.LEISURE_PITCH);
                                     } else if (value.equalsIgnoreCase("park")) {
-                                        curWayType = LEISURE_PARK;
+                                        curWayInfo.setType(WayInfo.LEISURE_PARK);
                                     } else if (value.equalsIgnoreCase("playground")) {
-                                        curWayType = LEISURE_PLAYGROUND;
+                                        curWayInfo.setType(WayInfo.LEISURE_PLAYGROUND);
                                     } else if (value.equalsIgnoreCase("sports_centre")) {
-                                        curWayType = LEISURE_SPORTS_CENTRE;
+                                        curWayInfo.setType(WayInfo.LEISURE_SPORTS_CENTRE);
                                     } else if (value.equalsIgnoreCase("stadium")) {
-                                        curWayType = LEISURE_STADIUM;
+                                        curWayInfo.setType(WayInfo.LEISURE_STADIUM);
                                     } else if (value.equalsIgnoreCase("track")) {
-                                        curWayType = LEISURE_TRACK;
+                                        curWayInfo.setType(WayInfo.LEISURE_TRACK);
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("natural")) {
+                                    if (value.equalsIgnoreCase("bay")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_BAY);
+                                    } else if (value.equalsIgnoreCase("beach")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_BEACH);
+                                    } else if (value.equalsIgnoreCase("cliff")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_CLIFF);
+                                    } else if (value.equalsIgnoreCase("coastline")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_COASTLINE);
+                                    } else if (value.equalsIgnoreCase("glacier")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_GLACIER);
+                                    } else if (value.equalsIgnoreCase("heath")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_HEATH);
+                                    } else if (value.equalsIgnoreCase("land")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_LAND);
+                                    } else if (value.equalsIgnoreCase("marsh")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_MARSH);
+                                    } else if (value.equalsIgnoreCase("peak")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_PEAK);
+                                    } else if (value.equalsIgnoreCase("sand")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_SAND);
+                                    } else if (value.equalsIgnoreCase("scrub")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_SCRUB);
+                                    } else if (value.equalsIgnoreCase("spring")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_SPRING);
+                                    } else if (value.equalsIgnoreCase("stone")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_STONE);
+                                    } else if (value.equalsIgnoreCase("tree")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_TREE);
+                                    } else if (value.equalsIgnoreCase("volcano")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_VOLCANO);
+                                    } else if (value.equalsIgnoreCase("water")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_WATER);
+                                    } else if (value.equalsIgnoreCase("wetland")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_WETLAND);
+                                    } else if (value.equalsIgnoreCase("wood")) {
+                                        curWayInfo.setType(WayInfo.NATURAL_WOOD);
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("waterway")) {
+                                    if (value.equalsIgnoreCase("canal")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_CANAL);
+                                    } else if (value.equalsIgnoreCase("dam")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_DAM);
+                                    } else if (value.equalsIgnoreCase("ditch")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_DITCH);
+                                    } else if (value.equalsIgnoreCase("dock")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_DOCK);
+                                    } else if (value.equalsIgnoreCase("drain")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_DRAIN);
+                                    } else if (value.equalsIgnoreCase("river")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_RIVER);
+                                    } else if (value.equalsIgnoreCase("riverbank")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_RIVERBANK);
+                                    } else if (value.equalsIgnoreCase("stream")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_STREAM);
+                                    } else if (value.equalsIgnoreCase("waterfall")) {
+                                        curWayInfo.setType(WayInfo.WATERWAY_WATERFALL);
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("cycleway")) {
+                                    if (value.equalsIgnoreCase("track")) {
+                                        curWayInfo.setType(WayInfo.CYCLEWAY_TRACK);
+                                    } else if (value.equalsIgnoreCase("lane")) {
+                                        curWayInfo.setType(WayInfo.CYCLEWAY_LANE);
+                                    } else if (value.equalsIgnoreCase("opposite")) {
+                                        curWayInfo.setType(WayInfo.CYCLEWAY_OPPOSITE);
+                                    } else if (value.equalsIgnoreCase("opposite_lane")) {
+                                        curWayInfo.setType(WayInfo.CYCLEWAY_OPPOSITE_LANE);
+                                    } else if (value.equalsIgnoreCase("opposite_track")) {
+                                        curWayInfo.setType(WayInfo.CYCLEWAY_OPPOSITE_TRACK);
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("railway")) {
+                                    if (value.equalsIgnoreCase("rail")) {
+                                        curWayInfo.setOther(true);
+                                        curWayInfo.setType(WayInfo.RAILWAY_RAIL);
+                                    } else if (value.equalsIgnoreCase("subway")) {
+                                        curWayInfo.setOther(true);
+                                        curWayInfo.setType(WayInfo.RAILWAY_SUBWAY);
+                                    } else if (value.equalsIgnoreCase("tram")) {
+                                        curWayInfo.setOther(true);
+                                        curWayInfo.setType(WayInfo.RAILWAY_TRAM);
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.startsWith("addr:")) {
-                                    /*Address address = new Address();
                                     if (key.equalsIgnoreCase("addr:housenumber") || key.equalsIgnoreCase("addr:housename")) {
-                                        address.setHousenumber(value);
+                                        curAddress.setHousenumber(value);
                                     } else if (key.equalsIgnoreCase("addr:street")) {
-                                        address.setStreet(value);
+                                        curAddress.setStreet(value);
                                     } else if (key.equalsIgnoreCase("addr:state")) {
-                                        address.setState(value);
+                                        curAddress.setState(value);
                                     } else if (key.equalsIgnoreCase("addr:postcode")) {
-                                        address.setPostcode(value);
+                                        curAddress.setPostcode(value);
                                     } else if (key.equalsIgnoreCase("addr:city")) {
-                                        address.setCity(value);
+                                        curAddress.setCity(value);
                                     } else if (key.equalsIgnoreCase("addr:country")) {
-                                        address.setCountry(value);
+                                        curAddress.setCountry(value);
                                     } else if (key.equalsIgnoreCase("addr:full")) {
-                                        address.setFullAddress(value);
+                                        curAddress.setFullAddress(value);
                                     } else if (key.equalsIgnoreCase("addr:interpolation")) {
-                                        address.setInterpolation(value);
+                                        curAddress.setInterpolation(value);
                                     } else {
                                         logger.warn("Unknown addr:* tag: " + key + ", value: " + value);
-                                    }*/
+                                    }
                                 } else if (key.equalsIgnoreCase("building")) {
-                                    curWayType += OFFSET_AREA_BUILDING; // TODO here and with the following: check if value == yes or something more specific
+                                    curWayInfo.setBuilding(true); // TODO here and with the following: check if value == yes or something more specific
                                 } else if (key.equalsIgnoreCase("bridge")) {
-                                    curWayType += OFFSET_STREET_BRIDGE;
+                                    curWayInfo.setBridge(WayInfo.BRIDGE);
                                 } else if (key.equalsIgnoreCase("tunnel")) {
-                                    curWayType += OFFSET_STREET_TUNNEL;
+                                    curWayInfo.setTunnel(WayInfo.TUNNEL);
                                 } else if (key.equalsIgnoreCase("area")) {
                                     if (value.equalsIgnoreCase("yes")) {
-                                        curWayType += OFFSET_AREA;
+                                        curWayInfo.setArea(true);
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
+                                } else if (key.equalsIgnoreCase("barrier")) {
+                                    curWayInfo.setOther(true);
                                 } else if (key.equalsIgnoreCase("access")) {
                                     if (value.equalsIgnoreCase("private")) {
-                                        curWayType += OFFSET_ACCESS_PRIVATE;
+                                         curWayInfo.setAccess(WayInfo.ACCESS_PRIVATE);
                                     } else if (value.equalsIgnoreCase("permissive")) {
-                                        curWayType += OFFSET_ACCESS_PERMISSIVE;
+                                        curWayInfo.setAccess(WayInfo.ACCESS_PERMISSIVE);
+                                    } else if (value.equalsIgnoreCase("destination")) {
+                                        curWayInfo.setAccess(WayInfo.ACCESS_DESTINATION);
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
-                                } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
+                                } else if (key.equalsIgnoreCase("surface")) {
+                                   if (value.equalsIgnoreCase("paved")) {
+                                        curWayInfo.setSurface(WayInfo.SURFACE_PAVED);
+                                   } else if (value.equalsIgnoreCase("unpaved")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_UNPAVED);
+                                   } else if (value.equalsIgnoreCase("asphalt")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_ASPHALT);
+                                   } else if (value.equalsIgnoreCase("gravel")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_GRAVEL);
+                                   } else if (value.equalsIgnoreCase("ground")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_GROUND);
+                                   } else if (value.equalsIgnoreCase("grass")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_GRASS);
+                                   } else if (value.equalsIgnoreCase("dirt")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_DIRT);
+                                   } else if (value.equalsIgnoreCase("cobblestone")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_COBBLESTONE);
+                                   } else if (value.equalsIgnoreCase("paving_stones")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_PAVING_STONES);
+                                   } else if (value.equalsIgnoreCase("concrete")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_CONCRETE);
+                                   } else if (value.equalsIgnoreCase("sand")) {
+                                       curWayInfo.setAccess(WayInfo.SURFACE_SAND);
+                                   } else {
+                                       logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                   }
+                               } else if (key.equalsIgnoreCase("segregated")) {
+                                    if (value.equalsIgnoreCase("yes")) {
+                                        curWayInfo.setSegregated(WayInfo.SEGREGATED);
+                                   } else if (value.equalsIgnoreCase("no")) {
+                                       curWayInfo.setSegregated(WayInfo.NO_SEGREGATED);
+                                   } else {
+                                       logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                   }
+                               } else if (key.equalsIgnoreCase("postal_code")) {
+                                    curAddress.setPostcode(value);
+                               } else if (key.equalsIgnoreCase("layer")) {
+                                    curWayInfo.setLayer(Integer.parseInt(value));
+                               } else if (key.equalsIgnoreCase("lanes")) {
+                                   curWayInfo.setLanes(Integer.parseInt(value));
+                              } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
                                         || key.equalsIgnoreCase("created_by")
+                                        || key.equalsIgnoreCase("foot")
+                                        || key.equalsIgnoreCase("source")
+                                        || key.equalsIgnoreCase("opening_date")
                                         || key.equalsIgnoreCase("landuse") /* TODO really ignore that? */
-                                        || key.startsWith("building:") /* " */) {
+                                        || key.startsWith("building:") /* " */
+                                        || key.equalsIgnoreCase("ref")
+                                        || key.equalsIgnoreCase("planned")
+                                        || key.equalsIgnoreCase("construction")) {
                                     // ignore
                                 } else {
                                     ignoredKeys++;
@@ -458,7 +398,7 @@ public class OSMLoader {
                             }
                         } else {
                             if (qName.equalsIgnoreCase("nd")) {
-                                curPolylineNode = idMap.get(Long.parseLong(attributes   .getValue("ref")));
+                                curPolylineNode = idMap.get(Long.parseLong(attributes.getValue("ref")));
                                 if (curPolylineNode == null) {
                                     logger.error("Node id is not known: id = " + attributes.getValue("ref"));
                                 }
@@ -480,12 +420,16 @@ public class OSMLoader {
                             }
                             idMap.put(Long.parseLong(attributes.getValue("id")), newId);
                             
-                            state.getLoadedMapInfo().addNode(coordinates, newId);
+                            // TODO curAddress = new Address();
+                            
+                            state.getLoadedMapInfo().addNode(coordinates, newId, curAddress);
                             
                             // TODO tags (for POI's)
                         } else if (qName.equalsIgnoreCase("way")) {
                             inWay = true;
                             curWayIds = new ArrayList<Integer>();
+                            curWayInfo = new WayInfo();
+                            curAddress = new Address();
                         } else if (qName.equalsIgnoreCase("relation")) {
                             // TODO
                         } else if (qName.equalsIgnoreCase("bounds")) {
@@ -514,19 +458,23 @@ public class OSMLoader {
                 public void endElement(String uri, String localName, String qName)
                         throws SAXException {
                     if (inWay && qName.equalsIgnoreCase("way")) {
+                        
+                        curWayInfo.setAddress(curAddress);
+                        if (curWayInfo.isStreet()) {
+                            curAddress.setStreet(curWayName);
+                        }
+                        if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
+                            state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayInfo);
+                        }
+                        
                         inWay = false;
                         inPolyline = false;
-                        
-                        state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayType);
-                        
                         curWayIds = null;
                         curWayName = null;
-                        curWayType = 0;
                     }
                 }
                 
                 public void characters(char ch[], int start, int length) throws SAXException {
-                    
                 }
                 
             };
@@ -540,7 +488,7 @@ public class OSMLoader {
             for (int i = 0; i < countIDs; i++) {
                 startIDs[i] = startIds.get(i);
                 endIDs[i] = endIds.get(i);
-                weights[i] = WeightCalculator.calcWeight(startIDs[i], endIDs[i]);
+                weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
             }
             
             state.getLoadedGraph().buildGraph(startIDs, endIDs, weights);
