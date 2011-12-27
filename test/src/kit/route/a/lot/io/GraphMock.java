@@ -61,5 +61,11 @@ public class GraphMock implements RoutingGraph {
         
     }
 
+    @Override
+    public int getWeight(int first, int last) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
     
 }
