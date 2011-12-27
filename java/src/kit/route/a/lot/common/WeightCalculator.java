@@ -27,4 +27,8 @@ public class WeightCalculator {
                     Math.pow((from.getLongitude() - to.getLongitude()), 2) + 
                     Math.pow((State.getHeightMalus() * (heightmap.getHeight(from) - heightmap.getHeight(to))), 2));
     }
+    
+    public static int calcWeight(Selection edge) {
+        return calcWeight(edge.getFrom(), edge.getTo());
+    }
 }

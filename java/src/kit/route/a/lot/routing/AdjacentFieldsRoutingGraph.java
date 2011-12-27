@@ -45,6 +45,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         // "You can't use generic array creation. It's a flaw/ feature of java generics." well, that sucks.
         ArrayList<LinkedList<IntTuple>> edgeLists = new ArrayList<LinkedList<IntTuple>>();
+        // Create a bucket for each ID with a linked list full of Semi-Edges.
         Arrays.fill(edgesPos, 0);
         for (int i = 0; i < startID.length; i++) {
             edgeLists.get(startID[i]).add(new IntTuple(endID[i], weight[i]));
