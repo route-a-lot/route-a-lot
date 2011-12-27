@@ -1,7 +1,6 @@
 package kit.route.a.lot.io;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +36,13 @@ public class OSMLoader {
     public static final int OFFSET_STREET_NO_ONEWAY = 4;
     public static final int OFFSET_STREET_ONEWAY_OPPOSITE = 5;
     public static final int OFFSET_STREET_BRIDGE = 6;
+    public static final int OFFSET_STREET_TUNNEL = 7;
     
     public static final int OFFSET_AREA_BUILDING = 1;
+    public static final int OFFSET_AREA = 2;
+    
+    public static final int OFFSET_ACCESS_PRIVATE = 1;
+    public static final int OFFSET_ACCESS_PERMISSIVE = 2;
     
     public static final int AEROWAY = 1000;
     public static final int AMENITY_BAR = 1050;
@@ -399,8 +403,52 @@ public class OSMLoader {
                                     } else {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
-                                } else if (key.equalsIgnoreCase("note")) {
-                                    // ignore notes
+                                } else if (key.startsWith("addr:")) {
+                                    /*Address address = new Address();
+                                    if (key.equalsIgnoreCase("addr:housenumber") || key.equalsIgnoreCase("addr:housename")) {
+                                        address.setHousenumber(value);
+                                    } else if (key.equalsIgnoreCase("addr:street")) {
+                                        address.setStreet(value);
+                                    } else if (key.equalsIgnoreCase("addr:state")) {
+                                        address.setState(value);
+                                    } else if (key.equalsIgnoreCase("addr:postcode")) {
+                                        address.setPostcode(value);
+                                    } else if (key.equalsIgnoreCase("addr:city")) {
+                                        address.setCity(value);
+                                    } else if (key.equalsIgnoreCase("addr:country")) {
+                                        address.setCountry(value);
+                                    } else if (key.equalsIgnoreCase("addr:full")) {
+                                        address.setFullAddress(value);
+                                    } else if (key.equalsIgnoreCase("addr:interpolation")) {
+                                        address.setInterpolation(value);
+                                    } else {
+                                        logger.warn("Unknown addr:* tag: " + key + ", value: " + value);
+                                    }*/
+                                } else if (key.equalsIgnoreCase("building")) {
+                                    curWayType += OFFSET_AREA_BUILDING; // TODO here and with the following: check if value == yes or something more specific
+                                } else if (key.equalsIgnoreCase("bridge")) {
+                                    curWayType += OFFSET_STREET_BRIDGE;
+                                } else if (key.equalsIgnoreCase("tunnel")) {
+                                    curWayType += OFFSET_STREET_TUNNEL;
+                                } else if (key.equalsIgnoreCase("area")) {
+                                    if (value.equalsIgnoreCase("yes")) {
+                                        curWayType += OFFSET_AREA;
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("access")) {
+                                    if (value.equalsIgnoreCase("private")) {
+                                        curWayType += OFFSET_ACCESS_PRIVATE;
+                                    } else if (value.equalsIgnoreCase("permissive")) {
+                                        curWayType += OFFSET_ACCESS_PERMISSIVE;
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
+                                        || key.equalsIgnoreCase("created_by")
+                                        || key.equalsIgnoreCase("landuse") /* TODO really ignore that? */
+                                        || key.startsWith("building:") /* " */) {
+                                    // ignore
                                 } else {
                                     ignoredKeys++;
                                     logger.debug("Key ignored: " + key + ", value = " + value + " : " + ignoredKeys);
@@ -485,13 +533,10 @@ public class OSMLoader {
 
             parser.parse(file, handler);
             
-            long countIDs = startIds.size();
-            if (countIDs > Integer.MAX_VALUE) {
-                logger.error("Can't import more than " + Integer.MAX_VALUE + " nodes. (Tried " + countIDs + ")");
-            }
-            int[] startIDs = new int[(int) countIDs];
-            int[] endIDs = new int[(int) countIDs];
-            int[] weights = new int[(int) countIDs];
+            int countIDs = startIds.size();
+            int[] startIDs = new int[countIDs];
+            int[] endIDs = new int[countIDs];
+            int[] weights = new int[countIDs];
             for (int i = 0; i < countIDs; i++) {
                 startIDs[i] = startIds.get(i);
                 endIDs[i] = endIds.get(i);

@@ -76,6 +76,7 @@ public class OSMLoaderTest {
     }
     
     @Test
+    // test file will not be committed to the repository because it is too big ~19G
     public void testImportGermany() {
         loader.importMap(new File("test/resources/germany.osm"));
         
@@ -83,6 +84,7 @@ public class OSMLoaderTest {
     }
     
     @Test
+    // test file will not be committed to the repository because it is too big ~2.8G
     public void testImportBadenWuerttemberg() {
         loader.importMap(new File("test/resources/baden-wuerttemberg.osm"));
         
