@@ -57,9 +57,9 @@ public class Router {
             // (everything else would be a pain in the ass)
             if (currentPath.getNode() == b.getTo()) {
                 // We can't return now, as there might be a shorter way via b.getFrom().
-                heap.add(new Route(-1, (int) (1/b.getRatio()) * WeightCalculator.calcWeight(b), currentPath));
+                heap.add(new Route(-1, (int) (1/b.getRatio()) * WeightCalculator.getInstance().calcWeight(b), currentPath));
             } else if (currentPath.getNode() == b.getFrom()) {
-                heap.add(new Route(-1, (int) b.getRatio() * WeightCalculator.calcWeight(b), currentPath));
+                heap.add(new Route(-1, (int) b.getRatio() * WeightCalculator.getInstance().calcWeight(b), currentPath));
             } else if (currentPath.getNode() == -1) {
                 return currentPath.toList();
             }
