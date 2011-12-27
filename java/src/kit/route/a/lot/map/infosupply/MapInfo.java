@@ -10,7 +10,7 @@ import kit.route.a.lot.map.*;
 
 public class MapInfo {
 
-    private ElementDB elementDB;
+    private static ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
 
@@ -136,7 +136,7 @@ public class MapInfo {
      *            
      * @return the coordinates of the node correspondenting to the give id.
      */
-    public Coordinates getNodePosition(int nodeID) {
+    public static Coordinates getNodePosition(int nodeID) {
         return elementDB.getNodePosition(nodeID);
     }
 

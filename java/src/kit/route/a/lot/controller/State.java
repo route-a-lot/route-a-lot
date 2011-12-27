@@ -3,6 +3,7 @@ package kit.route.a.lot.controller;
 import java.util.List;
 
 import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.RouteDescription;
@@ -63,7 +64,7 @@ public class State {
     /**
      * 
      */
-    public int heightMalus;
+    public static int heightMalus;
     /**
      * 
      */
@@ -199,7 +200,7 @@ public class State {
     }
 
     
-    public int getHeightMalus() {
+    public static int getHeightMalus() {
         return heightMalus;
     }
 
@@ -219,6 +220,12 @@ public class State {
     }
     
     public static RoutingGraph getRoutingGraph() {
+        return null;
+    }
+
+
+    public static Heightmap getHeightMap() {
+        // TODO Auto-generated method stub
         return null;
     }
 }
