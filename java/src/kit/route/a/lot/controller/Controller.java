@@ -1,7 +1,7 @@
 package kit.route.a.lot.controller;
 
-import kit.route.a.lot.map.rendering.Renderer;
-import kit.route.a.lot.gui.GUIHandler;
+import kit.route.a.lot.map.rendering.Renderer;import kit.route.a.lot.gui.GUIHandler;import kit.route.a.lot.common.*;
+import kit.route.a.lot.routing.Router;
 
 public class Controller {
 
@@ -60,7 +60,10 @@ public class Controller {
      * 
      * @return
      */
-    public void addNavNode() {
+    public void addNavNode(Coordinates pos) {
+        State state = State.getInstance();
+        state.getNavigationNodes().add(state.getLoadedMapInfo().select(pos));
+        calculateRoute();
     }
 
     /**
@@ -229,6 +232,10 @@ public class Controller {
      * @return
      */
     public void calculateRoute() {
+        State state = State.getInstance();
+        if (state.getNavigationNodes().size() >= 2) {
+            Router.calculateRoute();
+        }
     }
 
     /**

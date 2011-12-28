@@ -42,7 +42,4 @@ public class ViewChangedEvent extends java.util.EventObject {
     public float getLaltitude() {
         return laltitude;
     }
-
-    
-    
 }
