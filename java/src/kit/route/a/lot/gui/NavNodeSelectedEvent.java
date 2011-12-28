@@ -1,7 +1,7 @@
 package kit.route.a.lot.gui;
 
 
-public class StartSelectedEvent extends java.util.EventObject{
+public class NavNodeSelectedEvent extends java.util.EventObject{
     /*
      *describes the vertical position of the selected Target (number between 0 and 1 as percent indicator) 
      */ 
@@ -12,11 +12,17 @@ public class StartSelectedEvent extends java.util.EventObject{
     */ 
     private float laltitude;
     
+    /*
+     * describes the position of the navNode (1 for start, last pos. for end)
+     */
+    private int position;
+    
 
-    public StartSelectedEvent(Object source, float latitude, float longitude, int zoomLevelChange) {
+    public NavNodeSelectedEvent(Object source, float latitude, float longitude, int zoomLevelChange, int position) {
         super(source);
         this.laltitude = latitude;
         this.longitude = longitude;
+        this.position = position;
     }
 
 
@@ -26,5 +32,9 @@ public class StartSelectedEvent extends java.util.EventObject{
 
     public float getLaltitude() {
         return laltitude;
+    }
+    
+    public int getposition() {
+        return position;
     }
 }
