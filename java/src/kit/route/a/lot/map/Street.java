@@ -5,26 +5,26 @@ import java.util.ArrayList;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.WayInfo;
 
 
 public class Street extends MapElement {
 
-    /** Attributes */
-    /**
-     * 
-     */
     private int type;
-    /** Associations */
+   
     private ArrayList<Edge> edges;
+    
     private String name;
+    
+    private WayInfo wayInfo;
 
     
     
-    public Street(int type, String name) {
-        super();
+    public Street(int type, String name, WayInfo wayInfo) {
         this.type = type;
         edges = new ArrayList<Edge>();
         this.name = name;
+        this.wayInfo = wayInfo;
     }
 
     @Override
@@ -38,6 +38,10 @@ public class Street extends MapElement {
     
     public ArrayList<Edge> getEdges() {
         return edges;
+    }
+    
+    public WayInfo getwayinfo() {
+        return wayInfo;
     }
     
     public void addEdge(Edge edge) {

@@ -60,8 +60,8 @@ public class MapInfo {
      */
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
             
-        if(wayInfo.getType() > 0) {      //TODO define types
-            Street street = new Street(wayInfo.getType(), name);
+        if(wayInfo.isStreet()) {      //TODO define types
+            Street street = new Street(wayInfo.getType(), name, wayInfo);
             elementDB.addMapElement(street);
             for(int i = 0; i < ids.size() - 1; i++) {   //add edges
                 Node start = elementDB.getNode(ids.get(i));
@@ -72,7 +72,7 @@ public class MapInfo {
                 geographicalOperator.addToBaseLayer(edge);
                 }
         } else {    
-            Area area = new Area(wayInfo.getType(), name);
+            Area area = new Area(wayInfo.getType(), name, wayInfo);
             elementDB.addMapElement(area);
             geographicalOperator.addToBaseLayer(area);
             for (int i = 0; i < ids.size(); i++) {

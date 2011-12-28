@@ -1,10 +1,11 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.ArrayList;import java.awt.Polygon;
+import java.io.InputStream;import java.io.OutputStream;import java.util.ArrayList;import java.awt.Polygon; 
 import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.WayInfo;
 
 
 public class Area extends MapElement {
@@ -14,12 +15,15 @@ public class Area extends MapElement {
     private ArrayList<Node> nodes;
     
     private String name;
+    
+    private WayInfo wayInfo;
 
     
-    public Area(int type, String name) {
+    public Area(int type, String name, WayInfo wayInfo) {
         this.type = type;
         this.name = name;
         nodes = new ArrayList<Node>();
+        this.wayInfo = wayInfo;
     }
     
     public int getType() {
@@ -28,6 +32,10 @@ public class Area extends MapElement {
     
     public ArrayList<Node> getNodes() {
         return nodes;
+    }
+    
+    public WayInfo getwayinfo() {
+        return wayInfo;
     }
 
     public void addNode(Node node) {
