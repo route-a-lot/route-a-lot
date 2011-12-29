@@ -57,6 +57,12 @@ public interface ElementDB {
     MapElement getMapElement(int id);
 
     /**
+     * 
+     * @param id
+     */
+    public void deleteFavorite(int id);
+    
+    /**
      * Operation loadFromStream
      * 
      * @param stream

@@ -7,6 +7,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.POINode;
 
 public class ArrayElementDB implements ElementDB {
 
@@ -14,6 +15,8 @@ public class ArrayElementDB implements ElementDB {
     private ArrayList<Node> nodes;
    
     private ArrayList<MapElement> mapElements;
+    
+    private ArrayList<POINode> favorites;
 
     private int mapEleID = 0;   //counts mapElemnts
 
@@ -49,6 +52,14 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public MapElement getMapElement(int id) {
         return mapElements.get(id);
+    }
+    
+    public void addFavorite(POINode favorite) {
+        favorites.add(favorite);
+    }
+    
+    public void deleteFavorite(int id) {
+        favorites.remove(new POINode(id, null, null));
     }
 
     @Override

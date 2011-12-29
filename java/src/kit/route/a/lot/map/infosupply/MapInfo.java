@@ -98,38 +98,36 @@ public class MapInfo {
     }
 
     /**
-     * Operation addFavorite
+     * Adds a Favorite to the data structures.
      * 
-     * @param pos
-     *            -
-     * @param info
-     *            -
-     * @return
-     * @return
+     * @param the position of the favorite
+     *            
+     * @param description a description of the favorite
      */
-    public void addFavorite(Coordinates pos, String info) {
+    public void addFavorite(Coordinates pos, POIDescription description) {
+        POINode newFav = new POINode(0, pos, description);
+        elementDB.addMapElement(newFav);
+        geographicalOperator.addToOverlay(newFav);
     }
 
     /**
-     * Operation deleteFavorite
+     * Deletes the favorite in the given area (little area around the coordinate)
      * 
-     * @param position
-     *            -
-     * @return
-     * @return
+     * @param position the position of the favorite
      */
     public void deleteFavorite(Coordinates position) {
+        elementDB.deleteFavorite(geographicalOperator.deleteFavorite(position));
     }
 
     /**
-     * Operation getPOIDescription
+     * Returns a description of the POI at the given area (little area around the given position)
      * 
-     * @param pos
-     *            -
-     * @return POIDescription
+     * @param pos the position of the POI
+     *            
+     * @return the description of the POI
      */
     public POIDescription getPOIDescription(Coordinates pos) {
-        return null;
+        return geographicalOperator.getPOIDescription(pos);
     }
 
     /**
@@ -144,13 +142,10 @@ public class MapInfo {
     }
 
     /**
-     * Operation buildZoomlevels
-     * 
-     * @return
-     * 
-     * @return
+     * Builds the zoomLevels for the view.
      */
     public void buildZoomlevels() {
+        geographicalOperator.buildZoomlevels();
     }
 
     /**

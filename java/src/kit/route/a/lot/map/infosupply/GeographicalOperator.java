@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 
@@ -89,6 +90,22 @@ public interface GeographicalOperator {
      */
     void addToOverlay(MapElement element);
 
+    
+    
+    /**
+     * 
+     * @param pos
+     * @return
+     */
+    int deleteFavorite(Coordinates pos);
+    
+    /**
+     * 
+     * @param pos
+     * @return
+     */
+    POIDescription getPOIDescription(Coordinates pos);
+    
     /**
      * Operation loadFromStream
      * 

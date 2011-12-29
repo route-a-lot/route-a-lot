@@ -36,7 +36,6 @@ public class MapInfoTest {
         aids.add(9);
         aids.add(10);
         aids.add(11);
-        System.out.println("asasd");
       
         WayInfo street = new WayInfo();
         street.setStreet(true);

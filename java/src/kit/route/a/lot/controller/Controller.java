@@ -1,7 +1,6 @@
 package kit.route.a.lot.controller;
 
-import kit.route.a.lot.map.rendering.Renderer;import kit.route.a.lot.gui.GUIHandler;import kit.route.a.lot.common.*;
-import kit.route.a.lot.routing.Router;
+import kit.route.a.lot.map.rendering.Renderer;import kit.route.a.lot.gui.GUIHandler;import kit.route.a.lot.common.*;import kit.route.a.lot.routing.Router;
 
 public class Controller {
 
@@ -64,6 +63,7 @@ public class Controller {
         State state = State.getInstance();
         state.getNavigationNodes().add(state.getLoadedMapInfo().select(pos));
         calculateRoute();
+        render();
     }
 
     /**
@@ -224,6 +224,7 @@ public class Controller {
      * @return
      */
     public void render() {
+        renderer.render(guiHandler.getContext(), State.getInstance().getDetailLevel()); //TODO is rendering calculating coordinates?
     }
 
     /**

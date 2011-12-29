@@ -19,4 +19,12 @@ public class POINode extends Node {
     public POIDescription getInfo() {
         return info;
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof POINode) {
+            return ((POINode) obj).getID() == this.getID();
+        }
+        return false;
+    }
 }

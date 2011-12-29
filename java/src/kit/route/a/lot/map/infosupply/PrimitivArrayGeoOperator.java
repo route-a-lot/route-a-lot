@@ -8,6 +8,7 @@ import java.awt.geom.Line2D.*;
 
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.*;
 import kit.route.a.lot.common.Selection;
@@ -101,6 +102,18 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
     public void saveToStream(OutputStream stream) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public int deleteFavorite(Coordinates pos) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public POIDescription getPOIDescription(Coordinates pos) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }
