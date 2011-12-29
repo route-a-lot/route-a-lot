@@ -101,4 +101,6 @@ public interface RoutingGraph {
 
     int getWeight(int first, int last);
 
+    public int getIDCount();
+
 }

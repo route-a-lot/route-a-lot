@@ -38,19 +38,28 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
+        assert startID.length == endID.length;
+        assert endID.length == weight.length;
         int max = 0;
         for (int id: startID) {
             // Get maxID = edgesPos.size = edgeList.size
             max = Math.max(max, id);
         }
+        assert max <= startID.length;
+        // initialyze Arrays
+        edgesPos = new int[max];
+        areaID = new byte[max];
+        edges = new int[startID.length];
+        weights = new int[startID.length];
+        arcFlags = new long[startID.length];
         // "You can't use generic array creation. It's a flaw/ feature of java generics." well, that sucks.
         ArrayList<LinkedList<IntTuple>> edgeLists = new ArrayList<LinkedList<IntTuple>>();
-        // Create a bucket for each ID with a linked list full of Semi-Edges.
-        Arrays.fill(edgesPos, 0);
+        // Create a bucket for each ID with a linked list full of Semi-Edges.// currentPath ALWAYS contains the shortest path to currentPath.getNode() (with regards to Arc-Flags). 
         for (int i = 0; i < startID.length; i++) {
             edgeLists.get(startID[i]).add(new IntTuple(endID[i], weight[i]));
             // Create Mapping from ID => edge
         }
+        Arrays.fill(edgesPos, 0);
         int j = 0;  // Index of edges and weights
         int i = 1;  // Index of edgeLists and edgesPos
         for (LinkedList<IntTuple> edgeList: edgeLists) {
@@ -80,6 +89,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
+        assert node <= edgesPos.length;
         LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
             relevantEdges.add(edges[edgesPos[node]+i]);
@@ -89,11 +99,13 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public byte getAreaID(int node) {
+        assert node <= edgesPos.length;
         return areaID[node];
     }
 
     @Override
     public void setAreaID(int node, byte id) {
+        assert node <= edgesPos.length;
         areaID[node] = id;
     }
 
@@ -114,5 +126,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         return 0;
+    }
+    
+    public int getIDCount() {
+        return edgesPos.length;
     }
 }

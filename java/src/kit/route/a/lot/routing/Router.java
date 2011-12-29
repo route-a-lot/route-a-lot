@@ -1,5 +1,6 @@
 package kit.route.a.lot.routing;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,13 +47,21 @@ public class Router {
         if (a == null || b == null) {
             return (List<Integer>) null;
         }
+        // This helps us to reduce redundancy for a low cost.
+        boolean[] seen = new boolean[graph.getIDCount()];
+        Arrays.fill(seen, false);   // Is this necessary?
         // Initialize heap
         heap.add(new Route(a.getFrom(), (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio())));
         heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
         // start the lame calculating.
         while (heap.peek() != null) {
-            // currentPath ALWAYS contains the shortest path to currentPath.getNode() (with regards to Arc-Flags).
             currentPath = heap.poll();
+            if (seen[currentPath.getNode()]) {
+                // We already know a (shorter) path to that node, so ignore it.
+                continue;
+            }
+            // At this point currentPath ALWAYS contains the shortest path to currentPath.getNode() (with regards to Arc-Flags).
+            seen[currentPath.getNode()] = true;
             // the target requires a special node, since both paths to it have to be put on the heap.
             // (everything else would be a pain in the ass)
             if (currentPath.getNode() == b.getTo()) {
@@ -61,16 +70,16 @@ public class Router {
             } else if (currentPath.getNode() == b.getFrom()) {
                 heap.add(new Route(-1, (int) b.getRatio() * WeightCalculator.getInstance().calcWeight(b), currentPath));
             } else if (currentPath.getNode() == -1) {
+                // This is the shortest path.
                 return currentPath.toList();
             }
             for (Integer to: graph.getRelevantNeighbors(currentPath.getNode(), graph.getAreaID(currentPath.getNode()))) {
-                // Note: we don't check if for the given ID there already exists a (shorter) path to it,
-                // maybe we should, as it may greatly reduce the size of the heap.
-                // (I don't know how that scales with Arc-Flags)
+                // Here we add all the new paths.
                 heap.add(new Route(to, graph.getWeight(currentPath.getNode(), to), currentPath));
             }
         }
-        return null;
+        // No path was found, maybe raise an error?
+        return (List<Integer>) null;
     }
 }
 
