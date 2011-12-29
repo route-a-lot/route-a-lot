@@ -219,7 +219,7 @@ public class State {
         this.heighwayMalus = heighwayMalus;
     }
     
-    public RoutingGraph getRoutingGraph() {
+    public static RoutingGraph getRoutingGraph() {
         return null;
     }
 

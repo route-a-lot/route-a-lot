@@ -103,4 +103,6 @@ public interface RoutingGraph {
 
     public int getIDCount();
 
+    public RoutingGraph getInverted();
+
 }

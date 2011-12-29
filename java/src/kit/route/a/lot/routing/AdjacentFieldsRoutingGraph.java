@@ -131,4 +131,21 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public int getIDCount() {
         return edgesPos.length;
     }
+
+    @Override
+    public RoutingGraph getInverted() {
+        int[] startID = new int[edges.length];
+        int[] endID = new int[edges.length];
+        int[] weight = new int[edges.length];
+        AdjacentFieldsRoutingGraph result = new AdjacentFieldsRoutingGraph();
+        int j = 0;
+        for (int i = 0; i < edges.length; i++) {
+            for (; i >= edgesPos[j+1]; j++);
+            weight[i] = weights[i];
+            startID[i] = edges[i];
+            endID[i] = j;
+        }
+        result.buildGraph(startID, endID, weight);
+        return result;
+    }
 }

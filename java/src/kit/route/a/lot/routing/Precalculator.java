@@ -1,5 +1,7 @@
 package kit.route.a.lot.routing;
 
+import kit.route.a.lot.controller.State;
+
 
 public class Precalculator {
 
@@ -11,6 +13,8 @@ public class Precalculator {
      * @return
      */
     public void precalculate() {
+        RoutingGraph graph = State.getRoutingGraph();
+        RoutingGraph inverted = graph.getInverted();
         return;
     }
 }
