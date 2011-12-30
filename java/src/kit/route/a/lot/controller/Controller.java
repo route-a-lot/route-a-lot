@@ -20,6 +20,7 @@ public class Controller {
      * @return
      */
     public void setView() {
+        guiHandler.updateMap();  //TODO duration
     }
 
     /**
@@ -225,6 +226,7 @@ public class Controller {
      */
     public void render() {
         renderer.render(guiHandler.getContext(), State.getInstance().getDetailLevel()); //TODO is rendering calculating coordinates?
+        setView();
     }
 
     /**

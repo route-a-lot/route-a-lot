@@ -60,18 +60,18 @@ public class Area extends MapElement {
         int y[] = new int[this.nodes.size()];
         int i = 0;
         for (Node node: nodes) {
-            x[i] = (int)(node.getPos().getLongitude() * 100000000);  //100000000 is a random factor, can be changed
+            x[i] = (int)(node.getPos().getLongitude() * 10000000);  //100000000 is a random factor, can be changed
             i++;
         }
         i = 0;
         for (Node node: nodes) {
-            y[i] = (int)(node.getPos().getLatitude() * 100000000);
+            y[i] = (int)(node.getPos().getLatitude() * 10000000);
             i++;
         }
         Polygon area = new Polygon(x, y, nodes.size());
-        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude()  * 100000000 - 1, bottomRight.getLatitude() * 100000000 - 1, 
-                (bottomRight.getLongitude() - topLeft.getLongitude()) * 100000000 + 1,
-                (topLeft.getLatitude() - bottomRight.getLatitude())  * 100000000 + 1);
+        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude()  * 10000000 - 1, bottomRight.getLatitude() * 10000000 - 1, 
+                (bottomRight.getLongitude() - topLeft.getLongitude()) * 10000000 + 1,
+                (topLeft.getLatitude() - bottomRight.getLatitude())  * 10000000 + 1);
         boolean inside = false;
         for (Node node : nodes) {
             if(node.isInBounds(topLeft, bottomRight)) {

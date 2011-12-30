@@ -67,5 +67,17 @@ public class GraphMock implements RoutingGraph {
         return 0;
     }
 
+    @Override
+    public int getIDCount() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public RoutingGraph getInverted() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     
 }

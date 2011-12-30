@@ -16,6 +16,7 @@ public class Node extends MapElement {
     public Node(int id, Coordinates pos) {
         this.id = id;
         this.pos = pos;
+        outgoingEdges = new ArrayList<Edge>();
     }
     
 

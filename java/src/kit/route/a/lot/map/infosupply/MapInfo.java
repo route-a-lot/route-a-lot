@@ -67,6 +67,7 @@ public class MapInfo {
                 Node start = elementDB.getNode(ids.get(i));
                 Node end = elementDB.getNode(ids.get(i + 1));
                 Edge edge = new Edge(start, end, street);
+                start.addOutgoingEdge(edge);
                 street.addEdge(edge);
                 elementDB.addMapElement(edge);
                 geographicalOperator.addToBaseLayer(edge);
