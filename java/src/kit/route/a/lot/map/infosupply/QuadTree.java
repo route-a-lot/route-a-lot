@@ -1,14 +1,13 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Collection;
+import java.io.InputStream;import java.io.OutputStream;
+import java.util.Collection; import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 
-public class QuadTree {
+public abstract class QuadTree {
 
     /** Attributes */
     /**
@@ -19,6 +18,13 @@ public class QuadTree {
      * 
      */
     private Coordinates bottomRight;
+    
+    
+    public QuadTree(Coordinates upLeft, Coordinates bottomRight) {
+        this.upLeft = upLeft;
+        this.bottomRight = bottomRight;
+    }
+
 
     /**
      * Operation getLeafs
@@ -29,11 +35,20 @@ public class QuadTree {
      *            -
      * @return Collection<QTLeaf>
      */
-    protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
+    protected abstract Collection<QTLeaf> getLeafs(Coordinates upLeft,
+            Coordinates bottomRight);
+    
+    protected boolean isInBounds(Coordinates upLeft,
             Coordinates bottomRight) {
-        return null;
+        Rectangle2D.Float thiss = new Rectangle2D.Float(this.upLeft.getLongitude(), this.bottomRight.getLatitude(),    
+                this.bottomRight.getLongitude() - this.upLeft.getLongitude(),
+                this.upLeft.getLatitude() - this.bottomRight.getLatitude());
+        Rectangle2D.Float bounce = new Rectangle2D.Float(upLeft.getLongitude(), bottomRight.getLatitude(),    
+                bottomRight.getLongitude() - upLeft.getLongitude(),
+                upLeft.getLatitude() - bottomRight.getLatitude());
+        return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
     }
-
+    
     /**
      * Operation select
      * 
@@ -75,8 +90,7 @@ public class QuadTree {
      * @return
      * @return
      */
-    protected void addToOverlay(MapElement element) {
-    }
+    protected abstract void addToOverlay(MapElement element);
 
     /**
      * Operation addToBaseLayer
@@ -86,6 +100,5 @@ public class QuadTree {
      * @return
      * @return
      */
-    protected void addToBaseLayer(MapElement element) {
-    }
+    protected abstract void addToBaseLayer(MapElement element);
 }

@@ -15,11 +15,14 @@ import kit.route.a.lot.map.infosupply.QuadTree;
 public class QTGeographicalOperator implements GeographicalOperator {
 
     /** Associations */
-    private QuadTree zoomlevels;
+    private QuadTree zoomlevels[];
 
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
-        // TODO Auto-generated method stub
+        zoomlevels = new QuadTree[9];
+        for (int i = 0; i < zoomlevels.length; i++) {
+            zoomlevels[i] = new QTLeaf(upLeft, bottomRight);
+        }
 
     }
 
@@ -31,14 +34,13 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public Selection select(Coordinates pos) {
-        // TODO Auto-generated method stub
-        return null;
+        return zoomlevels[4].select(pos);
     }
 
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        // TODO Auto-generated method stub
+        zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);
         return null;
     }
 
