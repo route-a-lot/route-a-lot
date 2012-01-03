@@ -11,8 +11,10 @@ import kit.route.a.lot.map.infosupply.QuadTree;
 
 public class QTLeaf extends QuadTree {
 
-    private Set<MapElement> overlay;
-    private Set<MapElement> baseLayer;
+    private Collection<MapElement> overlay;
+    private Collection<MapElement> baseLayer;
+    
+    private int limit = 100;     //elements per Leaf -> performance-tests
         
     
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
@@ -26,7 +28,7 @@ public class QTLeaf extends QuadTree {
      * 
      * @return Set<MapElement>
      */
-    protected Set<MapElement> getBaseLayer() {
+    protected Collection<MapElement> getBaseLayer() {
         return baseLayer;
     }
 
@@ -35,7 +37,7 @@ public class QTLeaf extends QuadTree {
      * 
      * @return Set<MapElement>
      */
-    protected Set<MapElement> getOverlay() {
+    protected Collection<MapElement> getOverlay() {
         return overlay;
     }
 
@@ -50,14 +52,14 @@ public class QTLeaf extends QuadTree {
     }
 
     @Override
-    protected void addToOverlay(MapElement element) {
+    protected boolean addToOverlay(MapElement element) {
         // TODO Auto-generated method stub
-        
+        return false;
     }
 
     @Override
-    protected void addToBaseLayer(MapElement element) {
+    protected boolean addToBaseLayer(MapElement element) {
         // TODO Auto-generated method stub
-        
+        return false;
     }
 }

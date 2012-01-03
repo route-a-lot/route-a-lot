@@ -2,6 +2,7 @@ package kit.route.a.lot.map.rendering;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -55,7 +56,11 @@ public class Tile {
 
     public void prerender() {
         reset();
-        List<MapElement> map = State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight);
+        /* important!: baseLayer is a collection, now and can't be casted to a list
+         *  so i fixed it this way (but we can use a other collection, too)
+         */
+        List<MapElement> map = new ArrayList<MapElement>();
+        map.addAll(State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight));
         for (MapElement element: map) {
             draw(element);
         }

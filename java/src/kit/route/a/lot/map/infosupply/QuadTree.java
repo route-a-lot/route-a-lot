@@ -90,7 +90,7 @@ public abstract class QuadTree {
      * @return
      * @return
      */
-    protected abstract void addToOverlay(MapElement element);
+    protected abstract boolean addToOverlay(MapElement element);
 
     /**
      * Operation addToBaseLayer
@@ -100,5 +100,29 @@ public abstract class QuadTree {
      * @return
      * @return
      */
-    protected abstract void addToBaseLayer(MapElement element);
+    protected abstract boolean addToBaseLayer(MapElement element);
+
+
+    
+    public Coordinates getUpLeft() {
+        return upLeft;
+    }
+
+
+    
+    public void setUpLeft(Coordinates upLeft) {
+        this.upLeft = upLeft;
+    }
+
+
+    
+    public Coordinates getBottomRight() {
+        return bottomRight;
+    }
+
+
+    
+    public void setBottomRight(Coordinates bottomRight) {
+        this.bottomRight = bottomRight;
+    }
 }

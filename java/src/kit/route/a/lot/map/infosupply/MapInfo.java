@@ -2,6 +2,8 @@ package kit.route.a.lot.map.infosupply;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import kit.route.a.lot.common.Address;
@@ -193,7 +195,7 @@ public class MapInfo {
      *            
      * @return the correspondending mapElements
      */
-    public List<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight);
     }
@@ -209,7 +211,7 @@ public class MapInfo {
      *            
      * @return the correspondending mapElements
      */
-    public List<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         return geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight);
     }
