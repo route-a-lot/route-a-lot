@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
@@ -49,8 +50,13 @@ public class QTNode extends QuadTree {
     @Override
     protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
             Coordinates bottomRight) {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<QTLeaf> leafList = new ArrayList<QTLeaf>();
+        if (isInBounds(upLeft, bottomRight)) {    
+            for(QuadTree qt : children) {
+                leafList.addAll(qt.getLeafs(upLeft, bottomRight));
+            }
+        }
+        return leafList;
     }
 
     @Override

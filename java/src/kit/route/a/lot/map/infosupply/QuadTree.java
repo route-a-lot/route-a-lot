@@ -49,16 +49,7 @@ public abstract class QuadTree {
         return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
     }
     
-    /**
-     * Operation select
-     * 
-     * @param pos
-     *            -
-     * @return Selection
-     */
-    protected Selection select(Coordinates pos) {
-        return null;
-    }
+    
 
     /**
      * Operation loadFromStream

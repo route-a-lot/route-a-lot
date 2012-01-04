@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.Set;
+import java.io.InputStream;import java.io.OutputStream;import java.util.Collection;
+import java.util.Set;
 import java.util.ArrayList;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -112,6 +113,12 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
 
     @Override
     public POIDescription getPOIDescription(Coordinates pos) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<MapElement> getOverlayToLastOverlay() {
         // TODO Auto-generated method stub
         return null;
     }

@@ -58,7 +58,10 @@ public class Edge extends MapElement {
                                                 topLeft.getLatitude() - bottomRight.getLatitude());
         return box.intersectsLine(edge) || start.isInBounds(topLeft, bottomRight) || end.isInBounds(topLeft, bottomRight);
         //TODO pos -> neg (e.g. -180° -> 180°)
-        
+    }
+    
+    public float getRatio (Coordinates pos) {
+        return 0.0f;  //TODO "fall lot"
     }
 
     @Override

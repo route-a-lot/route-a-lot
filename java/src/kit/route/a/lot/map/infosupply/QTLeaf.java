@@ -1,11 +1,13 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.util.Collection;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
@@ -44,22 +46,30 @@ public class QTLeaf extends QuadTree {
     @Override
     protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
             Coordinates bottomRight) {
+        ArrayList<QTLeaf> ret = new ArrayList<QTLeaf>();
         if(isInBounds(upLeft, bottomRight)) {
-            HashSet<QTLeaf> ret = new HashSet<QTLeaf>();
             ret.add(this);
         }
-        return null;
+        return ret;
     }
 
     @Override
     protected boolean addToOverlay(MapElement element) {
-        // TODO Auto-generated method stub
-        return false;
+        if (overlay.size() == limit) {
+            return false;
+        }
+        overlay.add(element);
+        return true;
     }
 
     @Override
     protected boolean addToBaseLayer(MapElement element) {
-        // TODO Auto-generated method stub
-        return false;
+        if (baseLayer.size() == limit) {
+            return false;
+        }
+        baseLayer.add(element);
+        return true;
     }
+
+    
 }
