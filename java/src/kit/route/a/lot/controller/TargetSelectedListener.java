@@ -2,6 +2,8 @@ package kit.route.a.lot.controller;
 
 import java.util.EventObject;
 
+import kit.route.a.lot.gui.NavNodeSelectedEvent;
+
 
 public class TargetSelectedListener implements RALListener{
     private Controller ctrl;
@@ -12,11 +14,9 @@ public class TargetSelectedListener implements RALListener{
 
     @Override
     public void handleRALEvent(EventObject event) {
-        if (event instanceof kit.route.a.lot.gui.NavNodeSelectedEvent) {
-            //TODO we first have to decide who's getting the coordinates from clicks . . . 
+        if (event instanceof NavNodeSelectedEvent) {
+            ctrl.addNavNode(((NavNodeSelectedEvent) event).getCoordinates(), ((NavNodeSelectedEvent) event).getposition(),
+                    ((NavNodeSelectedEvent) event).getContext());
         }
-        
     }
-    
-    
 }

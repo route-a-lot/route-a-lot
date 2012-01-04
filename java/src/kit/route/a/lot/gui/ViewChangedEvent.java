@@ -1,18 +1,14 @@
 package kit.route.a.lot.gui;
 
+import kit.route.a.lot.common.Context;
+
 
 public class ViewChangedEvent extends java.util.EventObject {
     
-    /*describes the vertical movement of an mapObject 
-     *in a number between -1 (western movement) and one 1 (eastern movement)
-     */ 
-    private float longitude;
-    
     /*
-     * describes the horizontal movement of an mapObject 
-     * in a number between -1 (norther movement) and one 1 (south movement)
-    */ 
-    private float laltitude;
+     * the context which view has changed
+     */ 
+    private Context context;
     
     /*
      * describes the factor, the zoomlevel was changed:
@@ -22,10 +18,9 @@ public class ViewChangedEvent extends java.util.EventObject {
      */
     private int zoomLevelChange;
    
-    public ViewChangedEvent(Object source, float latitude, float longitude, int zoomLevelChange) {
+    public ViewChangedEvent(Object source, Context context, int zoomLevelChange) {
         super(source);
-        this.laltitude = latitude;
-        this.longitude = longitude;
+        
         this.zoomLevelChange = zoomLevelChange;
     }
 
@@ -35,11 +30,7 @@ public class ViewChangedEvent extends java.util.EventObject {
         return zoomLevelChange;
     }
 
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public float getLaltitude() {
-        return laltitude;
+    public Context getContext() {
+        return context;
     }
 }

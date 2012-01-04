@@ -1,40 +1,43 @@
 package kit.route.a.lot.gui;
 
 
+import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.Coordinates;
+
+
 public class NavNodeSelectedEvent extends java.util.EventObject{
     /*
-     *describes the vertical position of the selected Target (number between 0 and 1 as percent indicator) 
+     *describes the Coordinates of the selected point
      */ 
-    private float longitude;
-    
-    /*
-     * describes the horizontal position of the selected Target (number between 0 and 1 as percent indicator) 
-    */ 
-    private float laltitude;
+    private Coordinates coordiantes;
     
     /*
      * describes the position of the navNode (1 for start, last pos. for end)
      */
     private int position;
     
+    /*
+     * Context which view has to be changed
+     */
+    private Context context;
 
-    public NavNodeSelectedEvent(Object source, float latitude, float longitude, int zoomLevelChange, int position) {
+    public NavNodeSelectedEvent(Object source, Coordinates coor, int zoomLevelChange, int position, Context context) {
         super(source);
-        this.laltitude = latitude;
-        this.longitude = longitude;
+        this.coordiantes = coor;
         this.position = position;
+        this.context = context;
     }
 
 
-    public float getLongitude() {
-        return longitude;
-    }
-
-    public float getLaltitude() {
-        return laltitude;
+    public Coordinates getCoordinates() {
+        return coordiantes;
     }
     
     public int getposition() {
         return position;
+    }
+    
+    public Context getContext(){
+        return context;
     }
 }
