@@ -118,7 +118,8 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
     }
 
     @Override
-    public Collection<MapElement> getOverlayToLastOverlay() {
+    public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
+            Coordinates bottomRight) {
         // TODO Auto-generated method stub
         return null;
     }

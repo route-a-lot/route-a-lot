@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
@@ -84,29 +85,42 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);
-        return null;
+        ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
+        lastElementsOfSelectedMEs = zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);
+        for (QTLeaf qtL : lastElementsOfSelectedMEs) {
+            for (MapElement mapEle : qtL.getBaseLayer()) {
+                if(mapEle.isInBounds(upLeft, bottomRight)) {
+                    mapElements.add(mapEle);
+                }
+            }
+        }
+        return mapElements;
     }
 
     @Override
     public ArrayList<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        // TODO Auto-generated method stub
-        return null;
+        ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
+        for (QTLeaf qtL : zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight)) {
+            for (MapElement mapEle : qtL.getOverlay()) {
+                if(mapEle.isInBounds(upLeft, bottomRight)) {
+                    mapElements.add(mapEle);
+                }
+            }
+        }
+        return mapElements;
     }
     
     
 
     @Override
     public void addToBaseLayer(MapElement element) {
-        // TODO Auto-generated method stub
-
+        zoomlevels[0].addToBaseLayer(element);
     }
 
     @Override
     public void addToOverlay(MapElement element) {
-        // TODO Auto-generated method stub
-
+        zoomlevels[0].addToOverlay(element);
     }
 
     @Override
@@ -134,8 +148,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
 
     @Override
-    public Collection<MapElement> getOverlayToLastOverlay() {
-        // TODO Auto-generated method stub
-        return null;
+    public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
+            Coordinates bottomRight) {
+        ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
+        for (QTLeaf qtL : lastElementsOfSelectedMEs) {
+            for (MapElement mapEle : qtL.getBaseLayer()) {
+                if(mapEle.isInBounds(upLeft, bottomRight)) {
+                    mapElements.add(mapEle);
+                }
+            }
+        }
+        return mapElements;
     }
 }

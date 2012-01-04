@@ -71,7 +71,8 @@ public interface GeographicalOperator {
     Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight);
     
-    Collection<MapElement> getOverlayToLastOverlay();
+    Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
+            Coordinates bottomRight);
 
     /**
      * Operation addToBaseLayer
