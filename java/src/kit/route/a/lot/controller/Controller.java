@@ -1,8 +1,12 @@
 package kit.route.a.lot.controller;
 
-import kit.route.a.lot.map.rendering.Renderer;import kit.route.a.lot.gui.GUIHandler;import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.gui.GUIHandler;
+import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.routing.Router;
+
+import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
 
@@ -22,7 +26,7 @@ public class Controller {
      * @return
      */
     public void setView() {
-        guiHandler.updateMap();  //TODO duration
+        guiHandler.updateMap(); // TODO duration
     }
 
     /**
@@ -64,7 +68,8 @@ public class Controller {
      */
     public void addNavNode(Coordinates pos, int position, Context context) {
         State state = State.getInstance();
-        state.getNavigationNodes().add(position, state.getLoadedMapInfo().select(pos));
+        state.getNavigationNodes().add(position,
+                state.getLoadedMapInfo().select(pos));
         calculateRoute();
         render(context);
     }
@@ -227,7 +232,7 @@ public class Controller {
      * @return
      */
     public void render(Context context) {
-        renderer.render(context, State.getInstance().getDetailLevel()); //TODO is rendering calculating coordinates?
+        renderer.render(context, State.getInstance().getDetailLevel()); // TODO is rendering calculating coordinates?
         setView();
     }
 
@@ -250,6 +255,7 @@ public class Controller {
      *            -
      * @return
      */
-    public void main(String[] args) {
+    public static void main(String[] args) {
+        PropertyConfigurator.configure("config/log4j.conf");
     }
 }
