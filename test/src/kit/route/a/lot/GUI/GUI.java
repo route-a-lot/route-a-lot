@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.*;
 
@@ -129,10 +130,15 @@ public class GUI extends JFrame implements ActionListener {
         this.addMouseWheelListener(listener);
     }
 
+    private BufferedImage mapImage = testImage();
+    
     public void addContents() {
         this.map = new JPanel();
         map.setPreferredSize(new Dimension(this.getSize()));
         map.setBackground(Color.BLUE);
+        
+        Graphics2D g2 = (Graphics2D)map.getGraphics();
+        g2.drawImage(mapImage, map.getX(), map.getY(), null);
 
 
 
@@ -166,6 +172,16 @@ public class GUI extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
+    }
+    
+    private BufferedImage testImage(){
+        BufferedImage image = new BufferedImage(150, 150, BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < 150; x++) {
+            for(int y = 0; y < 150; y++) {
+                image.setRGB(x, y, 100);
+            }
+        }
+        return image;
     }
 
 }
