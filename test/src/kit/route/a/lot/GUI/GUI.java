@@ -2,6 +2,7 @@ package kit.route.a.lot.GUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
@@ -20,6 +21,11 @@ public class GUI extends JFrame implements ActionListener {
 
     private JPanel map;
     private JPopupMenu navNodeMenu;
+    private JTabbedPane tabbpane;
+    
+    private JComponent tab1;
+    private JComponent tab2;
+    private JComponent tab3;
     private Component selectedComponent;
 
     private boolean mouseClicked;
@@ -30,7 +36,30 @@ public class GUI extends JFrame implements ActionListener {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.pack();
-        this.addMouseListener(new MouseListener() {
+
+    }
+
+    //private BufferedImage mapImage = testImage();
+    
+    public void addContents() {
+        this.map = new JPanel();
+        map.setPreferredSize(new Dimension(this.getSize()));
+        map.setBackground(Color.BLUE);
+        
+        //Graphics2D g2 = (Graphics2D)map.getGraphics();
+        //g2.drawImage(mapImage, map.getX(), map.getY(), null);
+
+
+
+        this.navNodeMenu = new JPopupMenu("NavNodes");
+        navNodeMenu.add(makeMenuItem("Start"));
+        navNodeMenu.add(makeMenuItem("End"));
+
+        Container contents = this.getContentPane();
+        contents.setLayout(new BorderLayout());
+        contents.add(map,BorderLayout.CENTER);
+
+        map.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseReleased(MouseEvent me) {
@@ -127,29 +156,19 @@ public class GUI extends JFrame implements ActionListener {
             }
         };
 
-        this.addMouseWheelListener(listener);
-    }
-
-    //private BufferedImage mapImage = testImage();
-    
-    public void addContents() {
-        this.map = new JPanel();
-        map.setPreferredSize(new Dimension(this.getSize()));
-        map.setBackground(Color.BLUE);
+        map.addMouseWheelListener(listener);
         
-        //Graphics2D g2 = (Graphics2D)map.getGraphics();
-        //g2.drawImage(mapImage, map.getX(), map.getY(), null);
-
-
-
-        this.navNodeMenu = new JPopupMenu("NavNodes");
-        navNodeMenu.add(makeMenuItem("Start"));
-        navNodeMenu.add(makeMenuItem("End"));
-
-        Container contents = this.getContentPane();
-        contents.setLayout(new BorderLayout());
-        contents.add(map,BorderLayout.CENTER);
-
+        tabbpane = new JTabbedPane();
+        tabbpane.setPreferredSize(new Dimension(this.getWidth()/3, this.getHeight()));
+        this.add(tabbpane,BorderLayout.WEST);
+        
+        tabbpane.addTab("Tab1", null, tab1, "1");
+        //tabbpane.setMnemonicAt(1, KeyEvent.VK_2);
+        tabbpane.addTab("Tab2", null, tab2, "2");
+        //tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
+        tabbpane.addTab("Tab3", null, tab3, "3");
+        //tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
+        
         this.pack();
     }
 
@@ -158,8 +177,11 @@ public class GUI extends JFrame implements ActionListener {
 
         if(mouseClicked){
             map.setBackground(Color.BLUE);
-            g.drawString("("+xpos+","+ypos+")",xpos,ypos);
+            g.drawString("("+xpos+","+ypos+")",xpos + this.getWidth()/3,ypos);
+            mouseClicked = false;
+            repaint();
         }
+        map.setBackground(Color.WHITE);
 
     }
 
