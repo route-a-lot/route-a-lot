@@ -22,10 +22,16 @@ public class GUI extends JFrame implements ActionListener {
     private JPanel map;
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
+    private JButton importOSM;
     
-    private JComponent tab1;
-    private JComponent tab2;
-    private JComponent tab3;
+    private JPanel tab1;
+    private JPanel tab2;
+    private JPanel tab3;
+    
+    //private JCheckBox highwayMalus;
+    
+    private JSlider reliefmalus;
+    
     private Component selectedComponent;
 
     private boolean mouseClicked;
@@ -146,43 +152,43 @@ public class GUI extends JFrame implements ActionListener {
                 } else {
                     colorCounter--;
                 }
-                map.setBackground(colors[colorCounter]);
 
                 if (colorCounter == colors.length) {
                     colorCounter = 0;
                 } else if (colorCounter < 0) {
                     colorCounter = colors.length - 1;
                 }
+                map.setBackground(colors[colorCounter]);
             }
         };
 
         map.addMouseWheelListener(listener);
         
         tabbpane = new JTabbedPane();
-        tabbpane.setPreferredSize(new Dimension(this.getWidth()/3, this.getHeight()));
+        tabbpane.setPreferredSize(new Dimension(this.getWidth()*2/5, this.getHeight()));
         this.add(tabbpane,BorderLayout.WEST);
         
-        tabbpane.addTab("Tab1", null, tab1, "1");
+        tab1 = new JPanel();
+        
+        tab2 = new JPanel();
+        
+        tab3 = new JPanel();
+        
+        tabbpane.addTab("Planen", null, tab1, "1");
         //tabbpane.setMnemonicAt(1, KeyEvent.VK_2);
-        tabbpane.addTab("Tab2", null, tab2, "2");
+        tabbpane.addTab("Beschreibung", null, tab2, "2");
         //tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
-        tabbpane.addTab("Tab3", null, tab3, "3");
+        tabbpane.addTab("Karten", null, tab3, "3");
         //tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
         
+        tab3.setLayout(new FlowLayout());
+        
+        
+        
+        importOSM = new JButton("Importiere OSM-Karte");
+        tab3.add(importOSM);
+        
         this.pack();
-    }
-
-    public void paint(Graphics g) 
-    {
-
-        if(mouseClicked){
-            map.setBackground(Color.BLUE);
-            g.drawString("("+xpos+","+ypos+")",xpos + this.getWidth()/3,ypos);
-            mouseClicked = false;
-            repaint();
-        }
-        map.setBackground(Color.WHITE);
-
     }
 
     private JMenuItem makeMenuItem(String label) {
@@ -193,6 +199,7 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        System.out.printf("("+xpos+","+ypos+")\n");
         repaint();
     }
     
