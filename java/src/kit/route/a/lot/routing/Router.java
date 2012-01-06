@@ -73,7 +73,7 @@ public class Router {
                 // This is the shortest path.
                 return currentPath.toList();
             }
-            for (Integer to: graph.getRelevantNeighbors(currentPath.getNode(), graph.getAreaID(currentPath.getNode()))) {
+            for (Integer to: graph.getRelevantNeighbors(currentPath.getNode(), new byte[] {graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo())})) {
                 // Here we add all the new paths.
                 heap.add(new Route(to, graph.getWeight(currentPath.getNode(), to), currentPath));
             }

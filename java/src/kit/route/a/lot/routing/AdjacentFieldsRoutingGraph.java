@@ -68,6 +68,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 edgesPos[i]++;
                 edges[j] = values.getFirst();
                 weights[j] = values.getLast();
+                arcFlags[j] = ~ ((long) 0);
                 j++;
             }
             i++;
@@ -89,14 +90,35 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
+        return getRelevantNeighbors(node, new byte[] {destArea});
+    }
+    
+    
+    public Collection<Integer> getRelevantNeighbors(int node, byte[] destAreas) {
         assert node <= edgesPos.length;
         LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
+        long flags = 0;
+        for (byte area: destAreas) {
+            flags |= 1 << area;
+        }
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
-            relevantEdges.add(edges[edgesPos[node]+i]);
+            if ((arcFlags[i] | flags) != 0) {
+                relevantEdges.add(edges[i]);
+            }
         }
         return relevantEdges;
     }
-
+    
+    @Override
+    public Collection<Integer> getAllNeighbors(int node) {
+        assert node <= edgesPos.length;
+        LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
+        for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
+            relevantEdges.add(edges[i]);
+        }
+        return relevantEdges;
+    }
+    
     @Override
     public byte getAreaID(int node) {
         assert node <= edgesPos.length;
@@ -111,12 +133,27 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public long getArcFlags(int startID, int endID) {
-        return ~((long) 0);
+        assert startID <= edgesPos.length;
+        assert endID <= edgesPos.length;
+        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
+            if (endID == edges[i]) {
+                return arcFlags[i];
+            }
+        }
+        return (long) 0;
     }
 
     @Override
-    public void setArcFlags(int startID, int endID, int flags) {
-        // TODO Auto-generated method stub
+    public void setArcFlags(int startID, int endID, long flags) {
+        assert startID <= edgesPos.length;
+        assert endID <= edgesPos.length;
+        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
+            if (endID == edges[i]) {
+                arcFlags[i] = flags;
+                // There might be multiple entries for the same edge, so don't abort yet
+                // to make it more robust.
+            }
+        }
     }
 
     public int getWeight(int from, int to) {
@@ -134,6 +171,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public RoutingGraph getInverted() {
+        // Deep "copy"
         int[] startID = new int[edges.length];
         int[] endID = new int[edges.length];
         int[] weight = new int[edges.length];
@@ -148,4 +186,5 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         result.buildGraph(startID, endID, weight);
         return result;
     }
+
 }

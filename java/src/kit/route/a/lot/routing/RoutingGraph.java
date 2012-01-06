@@ -96,7 +96,7 @@ public interface RoutingGraph {
      * @return
      * @return
      */
-    void setArcFlags(int startID, int endID, int flags);
+    void setArcFlags(int startID, int endID, long flags);
 
 
     int getWeight(int first, int last);
@@ -104,5 +104,8 @@ public interface RoutingGraph {
     public int getIDCount();
 
     public RoutingGraph getInverted();
+
+    public Collection<Integer> getRelevantNeighbors(int node, byte[] bs);
+    public Collection<Integer> getAllNeighbors(int node);
 
 }
