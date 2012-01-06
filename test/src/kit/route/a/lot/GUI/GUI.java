@@ -102,7 +102,7 @@ public class GUI extends JFrame implements ActionListener {
             public void mouseWheelMoved(MouseWheelEvent e) {
                 int direction;
                 int count = e.getWheelRotation();
-                if(Math.abs(count) > 0) {
+                if(count < 0) {
                     direction = up;
                 } else {
                     direction = down;
@@ -111,13 +111,13 @@ public class GUI extends JFrame implements ActionListener {
             }
 
             private void changeBackground(int direction) {
-                map.setBackground(colors[colorCounter]);
 
                 if (direction == up) {
                     colorCounter++;
                 } else {
                     colorCounter--;
                 }
+                map.setBackground(colors[colorCounter]);
 
                 if (colorCounter == colors.length) {
                     colorCounter = 0;
@@ -130,15 +130,15 @@ public class GUI extends JFrame implements ActionListener {
         this.addMouseWheelListener(listener);
     }
 
-    private BufferedImage mapImage = testImage();
+    //private BufferedImage mapImage = testImage();
     
     public void addContents() {
         this.map = new JPanel();
         map.setPreferredSize(new Dimension(this.getSize()));
         map.setBackground(Color.BLUE);
         
-        Graphics2D g2 = (Graphics2D)map.getGraphics();
-        g2.drawImage(mapImage, map.getX(), map.getY(), null);
+        //Graphics2D g2 = (Graphics2D)map.getGraphics();
+        //g2.drawImage(mapImage, map.getX(), map.getY(), null);
 
 
 
@@ -174,6 +174,7 @@ public class GUI extends JFrame implements ActionListener {
         repaint();
     }
     
+    /*
     private BufferedImage testImage(){
         BufferedImage image = new BufferedImage(150, 150, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < 150; x++) {
@@ -182,6 +183,6 @@ public class GUI extends JFrame implements ActionListener {
             }
         }
         return image;
-    }
+    }*/
 
 }
