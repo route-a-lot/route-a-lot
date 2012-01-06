@@ -2,7 +2,8 @@ package kit.route.a.lot.map;
 
 import kit.route.a.lot.common.Coordinates;import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.*;
-import java.util.ArrayList; import kit.route.a.lot.common.Address; import kit.route.a.lot.common.WayInfo;
+import java.util.ArrayList; import kit.route.a.lot.common.Address; import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.WayInfo;
 
 public class MapInfoTest {
 
@@ -10,8 +11,14 @@ public class MapInfoTest {
      * @param args
      */
     public static void main(String[] args) {
-        MapInfo info = new MapInfo();
-        info.addNode(new Coordinates(0.3f, 0.3f), 0, new Address());
+        Coordinates topLeft = new Coordinates();
+        topLeft.setLatitude(89);
+        topLeft.setLongitude(0);
+        Coordinates bottomRight = new Coordinates();
+        bottomRight.setLatitude(0);
+        bottomRight.setLongitude(179);
+        MapInfo info = new MapInfo(topLeft, bottomRight);
+        info.addNode(new Coordinates(2f, 2f), 0, new Address());
         info.addNode(new Coordinates(10.0f, 10.0f), 1, new Address());
         info.addNode(new Coordinates(2.4f, 2.5f), 2, new Address());
         info.addNode(new Coordinates(2.4f, 2.5f), 3, new Address());
@@ -46,6 +53,13 @@ public class MapInfoTest {
         for(MapElement ele: a) {
             System.out.println(ele.toString());
         }
+        Selection sel = info.select(bottomRight);
+        if (sel != null) {
+            System.out.println(sel.toString());
+        } else {
+            System.err.println("select funktioniert noch nicht :(");
+        }
+       
     }
 
 }

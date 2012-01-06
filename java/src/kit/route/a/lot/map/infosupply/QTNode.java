@@ -1,10 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.ArrayList;import java.util.Collection;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
@@ -17,7 +15,6 @@ public class QTNode extends QuadTree {
      * 2: "bottomLeft" child
      * 3: "bottomRight" child
      */
-    
     private QuadTree[] children = new QuadTree[4];  
     
    
@@ -32,7 +29,7 @@ public class QTNode extends QuadTree {
         upMiddle.setLatitude(upLeft.getLatitude());
         upMiddle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
         middleLeft.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-        middleLeft.setLongitude(upMiddle.getLongitude());
+        middleLeft.setLongitude(upLeft.getLongitude());
         middleMiddle.setLatitude(middleLeft.getLatitude());
         middleMiddle.setLongitude(upMiddle.getLongitude());
         middleRight.setLatitude(middleLeft.getLatitude());

@@ -1,9 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream;import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import kit.route.a.lot.common.Address;
@@ -19,11 +17,17 @@ public class MapInfo {
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
 
+    public MapInfo() {
+        elementDB = new ArrayElementDB();
+        geographicalOperator = new PrimitivArrayGeoOperator();
+    }
+    
     /**
      * Constructor
      */
-    public MapInfo(){
-        geographicalOperator = new PrimitivArrayGeoOperator();
+    public MapInfo(Coordinates upLeft, Coordinates bottomRight){
+        geographicalOperator = new QTGeographicalOperator();
+        geographicalOperator.setBounds(upLeft, bottomRight);
         elementDB = new ArrayElementDB(); 
     }
     
@@ -81,6 +85,7 @@ public class MapInfo {
             for (int i = 0; i < ids.size(); i++) {
                 area.addNode(elementDB.getNode(ids.get(i)));
             }    
+            geographicalOperator.addToBaseLayer(area);
         }
     }
     

@@ -1,10 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;
-import java.util.Collection; import java.awt.geom.Rectangle2D;
+import java.io.InputStream;import java.io.OutputStream;import java.util.Collection; import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
 
 public abstract class QuadTree {

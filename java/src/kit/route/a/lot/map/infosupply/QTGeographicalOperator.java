@@ -1,13 +1,10 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
+import java.awt.geom.Line2D;import java.awt.geom.Point2D;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -28,7 +25,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         zoomlevels = new QuadTree[9];
         for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i] = new QTLeaf(upLeft, bottomRight);
+            zoomlevels[i] = new QTNode(upLeft, bottomRight);
         }
 
     }
@@ -43,14 +40,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public Selection select(Coordinates pos) {
         float radius = 0.01f;
         Selection sel = null;
-        while(sel == null || radius < 360) {  //360 for avoiding errors on maps without edges
-            select(pos, radius, sel);
-            radius *= 2;  // if we found no edge we have to search in a bigger area
+        while(sel == null && radius < 1000) {  //360 for avoiding errors on maps without edges
+            sel = select(pos, radius);
+            radius *= 10;  // if we found no edge we have to search in a bigger area
         }
         return  sel;
     }
     
-    private void select(Coordinates pos, float radius, Selection selection) {
+    private Selection select(Coordinates pos, float radius) {
+        Selection selection = null;
         Coordinates newUL = new Coordinates();
         Coordinates newBR = new Coordinates();
         newUL.setLatitude(pos.getLatitude() + radius);
@@ -79,6 +77,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         if (currentClosest != null) {
             selection = new Selection(currentClosest.getStart().getID(), currentClosest.getEnd().getID(), currentClosest.getRatio(pos));
         }
+        return selection;
     }
         
         
@@ -147,6 +146,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return null;
     }
 
+    /**
+     * Returns the correspondending overlay to the last baseLayer  
+     */
     @Override
     public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
             Coordinates bottomRight) {
