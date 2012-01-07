@@ -1,6 +1,7 @@
 package kit.route.a.lot.map;
 
-import kit.route.a.lot.common.Coordinates;import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.*;
 import java.util.ArrayList; import kit.route.a.lot.common.Address; import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
@@ -43,14 +44,16 @@ public class MapInfoTest {
         aids.add(9);
         aids.add(10);
         aids.add(11);
-      
+
         WayInfo street = new WayInfo();
         street.setStreet(true);
         info.addWay(ids, "Hubert Straße", street);
         info.addWay(aids, "Fußballplatz", new WayInfo());
-        ArrayList<MapElement> a = (ArrayList<MapElement>)info.getBaseLayer(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f));
+        ArrayList<MapElement> a =
+                (ArrayList<MapElement>) info.getBaseLayer(0, new Coordinates(
+                        5.0f, 1.0f), new Coordinates(1.0f, 5.0f));
         System.out.println(a.size());
-        for(MapElement ele: a) {
+        for (MapElement ele : a) {
             System.out.println(ele.toString());
         }
         Selection sel = info.select(bottomRight);
