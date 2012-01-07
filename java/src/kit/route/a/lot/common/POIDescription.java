@@ -7,13 +7,38 @@ public class POIDescription {
     /**
      * 
      */
-    public String name;
+    private String name;
     /**
      * 
      */
-    public int category;
+    private int category;
     /**
      * 
      */
-    public String description;
+    private String description;
+    
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public int getCategory() {
+        return category;
+    }
+    
+    public void setCategory(int category) {
+        this.category = category;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

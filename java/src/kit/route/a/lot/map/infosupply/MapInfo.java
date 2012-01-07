@@ -99,7 +99,7 @@ public class MapInfo {
      *            
      * @param description the description of the POI
      */
-    public void addPOI(Coordinates position, int id, POIDescription description) {
+    public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
             POINode newPOI = new POINode(id, position, description);
             elementDB.addNode(newPOI);
             geographicalOperator.addToOverlay(newPOI);
