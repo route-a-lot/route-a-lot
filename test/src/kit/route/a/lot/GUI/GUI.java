@@ -10,6 +10,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.Hashtable;
 
+import javax.print.attribute.standard.JobName;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -31,21 +32,33 @@ public class GUI extends JFrame implements ActionListener {
     private JButton kmlExport;
     private JButton print;
     private JButton graphics;
+    private JButton addTextPoints;
+    private JButton optimizeRoute;
     
-    private JLabel activeRoute;
-    private JLabel routeText;
+    private JLabel l_activeRoute;
+    private JLabel l_routeText;
+    private JLabel l_highwayMalus;
+    private JLabel l_heightMalus;
+    private JLabel l_speed;
+    
+    private JTextField startPoint;
+    private JTextField endPoint;
     
     private JSlider scrolling;
     
     private JPanel mapContents;
     private JPanel map;
     private JPanel mapButtonPanel;
-    
     private JPanel tab1;
     private JPanel tab2;
     private JPanel tab3;
     
     //private JCheckBox highwayMalus;
+    
+    private JSpinner s_speed;
+    
+    private Hashtable<Integer, JTextField> alladdedNavPoints;
+    private Hashtable<Integer, JButton> alladdedButtons;
     
     private JSlider reliefmalus;
     
@@ -54,6 +67,7 @@ public class GUI extends JFrame implements ActionListener {
     private boolean mouseClicked;
     private int xpos;
     private int ypos;
+    private int key = 0;
 
     public GUI() {
         super("Route-A-Lot");
@@ -81,8 +95,8 @@ public class GUI extends JFrame implements ActionListener {
         navNodeMenu.add(makeMenuItem("Start"));
         navNodeMenu.add(makeMenuItem("End"));
         
-        this.activeRoute = new JLabel();
-        activeRoute.setText("Route:");
+        this.l_activeRoute = new JLabel();
+        l_activeRoute.setText("Route:");
         
         mapContents = new JPanel();
         mapContents.setLayout(new BorderLayout());
@@ -95,13 +109,13 @@ public class GUI extends JFrame implements ActionListener {
         contents.setLayout(new BorderLayout());
         
         contents.add(tabbpane,BorderLayout.WEST);
-        contents.add(activeRoute,BorderLayout.SOUTH);
+        contents.add(l_activeRoute,BorderLayout.SOUTH);
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel,BorderLayout.NORTH);
         mapContents.add(map,BorderLayout.CENTER);
         
-        routeText = new JLabel();
-        routeText.setText("Route:");
+        l_routeText = new JLabel();
+        l_routeText.setText("Route:");
         
         load = new JButton();
         load.setText("Laden");
@@ -142,7 +156,7 @@ public class GUI extends JFrame implements ActionListener {
         scrolling.setPaintLabels(true);
         scrolling.setSnapToTicks(true);
         
-        mapButtonPanel.add(routeText);
+        mapButtonPanel.add(l_routeText);
         mapButtonPanel.add(load);
         mapButtonPanel.add(save);
         mapButtonPanel.add(kmlExport);
@@ -250,9 +264,7 @@ public class GUI extends JFrame implements ActionListener {
         map.addMouseWheelListener(listener);
         
         tab1 = new JPanel();
-        
         tab2 = new JPanel();
-        
         tab3 = new JPanel();
         
         tabbpane.addTab("Planen", null, tab1, "1");
@@ -262,9 +274,46 @@ public class GUI extends JFrame implements ActionListener {
         tabbpane.addTab("Karten", null, tab3, "3");
         //tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
         
+        tab1.setLayout(new FlowLayout());
+        
+        startPoint = new JTextField();
+        startPoint.setPreferredSize(new Dimension(this.getWidth()*2/5-30,20));
+        endPoint = new JTextField();
+        endPoint.setPreferredSize(new Dimension(this.getWidth()*2/5-30,20));
+        addTextPoints = new JButton("+");
+        
+        optimizeRoute = new JButton("Reihenfolge optimieren");
+        
+        s_speed = new JSpinner(new SpinnerNumberModel(15, 0, null, 1));
+        s_speed.setSize(new Dimension(30,20));
+        
+        l_speed = new JLabel("hm/h");
+        
+        tab1.add(startPoint);
+        tab1.add(endPoint);
+        tab1.add(addTextPoints);
+        tab1.add(optimizeRoute);
+        tab1.add(s_speed);
+        tab1.add(l_speed);
+        
+        alladdedNavPoints = new Hashtable<Integer, JTextField>();
+        alladdedButtons = new Hashtable<Integer, JButton>();
+        /*
+        addTextPoints.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                key++;
+                alladdedNavPoints.put(key, new JTextField());
+                alladdedButtons.put(key, new JButton("x"));
+                alladdedNavPoints.get(key).setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
+                tab1.add(alladdedNavPoints.get(key));
+                tab1.add(alladdedButtons.get(key));
+                
+            }
+        });*/
+        
         tab3.setLayout(new FlowLayout());
-        
-        
         
         importOSM = new JButton("Importiere OSM-Karte");
         tab3.add(importOSM);
