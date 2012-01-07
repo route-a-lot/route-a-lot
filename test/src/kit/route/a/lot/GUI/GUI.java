@@ -8,8 +8,11 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
+import java.util.Hashtable;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 
 
 public class GUI extends JFrame implements ActionListener {
@@ -19,10 +22,24 @@ public class GUI extends JFrame implements ActionListener {
         Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK,
         Color.RED, Color.WHITE, Color.YELLOW };
 
-    private JPanel map;
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
+    
     private JButton importOSM;
+    private JButton load;
+    private JButton save;
+    private JButton kmlExport;
+    private JButton print;
+    private JButton graphics;
+    
+    private JLabel activeRoute;
+    private JLabel routeText;
+    
+    private JSlider scrolling;
+    
+    private JPanel mapContents;
+    private JPanel map;
+    private JPanel mapButtonPanel;
     
     private JPanel tab1;
     private JPanel tab2;
@@ -48,22 +65,90 @@ public class GUI extends JFrame implements ActionListener {
     //private BufferedImage mapImage = testImage();
     
     public void addContents() {
+        
+        this.mapButtonPanel = new JPanel();
+        mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
+        
         this.map = new JPanel();
         map.setPreferredSize(new Dimension(this.getSize()));
-        map.setBackground(Color.BLUE);
+        map.setBackground(Color.WHITE);
+        map.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
         
         //Graphics2D g2 = (Graphics2D)map.getGraphics();
         //g2.drawImage(mapImage, map.getX(), map.getY(), null);
 
-
-
         this.navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(makeMenuItem("Start"));
         navNodeMenu.add(makeMenuItem("End"));
+        
+        this.activeRoute = new JLabel();
+        activeRoute.setText("Route:");
+        
+        mapContents = new JPanel();
+        mapContents.setLayout(new BorderLayout());
+        
+        tabbpane = new JTabbedPane();
+        tabbpane.setPreferredSize(new Dimension(this.getWidth()*2/5, this.getHeight()));
+        tabbpane.setBackground(Color.LIGHT_GRAY);
 
         Container contents = this.getContentPane();
         contents.setLayout(new BorderLayout());
-        contents.add(map,BorderLayout.CENTER);
+        
+        contents.add(tabbpane,BorderLayout.WEST);
+        contents.add(activeRoute,BorderLayout.SOUTH);
+        contents.add(mapContents, BorderLayout.CENTER);
+        mapContents.add(mapButtonPanel,BorderLayout.NORTH);
+        mapContents.add(map,BorderLayout.CENTER);
+        
+        routeText = new JLabel();
+        routeText.setText("Route:");
+        
+        load = new JButton();
+        load.setText("Laden");
+        
+        save = new JButton();
+        save.setText("Speichern");
+        
+        kmlExport = new JButton();
+        kmlExport.setText("KML-Export");
+        
+        print = new JButton();
+        print.setText("Ausdrucken");
+        
+        graphics = new JButton();
+        graphics.setText("2D/3D");
+
+        Hashtable<Integer, JLabel> allScrollingTicks = new Hashtable<Integer, JLabel>();
+        
+        allScrollingTicks.put(1, new JLabel("1"));
+        allScrollingTicks.put(2, new JLabel("2"));
+        allScrollingTicks.put(3, new JLabel("3"));
+        allScrollingTicks.put(4, new JLabel("4"));
+        allScrollingTicks.put(5, new JLabel("5"));
+        allScrollingTicks.put(6, new JLabel("6"));
+        allScrollingTicks.put(7, new JLabel("7"));
+        allScrollingTicks.put(8, new JLabel("8"));
+        allScrollingTicks.put(9, new JLabel("9"));
+        allScrollingTicks.put(10, new JLabel("10"));
+        
+        scrolling = new JSlider();
+        scrolling.setMaximum(10);
+        scrolling.setMinimum(1);
+        scrolling.setValue(10);
+        scrolling.setMajorTickSpacing(1);
+        scrolling.setMinorTickSpacing(1);
+        scrolling.setLabelTable(allScrollingTicks);
+        scrolling.setPaintTicks(true);
+        scrolling.setPaintLabels(true);
+        scrolling.setSnapToTicks(true);
+        
+        mapButtonPanel.add(routeText);
+        mapButtonPanel.add(load);
+        mapButtonPanel.add(save);
+        mapButtonPanel.add(kmlExport);
+        mapButtonPanel.add(print);
+        mapButtonPanel.add(graphics);
+        mapButtonPanel.add(scrolling);
 
         map.addMouseListener(new MouseListener() {
 
@@ -163,10 +248,6 @@ public class GUI extends JFrame implements ActionListener {
         };
 
         map.addMouseWheelListener(listener);
-        
-        tabbpane = new JTabbedPane();
-        tabbpane.setPreferredSize(new Dimension(this.getWidth()*2/5, this.getHeight()));
-        this.add(tabbpane,BorderLayout.WEST);
         
         tab1 = new JPanel();
         
