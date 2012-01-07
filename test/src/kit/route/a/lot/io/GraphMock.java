@@ -56,12 +56,6 @@ public class GraphMock implements RoutingGraph {
     }
 
     @Override
-    public void setArcFlags(int startID, int endID, int flags) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
     public int getWeight(int first, int last) {
         // TODO Auto-generated method stub
         return 0;
@@ -75,6 +69,24 @@ public class GraphMock implements RoutingGraph {
 
     @Override
     public RoutingGraph getInverted() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setArcFlags(int startID, int endID, long flags) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Collection<Integer> getRelevantNeighbors(int node, byte[] bs) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Collection<Integer> getAllNeighbors(int node) {
         // TODO Auto-generated method stub
         return null;
     }
