@@ -1,14 +1,14 @@
 package kit.route.a.lot.common;
 
-import java.lang.Math;
+
+public class WeightCalculator {
+    import java.lang.Math;
 
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
 
-public class WeightCalculator {
-    
     private static WeightCalculator instance;
     
     protected WeightCalculator() { }
