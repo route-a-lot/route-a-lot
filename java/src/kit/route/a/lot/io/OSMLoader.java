@@ -23,16 +23,16 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class OSMLoader {
-    
+
     private static Logger logger = Logger.getLogger(OSMLoader.class);
-    
+
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
-    
-    
+
+
     State state;
     WeightCalculator weightCalculator;
-    
+
     public OSMLoader() {
         state = State.getInstance();
         weightCalculator = WeightCalculator.getInstance();
@@ -48,35 +48,34 @@ public class OSMLoader {
      * @return
      */
     public void importMap(File file) {
-        
+
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
-            
+
             DefaultHandler handler = new DefaultHandler() {
-                
+
                 Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the new id
-                
+
                 boolean inWay;
                 boolean inPolyline;
                 Integer curPolylineNode;
                 List<Integer> curWayIds;
                 String curWayName;
                 WayInfo curWayInfo;
-                
+
                 Address curAddress;
                 int curType;
-                
+
                 boolean inNode;
                 Coordinates curNodeCoordinates;
                 int curNodeId;
                 POIDescription curNodePOIDescription;
-                
+
                 long ignoredKeys = 0;
-                
-                public void startElement(String uri, String localName, String qName, Attributes attributes)
-                    throws SAXException {
-                    
+
+                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+
                     if ((inWay && inPolyline) || inNode) {
                         if (qName.equalsIgnoreCase("tag")) {
                             String key = attributes.getValue("k");
@@ -98,10 +97,8 @@ public class OSMLoader {
                                     curAddress.setFullAddress(value);
                                 } else if (key.equalsIgnoreCase("addr:interpolation")) {
                                     curAddress.setInterpolation(value);
-                                } else if (key.equalsIgnoreCase("addr:suburb")
-                                        || key.equalsIgnoreCase("addr:quarter")
-                                        || key.equalsIgnoreCase("addr:district")
-                                        || key.equalsIgnoreCase("addr:hamlet")) {
+                                } else if (key.equalsIgnoreCase("addr:suburb") || key.equalsIgnoreCase("addr:quarter")
+                                        || key.equalsIgnoreCase("addr:district") || key.equalsIgnoreCase("addr:hamlet")) {
                                     // ignore
                                 } else if (key.equalsIgnoreCase("addr:inclusion")) {
                                     // ignore; indicates accuracy of interpolation (actual, estimate or potential)
@@ -110,7 +107,7 @@ public class OSMLoader {
                                 }
                                 return;
                             }
-                            
+
                             if (key.equalsIgnoreCase("amenity")) {
                                 if (value.equalsIgnoreCase("arts_centre")) {
                                     curType = OSMType.AMENITY_ARTS_CENTRE;
@@ -263,7 +260,7 @@ public class OSMLoader {
                                 }
                                 return;
                             }
-                            
+
                             if (key.equalsIgnoreCase("shop")) {
                                 if (value.equalsIgnoreCase("alcohol")) {
                                     curType = OSMType.SHOP_ALCOHOL;
@@ -328,7 +325,7 @@ public class OSMLoader {
                                 }
                                 return;
                             }
-                            
+
                             if (key.equalsIgnoreCase("historic")) {
                                 if (value.equalsIgnoreCase("castle")) {
                                     curType = OSMType.HISTORIC_CASTLE;
@@ -339,7 +336,7 @@ public class OSMLoader {
                                 }
                                 return;
                             }
-                            
+
                             if (key.equalsIgnoreCase("crossing")) {
                                 if (curType == OSMType.HIGHWAY_CROSSING) {
                                     if (value.equalsIgnoreCase("no")) {
@@ -375,14 +372,14 @@ public class OSMLoader {
                                 }
                                 return;
                             }
-                            
+
                             if (key.equalsIgnoreCase("postal_code")) {
                                 curAddress.setPostcode(value);
                                 return;
                             }
                         }
                     }
-                    
+
                     if (inWay) {
                         if (inPolyline) {
                             if (qName.equalsIgnoreCase("nd")) {
@@ -564,7 +561,8 @@ public class OSMLoader {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("building")) {
-                                    curWayInfo.setBuilding(true); // TODO here and with the following: check if value == yes or something more specific
+                                    curWayInfo.setBuilding(true); // TODO here and with the following: check if value == yes or
+                                                                  // something more specific
                                 } else if (key.equalsIgnoreCase("bridge")) {
                                     curWayInfo.setBridge(WayInfo.BRIDGE);
                                 } else if (key.equalsIgnoreCase("tunnel")) {
@@ -579,7 +577,7 @@ public class OSMLoader {
                                     curWayInfo.setOther(true);
                                 } else if (key.equalsIgnoreCase("access")) {
                                     if (value.equalsIgnoreCase("private")) {
-                                         curWayInfo.setAccess(WayInfo.ACCESS_PRIVATE);
+                                        curWayInfo.setAccess(WayInfo.ACCESS_PRIVATE);
                                     } else if (value.equalsIgnoreCase("destination") || value.equalsIgnoreCase("customers")) {
                                         curWayInfo.setAccess(WayInfo.ACCESS_DESTINATION);
                                     } else if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("permissive")
@@ -595,58 +593,61 @@ public class OSMLoader {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("surface")) {
-                                   if (value.equalsIgnoreCase("paved")) {
+                                    if (value.equalsIgnoreCase("paved")) {
                                         curWayInfo.setSurface(WayInfo.SURFACE_PAVED);
-                                   } else if (value.equalsIgnoreCase("unpaved")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_UNPAVED);
-                                   } else if (value.equalsIgnoreCase("asphalt")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_ASPHALT);
-                                   } else if (value.equalsIgnoreCase("gravel")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_GRAVEL);
-                                   } else if (value.equalsIgnoreCase("ground")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_GROUND);
-                                   } else if (value.equalsIgnoreCase("grass")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_GRASS);
-                                   } else if (value.equalsIgnoreCase("dirt")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_DIRT);
-                                   } else if (value.equalsIgnoreCase("cobblestone")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_COBBLESTONE);
-                                   } else if (value.equalsIgnoreCase("paving_stones")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_PAVING_STONES);
-                                   } else if (value.equalsIgnoreCase("concrete")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_CONCRETE);
-                                   } else if (value.equalsIgnoreCase("sand")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_SAND);
-                                   } else if (value.equalsIgnoreCase("compacted")) {
-                                       curWayInfo.setAccess(WayInfo.SURFACE_COMPACTED);
-                                   } else {
-                                       logger.warn("Unknown value for " + key + " key in tags: " + value);
-                                   }
-                               } else if (key.equalsIgnoreCase("segregated")) {
+                                    } else if (value.equalsIgnoreCase("unpaved")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_UNPAVED);
+                                    } else if (value.equalsIgnoreCase("asphalt")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_ASPHALT);
+                                    } else if (value.equalsIgnoreCase("gravel")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_GRAVEL);
+                                    } else if (value.equalsIgnoreCase("ground")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_GROUND);
+                                    } else if (value.equalsIgnoreCase("grass")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_GRASS);
+                                    } else if (value.equalsIgnoreCase("dirt")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_DIRT);
+                                    } else if (value.equalsIgnoreCase("cobblestone")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_COBBLESTONE);
+                                    } else if (value.equalsIgnoreCase("paving_stones")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_PAVING_STONES);
+                                    } else if (value.equalsIgnoreCase("concrete")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_CONCRETE);
+                                    } else if (value.equalsIgnoreCase("sand")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_SAND);
+                                    } else if (value.equalsIgnoreCase("compacted")) {
+                                        curWayInfo.setAccess(WayInfo.SURFACE_COMPACTED);
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("segregated")) {
                                     if (value.equalsIgnoreCase("yes")) {
                                         curWayInfo.setSegregated(WayInfo.SEGREGATED_YES);
-                                   } else if (value.equalsIgnoreCase("no")) {
-                                       curWayInfo.setSegregated(WayInfo.SEGREGATED_NO);
-                                   } else {
-                                       logger.warn("Unknown value for " + key + " key in tags: " + value);
-                                   }
-                               } else if (key.equalsIgnoreCase("layer")) {
-                                    curWayInfo.setLayer(Integer.parseInt(value));
-                               } else if (key.equalsIgnoreCase("lanes")) {
-                                   try {
-                                       curWayInfo.setLanes(Integer.parseInt(value));
-                                   } catch (NumberFormatException e) {
-                                       logger.warn("Could not parse " + value + " as Integer; used in " + key + " in a " + qName);
-                                   }
-                              } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
-                                        || key.equalsIgnoreCase("created_by")
-                                        || key.equalsIgnoreCase("foot")
-                                        || key.equalsIgnoreCase("source")
-                                        || key.equalsIgnoreCase("opening_date")
+                                    } else if (value.equalsIgnoreCase("no")) {
+                                        curWayInfo.setSegregated(WayInfo.SEGREGATED_NO);
+                                    } else {
+                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    }
+                                } else if (key.equalsIgnoreCase("layer")) {
+                                    try {
+                                        curWayInfo.setLayer(Integer.parseInt(value));
+                                    } catch (NumberFormatException e) {
+                                        logger.error(e.toString());
+                                        logger.error("Could not parse " + value + " as Integer; used in " + key + " in a " + qName);
+                                    }
+                                } else if (key.equalsIgnoreCase("lanes")) {
+                                    try {
+                                        curWayInfo.setLanes(Integer.parseInt(value));
+                                    } catch (NumberFormatException e) {
+                                        logger.error(e.toString());
+                                        logger.error("Could not parse " + value + " as Integer; used in " + key + " in a " + qName);
+                                    }
+                                } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
+                                        || key.equalsIgnoreCase("created_by") || key.equalsIgnoreCase("foot")
+                                        || key.equalsIgnoreCase("source") || key.equalsIgnoreCase("opening_date")
                                         || key.equalsIgnoreCase("landuse") /* TODO really ignore that? */
                                         || key.startsWith("building:") /* " */
-                                        || key.equalsIgnoreCase("ref")
-                                        || key.equalsIgnoreCase("planned")
+                                        || key.equalsIgnoreCase("ref") || key.equalsIgnoreCase("planned")
                                         || key.equalsIgnoreCase("construction")) {
                                     // ignore
                                 } else {
@@ -668,12 +669,12 @@ public class OSMLoader {
                         }
                         return;
                     }
-                    
+
                     if (inNode) {
                         if (qName.equalsIgnoreCase("tag")) {
                             String key = attributes.getValue("k");
                             String value = attributes.getValue("v");
-                            
+
                             if (key.equalsIgnoreCase("name")) {
                                 curNodePOIDescription.setName(value);
                             } else if (key.equalsIgnoreCase("barrier")) {
@@ -709,7 +710,7 @@ public class OSMLoader {
                                 }
                             } else if (key.equalsIgnoreCase("source") || key.equalsIgnoreCase("created_by")
                                     || key.equalsIgnoreCase("note") || key.equalsIgnoreCase("source_ref")) {
-                                //ignore
+                                // ignore
                             } else {
                                 logger.warn("Unknown key in tags in a node: key: " + key + ", value: " + value);
                             }
@@ -718,7 +719,7 @@ public class OSMLoader {
                         }
                         return;
                     }
-                    
+
                     if (qName.equalsIgnoreCase("node")) {
                         curNodeCoordinates = new Coordinates();
 
@@ -735,7 +736,7 @@ public class OSMLoader {
                         curAddress = new Address();
                         curNodePOIDescription = new POIDescription();
                         curType = 0;
-                        
+
                         inNode = true;
 
                         // TODO tags (for POI's)
@@ -749,7 +750,7 @@ public class OSMLoader {
                         logger.debug("Ignored relation.");
                     } else if (qName.equalsIgnoreCase("bounds")) {
                         Coordinates upLeft = new Coordinates();
-                        Coordinates bottomRight = new Coordinates();;
+                        Coordinates bottomRight = new Coordinates();
 
                         upLeft.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
                         upLeft.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
@@ -768,13 +769,12 @@ public class OSMLoader {
                         logger.trace("Element start ignored: " + qName);
                     }
                 }
-                    
-                public void endElement(String uri, String localName, String qName)
-                        throws SAXException {
+
+                public void endElement(String uri, String localName, String qName) throws SAXException {
                     if (inWay && qName.equalsIgnoreCase("way")) {
-                        
+
                         curWayInfo.setType(curType);
-                        
+
                         curWayInfo.setAddress(curAddress);
                         if (curWayInfo.isStreet()) {
                             curAddress.setStreet(curWayName);
@@ -782,7 +782,7 @@ public class OSMLoader {
                         if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
                             state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayInfo);
                         }
-                        
+
                         if (curWayInfo.isStreet()) {
                             startIds.add(curWayIds.get(0));
                             for (int i = 1; i < curWayIds.size() - 1; i++) {
@@ -791,31 +791,31 @@ public class OSMLoader {
                             }
                             endIds.add(curWayIds.get(curWayIds.size()));
                         }
-                        
+
                         inWay = false;
                         inPolyline = false;
                         curWayIds = null;
                         curWayName = null;
                     } else if (inNode && qName.equalsIgnoreCase("node")) {
-                        
+
                         if (curType != 0) {
                             curNodePOIDescription.setCategory(curType);
                             state.getLoadedMapInfo().addPOI(curNodeCoordinates, curNodeId, curNodePOIDescription, curAddress);
                         } else {
                             state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                         }
-                        
+
                         inNode = false;
                     }
                 }
-                
+
                 public void characters(char ch[], int start, int length) throws SAXException {
                 }
-                
+
             };
 
             parser.parse(file, handler);
-            
+
             int countIDs = startIds.size();
             int[] startIDs = new int[countIDs];
             int[] endIDs = new int[countIDs];
@@ -825,14 +825,14 @@ public class OSMLoader {
                 endIDs[i] = endIds.get(i);
                 weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
             }
-            
+
             state.getLoadedGraph().buildGraph(startIDs, endIDs, weights);
-            
-            
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        
+
+
     }
 }
