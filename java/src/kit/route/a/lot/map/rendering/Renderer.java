@@ -5,6 +5,7 @@ import java.util.List;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.RenderCache;
@@ -15,6 +16,8 @@ public class Renderer {
      * A cache storing tiles that were previously drawn.
      */
     private RenderCache cache;
+    
+    protected State state = State.getInstance();
 
     /**
      * Creates a new renderer.
@@ -31,12 +34,12 @@ public class Renderer {
      * @param detail level of detail of the map view
      * @param renderingContext the output rendering context
      */
-    public void render(Context rc, int detail) {
+    public void render(Context context, int detail) {
         // TEMPORARY: create one big tile only, don't cache
-        Tile out = new Tile(rc.getTopLeft(), rc.getBottomRight(), detail,
-                            rc.getWidth(), rc.getHeight());
-        out.prerender();
-        rc.drawImage(0, 0, out.getData());
+        Tile out = new Tile(context.getTopLeft(), context.getBottomRight(), detail,
+                context.getWidth(), context.getHeight());
+        out.prerender(state);
+        context.drawImage(0, 0, out.getData());
         /*
          * prerenderTiles(rc.getTopLeft(), rc.getBottomRight(), detail);
          * ...
@@ -73,7 +76,7 @@ public class Renderer {
      */
     private void prerenderTile(Tile tile) {
         if (!cache.queryCache(tile)) {
-            tile.prerender();
+            tile.prerender(state);
             cache.addToCache(tile);
         }
     }

@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.rendering;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,16 +62,25 @@ public class Tile {
         this(topLeft, bottomRight, detail, 350, 350);
     }
 
-    public void prerender() {
+    public void prerender(State state) {
         reset();
         /*
          * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way (but we can
          * use a other collection, too)
          */
+        // TODO this copying is unnecessary and bad for performance
         List<MapElement> map = new ArrayList<MapElement>();
-        map.addAll(State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight));
+        map.addAll(state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight));
         for (MapElement element : map) {
-            draw(element);
+            if (element instanceof Node) {
+                draw((Node) element);
+            } else if (element instanceof Area) {
+                draw((Area) element);
+            } else if (element instanceof Edge) {
+                draw((Edge) element);
+            } else {
+                draw(element);
+            }
         }
     }
 
@@ -79,8 +89,9 @@ public class Tile {
      */
     protected void reset() {
         data = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        data.getGraphics().setColor(Color.LIGHT_GRAY);
-        data.getGraphics().fillRect(0, 0, this.width, this.height);
+        Graphics2D graphics = data.createGraphics();
+        graphics.setColor(Color.cyan);
+        graphics.fillRect(0, 0, this.width, this.height);
     }
 
     /**
@@ -121,10 +132,11 @@ public class Tile {
      *            the node to be drawn
      */
     protected void draw(Node node) {
-        int size = 3;
+        int size = 5;
+
         Coordinates localCoordinates = geoCoordinatesToLocalCoordinates(node.getPos());
-        data.getGraphics().drawOval((int) localCoordinates.getLatitude(), (int) localCoordinates.getLongitude(), size,
-                size);
+        Graphics2D graphics = data.createGraphics();
+        graphics.fillOval((int) localCoordinates.getLatitude(), (int) localCoordinates.getLongitude(), size, size);
     }
 
     /**
@@ -146,7 +158,7 @@ public class Tile {
             yPoints[i] = (int) nodes.get(i).getPos().getLongitude();
         }
 
-        data.getGraphics().drawPolygon(xPoints, yPoints, nPoints);
+        data.createGraphics().fillPolygon(xPoints, yPoints, nPoints);
     }
 
     /**
@@ -159,7 +171,7 @@ public class Tile {
         Coordinates start = edge.getStart().getPos();
         Coordinates end = edge.getEnd().getPos();
 
-        data.getGraphics().drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
+        data.createGraphics().drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
                 (int) end.getLongitude());
 
         draw(edge.getStart());

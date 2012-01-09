@@ -3,6 +3,7 @@ package kit.route.a.lot.common;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Dimension;
@@ -48,7 +49,7 @@ public class Context extends Component{
      * @param image
      */
     public void drawImage(int x, int y, Image image) {
-		Graphics g = bgImage.getGraphics();
+		Graphics g = bgImage.createGraphics();
 		g.drawImage(image,x,y,null);
 		repaint();
     }
@@ -60,7 +61,7 @@ public class Context extends Component{
     
     
     public void paint(Graphics g){
-	//den Hintergrund zeichnen
+        //den Hintergrund zeichnen
 		g.drawImage(bgImage,0,0,null);
     }
 
