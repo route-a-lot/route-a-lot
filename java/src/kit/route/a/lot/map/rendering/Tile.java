@@ -137,12 +137,12 @@ public class Tile {
         nPoints = nodes.size();
         xPoints = new int[nPoints];
         yPoints = new int[nPoints];
-        
+
         for (int i = 0; i < nPoints; i++) {
             xPoints[i] = (int) nodes.get(i).getPos().getLatitude();
             yPoints[i] = (int) nodes.get(i).getPos().getLongitude();
         }
-        
+
         data.getGraphics().drawPolygon(xPoints, yPoints, nPoints);
     }
 
@@ -153,6 +153,11 @@ public class Tile {
      *            the edge to be drawn
      */
     protected void draw(Edge edge) {
+        Coordinates start = edge.getStart().getPos();
+        Coordinates end = edge.getEnd().getPos();
+
+        data.getGraphics().drawLine((int) start.getLatitude(), (int) start.getLongitude(),
+                (int) end.getLatitude(), (int) end.getLongitude());
     }
 
     /**
@@ -165,7 +170,7 @@ public class Tile {
         // EXTEND: better hash code derivation
         return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
     }
-    
+
     private Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
         Coordinates localCoordinates = new Coordinates();
         localCoordinates.setLatitude((geoCoordinates.getLatitude() - topLeft.getLatitude()) * width
