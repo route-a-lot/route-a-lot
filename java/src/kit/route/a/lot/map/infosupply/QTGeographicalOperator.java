@@ -56,16 +56,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
         newBR.setLatitude(pos.getLatitude() - radius);
         newBR.setLongitude(pos.getLongitude() + radius);
         Collection<QTLeaf> matchingLeafs = zoomlevels[0].getLeafs(newUL, newBR);
-        Point2D.Double selectedPoint = new Point2D.Double(pos.getLon(), pos.getLat());
+        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());
         Edge currentClosest = null;
         double distance = -1;
         for (QTLeaf qtL : matchingLeafs) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
                 if (mapEle instanceof Edge) {
-                    Line2D.Double line = new Line2D.Double(((Edge) mapEle).getStart().getPos().getLon(),
-                                                           ((Edge) mapEle).getStart().getPos().getLat(),
-                                                           ((Edge) mapEle).getEnd().getPos().getLon(),
-                                                           ((Edge) mapEle).getEnd().getPos().getLat());
+                    Line2D.Double line = new Line2D.Double(((Edge) mapEle).getStart().getPos().getLongitude(),
+                                                           ((Edge) mapEle).getStart().getPos().getLatitude(),
+                                                           ((Edge) mapEle).getEnd().getPos().getLongitude(),
+                                                           ((Edge) mapEle).getEnd().getPos().getLatitude());
                     if (distance == -1 
                             || line.ptLineDist(selectedPoint) < distance) {
                         currentClosest = (Edge)mapEle;

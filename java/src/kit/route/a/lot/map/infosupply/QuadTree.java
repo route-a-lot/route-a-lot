@@ -38,10 +38,10 @@ public abstract class QuadTree {
     
     protected boolean isInBounds(Coordinates upLeft,
             Coordinates bottomRight) {
-        Rectangle2D.Float thiss = new Rectangle2D.Float(this.upLeft.getLongitude(), this.bottomRight.getLatitude(),    
+        Rectangle2D.Double thiss = new Rectangle2D.Double(this.upLeft.getLongitude(), this.bottomRight.getLatitude(),    
                 this.bottomRight.getLongitude() - this.upLeft.getLongitude(),
                 this.upLeft.getLatitude() - this.bottomRight.getLatitude());
-        Rectangle2D.Float bounce = new Rectangle2D.Float(upLeft.getLongitude(), bottomRight.getLatitude(),    
+        Rectangle2D.Double bounce = new Rectangle2D.Double(upLeft.getLongitude(), bottomRight.getLatitude(),    
                 bottomRight.getLongitude() - upLeft.getLongitude(),
                 upLeft.getLatitude() - bottomRight.getLatitude());
         return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
