@@ -64,8 +64,8 @@ public class Tile {
     public void prerender() {
         reset();
         /*
-         * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way (but we can use a other
-         * collection, too)
+         * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way (but we can
+         * use a other collection, too)
          */
         List<MapElement> map = new ArrayList<MapElement>();
         map.addAll(State.getInstance().loadedMapInfo.getBaseLayer(detail, topLeft, bottomRight));
@@ -84,7 +84,8 @@ public class Tile {
     }
 
     /**
-     * Returns the rendered tile image. If nothing was rendered so far, returns an empty (background color filled) tile image.
+     * Returns the rendered tile image. If nothing was rendered so far, returns an empty (background color filled) tile
+     * image.
      * 
      * @return the tile image
      */
@@ -120,8 +121,10 @@ public class Tile {
      *            the node to be drawn
      */
     protected void draw(Node node) {
+        int size = 3;
         Coordinates localCoordinates = geoCoordinatesToLocalCoordinates(node.getPos());
-        data.getGraphics().drawOval((int) localCoordinates.getLatitude(), (int) localCoordinates.getLongitude(), 3, 3);
+        data.getGraphics().drawOval((int) localCoordinates.getLatitude(), (int) localCoordinates.getLongitude(), size,
+                size);
     }
 
     /**
@@ -156,12 +159,16 @@ public class Tile {
         Coordinates start = edge.getStart().getPos();
         Coordinates end = edge.getEnd().getPos();
 
-        data.getGraphics().drawLine((int) start.getLatitude(), (int) start.getLongitude(),
-                (int) end.getLatitude(), (int) end.getLongitude());
+        data.getGraphics().drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
+                (int) end.getLongitude());
+
+        draw(edge.getStart());
+        draw(edge.getEnd());
     }
 
     /**
-     * Derives a hash code using the tiles defining attributes' values, such as the origin coordinates and the level of detail.
+     * Derives a hash code using the tiles defining attributes' values, such as the origin coordinates and the level of
+     * detail.
      * 
      * @return the hash code
      */
