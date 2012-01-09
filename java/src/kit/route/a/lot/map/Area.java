@@ -69,7 +69,7 @@ public class Area extends MapElement {
             i++;
         }
         Polygon area = new Polygon(x, y, nodes.size());
-        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude()  * 10000000 - 1, bottomRight.getLatitude() * 10000000 - 1, 
+        Rectangle2D.Double box = new Rectangle2D.Double(topLeft.getLongitude()  * 10000000 - 1, bottomRight.getLatitude() * 10000000 - 1, 
                 (bottomRight.getLongitude() - topLeft.getLongitude()) * 10000000 + 1,
                 (topLeft.getLatitude() - bottomRight.getLatitude())  * 10000000 + 1);
         boolean inside = false;

@@ -51,9 +51,9 @@ public class Edge extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        Line2D.Float edge = new Line2D.Float(start.getPos().getLongitude(), start.getPos().getLatitude(),
+        Line2D.Double edge = new Line2D.Double(start.getPos().getLongitude(), start.getPos().getLatitude(),
                                             end.getPos().getLongitude(), end.getPos().getLatitude());
-        Rectangle2D.Float box = new Rectangle2D.Float(topLeft.getLongitude(), bottomRight.getLatitude(),    //coord.sys. begins in upper left corner 
+        Rectangle2D.Double box = new Rectangle2D.Double(topLeft.getLongitude(), bottomRight.getLatitude(),    //coord.sys. begins in upper left corner 
                                                 bottomRight.getLongitude() - topLeft.getLongitude(),
                                                 topLeft.getLatitude() - bottomRight.getLatitude());
         return box.intersectsLine(edge) || start.isInBounds(topLeft, bottomRight) || end.isInBounds(topLeft, bottomRight);

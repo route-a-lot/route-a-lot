@@ -11,14 +11,6 @@ public class Coordinates {
         this.latitude = lat;
     }
     
-    public double getLon() {
-        return this.longitude;
-    }
-    
-    public double getLat() {
-        return this.latitude;
-    }
-    
     public Coordinates() { }
     
     public Coordinates(float lat, float lon) {
@@ -26,17 +18,16 @@ public class Coordinates {
         longitude = lon;
     }
     
-    //TODO why was this still here?
-    public float getLatitude() {
-        return (float)latitude;
+    public double getLatitude() {
+        return latitude;
     }
     
     public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
     
-    public float getLongitude() {
-        return (float)longitude;
+    public double getLongitude() {
+        return longitude;
     }
     
     public void setLongitude(float longitude) {
