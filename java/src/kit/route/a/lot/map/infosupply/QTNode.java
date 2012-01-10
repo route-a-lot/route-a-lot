@@ -62,7 +62,9 @@ public class QTNode extends QuadTree {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addToOverlay(element)) {  //full leaf
                     Collection<MapElement> temp = ((QTLeaf)children[i]).getOverlay();
-                    children[i] = new QTNode(getUpLeft(), getBottomRight());
+                    Coordinates childUL = children[i].getUpLeft();
+                    Coordinates childBR = children[i].getBottomRight();
+                    children[i] = new QTNode(childUL, childBR);
                     for(MapElement ele: temp) {
                         children[i].addToOverlay(ele);
                     }
@@ -79,7 +81,9 @@ public class QTNode extends QuadTree {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addToBaseLayer(element)) {  //full leaf
                     Collection<MapElement> temp = ((QTLeaf)children[i]).getBaseLayer();
-                    children[i] = new QTNode(getUpLeft(), getBottomRight());
+                    Coordinates childUL = children[i].getUpLeft();
+                    Coordinates childBR = children[i].getBottomRight();
+                    children[i] = new QTNode(childUL, childBR);
                     for(MapElement ele: temp) {
                         children[i].addToBaseLayer(ele);
                     }

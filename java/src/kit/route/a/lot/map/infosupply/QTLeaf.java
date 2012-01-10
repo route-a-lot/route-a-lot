@@ -12,13 +12,13 @@ public class QTLeaf extends QuadTree {
     private Collection<MapElement> overlay;
     private Collection<MapElement> baseLayer;
     
-    private int limit = 100;     //elements per Leaf -> performance-tests
+    private int limit = 3;     //elements per Leaf -> performance-tests
         
     
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
-        overlay = new HashSet<MapElement>();
-        baseLayer = new HashSet<MapElement>();
+        overlay = new ArrayList<MapElement>();
+        baseLayer = new ArrayList<MapElement>();
     }
 
     /**

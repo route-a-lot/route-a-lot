@@ -88,7 +88,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         lastElementsOfSelectedMEs = zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);
         for (QTLeaf qtL : lastElementsOfSelectedMEs) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
-                if(mapEle.isInBounds(upLeft, bottomRight)) {
+                if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
                     mapElements.add(mapEle);
                 }
             }
@@ -102,7 +102,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
         for (QTLeaf qtL : zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight)) {
             for (MapElement mapEle : qtL.getOverlay()) {
-                if(mapEle.isInBounds(upLeft, bottomRight)) {
+                if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
                     mapElements.add(mapEle);
                 }
             }
@@ -155,8 +155,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
         for (QTLeaf qtL : lastElementsOfSelectedMEs) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
-                if(mapEle.isInBounds(upLeft, bottomRight)) {
-                    mapElements.add(mapEle);
+                if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
+                    mapElements.add(mapEle); 
                 }
             }
         }
