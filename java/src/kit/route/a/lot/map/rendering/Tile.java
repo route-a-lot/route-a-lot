@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -136,7 +137,7 @@ public class Tile {
 
         Coordinates localCoordinates = geoCoordinatesToLocalCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();
-        graphics.fillOval((int) localCoordinates.getLatitude(), (int) localCoordinates.getLongitude(), size, size);
+        graphics.fillOval((int) localCoordinates.getLatitude() - size/2, (int) localCoordinates.getLongitude() - size/2, size, size);
     }
 
     /**
@@ -154,8 +155,9 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            xPoints[i] = (int) nodes.get(i).getPos().getLatitude();
-            yPoints[i] = (int) nodes.get(i).getPos().getLongitude();
+            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes.get(i).getPos());
+            xPoints[i] = (int) curCoordinates.getLatitude();
+            yPoints[i] = (int) curCoordinates.getLongitude();
         }
 
         data.createGraphics().fillPolygon(xPoints, yPoints, nPoints);
@@ -168,10 +170,13 @@ public class Tile {
      *            the edge to be drawn
      */
     protected void draw(Edge edge) {
-        Coordinates start = edge.getStart().getPos();
-        Coordinates end = edge.getEnd().getPos();
+        Coordinates start = geoCoordinatesToLocalCoordinates(edge.getStart().getPos());
+        Coordinates end = geoCoordinatesToLocalCoordinates(edge.getEnd().getPos());
 
-        data.createGraphics().drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
+        Graphics2D graphics = data.createGraphics();
+        graphics.setStroke(new BasicStroke(3));
+        graphics.setColor(Color.red);
+        graphics.drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
                 (int) end.getLongitude());
 
         draw(edge.getStart());

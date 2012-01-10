@@ -38,7 +38,7 @@ public class Area extends MapElement {
         return nodes;
     }
 
-    public WayInfo getwayinfo() {
+    public WayInfo getWayInfo() {
         return wayInfo;
     }
 
