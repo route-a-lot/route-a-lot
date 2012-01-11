@@ -1,15 +1,29 @@
 package kit.route.a.lot.gui;
 
 import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.controller.RALListener;
 
 public class GUIHandler {
+
+    private GUI gui;
+    
+    public GUIHandler(Coordinates topLeft, Coordinates bottomRight) {
+        createGUI(topLeft, bottomRight);
+    }
 
     /**
      * Operation createGUI
      * 
      * @return
      */
-    public void createGUI() {
+    public void createGUI(Coordinates topLeft, Coordinates bottomRight) {
+        gui = new GUI(topLeft, bottomRight);
+        gui.setBounds(0, 25, 500, 500);
+        System.out.println(gui.getWidth());
+        System.out.println(gui.getHeight());
+        gui.setVisible(true);
+        gui.addContents();
     }
 
     /**
@@ -146,7 +160,8 @@ public class GUIHandler {
      * 
      * @return
      */
-    public void addListenerAddNavNode() {
+    public void addListenerAddNavNode(RALListener targetSelectedListener) {
+        gui.addTargetSelectedListener(targetSelectedListener);
     }
 
     /**

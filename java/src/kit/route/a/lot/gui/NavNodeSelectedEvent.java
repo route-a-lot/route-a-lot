@@ -21,7 +21,7 @@ public class NavNodeSelectedEvent extends java.util.EventObject{
      */
     private Context context;
 
-    public NavNodeSelectedEvent(Object source, Coordinates coor, int zoomLevelChange, int position, Context context) {
+    public NavNodeSelectedEvent(Object source, Coordinates coor, int position, Context context) {
         super(source);
         this.coordiantes = coor;
         this.position = position;
