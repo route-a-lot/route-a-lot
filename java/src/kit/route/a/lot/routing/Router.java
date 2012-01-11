@@ -55,28 +55,31 @@ public class Router {
         heap.add(new Route(a.getFrom(), (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio())));
         heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
         // start the calculation.
+        int currentNode;
+        
         while (heap.peek() != null) {
             currentPath = heap.poll();
-            if (seen[currentPath.getNode()]) {
+            currentNode = currentPath.getNode();
+            if (seen[currentNode]) {
                 // We already know a (shorter) path to that node, so ignore it.
                 continue;
             }
             // At this point currentPath ALWAYS contains the shortest path to currentPath.getNode() (with regards to Arc-Flags).
-            seen[currentPath.getNode()] = true;
+            seen[currentNode] = true;
             // the target requires a special node, since both paths to it have to be put on the heap.
             // (everything else would be a pain in the ass)
-            if (currentPath.getNode() == b.getTo()) {
+            if (currentNode == b.getTo()) {
                 // We can't return now, as there might be a shorter way via b.getFrom().
                 heap.add(new Route(-1, (int) (1/b.getRatio()) * WeightCalculator.getInstance().calcWeight(b), currentPath));
-            } else if (currentPath.getNode() == b.getFrom()) {
+            } else if (currentNode == b.getFrom()) {
                 heap.add(new Route(-1, (int) b.getRatio() * WeightCalculator.getInstance().calcWeight(b), currentPath));
-            } else if (currentPath.getNode() == -1) {
+            } else if (currentNode == -1) {
                 // This is the shortest path.
                 return currentPath.toList();
             }
-            for (Integer to: graph.getRelevantNeighbors(currentPath.getNode(), new byte[] {graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo())})) {
+            for (Integer to: graph.getRelevantNeighbors(currentNode, new byte[] {graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo())})) {
                 // Here we add the new paths.
-                heap.add(new Route(to, graph.getWeight(currentPath.getNode(), to), currentPath));
+                heap.add(new Route(to, graph.getWeight(currentNode, to), currentPath));
             }
         }
         // No path was found, maybe raise an error?

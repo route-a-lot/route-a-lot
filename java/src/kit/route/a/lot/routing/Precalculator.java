@@ -31,25 +31,30 @@ public class Precalculator {
     }
 
     private void createFlags(int node) {
-        // On further notes, see Router.fromAToB()
+        // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
         Route currentPath = null;
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator());
         Arrays.fill(seen, false);
         heap.add(new Route(node, 0));
         byte area = graph.getAreaID(node);
+        int currentNode;
+        
         while (heap.peek() != null) {
             currentPath = heap.poll();
-            if (seen[currentPath.getNode()]) {
+            currentNode = currentPath.getNode();
+            if (seen[currentNode]) {
                 // We already know a (shorter) path from that node, so ignore it.
                 continue;
             }
-            seen[currentPath.getNode()] = true;
-            graph.setArcFlag(currentPath.getRoute().getNode(), currentPath.getNode(), area);
-            for (Integer to: inverted.getAllNeighbors(currentPath.getNode())) {
-                heap.add(new Route(to, graph.getWeight(currentPath.getNode(), to), currentPath));
+            seen[currentNode] = true;
+            // At this point, we have the shortest way for sure.
+            graph.setArcFlag(currentPath.getRoute().getNode(), currentNode, area);
+            for (Integer to: inverted.getAllNeighbors(currentNode)) {
+                heap.add(new Route(to, graph.getWeight(currentNode, to), currentPath));
             }
         }
+        // If there exist nodes not yet visited at this point, they can't reach the node at all.
     }
 
     private void doAreas() {
