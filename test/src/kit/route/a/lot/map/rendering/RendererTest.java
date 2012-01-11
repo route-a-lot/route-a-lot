@@ -1,9 +1,11 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.ContextSW;
@@ -44,7 +46,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphics());
+        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -77,7 +79,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphics());
+        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -105,7 +107,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphics());
+        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -116,7 +118,8 @@ public class RendererTest {
     public class TestGUI extends JFrame {
 
         private static final long serialVersionUID = 1L;
-
+        
+        Component rendererdContent;
         RendererTest rendererTest;
 
         public TestGUI(RendererTest rendererTest) {
@@ -124,9 +127,18 @@ public class RendererTest {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             this.setSize(250, 250);
             this.setLocation(new Point(500, 500));
+            
+            rendererdContent = this.add(new JPanel());
+            rendererdContent.setVisible(true);
+            rendererdContent.setSize(250, 250);
+            
             this.rendererTest = rendererTest;
         }
-
+        
+        public Graphics getGraphicsForRenderedContent() {
+            return rendererdContent.getGraphics();
+        }
+        
         public void paint(Graphics g) {
             super.paint(g);
             rendererTest.repaint();
