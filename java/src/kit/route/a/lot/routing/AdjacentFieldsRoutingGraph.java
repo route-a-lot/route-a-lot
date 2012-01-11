@@ -38,6 +38,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
+        // ToDo: revise
         assert startID.length == endID.length;
         assert endID.length == weight.length;
         int max = 0;
@@ -119,6 +120,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
+        // ToDo: obsolete?
         return getRelevantNeighbors(node, new byte[] {destArea});
     }
     
@@ -128,9 +130,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
         long flags = 0;
         for (byte area: destAreas) {
+            // create bitmask
             flags |= 1 << area;
         }
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
+            // filter edges
             if ((arcFlags[i] | flags) != 0) {
                 relevantEdges.add(edges[i]);
             }
@@ -140,9 +144,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     @Override
     public Collection<Integer> getAllNeighbors(int node) {
+        // required for Precalculator.
         assert node <= edgesPos.length;
         LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
+            // don't filter at all
             relevantEdges.add(edges[i]);
         }
         return relevantEdges;
@@ -162,6 +168,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public long getArcFlags(int startID, int endID) {
+        // ToDo: obsolete?
         assert startID <= edgesPos.length;
         assert endID <= edgesPos.length;
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
@@ -174,6 +181,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public void setArcFlags(int startID, int endID, long flags) {
+        // ToDo: obsolete?
         assert startID <= edgesPos.length;
         assert endID <= edgesPos.length;
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
@@ -184,6 +192,17 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
     }
+    
+    public void setArcFlag(int startID, int endID, byte area) {
+        // Note: doesn't do anything if the edge is not found, maybe we should raise an error?
+        assert startID <= edgesPos.length;
+        assert endID <= edgesPos.length;
+        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
+            if (endID == edges[i]) {
+                arcFlags[i] |= 1 << area;
+            }
+        }    
+    }
 
     public int getWeight(int from, int to) {
         for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
@@ -191,6 +210,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 return weights[i];
             }
         }
+        // Maybe raise an error instead?
         return 0;
     }
     

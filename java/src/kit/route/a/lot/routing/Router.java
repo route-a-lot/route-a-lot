@@ -40,6 +40,7 @@ public class Router {
     }
 
     private static List<Integer> fromAToB(Selection a, Selection b) {
+        // ToDo: rename?
         Route bestPath = null;
         RoutingGraph graph = State.getInstance().getRoutingGraph();
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator());
@@ -47,13 +48,13 @@ public class Router {
         if (a == null || b == null) {
             return (List<Integer>) null;
         }
-        // This helps us to reduce redundancy for a low cost.
+        // This helps us to reduce redundancy at a low cost.
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false);   // Is this necessary?
         // Initialize heap
         heap.add(new Route(a.getFrom(), (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio())));
         heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
-        // start the lame calculating.
+        // start the calculation.
         while (heap.peek() != null) {
             currentPath = heap.poll();
             if (seen[currentPath.getNode()]) {
@@ -74,7 +75,7 @@ public class Router {
                 return currentPath.toList();
             }
             for (Integer to: graph.getRelevantNeighbors(currentPath.getNode(), new byte[] {graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo())})) {
-                // Here we add all the new paths.
+                // Here we add the new paths.
                 heap.add(new Route(to, graph.getWeight(currentPath.getNode(), to), currentPath));
             }
         }
@@ -84,6 +85,7 @@ public class Router {
 }
 
 class RouteComparator<T> implements Comparator<T> {
+    // Comperator used in Heap
     @Override
     public int compare(T a, T b) {
         return ((Route) a).length() - ((Route) b).length();

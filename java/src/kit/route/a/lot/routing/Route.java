@@ -27,6 +27,14 @@ public class Route {
     public int getNode() {
         return to;
     }
+    
+    public Route getRoute() {
+        if (from == null) {
+            // Quick 'n' dirty
+            return this;
+        }
+        return from;
+    }
 
     public LinkedList<Integer> toList() {
         LinkedList<Integer> result = new LinkedList<Integer>();

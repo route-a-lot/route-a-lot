@@ -104,4 +104,6 @@ public interface RoutingGraph {
     public Collection<Integer> getRelevantNeighbors(int node, byte[] bs);
     public Collection<Integer> getAllNeighbors(int node);
 
+    public void setArcFlag(int node, int node2, byte area);
+
 }
