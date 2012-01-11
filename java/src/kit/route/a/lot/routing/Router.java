@@ -86,11 +86,3 @@ public class Router {
         return (List<Integer>) null;
     }
 }
-
-class RouteComparator<T> implements Comparator<T> {
-    // Comperator used in Heap
-    @Override
-    public int compare(T a, T b) {
-        return ((Route) a).length() - ((Route) b).length();
-    }
-}
