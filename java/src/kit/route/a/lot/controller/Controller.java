@@ -19,7 +19,14 @@ public class Controller {
      * 
      */
     private GUIHandler guiHandler;
-
+    
+    
+    private Controller() {
+        renderer = new Renderer();
+    }
+    
+    
+    
     /**
      * Operation setView
      * 
@@ -71,7 +78,7 @@ public class Controller {
         state.getNavigationNodes().add(position,
                 state.getLoadedMapInfo().select(pos));
         calculateRoute();
-        render(context);
+        render(context, -1);
     }
 
     /**
@@ -231,8 +238,11 @@ public class Controller {
      * 
      * @return
      */
-    public void render(Context context) {
-        renderer.render(context, State.getInstance().getDetailLevel()); // TODO is rendering calculating coordinates?
+    public void render(Context context, int zoomLevel) {
+        if(zoomLevel != -1) {
+            State.getInstance().setDetailLevel(zoomLevel);
+        }
+        renderer.render(context, State.getInstance().getDetailLevel()); 
         setView();
     }
 
@@ -257,5 +267,6 @@ public class Controller {
      */
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
+        
     }
 }

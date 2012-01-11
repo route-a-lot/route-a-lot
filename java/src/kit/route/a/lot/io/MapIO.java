@@ -34,8 +34,8 @@ public class MapIO {
             throw new IllegalArgumentException();
         }
         State state = State.getInstance();
-        if ((state.loadedMapInfo == null) || (state.loadedGraph == null)
-                || (state.loadedMapName == null)) {
+        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)
+                || (state.getLoadedMapName() == null)) {
             throw new IllegalStateException("No map initialized!");
         }
         
@@ -51,9 +51,9 @@ public class MapIO {
         if (!stream.readUTF().equals("0.5")) {
             throw new DataFormatException("Wrong format version: " + file.getName());
         }
-        state.loadedMapName = stream.readUTF();
-        state.loadedMapInfo.loadFromStream(stream);
-        state.loadedGraph.loadFromStream(stream);
+        state.setLoadedMapName(stream.readUTF());
+        state.getLoadedMapInfo().loadFromStream(stream);
+        state.getLoadedGraph().loadFromStream(stream);
         stream.close();
     }
 
@@ -74,8 +74,8 @@ public class MapIO {
             throw new IllegalArgumentException();
         }
         State state = State.getInstance();
-        if ((state.loadedMapInfo == null) || (state.loadedGraph == null)
-                || (state.loadedMapName == null)) {
+        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)
+                || (state.getLoadedMapName() == null)) {
             throw new IllegalStateException("No map loaded!");
         }
         
@@ -86,9 +86,9 @@ public class MapIO {
         stream.writeBytes("SRAL");  // magic number
         stream.writeUTF("0.5");     // version number
         // TODO: maybe add date
-        stream.writeUTF(State.getInstance().loadedMapName);
-        state.loadedMapInfo.saveToStream(stream);
-        state.loadedGraph.saveToStream(stream); 
+        stream.writeUTF(State.getInstance().getLoadedMapName());
+        state.getLoadedMapInfo().saveToStream(stream);
+        state.getLoadedGraph().saveToStream(stream); 
         stream.close();      
     }
 }

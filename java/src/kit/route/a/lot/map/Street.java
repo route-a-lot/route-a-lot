@@ -58,8 +58,13 @@ public class Street extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) { //not necessary, cause we draw edges
-        // TODO Auto-generated method stub
-        return false;       
+        boolean inBounds = false;
+        int i = 0;
+        while(inBounds == false && i < edges.size()) {
+            inBounds = edges.get(i).isInBounds(topLeft, bottomRight);
+            i++;
+        }
+        return inBounds;
     }
 
     @Override

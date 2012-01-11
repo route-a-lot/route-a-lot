@@ -37,7 +37,7 @@ public class MapInfoTest {
     }
     
     @Test
-    public void MapInfoTest() {
+    public void test() {
         info.addNode(new Coordinates(2f, 2f), 0, new Address());
         info.addNode(new Coordinates(10.0f, 10.0f), 1, new Address());
         info.addNode(new Coordinates(4f, 2.5f), 2, new Address());
@@ -88,7 +88,7 @@ public class MapInfoTest {
             System.err.println("select funktioniert noch nicht :(");
         }
         
-        assertEquals(10, a.size());
+        assertEquals(7, a.size());
     }
 
 }

@@ -12,63 +12,64 @@ import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
 
+    private static State singleton;
     /** Attributes */
     /**
      * 
      */
-    public String loadedMapName;
+    private String loadedMapName;
     /**
      * 
      */
-    public MapInfo loadedMapInfo;
+    private MapInfo loadedMapInfo;
     /**
      * 
      */
-    public RoutingGraph loadedGraph;
+    private RoutingGraph loadedGraph;
     /**
      * 
      */
-    public IHeightmap loadedHeightmap;
+    private IHeightmap loadedHeightmap;
     /**
      * 
      */
-    public List<Selection> navigationNodes;
+    private List<Selection> navigationNodes;
     /**
      * 
      */
-    public List<Integer> currentRoute;
+    private List<Integer> currentRoute;
     /**
      * 
      */
-    public Coordinates areaCoord;
+    private Coordinates areaCoord;
     /**
      * 
      */
-    public int detailLevel;
+    private int detailLevel;
     /**
      * 
      */
-    public int clickRadius;
+    private int clickRadius;
     /**
      * 
      */
-    public RouteDescription routeDescription;
+    private RouteDescription routeDescription;
     /**
      * 
      */
-    public int speed;
+    private int speed;
     /**
      * 
      */
-    public int duration;
+    private int duration;
     /**
      * 
      */
-    public static int heightMalus;
+    private int heightMalus;
     /**
      * 
      */
-    public int heighwayMalus;
+    private int heighwayMalus;
 
     /**
      * Operation getInstance
@@ -76,7 +77,10 @@ public class State {
      * @return State
      */
     public static State getInstance() {
-        return null;
+        if(singleton == null) {
+            singleton = new State();
+        }
+        return singleton;
     }
 
     
@@ -200,7 +204,7 @@ public class State {
     }
 
     
-    public static int getHeightMalus() {
+    public int getHeightMalus() {
         return heightMalus;
     }
 
