@@ -79,7 +79,7 @@ public class MapInfo {
      */
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
 
-        if (wayInfo.isStreet()) { // TODO define types
+        if (wayInfo.isStreet()) { 
             Street street = new Street(wayInfo.getType(), name, wayInfo);
             addEdgesToStreet(street, ids);
             elementDB.addMapElement(street);

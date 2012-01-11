@@ -32,7 +32,10 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public void addNode(Node node) {
+    public void addNode(Node node) throws IllegalArgumentException {
+        if (node.getID() > nodes.size()) {
+            throw new IllegalArgumentException("Previous numbers weren't insert, yet");
+        }
         nodes.add(node.getID(), node);
     }
 
@@ -42,7 +45,7 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public void addMapElement(MapElement element) {
+    public void addMapElement(MapElement element) throws IllegalArgumentException {
         mapElements.add(element);
         element.setID(mapEleID);
         mapEleID++;
@@ -50,7 +53,10 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public MapElement getMapElement(int id) {
+    public MapElement getMapElement(int id) throws IllegalArgumentException {
+        if (id >= mapElements.size()) { 
+            throw new IllegalArgumentException("There's no mapElement with this number");
+        }
         return mapElements.get(id);
     }
     

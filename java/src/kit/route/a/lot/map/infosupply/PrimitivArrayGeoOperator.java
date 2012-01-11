@@ -51,7 +51,7 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
                 }
             }
         }
-        return new Selection(currentClosest.getStart().getID(), currentClosest.getEnd().getID(), 0.0f);    //TODO lot
+        return new Selection(currentClosest.getStart().getID(), currentClosest.getEnd().getID(), 0.0f, pos);    //TODO lot
     }
 
     @Override

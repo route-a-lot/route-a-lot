@@ -49,14 +49,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     private Selection select(Coordinates pos, float radius) {
         Selection selection = null;
-        Coordinates newUL = new Coordinates();
+        Coordinates newUL = new Coordinates();  //Bounds for area to search in
         Coordinates newBR = new Coordinates();
         newUL.setLatitude(pos.getLatitude() + radius);
         newUL.setLongitude(pos.getLongitude() - radius);
         newBR.setLatitude(pos.getLatitude() - radius);
         newBR.setLongitude(pos.getLongitude() + radius);
-        Collection<QTLeaf> matchingLeafs = zoomlevels[0].getLeafs(newUL, newBR);
-        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());
+        Collection<QTLeaf> matchingLeafs = zoomlevels[0].getLeafs(newUL, newBR);  //the mapElements in the new area
+        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());  
         Edge currentClosest = null;
         double distance = -1;
         for (QTLeaf qtL : matchingLeafs) {
@@ -67,7 +67,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
                                                            ((Edge) mapEle).getEnd().getPos().getLongitude(),
                                                            ((Edge) mapEle).getEnd().getPos().getLatitude());
                     if (distance == -1 
-                            || line.ptLineDist(selectedPoint) < distance) {
+                            || line.ptLineDist(selectedPoint) < distance) {  //we found an edge which is more closer to the point
                         currentClosest = (Edge)mapEle;
                         distance = line.ptLineDist(selectedPoint);
                     }
@@ -75,9 +75,13 @@ public class QTGeographicalOperator implements GeographicalOperator {
             }
         }
         if (currentClosest != null) {
-            selection = new Selection(currentClosest.getStart().getID(), currentClosest.getEnd().getID(), currentClosest.getRatio(pos));
+            selection = getSelectionfromPointAndEdge(currentClosest, pos);
         }
         return selection;
+    }
+    
+    private Selection getSelectionfromPointAndEdge(Edge edge, Coordinates point) {
+        return new Selection(edge.getStart().getID(), edge.getEnd().getID(), 0.0f, point); //TODO lot
     }
         
         
