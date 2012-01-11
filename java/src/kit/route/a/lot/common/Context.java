@@ -2,30 +2,19 @@ package kit.route.a.lot.common;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import java.awt.Component;
-// TODO: Derive two subclasses from Context, one for a OpenGL-Context (ContextHW), another one for a software context (ContextSW).
-public class Context extends Component{
 
-    private int width;
-    private int height;
+public abstract class Context {
+
+    private int width; // in pixels
+    private int height; // in pixels
     private Coordinates topLeft;
     private Coordinates bottomRight;
-    private BufferedImage bgImage;
-    private Color bgColor;
 
     public Context(int width, int height, Coordinates topLeft, Coordinates bottomRight) {
-        this.bgImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
         this.width = width;
         this.height = height;
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
-	this.bgColor = Color.WHITE;
-
     }
     
     /**
@@ -33,14 +22,8 @@ public class Context extends Component{
      * 
      * @param color
      */
-    public void fillBackground(Color color) {
-		this.bgColor = color;
-		Graphics gImage = bgImage.getGraphics();
-                gImage.setColor(bgColor);
-                gImage.fillRect(0, 0, bgImage.getWidth(), bgImage.getHeight());
-		repaint();
-    }
-
+    public abstract void fillBackground(Color color);
+    
     /**
      * Operation drawImage
      * 
@@ -48,37 +31,22 @@ public class Context extends Component{
      * @param y
      * @param image
      */
-    public void drawImage(int x, int y, Image image) {
-		Graphics g = bgImage.createGraphics();
-		g.drawImage(image,x,y,null);
-		repaint();
-    }
-
-
-    public Dimension getPreferredSize(){
-	return new Dimension(bgImage.getWidth(), bgImage.getHeight());
-    }
-    
-    
-    public void paint(Graphics g){
-        //den Hintergrund zeichnen
-		g.drawImage(bgImage,0,0,null);
-    }
+    public abstract void drawImage(Coordinates position, Image image);
 
     public int getWidth() {
-        return width;
+        return this.width;
     }
     
     public int getHeight() {
-        return height;
+        return this.height;
     }
     
     public Coordinates getTopLeft() {
-        return topLeft;
+        return this.topLeft;
     }
     
     public Coordinates getBottomRight() {
-        return bottomRight;
+        return this.bottomRight;
     }
     
 }
