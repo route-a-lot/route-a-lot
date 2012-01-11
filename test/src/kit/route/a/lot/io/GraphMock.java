@@ -91,5 +91,11 @@ public class GraphMock implements RoutingGraph {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public void setArcFlag(int node, int node2, byte area) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }
