@@ -1,7 +1,8 @@
 package kit.route.a.lot.routing;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 
 public interface RoutingGraph {
@@ -22,24 +23,19 @@ public interface RoutingGraph {
     public void buildGraph(int[] startID, int[] endID, int[] weight);
 
     /**
-     * Operation loadFromStream
+     * Loads the underlying routing graph from the given stream.
+     * Any old graph will be deleted doing so.
      * 
-     * @param stream
-     *            -
-     * @return
-     * @return
+     * @param stream the source stream
      */
-    public void loadFromStream(InputStream stream);
+    public void loadFromStream(DataInputStream stream) throws IOException;
 
     /**
-     * Operation saveToStream
+     * Saves the underlying routing graph to the given stream.
      * 
-     * @param stream
-     *            -
-     * @return
-     * @return
+     * @param stream the destination stream
      */
-    public void saveToStream(OutputStream stream);
+    public void saveToStream(DataOutputStream stream) throws IOException;
 
     /**
      * Operation getRelevantNeighbors

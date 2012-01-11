@@ -8,7 +8,7 @@ import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Component;
-
+// TODO: Derive two subclasses from Context, one for a OpenGL-Context (ContextHW), another one for a software context (ContextSW).
 public class Context extends Component{
 
     private int width;

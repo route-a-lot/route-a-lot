@@ -1,13 +1,13 @@
 package kit.route.a.lot.routing;
 
-import java.io.InputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.Math;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Arrays;
-import java.util.LinkedList;
 
 import kit.route.a.lot.common.IntTuple;
 
@@ -77,15 +77,44 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
 
     @Override
-    public void loadFromStream(InputStream stream) {
-        // TODO Auto-generated method stub
-
+    public void loadFromStream(DataInputStream stream) throws IOException {
+        if (stream == null) {
+            throw new IllegalArgumentException();
+        }
+        int nodeCount = stream.readInt();
+        edgesPos = new int[nodeCount];
+        areaID = new byte[nodeCount];
+        for (int i = 0; i < nodeCount; i++) {
+            edgesPos[i] = stream.readInt();
+            areaID[i] = stream.readByte();
+        } 
+        int edgeCount = stream.readInt();
+        edges = new int[edgeCount];
+        weights = new int[edgeCount];
+        arcFlags = new long[edgeCount];
+        for (int i = 0; i < edgeCount; i++) {
+            edges[i] = stream.readInt();
+            weights[i] = stream.readInt();
+            arcFlags[i] = stream.readLong();
+        }
     }
 
     @Override
-    public void saveToStream(OutputStream stream) {
-        // TODO Auto-generated method stub
-
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        if (stream == null) {
+            throw new IllegalArgumentException();
+        }
+        stream.writeInt(edgesPos.length);
+        for (int i = 0; i < edgesPos.length; i++) {
+            stream.writeInt(edgesPos[i]);
+            stream.writeByte(areaID[i]);
+        }
+        stream.writeInt(edges.length);
+        for (int i = 0; i < edges.length; i++) {
+            stream.writeInt(edges[i]);
+            stream.writeInt(weights[i]);
+            stream.writeLong(arcFlags[i]);
+        }
     }
 
     @Override
