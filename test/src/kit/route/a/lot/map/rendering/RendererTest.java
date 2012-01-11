@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.Node;
@@ -53,11 +54,13 @@ public class RendererTest {
 
         renderer.state = state;
                 
+        WayInfo wayInfo = new WayInfo();
+        wayInfo.setBuilding(true);
         Node node1 = new Node(0, new Coordinates(12.032, 12.0333));
         Node node2 = new Node(1, new Coordinates(12.1728, 12.16663));
         Node node3 = new Node(2, new Coordinates(12.1234, 12.1458));
         Node node4 = new Node(3, new Coordinates(12.0788, 12.1234));
-        Area area = new Area(0, "", null);
+        Area area = new Area(0, "", wayInfo);
         area.addNode(node1);
         area.addNode(node2);
         area.addNode(node3);

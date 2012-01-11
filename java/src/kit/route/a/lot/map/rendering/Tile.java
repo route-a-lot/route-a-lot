@@ -3,11 +3,14 @@ package kit.route.a.lot.map.rendering;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.OSMType;
+import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Edge;
@@ -159,8 +162,29 @@ public class Tile {
             xPoints[i] = (int) curCoordinates.getLatitude();
             yPoints[i] = (int) curCoordinates.getLongitude();
         }
+        
+        Graphics2D graphics = data.createGraphics();
+        
+        WayInfo wayInfo = area.getWayInfo();
+        
+        // TODO would be nice not to have that hardcoded here
+        
+        if (wayInfo.isBuilding()) {
+            graphics.setColor(Color.GRAY);
+        } else if (wayInfo.isArea()) {
+            switch (wayInfo.getType()) {
+                case OSMType.NATURAL_WOOD:
+                    graphics.setColor(Color.GREEN);
+            }
+        }
+        
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        data.createGraphics().fillPolygon(xPoints, yPoints, nPoints);
+        graphics.fillPolygon(xPoints, yPoints, nPoints);
+        
+        graphics.setColor(Color.BLACK);
+        graphics.drawPolygon(xPoints, yPoints, nPoints);
     }
 
     /**
