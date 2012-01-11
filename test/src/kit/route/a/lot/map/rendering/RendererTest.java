@@ -19,7 +19,7 @@ import org.junit.Test;
 public class RendererTest {
 
     public static void main(String[] args) {
-        new RendererTest().testDrawAreaAndNodes();
+        new RendererTest().testDrawStreet();
     }
     
     public void testDrawEdgeAndNodes() {
@@ -79,6 +79,36 @@ public class RendererTest {
         renderer.render(context, 0);
     }
     
+    public void testDrawStreet() {
+        Renderer renderer = new Renderer();
+        Coordinates topLeft = new Coordinates(12., 12.);
+        Coordinates bottomRight = new Coordinates(12.2, 12.2);
+
+        StateMock state = new StateMock();
+        MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
+
+        renderer.state = state;
+                
+        WayInfo wayInfo = new WayInfo();
+        wayInfo.setStreet(true);
+        Node node1 = new Node(0, new Coordinates(12.032, 12.0333));
+        Node node2 = new Node(1, new Coordinates(12.0788, 12.1234));
+        Node node3 = new Node(2, new Coordinates(12.1234, 12.1458));
+        Node node4 = new Node(3, new Coordinates(12.1728, 12.16663));
+        Street street = new Street(0, "", wayInfo);
+        street.addEdge(new Edge(node1, node2, street));
+        street.addEdge(new Edge(node2, node3, street));
+        street.addEdge(new Edge(node3, node4, street));
+        mapInfo.addMapElement(street);
+
+        Context context = new Context(200, 200, topLeft, bottomRight);
+
+        TestGUI gui = new TestGUI(context); 
+        gui.setVisible(true);
+        
+        renderer.render(context, 0);
+    }
+    
     class TestGUI extends JFrame {
         
         Component compContext;
@@ -89,7 +119,7 @@ public class RendererTest {
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             compContext = this.add(context);
-            this.setSize(200, 200);
+            this.setSize(250, 250);
             this.setLocation(new Point(500, 500));
             repaint();
         }

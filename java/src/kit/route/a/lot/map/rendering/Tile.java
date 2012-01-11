@@ -16,6 +16,7 @@ import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.Street;
 
 
 public class Tile {
@@ -80,8 +81,8 @@ public class Tile {
                 draw((Node) element);
             } else if (element instanceof Area) {
                 draw((Area) element);
-            } else if (element instanceof Edge) {
-                draw((Edge) element);
+            } else if (element instanceof Street) {
+                draw((Street) element);
             } else {
                 draw(element);
             }
@@ -188,7 +189,7 @@ public class Tile {
     }
 
     /**
-     * Draws a single street edge on the tile, taking the street type into consideration.
+     * Draws a single street edge on the tile.
      * 
      * @param edge
      *            the edge to be drawn
@@ -205,6 +206,39 @@ public class Tile {
 
         draw(edge.getStart());
         draw(edge.getEnd());
+    }
+    
+    /**
+     * Draws a street on the tile, taking the street type into consideration.
+     * 
+     * @param street the street to be drawn
+     */
+    protected void draw(Street street) {
+        int[] xPoints, yPoints;
+        int nPoints;
+        List<Edge> edges = street.getEdges();
+        List<Node> nodes = new ArrayList<Node>();
+        nodes.add(edges.get(0).getStart());
+        for (int i = 0; i < edges.size(); i++) {
+            nodes.add(edges.get(i).getEnd());
+        }
+        nPoints = nodes.size();
+        xPoints = new int[nPoints];
+        yPoints = new int[nPoints];
+
+        for (int i = 0; i < nPoints; i++) {
+            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes.get(i).getPos());
+            xPoints[i] = (int) curCoordinates.getLatitude();
+            yPoints[i] = (int) curCoordinates.getLongitude();
+        }
+        
+        Graphics2D graphics = data.createGraphics();
+        graphics.setStroke(new BasicStroke(8));
+        graphics.setColor(Color.WHITE);
+        
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.drawPolyline(xPoints, yPoints, nPoints);
+
     }
 
     /**
