@@ -1,15 +1,16 @@
 package kit.route.a.lot.common;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
 
 public class ContextSW extends Context {
 
-    private Graphics2D output;
+    private Graphics output;
     
-    public ContextSW(int width, int height, Coordinates topLeft, Coordinates bottomRight, Graphics2D surface) {
+    public ContextSW(int width, int height, Coordinates topLeft, Coordinates bottomRight, Graphics surface) {
         super(width, height, topLeft, bottomRight);
         this.output = surface;
     }
