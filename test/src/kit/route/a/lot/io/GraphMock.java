@@ -1,5 +1,8 @@
 package kit.route.a.lot.io;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
@@ -17,18 +20,6 @@ public class GraphMock implements RoutingGraph {
         startIDs = startID;
         endIDs = endID;
         weights = weight;
-    }
-
-    @Override
-    public void loadFromStream(InputStream stream) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void saveToStream(OutputStream stream) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -89,6 +80,18 @@ public class GraphMock implements RoutingGraph {
     public Collection<Integer> getAllNeighbors(int node) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void loadFromStream(DataInputStream stream) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        // TODO Auto-generated method stub
+        
     }
 
     
