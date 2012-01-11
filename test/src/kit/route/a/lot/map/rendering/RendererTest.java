@@ -1,11 +1,12 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.Component;
+import java.awt.Graphics2D;
 import java.awt.Point;
 
 import javax.swing.JFrame;
 
 import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.ContextSW;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
@@ -19,10 +20,10 @@ import org.junit.Test;
 public class RendererTest {
 
     public static void main(String[] args) {
-        new RendererTest().testDrawStreet();
+        new TestGUI();
     }
     
-    public void testDrawEdgeAndNodes() {
+    public static void testDrawEdgeAndNodes(TestGUI gui) {
         Renderer renderer = new Renderer();
         Coordinates topLeft = new Coordinates(12., 12.);
         Coordinates bottomRight = new Coordinates(12.2, 12.2);
@@ -35,16 +36,13 @@ public class RendererTest {
         mapInfo.addMapElement(new Node(0, new Coordinates(12.032, 12.0333)));
         mapInfo.addMapElement(new Node(0, new Coordinates(12.1728, 12.16663)));
         mapInfo.addMapElement(new Edge(new Node(0, new Coordinates(12.0788, 12.1234)), new Node(0, new Coordinates(12.1234, 12.1458)), new Street(0, null, null)));
-
-        Context context = new Context(100, 100, topLeft, bottomRight);
-
-        TestGUI gui = new TestGUI(context); 
-        gui.setVisible(true);
-        
+ 
+        gui.setVisible(true); 
+        Context context = new ContextSW(100, 100, topLeft, bottomRight, (Graphics2D) gui.getGraphics());      
         renderer.render(context, 0);
     }
     
-    public void testDrawAreaAndNodes() {
+    public static void testDrawAreaAndNodes(TestGUI gui) {
         Renderer renderer = new Renderer();
         Coordinates topLeft = new Coordinates(12., 12.);
         Coordinates bottomRight = new Coordinates(12.2, 12.2);
@@ -70,16 +68,13 @@ public class RendererTest {
         mapInfo.addMapElement(node3);
         mapInfo.addMapElement(node4);
         mapInfo.addMapElement(area);
-
-        Context context = new Context(100, 100, topLeft, bottomRight);
-
-        TestGUI gui = new TestGUI(context); 
-        gui.setVisible(true);
         
+        gui.setVisible(true);  
+        Context context = new ContextSW(100, 100, topLeft, bottomRight, (Graphics2D) gui.getGraphics());         
         renderer.render(context, 0);
     }
     
-    public void testDrawStreet() {
+    public static void testDrawStreet(TestGUI gui) {
         Renderer renderer = new Renderer();
         Coordinates topLeft = new Coordinates(12., 12.);
         Coordinates bottomRight = new Coordinates(12.2, 12.2);
@@ -101,27 +96,22 @@ public class RendererTest {
         street.addEdge(new Edge(node3, node4, street));
         mapInfo.addMapElement(street);
 
-        Context context = new Context(200, 200, topLeft, bottomRight);
-
-        TestGUI gui = new TestGUI(context); 
-        gui.setVisible(true);
-        
+        gui.setVisible(true); // must be done before calling gui.getGraphics()
+        Context context = new ContextSW(200, 200, topLeft, bottomRight, (Graphics2D) gui.getGraphics());        
         renderer.render(context, 0);
     }
     
-    class TestGUI extends JFrame {
-        
-        Component compContext;
-        
-        public TestGUI(Context context) {
+    static class TestGUI extends JFrame {
+
+        private static final long serialVersionUID = 1L;
+
+        public TestGUI() {
             super("Test");
-
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            compContext = this.add(context);
             this.setSize(250, 250);
-            this.setLocation(new Point(500, 500));
+            this.setLocation(new Point(500, 500));  
             repaint();
+            testDrawStreet(this);
         }
         
     }

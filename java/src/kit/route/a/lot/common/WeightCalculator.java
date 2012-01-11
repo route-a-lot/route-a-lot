@@ -1,14 +1,10 @@
 package kit.route.a.lot.common;
 
-
-public class WeightCalculator {
-    import java.lang.Math;
-
+import java.lang.Math;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.Heightmap;
-import kit.route.a.lot.map.infosupply.MapInfo;
 
-
+public class WeightCalculator {
     private static WeightCalculator instance;
     
     protected WeightCalculator() { }
@@ -30,8 +26,8 @@ import kit.route.a.lot.map.infosupply.MapInfo;
      * @return int
      */
     public int calcWeight(int fromID, int toID) {
-        Coordinates from = MapInfo.getNodePosition(fromID);
-        Coordinates to = MapInfo.getNodePosition(toID);
+        Coordinates from = State.getInstance().loadedMapInfo.getNodePosition(fromID);
+        Coordinates to = State.getInstance().loadedMapInfo.getNodePosition(toID);
         Heightmap heightmap = State.getInstance().getHeightMap();
         // Pythagoras.
         return (int) Math.sqrt(

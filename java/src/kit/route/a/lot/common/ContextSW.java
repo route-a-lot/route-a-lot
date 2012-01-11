@@ -12,6 +12,9 @@ public class ContextSW extends Context {
     
     public ContextSW(int width, int height, Coordinates topLeft, Coordinates bottomRight, Graphics surface) {
         super(width, height, topLeft, bottomRight);
+        if (surface == null) {
+            throw new IllegalArgumentException();
+        }
         this.output = surface;
     }
     

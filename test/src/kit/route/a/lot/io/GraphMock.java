@@ -3,8 +3,6 @@ package kit.route.a.lot.io;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collection;
 
 import kit.route.a.lot.routing.RoutingGraph;
@@ -93,6 +91,5 @@ public class GraphMock implements RoutingGraph {
         // TODO Auto-generated method stub
         
     }
-
     
 }

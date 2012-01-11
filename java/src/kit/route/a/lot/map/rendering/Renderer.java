@@ -39,7 +39,7 @@ public class Renderer {
         Tile out = new Tile(context.getTopLeft(), context.getBottomRight(), detail,
                 context.getWidth(), context.getHeight());
         out.prerender(state);
-        context.drawImage(0, 0, out.getData());
+        context.drawImage(context.getTopLeft(), out.getData());
         /*
          * prerenderTiles(rc.getTopLeft(), rc.getBottomRight(), detail);
          * ...

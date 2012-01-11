@@ -6,6 +6,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,6 +34,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+import kit.route.a.lot.common.ContextSW;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.controller.RALListener;
@@ -115,11 +117,6 @@ public class GUI extends JFrame implements ActionListener {
         map.setPreferredSize(new Dimension(this.getSize()));
         map.setBackground(Color.WHITE);
         map.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
-        context = new Context(this.getWidth()-10, this.getHeight()-10, topLeft, bottomRight);
-        map.add(context);
-
-        // Graphics2D g2 = (Graphics2D)map.getGraphics();
-        // g2.drawImage(mapImage, map.getX(), map.getY(), null);
 
         this.navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(makeMenuItem("Start"));
@@ -338,6 +335,11 @@ public class GUI extends JFrame implements ActionListener {
         importOSM = new JButton("Importiere OSM-Karte");
         tab3.add(importOSM);
         this.pack();
+        
+        // The context needs to be queried / created in the very end.
+        context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, (Graphics2D) map.getGraphics());
+        // Graphics2D g2 = (Graphics2D)map.getGraphics();
+        // g2.drawImage(mapImage, map.getX(), map.getY(), null);
     }
 
     private JMenuItem makeMenuItem(String label) {

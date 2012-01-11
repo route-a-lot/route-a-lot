@@ -11,6 +11,9 @@ public abstract class Context {
     private Coordinates bottomRight;
 
     public Context(int width, int height, Coordinates topLeft, Coordinates bottomRight) {
+        if ((topLeft == null) || (bottomRight == null)) {
+            throw new IllegalArgumentException();
+        }
         this.width = width;
         this.height = height;
         this.topLeft = topLeft;
