@@ -1,13 +1,19 @@
 package kit.route.a.lot.GUI;
 
+import kit.route.a.lot.gui.GUI;
+import kit.route.a.lot.common.Coordinates;;
+
 
 public class ShellGUI {
+    static GUI gui;
+    
     public static void main(String[] args) {
-        GUI theGUI = new GUI();
-        theGUI.setBounds(0, 25, 500, 500);
-        theGUI.setVisible(true);
-        theGUI.addContents();
-        return;
+        gui = new GUI(new Coordinates(), new Coordinates());
+        gui.setBounds(0, 25, 500, 500);
+        System.out.println(gui.getWidth());
+        System.out.println(gui.getHeight());
+        gui.setVisible(true);
+        gui.addContents();
     }
     
 }
