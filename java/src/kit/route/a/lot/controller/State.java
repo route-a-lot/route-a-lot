@@ -14,7 +14,7 @@ import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
 
-    private static State singleton;
+    private static State singleton = null;
     /** Attributes */
     /**
      * 

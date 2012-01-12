@@ -5,8 +5,10 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.*;
 import java.util.ArrayList; 
 
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kit.route.a.lot.common.Address; 
@@ -20,6 +22,11 @@ public class MapInfoTest {
     public MapInfo info;
     Coordinates topLeft;
     Coordinates bottomRight;
+    
+    @BeforeClass
+    public static void setUpClass() {
+        PropertyConfigurator.configure("config/log4j.conf");
+    }
     
     @Before
     public void setUp() throws Exception {

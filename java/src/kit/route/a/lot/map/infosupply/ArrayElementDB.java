@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;
-import java.util.ArrayList;
+import java.io.InputStream;import java.io.OutputStream;import java.util.ArrayList;
+
+import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
@@ -11,6 +12,7 @@ import kit.route.a.lot.map.POINode;
 
 public class ArrayElementDB implements ElementDB {
 
+    private static Logger logger = Logger.getLogger(ArrayElementDB.class);
     
     private ArrayList<Node> nodes;
    
@@ -37,6 +39,7 @@ public class ArrayElementDB implements ElementDB {
             throw new IllegalArgumentException("Previous numbers weren't insert, yet");
         }
         nodes.add(node.getID(), node);
+        logger.debug("NodeArraySize: " + nodes.size());
     }
 
     @Override

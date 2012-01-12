@@ -32,7 +32,7 @@ public class Controller {
     private Controller() {
         renderer = new Renderer();
         guiHandler = new GUIHandler();
-        state = state.getInstance();
+        state = State.getInstance();
     }
     
     

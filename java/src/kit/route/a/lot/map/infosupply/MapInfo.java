@@ -1,9 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStream;import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
+
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -17,15 +17,22 @@ import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 
+import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+
 public class MapInfo {
 
+    private static Logger logger = Logger.getLogger(MapInfo.class);
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
 
     public MapInfo() {
         elementDB = new ArrayElementDB();
-        geographicalOperator = new PrimitivArrayGeoOperator();
+        geographicalOperator = new QTGeographicalOperator();
     }
 
     /**
@@ -60,9 +67,12 @@ public class MapInfo {
      *            the unique id of the node
      */
     public void addNode(Coordinates position, int id, Address address) {
+        
+        
         Node newNode = new Node(id, position);
         elementDB.addNode(newNode);
         geographicalOperator.addToBaseLayer(newNode);
+        logger.warn("asdasds");
     }
 
     /**
