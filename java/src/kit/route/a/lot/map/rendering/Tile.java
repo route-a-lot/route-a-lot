@@ -83,6 +83,8 @@ public class Tile {
                 draw((Area) element);
             } else if (element instanceof Street) {
                 draw((Street) element);
+            } else if (element instanceof Edge) {
+                draw((Edge) element);
             } else {
                 draw(element);
             }
@@ -200,7 +202,7 @@ public class Tile {
 
         Graphics2D graphics = data.createGraphics();
         graphics.setStroke(new BasicStroke(3));
-        graphics.setColor(Color.red);
+        graphics.setColor(Color.WHITE);
         graphics.drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
                 (int) end.getLongitude());
 
