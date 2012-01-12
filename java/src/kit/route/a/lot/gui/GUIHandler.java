@@ -8,10 +8,20 @@ public class GUIHandler {
 
     private GUI gui;
     
+    public GUIHandler() {
+        createGUI();
+    }
     public GUIHandler(Coordinates topLeft, Coordinates bottomRight) {
         createGUI(topLeft, bottomRight);
     }
 
+    public void createGUI() {
+        gui = new GUI();
+        gui.setBounds(0, 25, 500, 500);
+        gui.setVisible(true);
+        gui.addContents();
+    }
+    
     /**
      * Operation createGUI
      * 
@@ -164,6 +174,10 @@ public class GUIHandler {
         gui.addTargetSelectedListener(targetSelectedListener);
     }
 
+    public void addChangedViewListener(RALListener viewChangedListener) {
+        gui.addViewChangedListener(viewChangedListener);
+    }
+    
     /**
      * Operation addListenerDeleteNavNode
      * 

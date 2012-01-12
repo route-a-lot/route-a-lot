@@ -20,7 +20,7 @@ public class ViewChangedEvent extends java.util.EventObject {
    
     public ViewChangedEvent(Object source, Context context, int zoomLevelChange) {
         super(source);
-        
+        this.context = context;
         this.zoomLevelChange = zoomLevelChange;
     }
 

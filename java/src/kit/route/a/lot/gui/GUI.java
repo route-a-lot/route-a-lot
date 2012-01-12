@@ -50,6 +50,8 @@ public class GUI extends JFrame implements ActionListener {
             Color.YELLOW };
 
     private ArrayList<RALListener> targetSelectedList;
+    private ArrayList<RALListener> viewChangedList;
+    
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
 
@@ -107,16 +109,30 @@ public class GUI extends JFrame implements ActionListener {
     int mousePosYDist;
     double coordinatesWidth;
     double coordinatesHeight;
+    double coordinatesPixelWidthDifference;
+    double coordinatesPixelHeightDifference;
 
     public GUI(Coordinates topLeft, Coordinates bottomRight) {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
+        viewChangedList = new ArrayList<RALListener>();
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
         this.pack();
         this.setVisible(true);
 
+    }
+    
+    public GUI() {
+        super("Route-A-Lot");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        targetSelectedList = new ArrayList<RALListener>();
+        viewChangedList = new ArrayList<RALListener>();
+        this.topLeft = new Coordinates(0.0, 0.0);
+        this.bottomRight = new Coordinates(0.0, 0.0);
+        this.pack();
+        this.setVisible(true);
     }
 
     // private BufferedImage mapImage = testImage();
@@ -274,17 +290,9 @@ public class GUI extends JFrame implements ActionListener {
             public void mouseDragged(MouseEvent e) {
                 newMousePosX = e.getX();
                 newMousePosY = e.getY();
-                if(newMousePosX > oldMousePosX) {
-                    mousePosXDist = newMousePosX - oldMousePosX;
-                } else {
-                    mousePosXDist = oldMousePosX -newMousePosX;
-                }
-                if(newMousePosY > oldMousePosY) {
-                    mousePosYDist = newMousePosY - oldMousePosY;
-                } else {
-                    mousePosYDist = oldMousePosY -newMousePosY;
-                }
-                System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
+                mousePosXDist = newMousePosX - oldMousePosX;
+                mousePosYDist = newMousePosY - oldMousePosY;
+                
                 if(topLeft.getLatitude() > bottomRight.getLatitude()) {
                     coordinatesWidth = topLeft.getLatitude() - bottomRight.getLatitude();
                 } else {
@@ -295,6 +303,25 @@ public class GUI extends JFrame implements ActionListener {
                 } else {
                     coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
                 }
+                coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
+                coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
+                
+                double newTopLeftLongitude = topLeft.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
+                double newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                double newBottomRightLongitude = bottomRight.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
+                double newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                
+                topLeft.setLongitude(newTopLeftLongitude);
+                topLeft.setLatitude(newTopLeftLatitude);
+                bottomRight.setLongitude(newBottomRightLongitude);
+                bottomRight.setLatitude(newBottomRightLatitude);
+                
+                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, 0);
+                for(RALListener lis: viewChangedList){
+                    lis.handleRALEvent(viewEvent);
+                }
+                
+                System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
             }
         });
         
@@ -413,6 +440,9 @@ public class GUI extends JFrame implements ActionListener {
         repaint();
     }
 
+    public void addViewChangedListener(RALListener viewChangedListener) {
+        viewChangedList.add(viewChangedListener);
+    }
     public void addTargetSelectedListener(RALListener targetSelectedListener) {
         targetSelectedList.add(targetSelectedListener);
     }
@@ -420,7 +450,10 @@ public class GUI extends JFrame implements ActionListener {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        //
+        ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, 0);
+        for(RALListener lis: viewChangedList){
+            lis.handleRALEvent(viewEvent);
+        }
     }
     
     /*
