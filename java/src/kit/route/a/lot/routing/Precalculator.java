@@ -1,5 +1,13 @@
 package kit.route.a.lot.routing;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
@@ -58,8 +66,62 @@ public class Precalculator {
     }
 
     private void doAreas() {
-        // Divide nodes in areas.
-        // TODO Auto-generated method stub
+        int AREAS = 63;
+        String FILE = "graph.txt";
+        // Now this is dirty
         
+        // Write graph file
+        try {
+            BufferedWriter out = new BufferedWriter(new FileWriter("graph.txt"));
+            out.write(graph.getMetisRepresentation());
+            out.close();
+        } catch (IOException e) {
+            System.out.println("Exception ");
+            return;
+        }
+        
+        //calculate areas with Metis
+        String buffer = "";
+        try {
+            Process process = Runtime.getRuntime().exec("kmetis "+ FILE + " " + AREAS);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // read the output from the command
+            while ((buffer = stdInput.readLine()) != null) {
+                // nop
+            }
+            
+            // read any errors from the attempted command
+            while ((buffer = stdError.readLine()) != null) {
+                // nop
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+        // read resulting file
+        String filePath = FILE + ".part." + AREAS + "Parts";
+        byte[] areas = new byte[(int) new File(filePath).length()];
+        BufferedInputStream file = null;
+        try {
+            file = new BufferedInputStream(new FileInputStream(filePath));
+            file.read(areas);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            if (file != null) {
+                try {
+                    file.close(); 
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+        }
+        
+        graph.readAreas(new String(areas));
     }
 }

@@ -105,5 +105,9 @@ public interface RoutingGraph {
     public Collection<Integer> getAllNeighbors(int node);
 
     public void setArcFlag(int node, int node2, byte area);
+    
+    public String getMetisRepresentation();
+
+    public void readAreas(String areas);
 
 }

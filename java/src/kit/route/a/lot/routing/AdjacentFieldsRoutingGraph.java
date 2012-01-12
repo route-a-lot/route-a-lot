@@ -236,4 +236,34 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         return result;
     }
 
+    @Override
+    public String getMetisRepresentation() {
+        // returns a representation of the graph suitable for Metis.
+        //TODO: edges.length isn't what is required by Metis (it works with undirected graphs only)
+        String result = "";
+        result += String.valueOf(edgesPos.length);
+        result += " ";
+        result += String.valueOf(edges.length);
+        result += "\n";
+        for (int i = 0; i < edgesPos.length; i++) {
+            for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {
+                result += String.valueOf(edges[j]);
+                result += " ";
+            }
+            result += "\n";
+        }
+        return result;
+    }
+
+    @Override
+    public void readAreas(String areas) {
+        // TODO: way to slow, might require error-handling
+        int i = 0;
+        for (String area: areas.split("\\s+")) {
+            areaID[i++] = (byte) Integer.parseInt(area);
+        }
+    }
+    
+    
+
 }
