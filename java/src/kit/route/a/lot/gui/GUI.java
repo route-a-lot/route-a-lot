@@ -101,10 +101,11 @@ public class GUI extends JFrame implements ActionListener {
     private int newMousePosX;
     private int oldMousePosY;
     private int newMousePosY;
+    private int currentZoomLevel;
     private Context context;
     private Coordinates middle;
-    private Coordinates topLeft;
-    private Coordinates bottomRight;
+    private Coordinates topLeft = new Coordinates();
+    private Coordinates bottomRight = new Coordinates();
     private boolean mouseDragged = false;
     int mousePosXDist;
     int mousePosYDist;
