@@ -285,6 +285,7 @@ public class Controller {
             logger.warn("No state file found. Go on withloading map of Karlsruhe");
             File karlsruheMap = new File("test/resources/karlsruhe_small.osm");
             if(karlsruheMap.exists()) {
+                logger.info("file exists");
                 OSMLoader osmLoader = new OSMLoader();
                 osmLoader.importMap(karlsruheMap);
                 ctrl.guiHandler.createGUI(ctrl.state.getAreaCoord());

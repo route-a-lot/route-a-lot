@@ -1,7 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.awt.geom.Line2D;import java.awt.geom.Point2D;
-import java.io.InputStream;
+import java.awt.geom.Line2D;import java.awt.geom.Point2D;import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,8 +13,15 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.GeographicalOperator;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
+import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 public class QTGeographicalOperator implements GeographicalOperator {
 
+    private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
+    
     /** Associations */
     private QuadTree zoomlevels[];
     
@@ -93,6 +99,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
         for (QTLeaf qtL : lastElementsOfSelectedMEs) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
                 if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
+                    logger.info("getBasseLayer called");
+                    logger.debug(mapEle);
                     mapElements.add(mapEle);
                 }
             }
@@ -118,6 +126,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void addToBaseLayer(MapElement element) {
+        logger.info("addToBaseLayer called");
+        logger.debug(element);
         zoomlevels[0].addToBaseLayer(element);
     }
 

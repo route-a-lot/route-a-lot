@@ -9,7 +9,6 @@ public class GUIHandler {
     private GUI gui;
     
     public GUIHandler() {
-        createGUI();
     }
     public GUIHandler(Coordinates middle) {
         createGUI(middle);
