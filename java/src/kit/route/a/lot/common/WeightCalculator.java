@@ -25,7 +25,7 @@ public class WeightCalculator {
      *            -
      * @return int
      */
-    public int calcWeight(int fromID, int toID) {
+    public int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = State.getInstance().loadedMapInfo.getNodePosition(fromID);
         Coordinates to = State.getInstance().loadedMapInfo.getNodePosition(toID);
         Heightmap heightmap = State.getInstance().getHeightMap();
@@ -34,6 +34,16 @@ public class WeightCalculator {
                     Math.pow((from.getLatitude() - to.getLatitude()), 2) + 
                     Math.pow((from.getLongitude() - to.getLongitude()), 2) + 
                     Math.pow((State.getHeightMalus() * (heightmap.getHeight(from) - heightmap.getHeight(to))), 2));
+    }
+
+
+
+    public int calcWeight(int fromID, int toID) {
+        Coordinates from = State.getInstance().loadedMapInfo.getNodePosition(fromID);
+        Coordinates to = State.getInstance().loadedMapInfo.getNodePosition(toID);
+        
+        //Kugelkoordinaten berechnet distance in km
+        return (int) = 6378.388 * Math.acos(Math.sin(from.getLatitude()) * Math.sin(to.getLatitude()) + Math.cos(from.getLatitude()) * Math.cos(to.getLatitude()) * Math.cos(to.getLongitude() - from.getLongitude()));
     }
     
     public int calcWeight(Selection edge) {
