@@ -89,21 +89,27 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return new Selection(edge.getStart().getID(), edge.getEnd().getID(), 0.0f, point); //TODO lot
     }
         
-        
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
+        logger.info("getBasseLayer called");
+        logger.info("upLeft long: " + upLeft.getLongitude());
+        logger.info("upLeft lal: " + upLeft.getLatitude());
+        logger.info("QT Bounds ULLong: " + zoomlevels[0].getUpLeft().getLongitude());
+        logger.info("QT Bounds ULLAL: " + zoomlevels[0].getUpLeft().getLatitude());
+        logger.info("QT Bounds BRLONG: " + zoomlevels[0].getBottomRight().getLongitude());
+        logger.info("QT Bounds BRLAL: " + zoomlevels[0].getBottomRight().getLatitude());
+        
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
-        lastElementsOfSelectedMEs = zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);
+        lastElementsOfSelectedMEs = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
         for (QTLeaf qtL : lastElementsOfSelectedMEs) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
                 if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
-                    logger.info("getBasseLayer called");
-                    logger.debug(mapEle);
                     mapElements.add(mapEle);
                 }
             }
         }
+        logger.debug("baseLAyerSize: " + mapElements.size());
         return mapElements;
     }
 

@@ -1,20 +1,23 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.Collection;
-import java.util.ArrayList;
+import java.io.InputStream;import java.io.OutputStream;import java.util.Collection;import java.util.ArrayList;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+
+import org.apache.log4j.Logger;
 
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.*;
 
 
 public class PrimitivArrayGeoOperator implements GeographicalOperator {
     private ArrayList<MapElement> overlay;
     private ArrayList<MapElement> baseLayer;
+    private Logger logger = Logger.getLogger(PrimitivArrayGeoOperator.class);
      
     public PrimitivArrayGeoOperator() {
         overlay = new ArrayList<MapElement>();
@@ -57,12 +60,18 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
+        logger.info("getBasseLayer called");
+        logger.info("upLeft long: " + upLeft.getLongitude());
+        logger.info("upLeft lal: " + upLeft.getLatitude());
+        logger.info("middle long: " + State.getInstance().getAreaCoord().getLongitude());
+        logger.info("middle lal: " + State.getInstance().getAreaCoord().getLatitude());
         ArrayList<MapElement> baseLay = new ArrayList<MapElement>();
         for(MapElement mapEle: baseLayer){
             if(mapEle.isInBounds(upLeft, bottomRight)){
                 baseLay.add(mapEle);
             }
         }
+        logger.debug("BaseLayerSize: " + baseLay.size());
         return baseLay;
     }
 

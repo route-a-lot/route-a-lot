@@ -32,7 +32,7 @@ public class MapInfo {
 
     public MapInfo() {
         elementDB = new ArrayElementDB();
-        geographicalOperator = new QTGeographicalOperator();
+        geographicalOperator = new PrimitivArrayGeoOperator();
     }
 
     /**
