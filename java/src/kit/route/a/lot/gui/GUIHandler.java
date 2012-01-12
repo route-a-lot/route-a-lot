@@ -11,8 +11,8 @@ public class GUIHandler {
     public GUIHandler() {
         createGUI();
     }
-    public GUIHandler(Coordinates topLeft, Coordinates bottomRight) {
-        createGUI(topLeft, bottomRight);
+    public GUIHandler(Coordinates middle) {
+        createGUI(middle);
     }
 
     public void createGUI() {
@@ -27,8 +27,8 @@ public class GUIHandler {
      * 
      * @return
      */
-    public void createGUI(Coordinates topLeft, Coordinates bottomRight) {
-        gui = new GUI(topLeft, bottomRight);
+    public void createGUI(Coordinates middle) {
+        gui = new GUI(middle);
         gui.setBounds(0, 25, 500, 500);
         System.out.println(gui.getWidth());
         System.out.println(gui.getHeight());

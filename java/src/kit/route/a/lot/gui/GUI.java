@@ -102,6 +102,7 @@ public class GUI extends JFrame implements ActionListener {
     private int oldMousePosY;
     private int newMousePosY;
     private Context context;
+    private Coordinates middle;
     private Coordinates topLeft;
     private Coordinates bottomRight;
     private boolean mouseDragged = false;
@@ -112,13 +113,12 @@ public class GUI extends JFrame implements ActionListener {
     double coordinatesPixelWidthDifference;
     double coordinatesPixelHeightDifference;
 
-    public GUI(Coordinates topLeft, Coordinates bottomRight) {
+    public GUI(Coordinates middle) {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
+        this.middle = middle;
         this.pack();
         this.setVisible(true);
 
@@ -171,6 +171,10 @@ public class GUI extends JFrame implements ActionListener {
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
+        topLeft.setLongitude(middle.getLongitude() - 0.01);
+        topLeft.setLatitude(middle.getLatitude() + 0.01);
+        bottomRight.setLongitude(middle.getLongitude() + 0.01);
+        bottomRight.setLatitude(middle.getLatitude() - 0.01);
         // The context needs to be queried / created in the very end.
         context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
 
@@ -331,7 +335,7 @@ public class GUI extends JFrame implements ActionListener {
 
             int up = 1;
 
-            int down = 2;
+            int down = -1;
 
 
             public void mouseWheelMoved(MouseWheelEvent e) {
@@ -342,6 +346,12 @@ public class GUI extends JFrame implements ActionListener {
                 } else {
                     direction = down;
                 }
+                
+                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
+                for(RALListener lis: viewChangedList){
+                    lis.handleRALEvent(viewEvent);
+                }
+                
                 changeBackground(direction);
             }
 

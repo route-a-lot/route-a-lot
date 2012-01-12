@@ -277,6 +277,7 @@ public class Controller {
      */
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
+        Controller ctrl = new Controller();
         File stateFile = new File("./state.state");
         if (stateFile.exists()) {
             StateIO.loadState(stateFile);
@@ -286,12 +287,12 @@ public class Controller {
             if(karlsruheMap.exists()) {
                 OSMLoader osmLoader = new OSMLoader();
                 osmLoader.importMap(karlsruheMap);
+                ctrl.guiHandler.createGUI(ctrl.state.getAreaCoord());
             } else {
                 logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
             }
         }
-        Controller ctrl = new Controller();
-        //ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
-        //ctrl.guiHandler.addViewChangedListener(new ViewChangedListener(ctrl));
+        ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
+        ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
     }
 }
