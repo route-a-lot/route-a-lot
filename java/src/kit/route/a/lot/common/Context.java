@@ -51,5 +51,27 @@ public abstract class Context {
     public Coordinates getBottomRight() {
         return this.bottomRight;
     }
+
+    
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    
+    public void setTopLeft(Coordinates topLeft) {
+        this.topLeft = topLeft;
+    }
+
+    
+    public void setBottomRight(Coordinates bottomRight) {
+        this.bottomRight = bottomRight;
+    }
+    
+    
     
 }

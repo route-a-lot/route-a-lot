@@ -6,7 +6,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -101,6 +103,10 @@ public class GUI extends JFrame implements ActionListener {
     private Coordinates topLeft;
     private Coordinates bottomRight;
     private boolean mouseDragged = false;
+    int mousePosXDist;
+    int mousePosYDist;
+    double coordinatesWidth;
+    double coordinatesHeight;
 
     public GUI(Coordinates topLeft, Coordinates bottomRight) {
         super("Route-A-Lot");
@@ -207,6 +213,8 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             public void mouseReleased(MouseEvent me) {
                 checkPopup(me);
+                newMousePosX = me.getX();
+                newMousePosY = me.getY();
                 mouseDragged = false;
 
             }
@@ -233,13 +241,6 @@ public class GUI extends JFrame implements ActionListener {
 
             @Override
             public void mouseClicked(MouseEvent me) {
-                /*
-                 * xpos = me.getX(); ypos = me.getY();
-                 * 
-                 * if(xpos > map.getX() && xpos < map.getX()+map.getWidth() && ypos > map.getY() && ypos <
-                 * map.getY()+map.getHeight() && me.getButton() == 3) { mouseClicked = true; }else {
-                 * mouseClicked = false; } repaint();
-                 */
                 checkPopup(me);
             }
 
@@ -273,7 +274,27 @@ public class GUI extends JFrame implements ActionListener {
             public void mouseDragged(MouseEvent e) {
                 newMousePosX = e.getX();
                 newMousePosY = e.getY();
+                if(newMousePosX > oldMousePosX) {
+                    mousePosXDist = newMousePosX - oldMousePosX;
+                } else {
+                    mousePosXDist = oldMousePosX -newMousePosX;
+                }
+                if(newMousePosY > oldMousePosY) {
+                    mousePosYDist = newMousePosY - oldMousePosY;
+                } else {
+                    mousePosYDist = oldMousePosY -newMousePosY;
+                }
                 System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
+                if(topLeft.getLatitude() > bottomRight.getLatitude()) {
+                    coordinatesWidth = topLeft.getLatitude() - bottomRight.getLatitude();
+                } else {
+                    coordinatesWidth = bottomRight.getLatitude() - bottomRight.getLatitude();
+                }
+                if(topLeft.getLongitude() > bottomRight.getLongitude()) {
+                    coordinatesHeight = topLeft.getLongitude() - bottomRight.getLongitude();
+                } else {
+                    coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
+                }
             }
         });
         
@@ -327,7 +348,7 @@ public class GUI extends JFrame implements ActionListener {
         tabbpane.addTab("Karten", null, tab3, "3");
         // tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
 
-        tab1.setLayout(new FlowLayout());
+        tab1.setLayout(new GridLayout(0,2));
 
         startPoint = new JTextField();
         startPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
@@ -351,16 +372,21 @@ public class GUI extends JFrame implements ActionListener {
 
         alladdedNavPoints = new Hashtable<Integer, JTextField>();
         alladdedButtons = new Hashtable<Integer, JButton>();
-        /*
-         * addTextPoints.addActionListener(new ActionListener() {
-         * 
-         * @Override public void actionPerformed(ActionEvent arg0) { key++; alladdedNavPoints.put(key, new
-         * JTextField()); alladdedButtons.put(key, new JButton("x"));
-         * alladdedNavPoints.get(key).setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
-         * tab1.add(alladdedNavPoints.get(key)); tab1.add(alladdedButtons.get(key));
-         * 
-         * } });
-         */
+        
+        addTextPoints.addActionListener(new ActionListener() {
+          
+          @Override 
+          public void actionPerformed(ActionEvent arg0) { 
+              key++; 
+              alladdedNavPoints.put(key, new JTextField()); 
+              alladdedButtons.put(key, new JButton("x"));
+              alladdedNavPoints.get(key).setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
+              tab1.add(alladdedNavPoints.get(key)); 
+              tab1.add(alladdedButtons.get(key));
+              tab1.validate();
+          
+          } });
+         
 
         tab3.setLayout(new FlowLayout());
 
@@ -389,6 +415,12 @@ public class GUI extends JFrame implements ActionListener {
 
     public void addTargetSelectedListener(RALListener targetSelectedListener) {
         targetSelectedList.add(targetSelectedListener);
+    }
+    
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        //
     }
     
     /*
