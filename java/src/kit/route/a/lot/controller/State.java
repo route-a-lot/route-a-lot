@@ -1,5 +1,6 @@
 package kit.route.a.lot.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -8,6 +9,7 @@ import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
 import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
@@ -84,6 +86,29 @@ public class State {
     }
 
     
+    
+    
+    public State() {
+        super();
+        this.loadedMapName = "";
+        this.loadedMapInfo = new MapInfo();
+        this.loadedGraph = new AdjacentFieldsRoutingGraph();
+        this.loadedHeightmap = null; //TODO heightmap
+        this.navigationNodes = new ArrayList<Selection>();
+        this.currentRoute = new ArrayList<Integer>();
+        this.areaCoord = null;
+        this.detailLevel = 0;
+        this.clickRadius = 1;  //TODO use it
+        this.routeDescription = new RouteDescription();
+        this.speed = 0;
+        this.duration = 0;
+        this.heightMalus = 0;
+        this.heighwayMalus = 0;
+    }
+
+
+
+
     public String getLoadedMapName() {
         return loadedMapName;
     }

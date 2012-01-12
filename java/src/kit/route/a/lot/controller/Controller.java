@@ -1,11 +1,16 @@
 package kit.route.a.lot.controller;
 
+import java.io.File;
+
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.gui.GUIHandler;
+import kit.route.a.lot.io.OSMLoader;
+import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.routing.Router;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
@@ -20,9 +25,14 @@ public class Controller {
      */
     private GUIHandler guiHandler;
     
+    private State state;
+
+    private static Logger logger = Logger.getLogger(Controller.class);
     
     private Controller() {
         renderer = new Renderer();
+        guiHandler = new GUIHandler();
+        state = state.getInstance();
     }
     
     
@@ -267,6 +277,21 @@ public class Controller {
      */
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
-        
+        File stateFile = new File("./state.state");
+        if (stateFile.exists()) {
+            StateIO.loadState(stateFile);
+        } else {
+            logger.warn("No state file found. Go on withloading map of Karlsruhe");
+            File karlsruheMap = new File("test/resources/karlsruhe_small.osm");
+            if(karlsruheMap.exists()) {
+                OSMLoader osmLoader = new OSMLoader();
+                osmLoader.importMap(karlsruheMap);
+            } else {
+                logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
+            }
+        }
+        Controller ctrl = new Controller();
+        //ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
+        //ctrl.guiHandler.addViewChangedListener(new ViewChangedListener(ctrl));
     }
 }
