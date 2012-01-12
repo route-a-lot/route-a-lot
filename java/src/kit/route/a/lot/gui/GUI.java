@@ -130,8 +130,7 @@ public class GUI extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
-        this.topLeft = new Coordinates(0.0, 0.0);
-        this.bottomRight = new Coordinates(0.0, 0.0);
+        this.middle = new Coordinates(0.0, 0.0);
         this.pack();
         this.setVisible(true);
     }
@@ -347,12 +346,16 @@ public class GUI extends JFrame implements ActionListener {
                 } else {
                     direction = down;
                 }
+                if(direction == up && currentZoomLevel != 4) {
+                    currentZoomLevel += direction;
+                } else if(direction == down && currentZoomLevel != -4) {
+                    currentZoomLevel += direction;
+                }
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
                 for(RALListener lis: viewChangedList){
                     lis.handleRALEvent(viewEvent);
                 }
-                
                 changeBackground(direction);
             }
 
