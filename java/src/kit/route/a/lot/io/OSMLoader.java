@@ -751,11 +751,11 @@ public class OSMLoader {
                         Coordinates upLeft = new Coordinates();
                         Coordinates bottomRight = new Coordinates();
 
-                        upLeft.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
+                        upLeft.setLatitude(Float.parseFloat(attributes.getValue("maxlat")));
                         upLeft.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
 
                         bottomRight.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
-                        bottomRight.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
+                        bottomRight.setLongitude(Float.parseFloat(attributes.getValue("maxlon")));
 
                         state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
                         
