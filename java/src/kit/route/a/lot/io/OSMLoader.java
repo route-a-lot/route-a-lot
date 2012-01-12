@@ -759,6 +759,11 @@ public class OSMLoader {
                         bottomRight.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
 
                         state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
+                        
+                        Coordinates middle = new Coordinates();
+                        middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
+                        middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
+                        state.setAreaCoord(middle);
 
                     } else if (qName.equalsIgnoreCase("osm")) {
                         String version = attributes.getValue("version");
