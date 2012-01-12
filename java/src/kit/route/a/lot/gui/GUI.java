@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
@@ -92,9 +93,14 @@ public class GUI extends JFrame implements ActionListener {
     private int xpos;
     private int ypos;
     private int key = 0;
+    private int oldMousePosX;
+    private int newMousePosX;
+    private int oldMousePosY;
+    private int newMousePosY;
     private Context context;
     private Coordinates topLeft;
     private Coordinates bottomRight;
+    private boolean mouseDragged = false;
 
     public GUI(Coordinates topLeft, Coordinates bottomRight) {
         super("Route-A-Lot");
@@ -103,6 +109,7 @@ public class GUI extends JFrame implements ActionListener {
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
         this.pack();
+        this.setVisible(true);
 
     }
 
@@ -117,6 +124,8 @@ public class GUI extends JFrame implements ActionListener {
         map.setPreferredSize(new Dimension(this.getSize()));
         map.setBackground(Color.WHITE);
         map.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        map.setVisible(true);
+        
 
         this.navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(makeMenuItem("Start"));
@@ -140,6 +149,8 @@ public class GUI extends JFrame implements ActionListener {
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
+        // The context needs to be queried / created in the very end.
+        context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
 
         l_routeText = new JLabel();
         l_routeText.setText("Route:");
@@ -196,12 +207,16 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             public void mouseReleased(MouseEvent me) {
                 checkPopup(me);
+                mouseDragged = false;
 
             }
 
             @Override
             public void mousePressed(MouseEvent me) {
                 checkPopup(me);
+                oldMousePosX = me.getX();
+                oldMousePosY = me.getY();
+                mouseDragged = true;
             }
 
             @Override
@@ -245,6 +260,23 @@ public class GUI extends JFrame implements ActionListener {
                 }
             }
         });
+        
+        map.addMouseMotionListener(new MouseMotionListener() {
+            
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                newMousePosX = e.getX();
+                newMousePosY = e.getY();
+                System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
+            }
+        });
+        
         MouseWheelListener listener = new MouseWheelListener() {
 
             int colorCounter;
@@ -335,9 +367,6 @@ public class GUI extends JFrame implements ActionListener {
         importOSM = new JButton("Importiere OSM-Karte");
         tab3.add(importOSM);
         this.pack();
-        
-        // The context needs to be queried / created in the very end.
-        context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, (Graphics2D) map.getGraphics());
         // Graphics2D g2 = (Graphics2D)map.getGraphics();
         // g2.drawImage(mapImage, map.getX(), map.getY(), null);
     }
