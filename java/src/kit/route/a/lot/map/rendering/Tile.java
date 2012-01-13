@@ -246,9 +246,23 @@ public class Tile {
         graphics.setStroke(new BasicStroke(5));
         graphics.setColor(Color.DARK_GRAY);
         graphics.drawPolyline(xPoints, yPoints, nPoints);
+        
+        WayInfo wayInfo = street.getWayInfo();
+        switch (wayInfo.getType()) {
+            case OSMType.HIGHWAY_MOTORWAY:
+            case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
+            case OSMType.HIGHWAY_MOTORWAY_LINK:
+                graphics.setColor(new Color(0, 51, 153));
+                break;
+            case OSMType.HIGHWAY_PRIMARY:
+            case OSMType.HIGHWAY_PRIMARY_LINK:
+                graphics.setColor(new Color(255, 204, 51));
+                break;
+            default:
+                graphics.setColor(Color.WHITE);
+        }
 
         graphics.setStroke(new BasicStroke(3));
-        graphics.setColor(Color.WHITE);
         graphics.drawPolyline(xPoints, yPoints, nPoints);
 
     }
