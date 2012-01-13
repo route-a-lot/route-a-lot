@@ -1,6 +1,7 @@
 package kit.route.a.lot.io;
 
-import java.io.File;import java.util.ArrayList;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ public class OSMLoader {
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
 
+    float minLat, maxLat, minLon, maxLon;
 
     State state;
     WeightCalculator weightCalculator;
@@ -53,9 +55,50 @@ public class OSMLoader {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parser = factory.newSAXParser();
 
+            maxLon = maxLat = Float.MIN_VALUE;
+            minLon = minLat = Float.MAX_VALUE;
+
+            DefaultHandler boundsHandler = new DefaultHandler() {
+
+                boolean noChange = false;
+
+                public void startElement(String uri, String localName, String qName, Attributes attributes)
+                        throws SAXException {
+
+                    if (!noChange && qName.equals("node")) {
+                        float curLat = Float.parseFloat(attributes.getValue("lat"));
+                        float curLon = Float.parseFloat(attributes.getValue("lon"));
+
+                        if (minLat > curLat) {
+                            minLat = curLat;
+                        }
+                        if (maxLat < curLat) {
+                            maxLat = curLat;
+                        }
+
+                        if (minLon > curLon) {
+                            minLon = curLon;
+                        }
+                        if (maxLon < curLon) {
+                            maxLon = curLon;
+                        }
+                    } else if (qName.equals("bounds")) {
+                        minLat = Float.parseFloat(attributes.getValue("minlat"));
+                        maxLat = Float.parseFloat(attributes.getValue("maxlat"));
+                        minLon = Float.parseFloat(attributes.getValue("minlon"));
+                        maxLon = Float.parseFloat(attributes.getValue("maxlon"));
+                        noChange = true;
+                    }
+                }
+
+            };
+
+            parser.parse(file, boundsHandler);
+
             DefaultHandler handler = new DefaultHandler() {
 
-                Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the new id
+                Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the
+                // new id
 
                 boolean inWay;
                 boolean inPolyline;
@@ -74,14 +117,16 @@ public class OSMLoader {
 
                 long ignoredKeys = 0;
 
-                public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+                public void startElement(String uri, String localName, String qName, Attributes attributes)
+                        throws SAXException {
 
                     if ((inWay && inPolyline) || inNode) {
                         if (qName.equalsIgnoreCase("tag")) {
                             String key = attributes.getValue("k");
                             String value = attributes.getValue("v");
                             if (key.startsWith("addr:")) {
-                                if (key.equalsIgnoreCase("addr:housenumber") || key.equalsIgnoreCase("addr:housename")) {
+                                if (key.equalsIgnoreCase("addr:housenumber")
+                                        || key.equalsIgnoreCase("addr:housename")) {
                                     curAddress.setHousenumber(value);
                                 } else if (key.equalsIgnoreCase("addr:street")) {
                                     curAddress.setStreet(value);
@@ -97,11 +142,14 @@ public class OSMLoader {
                                     curAddress.setFullAddress(value);
                                 } else if (key.equalsIgnoreCase("addr:interpolation")) {
                                     curAddress.setInterpolation(value);
-                                } else if (key.equalsIgnoreCase("addr:suburb") || key.equalsIgnoreCase("addr:quarter")
-                                        || key.equalsIgnoreCase("addr:district") || key.equalsIgnoreCase("addr:hamlet")) {
+                                } else if (key.equalsIgnoreCase("addr:suburb")
+                                        || key.equalsIgnoreCase("addr:quarter")
+                                        || key.equalsIgnoreCase("addr:district")
+                                        || key.equalsIgnoreCase("addr:hamlet")) {
                                     // ignore
                                 } else if (key.equalsIgnoreCase("addr:inclusion")) {
-                                    // ignore; indicates accuracy of interpolation (actual, estimate or potential)
+                                    // ignore; indicates accuracy of interpolation (actual, estimate or
+                                    // potential)
                                 } else {
                                     logger.debug("Unknown addr:* tag: " + key + ", value: " + value);
                                 }
@@ -347,7 +395,8 @@ public class OSMLoader {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else {
-                                    logger.warn("Encountered a crossing tag but no HIGHWAY_CROSSING. value: " + value);
+                                    logger.warn("Encountered a crossing tag but no HIGHWAY_CROSSING. value: "
+                                            + value);
                                 }
                                 return;
                             }
@@ -383,7 +432,8 @@ public class OSMLoader {
                     if (inWay) {
                         if (inPolyline) {
                             if (qName.equalsIgnoreCase("nd")) {
-                                Integer newPolylineNode = idMap.get(Long.parseLong(attributes.getValue("ref")));
+                                Integer newPolylineNode =
+                                        idMap.get(Long.parseLong(attributes.getValue("ref")));
                                 if (newPolylineNode == null) {
                                     logger.error("Node id is not known: id = " + attributes.getValue("ref"));
                                 }
@@ -448,7 +498,8 @@ public class OSMLoader {
                                     if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("designated")
                                             || value.equalsIgnoreCase("permissive")) {
                                         curWayInfo.setBicycle(WayInfo.BICYCLE_YES);
-                                    } else if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("private")) {
+                                    } else if (value.equalsIgnoreCase("no")
+                                            || value.equalsIgnoreCase("private")) {
                                         curWayInfo.setBicycle(WayInfo.BICYCLE_NO);
                                     } else if (value.equalsIgnoreCase("official")) {
                                         curWayInfo.setBicycle(WayInfo.BICYCLE_OFFICIAL);
@@ -462,7 +513,8 @@ public class OSMLoader {
                                 } else if (key.equalsIgnoreCase("oneway")) {
                                     if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true")) {
                                         curWayInfo.setOneway(WayInfo.ONEWAY_YES);
-                                    } else if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("false")) {
+                                    } else if (value.equalsIgnoreCase("no")
+                                            || value.equalsIgnoreCase("false")) {
                                         curWayInfo.setOneway(WayInfo.ONEWAY_NO);
                                     } else if (value.equalsIgnoreCase("-1")) {
                                         curWayInfo.setOneway(WayInfo.ONEWAY_OPPOSITE);
@@ -562,8 +614,9 @@ public class OSMLoader {
                                         logger.warn("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("building")) {
-                                    curWayInfo.setBuilding(true); // TODO here and with the following: check if value == yes or
-                                                                  // something more specific
+                                    curWayInfo.setBuilding(true); // TODO here and with the following: check
+                                    // if value == yes or
+                                    // something more specific
                                 } else if (key.equalsIgnoreCase("bridge")) {
                                     curWayInfo.setBridge(WayInfo.BRIDGE);
                                 } else if (key.equalsIgnoreCase("tunnel")) {
@@ -579,10 +632,13 @@ public class OSMLoader {
                                 } else if (key.equalsIgnoreCase("access")) {
                                     if (value.equalsIgnoreCase("private")) {
                                         curWayInfo.setAccess(WayInfo.ACCESS_PRIVATE);
-                                    } else if (value.equalsIgnoreCase("destination") || value.equalsIgnoreCase("customers")) {
+                                    } else if (value.equalsIgnoreCase("destination")
+                                            || value.equalsIgnoreCase("customers")) {
                                         curWayInfo.setAccess(WayInfo.ACCESS_DESTINATION);
-                                    } else if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("permissive")
-                                            || value.equalsIgnoreCase("access") || value.equalsIgnoreCase("public")) {
+                                    } else if (value.equalsIgnoreCase("yes")
+                                            || value.equalsIgnoreCase("permissive")
+                                            || value.equalsIgnoreCase("access")
+                                            || value.equalsIgnoreCase("public")) {
                                         curWayInfo.setAccess(WayInfo.ACCESS_YES);
                                     } else if (value.equalsIgnoreCase("forestry")) {
                                         curWayInfo.setAccess(WayInfo.ACCESS_FORESTRY);
@@ -634,18 +690,21 @@ public class OSMLoader {
                                         curWayInfo.setLayer(Integer.parseInt(value));
                                     } catch (NumberFormatException e) {
                                         logger.error(e.toString());
-                                        logger.error("Could not parse " + value + " as Integer; used in " + key + " in a " + qName);
+                                        logger.error("Could not parse " + value + " as Integer; used in "
+                                                + key + " in a " + qName);
                                     }
                                 } else if (key.equalsIgnoreCase("lanes")) {
                                     try {
                                         curWayInfo.setLanes(Integer.parseInt(value));
                                     } catch (NumberFormatException e) {
                                         logger.error(e.toString());
-                                        logger.error("Could not parse " + value + " as Integer; used in " + key + " in a " + qName);
+                                        logger.error("Could not parse " + value + " as Integer; used in "
+                                                + key + " in a " + qName);
                                     }
                                 } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
                                         || key.equalsIgnoreCase("created_by") || key.equalsIgnoreCase("foot")
-                                        || key.equalsIgnoreCase("source") || key.equalsIgnoreCase("opening_date")
+                                        || key.equalsIgnoreCase("source")
+                                        || key.equalsIgnoreCase("opening_date")
                                         || key.equalsIgnoreCase("landuse") /* TODO really ignore that? */
                                         || key.startsWith("building:") /* " */
                                         || key.equalsIgnoreCase("ref") || key.equalsIgnoreCase("planned")
@@ -653,7 +712,8 @@ public class OSMLoader {
                                     // ignore
                                 } else {
                                     ignoredKeys++;
-                                    logger.debug("Key ignored: " + key + ", value = " + value + " : " + ignoredKeys);
+                                    logger.debug("Key ignored: " + key + ", value = " + value + " : "
+                                            + ignoredKeys);
                                 }
                             } else {
                                 logger.warn("Element ignored in polyline: " + qName);
@@ -680,7 +740,8 @@ public class OSMLoader {
                                 curNodePOIDescription.setName(value);
                             } else if (key.equalsIgnoreCase("barrier")) {
                                 if (value.equalsIgnoreCase("gate") || value.equalsIgnoreCase("bollard")
-                                        || value.equalsIgnoreCase("cycle_barrier") || value.equalsIgnoreCase("entrance")
+                                        || value.equalsIgnoreCase("cycle_barrier")
+                                        || value.equalsIgnoreCase("entrance")
                                         || value.equalsIgnoreCase("lift_gate")) {
                                     // ignore because it should be no problem for bikers
                                     // TODO cycle_barrier could be interesting...
@@ -713,7 +774,8 @@ public class OSMLoader {
                                     || key.equalsIgnoreCase("note") || key.equalsIgnoreCase("source_ref")) {
                                 // ignore
                             } else {
-                                logger.warn("Unknown key in tags in a node: key: " + key + ", value: " + value);
+                                logger.warn("Unknown key in tags in a node: key: " + key + ", value: "
+                                        + value);
                             }
                         } else {
                             logger.error("Node inner elment ignored: " + qName);
@@ -735,7 +797,7 @@ public class OSMLoader {
                         idMap.put(Long.parseLong(attributes.getValue("id")), curNodeId);
 
                         curAddress = new Address();
-                        curNodePOIDescription = new POIDescription();
+                        curNodePOIDescription = new POIDescription(null, 0, null);
                         curType = 0;
 
                         inNode = true;
@@ -748,6 +810,8 @@ public class OSMLoader {
                         curAddress = new Address();
                         curType = 0;
                     } else if (qName.equalsIgnoreCase("relation")) {
+                        // TODO should not be ignored because for Autobahn and Bundestrassen they should be
+                        // rendered
                         logger.debug("Ignored relation.");
                     } else if (qName.equalsIgnoreCase("bounds")) {
                         Coordinates upLeft = new Coordinates();
@@ -759,18 +823,25 @@ public class OSMLoader {
                         bottomRight.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
                         bottomRight.setLongitude(Float.parseFloat(attributes.getValue("maxlon")));
 
-                        state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
-                        
+                        // state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
+
                         Coordinates middle = new Coordinates();
                         middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
                         middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-                        state.setAreaCoord(middle);
+                        // state.setAreaCoord(middle);
 
                     } else if (qName.equalsIgnoreCase("osm")) {
                         String version = attributes.getValue("version");
                         if (!version.equals("0.6")) {
                             logger.warn("OSM-Version is " + version);
                         }
+                        Coordinates upLeft = new Coordinates(maxLat, minLon);
+                        Coordinates bottomRight = new Coordinates(minLat, maxLon);
+                        Coordinates middle = new Coordinates();
+                        middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
+                        middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
+                        state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
+                        state.setAreaCoord(middle);
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }
@@ -806,7 +877,8 @@ public class OSMLoader {
 
                         if (curType != 0) {
                             curNodePOIDescription.setCategory(curType);
-                            state.getLoadedMapInfo().addPOI(curNodeCoordinates, curNodeId, curNodePOIDescription, curAddress);
+                            state.getLoadedMapInfo().addPOI(curNodeCoordinates, curNodeId,
+                                    curNodePOIDescription, curAddress);
                         } else {
                             state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                         }
