@@ -67,12 +67,9 @@ public class MapInfo {
      *            the unique id of the node
      */
     public void addNode(Coordinates position, int id, Address address) {
-        
-        
         Node newNode = new Node(id, position);
         elementDB.addNode(newNode);
         geographicalOperator.addToBaseLayer(newNode);
-        logger.warn("asdasds");
     }
 
     /**
