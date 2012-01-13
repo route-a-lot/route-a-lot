@@ -40,7 +40,7 @@ public class Street extends MapElement {
         return edges;
     }
     
-    public WayInfo getwayinfo() {
+    public WayInfo getWayInfo() {
         return wayInfo;
     }
     
