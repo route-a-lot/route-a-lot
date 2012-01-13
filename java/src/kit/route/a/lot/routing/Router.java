@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import org.apache.log4j.Logger;
+
 import kit.route.a.lot.common.IntTuple;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WeightCalculator;
@@ -20,13 +22,16 @@ public class Router {
      * 
      * @return List<int>
      */
+    
+    private static Logger logger = Logger.getLogger(Router.class);
     public static List<Integer> calculateRoute() {
         List<Integer> route = new LinkedList<Integer>();
-        Selection prev = null;
+        Selection prev = (Selection) null;
         for (Selection navPoint: State.getInstance().getNavigationNodes()) {
+            logger.info("Calculating route from " + prev.toString() + " to " + navPoint.toString());
             route.addAll(fromAToB(prev, navPoint));
         }
-        return null;
+        return route;
     }
 
     /**
@@ -41,11 +46,11 @@ public class Router {
 
     private static List<Integer> fromAToB(Selection a, Selection b) {
         // ToDo: rename?
-        Route bestPath = null;
         RoutingGraph graph = State.getInstance().getRoutingGraph();
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator());
         Route currentPath = null;
         if (a == null || b == null) {
+            logger.warn("Can't calculate route for one Selection only");
             return (List<Integer>) null;
         }
         // This helps us to reduce redundancy at a low cost.
@@ -75,6 +80,7 @@ public class Router {
                 heap.add(new Route(-1, (int) b.getRatio() * WeightCalculator.getInstance().calcWeight(b), currentPath));
             } else if (currentNode == -1) {
                 // This is the shortest path.
+                logger.info("Found route from " + a.toString() + " to " + b.toString());
                 return currentPath.toList();
             }
             for (Integer to: graph.getRelevantNeighbors(currentNode, new byte[] {graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo())})) {
@@ -83,6 +89,7 @@ public class Router {
             }
         }
         // No path was found, maybe raise an error?
+        logger.error("Couldn't find any route at all from " + a.toString() + " to " + b.toString() + ". Are you sure it is even possible?");
         return (List<Integer>) null;
     }
 }

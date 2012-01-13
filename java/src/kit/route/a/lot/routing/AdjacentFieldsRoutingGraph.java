@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Arrays;
 
+import org.apache.log4j.Logger;
+
 import kit.route.a.lot.common.IntTuple;
 
 
@@ -35,19 +37,25 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
      * 
      */
     private long[] arcFlags;
+    private static Logger logger = Logger.getLogger(AdjacentFieldsRoutingGraph.class);
 
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
         // ToDo: revise
-        assert startID.length == endID.length;
-        assert endID.length == weight.length;
+        if (startID.length != endID.length || endID.length != weight.length) {
+            logger.error("The length of the arrays don't match, aborting.");
+            return;
+        }
         int max = 0;
         for (int id: startID) {
             // Get maxID = edgesPos.size = edgeList.size
             max = Math.max(max, id);
         }
-        assert max <= startID.length;
-        // initialyze Arrays
+        if (max > startID.length) {
+            logger.error("ID's are NOT continuous, aborting.");
+            return;
+        }
+        // Initialize Arrays
         edgesPos = new int[max];
         areaID = new byte[max];
         edges = new int[startID.length];
@@ -63,7 +71,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         Arrays.fill(edgesPos, 0);
         int j = 0;  // Index of edges and weights
         int i = 1;  // Index of edgeLists and edgesPos
+        logger.info("Creating edges...");
         for (LinkedList<IntTuple> edgeList: edgeLists) {
+            logger.info("Creating edges for ID " + String.valueOf(i));
             // Fill Arrays
             for (IntTuple values: edgeList) {
                 edgesPos[i]++;
@@ -121,12 +131,16 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
         // ToDo: obsolete?
+        logger.warn("This method should NOT be called; revise code!");
         return getRelevantNeighbors(node, new byte[] {destArea});
     }
     
     
     public Collection<Integer> getRelevantNeighbors(int node, byte[] destAreas) {
-        assert node <= edgesPos.length;
+        if (node > edgesPos.length) {
+            logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
+            return null;
+        }
         LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
         long flags = 0;
         for (byte area: destAreas) {
@@ -145,7 +159,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public Collection<Integer> getAllNeighbors(int node) {
         // required for Precalculator.
-        assert node <= edgesPos.length;
+        if (node > edgesPos.length) {
+            logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
+            return null;
+        }
         LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
             // don't filter at all
@@ -156,21 +173,30 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     @Override
     public byte getAreaID(int node) {
-        assert node <= edgesPos.length;
+        if (node > edgesPos.length) {
+            logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
+            return (Byte) null;
+        }
         return areaID[node];
     }
 
     @Override
     public void setAreaID(int node, byte id) {
-        assert node <= edgesPos.length;
+        if (node > edgesPos.length) {
+            logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
+            return;
+        }
         areaID[node] = id;
     }
 
     @Override
     public long getArcFlags(int startID, int endID) {
         // ToDo: obsolete?
-        assert startID <= edgesPos.length;
-        assert endID <= edgesPos.length;
+        logger.warn("This method should NOT be called; revise code!");
+        if (startID > edgesPos.length || endID > edgesPos.length) {
+            logger.warn("ID's not within bounds");
+            return 0;
+        }
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
             if (endID == edges[i]) {
                 return arcFlags[i];
@@ -182,8 +208,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public void setArcFlags(int startID, int endID, long flags) {
         // ToDo: obsolete?
-        assert startID <= edgesPos.length;
-        assert endID <= edgesPos.length;
+        logger.warn("This method should NOT be called; revise code!");
+        if (startID > edgesPos.length || endID > edgesPos.length) {
+            logger.warn("ID's not within bounds");
+            return;
+        }
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
             if (endID == edges[i]) {
                 arcFlags[i] = flags;
@@ -195,8 +224,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     public void setArcFlag(int startID, int endID, byte area) {
         // Note: doesn't do anything if the edge is not found, maybe we should raise an error?
-        assert startID <= edgesPos.length;
-        assert endID <= edgesPos.length;
+        if (startID > edgesPos.length || endID > edgesPos.length) {
+            logger.warn("ID's not within bounds");
+            return;
+        }
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
             if (endID == edges[i]) {
                 arcFlags[i] |= 1 << area;
@@ -210,7 +241,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 return weights[i];
             }
         }
-        // Maybe raise an error instead?
+        logger.warn("No weight found from ID " + Integer.valueOf(from) + " to " + Integer.valueOf(to));
         return 0;
     }
     
