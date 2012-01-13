@@ -175,8 +175,6 @@ public class GUI extends JFrame implements ActionListener {
         topLeft.setLatitude(middle.getLatitude() + 0.01);
         bottomRight.setLongitude(middle.getLongitude() + 0.01);
         bottomRight.setLatitude(middle.getLatitude() - 0.01);
-        // The context needs to be queried / created in the very end.
-        context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
 
         l_routeText = new JLabel();
         l_routeText.setText("Route:");
@@ -434,8 +432,10 @@ public class GUI extends JFrame implements ActionListener {
         importOSM = new JButton("Importiere OSM-Karte");
         tab3.add(importOSM);
         this.pack();
-        // Graphics2D g2 = (Graphics2D)map.getGraphics();
-        // g2.drawImage(mapImage, map.getX(), map.getY(), null);
+        this.validate();
+        
+        // The context needs to be queried / created in the very end.
+        context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
     }
 
     private JMenuItem makeMenuItem(String label) {
