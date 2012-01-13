@@ -70,8 +70,8 @@ public class Tile {
     public void prerender(State state) {
         reset();
         /*
-         * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way (but we can
-         * use a other collection, too)
+         * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way
+         * (but we can use a other collection, too)
          */
         // TODO this copying is unnecessary and bad for performance
         List<MapElement> map = new ArrayList<MapElement>();
@@ -97,13 +97,13 @@ public class Tile {
     protected void reset() {
         data = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = data.createGraphics();
-        graphics.setColor(Color.cyan);
+        graphics.setColor(new Color(210, 230, 190));
         graphics.fillRect(0, 0, this.width, this.height);
     }
 
     /**
-     * Returns the rendered tile image. If nothing was rendered so far, returns an empty (background color filled) tile
-     * image.
+     * Returns the rendered tile image. If nothing was rendered so far, returns an empty (background color
+     * filled) tile image.
      * 
      * @return the tile image
      */
@@ -129,7 +129,8 @@ public class Tile {
     }
 
     protected void draw(MapElement element) {
-        throw new UnsupportedOperationException("Can't draw an element with type " + element.getClass().toString());
+        throw new UnsupportedOperationException("Can't draw an element with type "
+                + element.getClass().toString());
     }
 
     /**
@@ -139,11 +140,14 @@ public class Tile {
      *            the node to be drawn
      */
     protected void draw(Node node) {
-        int size = 5;
+        int size = 3;
 
         Coordinates localCoordinates = geoCoordinatesToLocalCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();
-        graphics.fillOval((int) localCoordinates.getLatitude() - size/2, (int) localCoordinates.getLongitude() - size/2, size, size);
+        graphics.setColor(Color.LIGHT_GRAY);
+        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2, (int) localCoordinates
+                .getLatitude()
+                - size / 2, size, size);
     }
 
     /**
@@ -162,16 +166,16 @@ public class Tile {
 
         for (int i = 0; i < nPoints; i++) {
             Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes.get(i).getPos());
-            xPoints[i] = (int) curCoordinates.getLatitude();
-            yPoints[i] = (int) curCoordinates.getLongitude();
+            xPoints[i] = (int) curCoordinates.getLongitude();
+            yPoints[i] = (int) curCoordinates.getLatitude();
         }
-        
+
         Graphics2D graphics = data.createGraphics();
-        
+
         WayInfo wayInfo = area.getWayInfo();
-        
+
         // TODO would be nice not to have that hardcoded here
-        
+
         if (wayInfo.isBuilding()) {
             graphics.setColor(Color.GRAY);
         } else if (wayInfo.isArea()) {
@@ -180,12 +184,13 @@ public class Tile {
                     graphics.setColor(Color.GREEN);
             }
         }
-        
+
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         graphics.fillPolygon(xPoints, yPoints, nPoints);
-        
+
         graphics.setColor(Color.BLACK);
         graphics.drawPolygon(xPoints, yPoints, nPoints);
     }
@@ -209,11 +214,12 @@ public class Tile {
         draw(edge.getStart());
         draw(edge.getEnd());
     }
-    
+
     /**
      * Draws a street on the tile, taking the street type into consideration.
      * 
-     * @param street the street to be drawn
+     * @param street
+     *            the street to be drawn
      */
     protected void draw(Street street) {
         int[] xPoints, yPoints;
@@ -230,22 +236,26 @@ public class Tile {
 
         for (int i = 0; i < nPoints; i++) {
             Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes.get(i).getPos());
-            xPoints[i] = (int) curCoordinates.getLatitude();
-            yPoints[i] = (int) curCoordinates.getLongitude();
+            xPoints[i] = (int) curCoordinates.getLongitude();
+            yPoints[i] = (int) curCoordinates.getLatitude();
         }
-        
+
         Graphics2D graphics = data.createGraphics();
-        graphics.setStroke(new BasicStroke(8));
-        graphics.setColor(Color.WHITE);
-        
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        graphics.setStroke(new BasicStroke(5));
+        graphics.setColor(Color.DARK_GRAY);
+        graphics.drawPolyline(xPoints, yPoints, nPoints);
+
+        graphics.setStroke(new BasicStroke(3));
+        graphics.setColor(Color.WHITE);
         graphics.drawPolyline(xPoints, yPoints, nPoints);
 
     }
 
     /**
-     * Derives a hash code using the tiles defining attributes' values, such as the origin coordinates and the level of
-     * detail.
+     * Derives a hash code using the tiles defining attributes' values, such as the origin coordinates and the
+     * level of detail.
      * 
      * @return the hash code
      */
