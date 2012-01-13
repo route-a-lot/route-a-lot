@@ -35,6 +35,7 @@ public class OSMLoader {
     public OSMLoader() {
         state = State.getInstance();
         weightCalculator = WeightCalculator.getInstance();
+        weightCalculator = new WeightCalculatorMock();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
     }
@@ -442,6 +443,7 @@ public class OSMLoader {
                                         curType = OSMType.HIGHWAY_IGNORED;
                                         logger.warn("Highway type ignored: " + value);
                                     }
+                                    curWayInfo.setStreet(true);
                                 } else if (key.equalsIgnoreCase("bicycle")) {
                                     if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("designated")
                                             || value.equalsIgnoreCase("permissive")) {
@@ -793,7 +795,7 @@ public class OSMLoader {
                                 startIds.add(curWayIds.get(i));
                                 endIds.add(curWayIds.get(i));
                             }
-                            endIds.add(curWayIds.get(curWayIds.size()));
+                            endIds.add(curWayIds.get(curWayIds.size() - 1));
                         }
 
                         inWay = false;
