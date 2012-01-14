@@ -9,6 +9,7 @@ import java.util.Set;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
 
 public interface GeographicalOperator {
@@ -129,5 +130,7 @@ public interface GeographicalOperator {
      * @return
      */
     void saveToStream(OutputStream stream);
+    
+    void addEdge(Edge edge); //TODO delete, or implement in a better way in classes 
 
 }

@@ -21,6 +21,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     
+    private ArrayList<Edge> edges;
+    
     /** Associations */
     private QuadTree zoomlevels[];
     
@@ -28,6 +30,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
+        edges = new ArrayList<Edge>(); //TODO impplement in a better way
         zoomlevels = new QuadTree[9];
         for (int i = 0; i < zoomlevels.length; i++) {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);
@@ -52,7 +55,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return  sel;
     }
     
-    private Selection select(Coordinates pos, float radius) {
+    /*private Selection select(Coordinates pos, float radius) {
         Selection selection = null;
         Coordinates newUL = new Coordinates();  //Bounds for area to search in
         Coordinates newBR = new Coordinates();
@@ -77,6 +80,34 @@ public class QTGeographicalOperator implements GeographicalOperator {
                         distance = line.ptLineDist(selectedPoint);
                     }
                 }
+            }
+        }
+        if (currentClosest != null) {
+            selection = getSelectionfromPointAndEdge(currentClosest, pos);
+        }
+        return selection;
+    }*/ //TODO if we have Edges in QT, this is the method we need
+    
+    private Selection select(Coordinates pos, float radius) {
+        Selection selection = null;
+        Coordinates newUL = new Coordinates();  //Bounds for area to search in
+        Coordinates newBR = new Coordinates();
+        newUL.setLatitude(pos.getLatitude() + radius);
+        newUL.setLongitude(pos.getLongitude() - radius);
+        newBR.setLatitude(pos.getLatitude() - radius);
+        newBR.setLongitude(pos.getLongitude() + radius);
+        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());  
+        Edge currentClosest = null;
+        double distance = -1;
+        for (Edge mapEle : edges) {
+            Line2D.Double line = new Line2D.Double(((Edge) mapEle).getStart().getPos().getLongitude(),
+                                                  ((Edge) mapEle).getStart().getPos().getLatitude(),
+                                                  ((Edge) mapEle).getEnd().getPos().getLongitude(),
+                                                  ((Edge) mapEle).getEnd().getPos().getLatitude());
+            if (distance == -1 
+              || line.ptLineDist(selectedPoint) < distance) {  //we found an edge which is more closer to the point
+                currentClosest = (Edge)mapEle;
+                distance = line.ptLineDist(selectedPoint);    
             }
         }
         if (currentClosest != null) {
@@ -180,5 +211,11 @@ public class QTGeographicalOperator implements GeographicalOperator {
             }
         }
         return mapElements;
+    }
+
+    @Override
+    public void addEdge(Edge edge) {
+        edges.add(edge);
+        
     }
 }

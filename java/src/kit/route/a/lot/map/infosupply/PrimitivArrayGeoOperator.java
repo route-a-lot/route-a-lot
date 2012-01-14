@@ -130,4 +130,10 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
         return null;
     }
 
+    @Override
+    public void addEdge(Edge edge) {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

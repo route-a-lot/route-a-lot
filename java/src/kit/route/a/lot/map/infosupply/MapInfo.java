@@ -109,6 +109,10 @@ public class MapInfo {
             Edge edge = new Edge(start, end, street);
             start.addOutgoingEdge(edge);
             street.addEdge(edge);
+            if (street.getWayInfo().getBicycle() == WayInfo.BICYCLE_YES) {
+                geographicalOperator.addEdge(edge);
+            }
+            
         }
     }
 
