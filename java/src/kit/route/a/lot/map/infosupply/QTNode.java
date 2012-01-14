@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.util.ArrayList;import java.util.Collection;
+import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
@@ -92,5 +93,53 @@ public class QTNode extends QuadTree {
             }
         }
         return true;
+    }
+    
+    @Override
+    public String print(int offset, List<Integer> last) {
+        if (offset > 50) {
+            return "this seems like a good point to stop printing...\n";
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("'" + countElements() + "'\n");
+        
+        printOffset(offset, last, stringBuilder);
+        stringBuilder.append("├──");
+        stringBuilder.append(children[0].print(offset + 1, last));
+        
+        printOffset(offset, last, stringBuilder);
+        stringBuilder.append("├──");
+        stringBuilder.append(children[1].print(offset + 1, last));
+        
+        printOffset(offset, last, stringBuilder);
+        stringBuilder.append("├──");
+        stringBuilder.append(children[2].print(offset + 1, last));
+        
+        printOffset(offset, last, stringBuilder);
+        stringBuilder.append("└──");
+        List<Integer> newLast = new ArrayList<Integer>(last);
+        newLast.add(offset);
+        stringBuilder.append(children[3].print(offset + 1, newLast));
+        
+        return stringBuilder.toString();
+    }
+    
+    private void printOffset(int offset, List<Integer> last, StringBuilder stringBuilder) {
+        for (int i = 0; i < offset; i++) {
+            if (last.contains(i)) {
+                stringBuilder.append("   ");
+            } else {
+                stringBuilder.append("│  ");
+            }
+        }
+    }
+    
+    @Override
+    public int countElements() {
+        int countElements = 0;
+        for (int i = 0; i < 4; i++) {
+            countElements += children[i].countElements();
+        }
+        return countElements;
     }
 }

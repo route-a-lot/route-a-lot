@@ -2,200 +2,204 @@ package kit.route.a.lot.common;
 
 
 public class WayInfo {
+    
+    private byte[] data = new byte[11];
 
-    private boolean isArea;
-    private boolean isBuilding;
-    private boolean isStreet;
-    private boolean isOther; // interesting to draw but not an area, building or street (for example: barrier, railway)
-
-    private int access;
-
-    /* used in case of isStreet */// possible values: (TODO)
-    private int bicycle; // NO_BICYCLE, BICYCLE
-    private int oneway; // NO_ONEWAY, ONEWAY, ONEWAY_OPPOSITE
-    private int cycleway; // CYCLEWAY_*
-    private int bridge; // BRIDGE
-    private int tunnel; // TUNNEL
-    private int lanes;
-    private int surface; // SURFACE_*
-
-    private int segregated;
-
+//    private byte elementType;
+//    
+//    private byte access;
+//
+//    /* used in case of isStreet */// possible values: (TODO)
+//    private byte bicycle; // NO_BICYCLE, BICYCLE
+//    private byte oneway; // NO_ONEWAY, ONEWAY, ONEWAY_OPPOSITE
+//    private byte cycleway; // CYCLEWAY_*
+//    private byte bridge; // BRIDGE
+//    private byte tunnel; // TUNNEL
+//    private byte lanes;
+//    private byte surface; // SURFACE_*
+//
+//    private byte segregated;
+//
     private int type;
-
-    private int layer;
+//
+//    private byte layer;
 
     private Address address;
 
-    public static final int BICYCLE_NO = 1;
-    public static final int BICYCLE_YES = 2;
-    public static final int BICYCLE_OFFICIAL = 3;
-    public static final int BICYCLE_DISMOUNT = 4;
-    public static final int BICYCLE_DESTINATION = 5;
-    public static final int ONEWAY_NO = 1;
-    public static final int ONEWAY_YES = 2;
-    public static final int ONEWAY_OPPOSITE = 3;
-    public static final int BRIDGE = 1;
-    public static final int TUNNEL = 1;
+    private static byte ELEMENT_TYPE_STREET;
+    private static byte ELEMENT_TYPE_AREA;
+    private static byte ELEMENT_TYPE_BUILDING;
+    private static byte ELEMENT_TYPE_OTHER;
 
-    public static final int SEGREGATED_YES = 1;
-    public static final int SEGREGATED_NO = 2;
+    public static final byte BICYCLE_NO = 1;
+    public static final byte BICYCLE_YES = 2;
+    public static final byte BICYCLE_OFFICIAL = 3;
+    public static final byte BICYCLE_DISMOUNT = 4;
+    public static final byte BICYCLE_DESTINATION = 5;
+    public static final byte ONEWAY_NO = 1;
+    public static final byte ONEWAY_YES = 2;
+    public static final byte ONEWAY_OPPOSITE = 3;
+    public static final byte BRIDGE = 1;
+    public static final byte TUNNEL = 1;
+
+    public static final byte SEGREGATED_YES = 1;
+    public static final byte SEGREGATED_NO = 2;
 
     
-    public static final int ACCESS_PRIVATE = 1;
-    public static final int ACCESS_DESTINATION = 3;
-    public static final int ACCESS_YES = 4;
-    public static final int ACCESS_NO = 4;
-    public static final int ACCESS_FORESTRY = 4;
-    public static final int ACCESS_AGRICULTURAL = 4;
+    public static final byte ACCESS_PRIVATE = 1;
+    public static final byte ACCESS_DESTINATION = 3;
+    public static final byte ACCESS_YES = 4;
+    public static final byte ACCESS_NO = 4;
+    public static final byte ACCESS_FORESTRY = 4;
+    public static final byte ACCESS_AGRICULTURAL = 4;
 
     public static enum Access {
         YES, FORESTRY, AGRICULTURAL, PRIVATE, DESTINATION, NO
     }
 
-    public static final int SURFACE_PAVED = 1;
-    public static final int SURFACE_UNPAVED = 2;
-    public static final int SURFACE_ASPHALT = 3;
-    public static final int SURFACE_GRAVEL = 4;
-    public static final int SURFACE_GROUND = 5;
-    public static final int SURFACE_GRASS = 6;
-    public static final int SURFACE_DIRT = 7;
-    public static final int SURFACE_COBBLESTONE = 8;
-    public static final int SURFACE_PAVING_STONES = 9;
-    public static final int SURFACE_CONCRETE = 10;
-    public static final int SURFACE_SAND = 11;
-    public static final int SURFACE_COMPACTED = 12;
+    public static final byte SURFACE_PAVED = 1;
+    public static final byte SURFACE_UNPAVED = 2;
+    public static final byte SURFACE_ASPHALT = 3;
+    public static final byte SURFACE_GRAVEL = 4;
+    public static final byte SURFACE_GROUND = 5;
+    public static final byte SURFACE_GRASS = 6;
+    public static final byte SURFACE_DIRT = 7;
+    public static final byte SURFACE_COBBLESTONE = 8;
+    public static final byte SURFACE_PAVING_STONES = 9;
+    public static final byte SURFACE_CONCRETE = 10;
+    public static final byte SURFACE_SAND = 11;
+    public static final byte SURFACE_COMPACTED = 12;
 
     
 
 
     public boolean isArea() {
-        return isArea;
+        return data[0] == ELEMENT_TYPE_AREA;
     }
 
 
     public void setArea(boolean isArea) {
-        this.isArea = isArea;
+        data[0] = ELEMENT_TYPE_AREA;
     }
 
 
     public boolean isBuilding() {
-        return isBuilding;
+        return data[0] == ELEMENT_TYPE_BUILDING;
     }
 
 
     public void setBuilding(boolean isBuilding) {
-        this.isBuilding = isBuilding;
+        data[0] = ELEMENT_TYPE_BUILDING;
     }
 
 
     public boolean isStreet() {
-        return isStreet;
+        return data[0] == ELEMENT_TYPE_STREET;
     }
 
 
     public void setStreet(boolean isStreet) {
-        this.isStreet = isStreet;
+        data[0] = ELEMENT_TYPE_STREET;
     }
 
 
     public boolean isOther() {
-        return isOther;
+        return data[0] == ELEMENT_TYPE_OTHER;
     }
 
 
     public void setOther(boolean isOther) {
-        this.isOther = isOther;
+        data[0] = ELEMENT_TYPE_OTHER;
     }
 
 
-    public int getAccess() {
-        return access;
+    public byte getAccess() {
+        return data[1];
     }
 
 
-    public void setAccess(int access) {
-        this.access = access;
+    public void setAccess(byte access) {
+        data[1] = access;
     }
 
 
-    public int getBicycle() {
-        return bicycle;
+    public byte getBicycle() {
+        return data[2];
     }
 
 
-    public void setBicycle(int bicycle) {
-        this.bicycle = bicycle;
+    public void setBicycle(byte bicycle) {
+        data[2] = bicycle;
     }
 
 
-    public int getOneway() {
-        return oneway;
+    public byte getOneway() {
+        return data[3];
     }
 
 
-    public void setOneway(int oneway) {
-        this.oneway = oneway;
+    public void setOneway(byte oneway) {
+        data[3] = oneway;
     }
 
 
-    public int getCycleway() {
-        return cycleway;
+    public byte getCycleway() {
+        return data[4];
     }
 
 
-    public void setCycleway(int cycleway) {
-        this.cycleway = cycleway;
+    public void setCycleway(byte cycleway) {
+        data[4] = cycleway;
     }
 
 
-    public int getBridge() {
-        return bridge;
+    public byte getBridge() {
+        return data[5];
     }
 
 
-    public void setBridge(int bridge) {
-        this.bridge = bridge;
+    public void setBridge(byte bridge) {
+        data[5] = bridge;
     }
 
 
-    public int getTunnel() {
-        return tunnel;
+    public byte getTunnel() {
+        return data[6];
     }
 
 
-    public void setTunnel(int tunnel) {
-        this.tunnel = tunnel;
+    public void setTunnel(byte tunnel) {
+        data[6] = tunnel;
     }
 
 
-    public int getLanes() {
-        return lanes;
+    public byte getLanes() {
+        return data[7];
     }
 
 
-    public void setLanes(int lanes) {
-        this.lanes = lanes;
+    public void setLanes(byte lanes) {
+        data[7] = lanes;
     }
 
 
-    public int getSurface() {
-        return surface;
+    public byte getSurface() {
+        return data[8];
     }
 
 
-    public void setSurface(int surface) {
-        this.surface = surface;
+    public void setSurface(byte surface) {
+        data[8] = surface;
     }
 
 
-    public int getSegregated() {
-        return segregated;
+    public byte getSegregated() {
+        return data[9];
     }
 
 
-    public void setSegregated(int segregated) {
-        this.segregated = segregated;
+    public void setSegregated(byte segregated) {
+        data[9] = segregated;
     }
 
 
@@ -209,13 +213,13 @@ public class WayInfo {
     }
 
 
-    public int getLayer() {
-        return layer;
+    public byte getLayer() {
+        return data[10];
     }
 
 
-    public void setLayer(int layer) {
-        this.layer = layer;
+    public void setLayer(byte layer) {
+        data[10] = layer;
     }
 
 

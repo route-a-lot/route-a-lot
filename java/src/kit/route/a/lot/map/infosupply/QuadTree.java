@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.Collection; import java.awt.geom.Rectangle2D;
+import java.io.InputStream;import java.io.OutputStream;import java.util.Collection; import java.util.List;
+import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
@@ -114,4 +115,7 @@ public abstract class QuadTree {
     public void setBottomRight(Coordinates bottomRight) {
         this.bottomRight = bottomRight;
     }
+    
+    public abstract String print(int offset, List<Integer> last);
+    public abstract int countElements();
 }

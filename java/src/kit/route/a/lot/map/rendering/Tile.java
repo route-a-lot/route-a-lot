@@ -21,7 +21,7 @@ import kit.route.a.lot.map.Street;
 
 public class Tile {
 
-    public static final double BASE_TILE_DIM = 0.001;
+    public static final float BASE_TILE_DIM = 0.001f;
 
     private Coordinates topLeft;
     private Coordinates bottomRight; // DISCUSS: keep or drop?
@@ -159,13 +159,13 @@ public class Tile {
     protected void draw(Area area) {
         int[] xPoints, yPoints;
         int nPoints;
-        List<Node> nodes = area.getNodes();
-        nPoints = nodes.size();
+        Node[] nodes = area.getNodes();
+        nPoints = nodes.length;
         xPoints = new int[nPoints];
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes.get(i).getPos());
+            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -224,11 +224,11 @@ public class Tile {
     protected void draw(Street street) {
         int[] xPoints, yPoints;
         int nPoints;
-        List<Edge> edges = street.getEdges();
+        Edge[] edges = street.getEdges();
         List<Node> nodes = new ArrayList<Node>();
-        nodes.add(edges.get(0).getStart());
-        for (int i = 0; i < edges.size(); i++) {
-            nodes.add(edges.get(i).getEnd());
+        nodes.add(edges[0].getStart());
+        for (int i = 0; i < edges.length; i++) {
+            nodes.add(edges[i].getEnd());
         }
         nPoints = nodes.size();
         xPoints = new int[nPoints];

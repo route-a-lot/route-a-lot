@@ -26,23 +26,23 @@ public class RendererTest {
     Coordinates bottomRight;
 
     public static void main(String[] args) {
-        new RendererTest().testDrawStreet();
+        new RendererTest().testDrawAreaAndNodes();
     }
 
     public void testDrawEdgeAndNodes() {
         renderer = new Renderer();
-        topLeft = new Coordinates(12., 12.);
-        bottomRight = new Coordinates(12.2, 12.2);
+        topLeft = new Coordinates(12.f, 12.f);
+        bottomRight = new Coordinates(12.2f, 12.2f);
 
         StateMock state = new StateMock();
         MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
 
         renderer.state = state;
 
-        mapInfo.addMapElement(new Node(0, new Coordinates(12.032, 12.0333)));
-        mapInfo.addMapElement(new Node(0, new Coordinates(12.1728, 12.16663)));
-        mapInfo.addMapElement(new Edge(new Node(0, new Coordinates(12.0788, 12.1234)), new Node(0,
-                new Coordinates(12.1234, 12.1458)), new Street(0, null, null)));
+        mapInfo.addMapElement(new Node(0, new Coordinates(12.032f, 12.0333f)));
+        mapInfo.addMapElement(new Node(0, new Coordinates(12.1728f, 12.16663f)));
+        mapInfo.addMapElement(new Edge(new Node(0, new Coordinates(12.0788f, 12.1234f)), new Node(0,
+                new Coordinates(12.1234f, 12.1458f)), new Street(null, null)));
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
@@ -52,8 +52,8 @@ public class RendererTest {
 
     public void testDrawAreaAndNodes() {
         renderer = new Renderer();
-        topLeft = new Coordinates(12., 12.);
-        bottomRight = new Coordinates(12.2, 12.2);
+        topLeft = new Coordinates(12f, 12.f);
+        bottomRight = new Coordinates(12.2f, 12.2f);
 
         StateMock state = new StateMock();
         MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
@@ -62,15 +62,17 @@ public class RendererTest {
 
         WayInfo wayInfo = new WayInfo();
         wayInfo.setBuilding(true);
-        Node node1 = new Node(0, new Coordinates(12.032, 12.0333));
-        Node node2 = new Node(1, new Coordinates(12.1728, 12.16663));
-        Node node3 = new Node(2, new Coordinates(12.1234, 12.1458));
-        Node node4 = new Node(3, new Coordinates(12.0788, 12.1234));
-        Area area = new Area(0, "", wayInfo);
-        area.addNode(node1);
-        area.addNode(node2);
-        area.addNode(node3);
-        area.addNode(node4);
+        Node node1 = new Node(0, new Coordinates(12.032f, 12.0333f));
+        Node node2 = new Node(1, new Coordinates(12.1728f, 12.16663f));
+        Node node3 = new Node(2, new Coordinates(12.1234f, 12.1458f));
+        Node node4 = new Node(3, new Coordinates(12.0788f, 12.1234f));
+        Area area = new Area("", wayInfo);
+        Node[] nodes = new Node[4];
+        nodes[0] = node1;
+        nodes[1] = node2;
+        nodes[2] = node3;
+        nodes[3] = node4;
+        area.setNodes(nodes);
         mapInfo.addMapElement(node1);
         mapInfo.addMapElement(node2);
         mapInfo.addMapElement(node3);
@@ -85,8 +87,8 @@ public class RendererTest {
 
     public void testDrawStreet() {
         renderer = new Renderer();
-        topLeft = new Coordinates(12., 12.);
-        bottomRight = new Coordinates(12.2, 12.2);
+        topLeft = new Coordinates(12.f, 12.f);
+        bottomRight = new Coordinates(12.2f, 12.2f);
 
         StateMock state = new StateMock();
         MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
@@ -95,14 +97,16 @@ public class RendererTest {
 
         WayInfo wayInfo = new WayInfo();
         wayInfo.setStreet(true);
-        Node node1 = new Node(0, new Coordinates(12.032, 12.0333));
-        Node node2 = new Node(1, new Coordinates(12.0788, 12.1234));
-        Node node3 = new Node(2, new Coordinates(12.1234, 12.1458));
-        Node node4 = new Node(3, new Coordinates(12.1728, 12.16663));
-        Street street = new Street(0, "", wayInfo);
-        street.addEdge(new Edge(node1, node2, street));
-        street.addEdge(new Edge(node2, node3, street));
-        street.addEdge(new Edge(node3, node4, street));
+        Node node1 = new Node(0, new Coordinates(12.032f, 12.0333f));
+        Node node2 = new Node(1, new Coordinates(12.0788f, 12.1234f));
+        Node node3 = new Node(2, new Coordinates(12.1234f, 12.1458f));
+        Node node4 = new Node(3, new Coordinates(12.1728f, 12.16663f));
+        Street street = new Street("", wayInfo);
+        Edge[] edges = new Edge[3];
+        edges[0] = new Edge(node1, node2, street);
+        edges[1] = new Edge(node2, node3, street);
+        edges[2] = new Edge(node3, node4, street);
+        street.setEdges(edges);
         mapInfo.addMapElement(street);
 
         TestGUI gui = new TestGUI(this);

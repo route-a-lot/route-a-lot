@@ -1,6 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.awt.geom.Line2D;import java.awt.geom.Point2D;import java.io.InputStream;import java.io.OutputStream;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -9,13 +12,8 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.infosupply.GeographicalOperator;
-import kit.route.a.lot.map.infosupply.QuadTree;
 
 import org.apache.log4j.Logger;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 public class QTGeographicalOperator implements GeographicalOperator {
 
@@ -216,6 +214,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void addEdge(Edge edge) {
         edges.add(edge);
+    }
         
+    
+    public String print() {
+        return zoomlevels[0].print(0, new ArrayList<Integer>());
     }
 }

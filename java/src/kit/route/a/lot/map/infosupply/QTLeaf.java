@@ -2,6 +2,7 @@ package kit.route.a.lot.map.infosupply;
 
 import java.util.ArrayList;import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
@@ -12,7 +13,7 @@ public class QTLeaf extends QuadTree {
     private Collection<MapElement> overlay;
     private Collection<MapElement> baseLayer;
     
-    private int limit = 64;     //elements per Leaf -> performance-tests
+    private static final int limit = 64;     //elements per Leaf -> performance-tests
         
     
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
@@ -69,5 +70,17 @@ public class QTLeaf extends QuadTree {
             baseLayer.add(element);
         }
         return true;
+    }
+    
+    @Override
+    public String print(int offset, List<Integer> last) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" " + countElements() + "\n");
+        return stringBuilder.toString();
+    }
+    
+    @Override
+    public int countElements() {
+        return baseLayer.size();
     }
 }

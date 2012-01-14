@@ -13,10 +13,8 @@ import kit.route.a.lot.common.WayInfo;
 
 
 public class Area extends MapElement {
-    
-    private int type;
 
-    private List<Node> nodes;
+    private Node[] nodes;
 
     private String name;
 
@@ -25,22 +23,17 @@ public class Area extends MapElement {
     
 
 
-    public Area(int type, String name, WayInfo wayInfo) {
-        this.type = type;
+    public Area(String name, WayInfo wayInfo) {
         this.name = name;
-        this.nodes = new ArrayList<Node>();
+        nodes = new Node[0];
         this.wayInfo = wayInfo;
     }
 
     public Area() {
-        this(-1, null, null);
+        this(null, null);
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public List<Node> getNodes() {
+    public Node[] getNodes() {
         return nodes;
     }
 
@@ -48,8 +41,8 @@ public class Area extends MapElement {
         return wayInfo;
     }
 
-    public void addNode(Node node) {
-        nodes.add(node);
+    public void setNodes(Node[] nodes) {
+        this.nodes = nodes;
     }
 
     @Override
@@ -66,8 +59,8 @@ public class Area extends MapElement {
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
         // TODO there is no float polygon, so I have to think about s.th. else (or leave it the way it is now)
-        int x[] = new int[this.nodes.size()];
-        int y[] = new int[this.nodes.size()];
+        int x[] = new int[nodes.length];
+        int y[] = new int[nodes.length];
         int i = 0;
         for (Node node : nodes) {
             x[i] = (int) (node.getPos().getLongitude() * 10000000); // 100000000 is a random factor, can be changed
@@ -78,7 +71,7 @@ public class Area extends MapElement {
             y[i] = (int) (node.getPos().getLatitude() * 10000000);
             i++;
         }
-        Polygon area = new Polygon(x, y, nodes.size());
+        Polygon area = new Polygon(x, y, nodes.length);
         Rectangle2D.Double box =
                 new Rectangle2D.Double(topLeft.getLongitude() * 10000000 - 1, bottomRight.getLatitude() * 10000000 - 1,
                         (bottomRight.getLongitude() - topLeft.getLongitude()) * 10000000 + 1,
@@ -91,13 +84,11 @@ public class Area extends MapElement {
         }
         return inside || area.contains(box) || area.intersects(box);
 
-
     }
 
     @Override
     protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub
-        
     }
 
     @Override

@@ -105,10 +105,10 @@ public class GUI extends JFrame implements ActionListener {
     private boolean mouseDragged = false;
     private int mousePosXDist;
     private int mousePosYDist;
-    private double coordinatesWidth;
-    private double coordinatesHeight;
-    private double coordinatesPixelWidthDifference;
-    private double coordinatesPixelHeightDifference;
+    private float coordinatesWidth;
+    private float coordinatesHeight;
+    private float coordinatesPixelWidthDifference;
+    private float coordinatesPixelHeightDifference;
 
     public GUI(Coordinates middle) {
         super("Route-A-Lot");
@@ -128,7 +128,7 @@ public class GUI extends JFrame implements ActionListener {
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
         navPointsList = new ArrayList<Coordinates>();
-        this.middle = new Coordinates(0.0, 0.0);
+        this.middle = new Coordinates(0.0f, 0.0f);
         this.pack();
         this.setVisible(true);
     }
@@ -169,10 +169,10 @@ public class GUI extends JFrame implements ActionListener {
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
-        topLeft.setLongitude(middle.getLongitude() - 0.01);
-        topLeft.setLatitude(middle.getLatitude() + 0.01);
-        bottomRight.setLongitude(middle.getLongitude() + 0.01);
-        bottomRight.setLatitude(middle.getLatitude() - 0.01);
+        topLeft.setLongitude(middle.getLongitude() - 0.01f);
+        topLeft.setLatitude(middle.getLatitude() + 0.01f);
+        bottomRight.setLongitude(middle.getLongitude() + 0.01f);
+        bottomRight.setLatitude(middle.getLatitude() - 0.01f);
 
         l_routeText = new JLabel();
         l_routeText.setText("Route:");
@@ -288,10 +288,10 @@ public class GUI extends JFrame implements ActionListener {
                 
                 calculateCoordinatesDistances();
                 
-                double newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                double newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
-                double newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                double newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
+                float newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
+                float newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
                 
                 topLeft.setLongitude(newTopLeftLongitude);
                 topLeft.setLatitude(newTopLeftLatitude);
@@ -475,5 +475,11 @@ public class GUI extends JFrame implements ActionListener {
      * BufferedImage.TYPE_INT_RGB); for (int x = 0; x < 150; x++) { for(int y = 0; y < 150; y++) {
      * image.setRGB(x, y, 100); } } return image; }
      */
+
+    @Override
+    public void actionPerformed(ActionEvent arg0) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

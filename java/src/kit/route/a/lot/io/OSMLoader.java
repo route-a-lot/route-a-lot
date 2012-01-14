@@ -687,7 +687,7 @@ public class OSMLoader {
                                     }
                                 } else if (key.equalsIgnoreCase("layer")) {
                                     try {
-                                        curWayInfo.setLayer(Integer.parseInt(value));
+                                        curWayInfo.setLayer(Byte.parseByte(value));
                                     } catch (NumberFormatException e) {
                                         logger.error(e.toString());
                                         logger.error("Could not parse " + value + " as Integer; used in "
@@ -695,7 +695,7 @@ public class OSMLoader {
                                     }
                                 } else if (key.equalsIgnoreCase("lanes")) {
                                     try {
-                                        curWayInfo.setLanes(Integer.parseInt(value));
+                                        curWayInfo.setLanes(Byte.parseByte(value));
                                     } catch (NumberFormatException e) {
                                         logger.error(e.toString());
                                         logger.error("Could not parse " + value + " as Integer; used in "

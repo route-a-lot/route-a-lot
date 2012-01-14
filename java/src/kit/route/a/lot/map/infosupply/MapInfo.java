@@ -1,9 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
-
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -18,9 +18,6 @@ import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 
 import org.apache.log4j.Logger;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 
 public class MapInfo {
@@ -86,33 +83,34 @@ public class MapInfo {
      */
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
 
-        if (wayInfo.isStreet()) { 
-            Street street = new Street(wayInfo.getType(), name, wayInfo);
+        if (wayInfo.isStreet()) {
+            Street street = new Street(name, wayInfo);
             addEdgesToStreet(street, ids);
             elementDB.addMapElement(street);
             geographicalOperator.addToBaseLayer(street);
         } else {
-            Area area = new Area(wayInfo.getType(), name, wayInfo);
+            Area area = new Area(name, wayInfo);
             elementDB.addMapElement(area);
             geographicalOperator.addToBaseLayer(area);
+            Node[] nodes = new Node[ids.size()];
             for (int i = 0; i < ids.size(); i++) {
-                area.addNode(elementDB.getNode(ids.get(i)));
+                nodes[i] = elementDB.getNode(ids.get(i));
             }
+            area.setNodes(nodes);
             geographicalOperator.addToBaseLayer(area);
         }
     }
 
     private void addEdgesToStreet(Street street, List<Integer> ids) {
+        Edge[] edges = new Edge[ids.size() - 1];
         for (int i = 0; i < ids.size() - 1; i++) {
             Node start = elementDB.getNode(ids.get(i));
             Node end = elementDB.getNode(ids.get(i + 1));
-            Edge edge = new Edge(start, end, street);
-            start.addOutgoingEdge(edge);
-            street.addEdge(edge);
+            edges[i] = new Edge(start, end, street);
             if (street.getWayInfo().getBicycle() == WayInfo.BICYCLE_YES) {
-                geographicalOperator.addEdge(edge);
+                geographicalOperator.addEdge(edges[i]);
             }
-            
+            street.setEdges(edges);
         }
     }
 
@@ -281,5 +279,9 @@ public class MapInfo {
      * @return
      */
     public void saveToStream(OutputStream stream) {
+    }
+
+    public String printQuadTree() {
+        return ((QTGeographicalOperator) geographicalOperator).print();
     }
 }

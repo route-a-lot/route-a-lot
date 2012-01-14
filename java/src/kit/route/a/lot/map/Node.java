@@ -9,16 +9,15 @@ import kit.route.a.lot.common.Selection;
 
 public class Node extends MapElement {
 
-    private Coordinates pos;
-    private ArrayList<Edge> outgoingEdges;
     private int id;
+    private float lat;
+    private float lon;
 
     public Node(int id, Coordinates pos) {
         this.id = id;
-        this.pos = pos;
-        outgoingEdges = new ArrayList<Edge>();
+        lat = pos.getLatitude();
+        lon = pos.getLongitude();
     }
-    
 
     public Node() {
         this(-1, null);
@@ -26,19 +25,12 @@ public class Node extends MapElement {
 
 
     public Coordinates getPos() {
-        return pos;
-    }
-    
-    
-    public void addOutgoingEdge(Edge edge) {
-        outgoingEdges.add(edge);
+        return new Coordinates(lat, lon);
     }
 
     public ArrayList<Edge> getOutgoingEdges() {
-        return outgoingEdges;
+        throw new UnsupportedOperationException("Unsupported due to memory performance.");
     }
-
-
 
     @Override
     protected String getName() {
@@ -53,25 +45,24 @@ public class Node extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        return (this.pos.getLatitude() <= topLeft.getLatitude() 
-                && this.pos.getLatitude() >= bottomRight.getLatitude()                
-                && this.pos.getLongitude() >= topLeft.getLongitude()       
-                && this.pos.getLongitude() <= bottomRight.getLongitude());
-                
-      //TODO pos -> neg (e.g. -180° -> 180°), but this is to do for every isInBounds-Fkt. for the mapElements
+        return (lat <= topLeft.getLatitude() && lat >= bottomRight.getLatitude()
+                && lon >= topLeft.getLongitude() && lon <= bottomRight.getLongitude());
+
+        // TODO pos -> neg (e.g. -180° -> 180°), but this is to do for every isInBounds-Fkt. for the
+        // mapElements
     }
 
     @Override
     protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub
-        
+
     }
 
 
     @Override
     protected void save(DataOutputStream stream) {
         // TODO Auto-generated method stub
-        
+
     }
 
 

@@ -57,7 +57,7 @@ public class Renderer {
      */
     @SuppressWarnings("unused")
     private void prerenderTiles(Coordinates topLeft, Coordinates bottomRight, int detail) {
-        double tileDim = Tile.BASE_TILE_DIM * Math.exp(detail * Math.log(2));
+        float tileDim = (float) (Tile.BASE_TILE_DIM * Math.exp(detail * Math.log(2)));
         int maxLon = (int) Math.floor(bottomRight.getLongitude() / tileDim);
         int maxLat = (int) Math.floor(bottomRight.getLatitude() / tileDim);
         for (int i = (int) Math.floor(topLeft.getLongitude() / tileDim); i <= maxLon; i++) {
