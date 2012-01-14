@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 
 import kit.route.a.lot.common.Coordinates;
@@ -10,8 +10,8 @@ import kit.route.a.lot.common.Selection;
 public class Node extends MapElement {
 
     private Coordinates pos;
-    
     private ArrayList<Edge> outgoingEdges;
+    private int id;
 
     public Node(int id, Coordinates pos) {
         this.id = id;
@@ -19,6 +19,11 @@ public class Node extends MapElement {
         outgoingEdges = new ArrayList<Edge>();
     }
     
+
+    public Node() {
+        this(-1, null);
+    }
+
 
     public Coordinates getPos() {
         return pos;
@@ -57,14 +62,21 @@ public class Node extends MapElement {
     }
 
     @Override
-    protected void load(InputStream stream) {
+    protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
+
 
     @Override
-    protected void save(OutputStream stream) {
+    protected void save(DataOutputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
+
+
+    public int getID() {
+        return this.id;
+    }
+
 }

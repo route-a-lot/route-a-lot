@@ -1,6 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 
 import kit.route.a.lot.common.Coordinates;
@@ -17,14 +18,16 @@ public class Street extends MapElement {
     private String name;
     
     private WayInfo wayInfo;
-
-    
     
     public Street(int type, String name, WayInfo wayInfo) {
         this.type = type;
-        edges = new ArrayList<Edge>();
+        this.edges = new ArrayList<Edge>();
         this.name = name;
         this.wayInfo = wayInfo;
+    }
+
+    public Street() {
+        this(-1, null, null);
     }
 
     @Override
@@ -68,14 +71,14 @@ public class Street extends MapElement {
     }
 
     @Override
-    protected void load(InputStream stream) {
+    protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
 
     @Override
-    protected void save(OutputStream stream) {
+    protected void save(DataOutputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
 }

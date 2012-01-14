@@ -50,9 +50,7 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public void addMapElement(MapElement element) throws IllegalArgumentException {
         mapElements.add(element);
-        element.setID(mapEleID);
         mapEleID++;
-
     }
 
     @Override

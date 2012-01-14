@@ -5,10 +5,6 @@ import kit.route.a.lot.common.POIDescription;
 
 public class POINode extends Node {
 
-    /** Attributes */
-    /**
-     * 
-     */
     private POIDescription info;
 
     public POINode(int id, Coordinates position, POIDescription description){
@@ -16,6 +12,10 @@ public class POINode extends Node {
         this.info = description;
     }
     
+    public POINode() {
+        this(-1, null, null);
+    }
+
     public POIDescription getInfo() {
         return info;
     }

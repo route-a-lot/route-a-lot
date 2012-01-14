@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.InputStream;import java.io.OutputStream;
-import java.awt.geom.Path2D.Float;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
@@ -16,9 +16,6 @@ public class Edge extends MapElement {
     private Node end;
     private Street street;
     
-    /**
-     * Constructor
-     */
     public Edge(Node start, Node end, Street street){
         this.start = start;
         this.end = end;
@@ -65,14 +62,14 @@ public class Edge extends MapElement {
     }
 
     @Override
-    protected void load(InputStream stream) {
+    protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
 
     @Override
-    protected void save(OutputStream stream) {
+    protected void save(DataOutputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
 }

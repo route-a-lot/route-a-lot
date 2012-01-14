@@ -6,14 +6,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.zip.DataFormatException; // TODO: possibly not the right exception type
 
 import kit.route.a.lot.controller.State;
-
-
-/*
- * DISCUSS: should mapInfo etc be created by loadMap() or by the controller?
- */
 
 public class MapIO {
 
@@ -28,7 +22,7 @@ public class MapIO {
      * @throws IOException
      * @throws DataFormatException
      */
-    public static void loadMap(File file) throws IOException, DataFormatException {
+    public static void loadMap(File file) throws IOException {
         // Verify requirements
         if (file == null) {
             throw new IllegalArgumentException();
@@ -46,10 +40,10 @@ public class MapIO {
         // Read data from stream, abort on error
         if ((stream.readChar() != 'S') || (stream.readChar() != 'R')
                 || (stream.readChar() != 'A') || (stream.readChar() != 'L')) {
-            throw new DataFormatException("Is not a map file: " + file.getName());
+            throw new IOException("Is not a map file: " + file.getName());
         }
         if (!stream.readUTF().equals("0.5")) {
-            throw new DataFormatException("Wrong format version: " + file.getName());
+            throw new IOException("Wrong format version: " + file.getName());
         }
         state.setLoadedMapName(stream.readUTF());
         state.getLoadedMapInfo().loadFromStream(stream);
@@ -80,7 +74,7 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-           DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
+        DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
         
         // Write data to stream, abort on error
         stream.writeBytes("SRAL");  // magic number

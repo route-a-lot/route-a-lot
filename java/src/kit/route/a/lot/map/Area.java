@@ -2,8 +2,8 @@ package kit.route.a.lot.map;
 
 import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import kit.route.a.lot.common.WayInfo;
 
 
 public class Area extends MapElement {
-
+    
     private int type;
 
     private List<Node> nodes;
@@ -21,13 +21,19 @@ public class Area extends MapElement {
     private String name;
 
     private WayInfo wayInfo;
+    
+    
 
 
     public Area(int type, String name, WayInfo wayInfo) {
         this.type = type;
         this.name = name;
-        nodes = new ArrayList<Node>();
+        this.nodes = new ArrayList<Node>();
         this.wayInfo = wayInfo;
+    }
+
+    public Area() {
+        this(-1, null, null);
     }
 
     public int getType() {
@@ -89,14 +95,14 @@ public class Area extends MapElement {
     }
 
     @Override
-    protected void load(InputStream stream) {
+    protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub
-
+        
     }
 
     @Override
-    protected void save(OutputStream stream) {
+    protected void save(DataOutputStream stream) {
         // TODO Auto-generated method stub
-
     }
+
 }

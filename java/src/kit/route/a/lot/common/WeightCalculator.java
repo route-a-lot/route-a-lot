@@ -43,7 +43,7 @@ public class WeightCalculator {
         Coordinates to = State.getInstance().getLoadedMapInfo().getNodePosition(toID);
         
         //Kugelkoordinaten berechnet distance in km
-        return (int) (6378.388 * Math.acos(Math.sin(from.getLatitude()) * Math.sin(to.getLatitude()) + Math.cos(from.getLatitude()) * Math.cos(to.getLatitude()) * Math.cos(to.getLongitude() - from.getLongitude())));
+        return (int) Math.floor((6378.388 * Math.acos(Math.sin(from.getLatitude()) * Math.sin(to.getLatitude()) + Math.cos(from.getLatitude()) * Math.cos(to.getLatitude()) * Math.cos(to.getLongitude() - from.getLongitude()))));
     }
     
     public int calcWeight(Selection edge) {
