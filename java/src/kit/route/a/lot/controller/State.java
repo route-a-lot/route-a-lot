@@ -14,6 +14,10 @@ import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
 
+    private ArrayList<String> importetMaps = new ArrayList<String>();  /*we need this list for the to know which maps can
+                                                                         be loaded, I would save patch, names will be saved 
+                                                                         implicit*/
+    
     private static State singleton = null;
     /** Attributes */
     /**
@@ -51,7 +55,7 @@ public class State {
     /**
      * 
      */
-    private int clickRadius;
+    private int clickRadius;    // TODO needed?
     /**
      * 
      */
@@ -89,21 +93,37 @@ public class State {
     
     
     public State() {
-        super();
-        this.loadedMapName = "";
-        this.loadedMapInfo = new MapInfo();
-        this.loadedGraph = new AdjacentFieldsRoutingGraph();
-        this.loadedHeightmap = null; //TODO heightmap
-        this.navigationNodes = new ArrayList<Selection>();
-        this.currentRoute = new ArrayList<Integer>();
-        this.areaCoord = null;
-        this.detailLevel = 0;
-        this.clickRadius = 1;  //TODO use it
-        this.routeDescription = new RouteDescription();
-        this.speed = 0;
-        this.duration = 0;
-        this.heightMalus = 0;
-        this.heighwayMalus = 0;
+        loadedMapName = "";
+        loadedMapInfo = new MapInfo();
+        loadedGraph = new AdjacentFieldsRoutingGraph();
+        loadedHeightmap = null; //TODO heightmap
+        navigationNodes = new ArrayList<Selection>();
+        currentRoute = new ArrayList<Integer>();
+        areaCoord = null;
+        detailLevel = 0;
+        clickRadius = 1;  //TODO use it
+        routeDescription = new RouteDescription();
+        speed = 15;
+        duration = 0;
+        heightMalus = 0;
+        heighwayMalus = 0;
+        importetMaps = new ArrayList<String>();
+    }
+
+
+
+
+    
+    public ArrayList<String> getImportetMaps() {
+        return importetMaps;
+    }
+
+
+
+
+    
+    public void setImportetMaps(ArrayList<String> importetMaps) {
+        this.importetMaps = importetMaps;
     }
 
 
@@ -256,5 +276,16 @@ public class State {
     public Heightmap getHeightMap() {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public void resetMap() {
+        loadedMapName = "";
+        loadedMapInfo = new MapInfo();
+        loadedGraph = new AdjacentFieldsRoutingGraph();
+        navigationNodes = new ArrayList<Selection>();
+        currentRoute = new ArrayList<Integer>();
+        areaCoord = new Coordinates();
+        detailLevel = 0;
+        routeDescription = new RouteDescription();
     }
 }

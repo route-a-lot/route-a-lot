@@ -43,7 +43,7 @@ public class Controller {
      * @return
      */
     public void setView() {
-        guiHandler.updateMap(); // TODO duration
+        guiHandler.updateMap(); // TODO needed?
     }
 
     /**
@@ -51,7 +51,7 @@ public class Controller {
      * 
      * @return
      */
-    public void setZoomLevel() {
+    public void setZoomLevel() {    //TODO needed?
     }
 
     /**
@@ -75,7 +75,15 @@ public class Controller {
      * 
      * @return
      */
-    public void importMap() {
+    public void importMap(String osmPathfile) {
+        File osmFile = new File(osmPathfile);
+        if(!osmFile.exists()) {
+            logger.error("osm File doesn't exist");
+        } else {
+            state.resetMap();
+            new OSMLoader().importMap(osmFile);
+            guiHandler.updateGUI();
+        }
     }
 
     /**
@@ -112,7 +120,7 @@ public class Controller {
      * 
      * @return
      */
-    public void orderNavNodes() {
+    public void orderNavNodes() {   
     }
 
     /**
@@ -249,11 +257,10 @@ public class Controller {
      * @return
      */
     public void render(Context context, int zoomLevel) {
-        if(zoomLevel != -1) {
-            State.getInstance().setDetailLevel(zoomLevel);
-        }
+        //if(zoomLevel != -1) {
+        //    State.getInstance().setDetailLevel(zoomLevel);    //TODO zoomlevels in geoOperator
+        //}
         renderer.render(context, State.getInstance().getDetailLevel()); 
-        setView();
     }
 
     /**
@@ -264,7 +271,7 @@ public class Controller {
     public void calculateRoute() {
         State state = State.getInstance();
         if (state.getNavigationNodes().size() >= 2) {
-            Router.calculateRoute();
+            state.setCurrentRoute(Router.calculateRoute());
         }
     }
 
