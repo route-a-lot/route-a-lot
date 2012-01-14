@@ -21,12 +21,6 @@ public class GraphMock implements RoutingGraph {
     }
 
     @Override
-    public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public byte getAreaID(int node) {
         // TODO Auto-generated method stub
         return 0;
@@ -36,12 +30,6 @@ public class GraphMock implements RoutingGraph {
     public void setAreaID(int node, byte id) {
         // TODO Auto-generated method stub
         
-    }
-
-    @Override
-    public long getArcFlags(int startID, int endID) {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     @Override
@@ -60,12 +48,6 @@ public class GraphMock implements RoutingGraph {
     public RoutingGraph getInverted() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void setArcFlags(int startID, int endID, long flags) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -94,6 +76,18 @@ public class GraphMock implements RoutingGraph {
 
     @Override
     public void setArcFlag(int node, int node2, byte area) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String getMetisRepresentation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void readAreas(String areas) {
         // TODO Auto-generated method stub
         
     }
