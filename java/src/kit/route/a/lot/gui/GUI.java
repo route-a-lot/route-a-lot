@@ -45,12 +45,9 @@ import kit.route.a.lot.controller.RALListener;
 
 public class GUI extends JFrame implements ActionListener {
 
-    private static final Color colors[] = { Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY,
-            Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.WHITE,
-            Color.YELLOW };
-
     private ArrayList<RALListener> targetSelectedList;
     private ArrayList<RALListener> viewChangedList;
+    private ArrayList<Coordinates> navPointsList;
     
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
@@ -93,7 +90,6 @@ public class GUI extends JFrame implements ActionListener {
 
     private Component selectedComponent;
 
-    private boolean mouseClicked;
     private int xpos;
     private int ypos;
     private int key = 0;
@@ -107,18 +103,19 @@ public class GUI extends JFrame implements ActionListener {
     private Coordinates topLeft = new Coordinates();
     private Coordinates bottomRight = new Coordinates();
     private boolean mouseDragged = false;
-    int mousePosXDist;
-    int mousePosYDist;
-    double coordinatesWidth;
-    double coordinatesHeight;
-    double coordinatesPixelWidthDifference;
-    double coordinatesPixelHeightDifference;
+    private int mousePosXDist;
+    private int mousePosYDist;
+    private double coordinatesWidth;
+    private double coordinatesHeight;
+    private double coordinatesPixelWidthDifference;
+    private double coordinatesPixelHeightDifference;
 
     public GUI(Coordinates middle) {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
+        navPointsList = new ArrayList<Coordinates>();
         this.middle = middle;
         this.pack();
         this.setVisible(true);
@@ -130,6 +127,7 @@ public class GUI extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
+        navPointsList = new ArrayList<Coordinates>();
         this.middle = new Coordinates(0.0, 0.0);
         this.pack();
         this.setVisible(true);
@@ -269,13 +267,6 @@ public class GUI extends JFrame implements ActionListener {
 
                     xpos = e.getX();
                     ypos = e.getY();
-
-                    if (xpos > map.getX() && xpos < map.getX() + map.getWidth() && ypos > map.getY()
-                            && ypos < map.getY() + map.getHeight()) {
-                        mouseClicked = true;
-                    } else {
-                        mouseClicked = false;
-                    }
                 }
             }
         });
@@ -308,9 +299,9 @@ public class GUI extends JFrame implements ActionListener {
                 coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
                 coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
                 
-                double newTopLeftLongitude = topLeft.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
+                double newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
                 double newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
-                double newBottomRightLongitude = bottomRight.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
+                double newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
                 double newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
                 
                 topLeft.setLongitude(newTopLeftLongitude);
@@ -354,23 +345,6 @@ public class GUI extends JFrame implements ActionListener {
                 for(RALListener lis: viewChangedList){
                     lis.handleRALEvent(viewEvent);
                 }
-                changeBackground(direction);
-            }
-
-            private void changeBackground(int direction) {
-
-                if (direction == up) {
-                    colorCounter++;
-                } else {
-                    colorCounter--;
-                }
-
-                if (colorCounter == colors.length) {
-                    colorCounter = 0;
-                } else if (colorCounter < 0) {
-                    colorCounter = colors.length - 1;
-                }
-                map.setBackground(colors[colorCounter]);
             }
         };
 
@@ -446,12 +420,35 @@ public class GUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.printf("(" + xpos + "," + ypos + ")\n");
-        NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, new Coordinates(), 1, context);
+        System.out.println("(" + xpos + "," + ypos + ")\n");
+        System.out.println("geht");
+        if(topLeft.getLatitude() > bottomRight.getLatitude()) {
+            coordinatesWidth = topLeft.getLatitude() - bottomRight.getLatitude();
+        } else {
+            coordinatesWidth = bottomRight.getLatitude() - bottomRight.getLatitude();
+        }
+        if(topLeft.getLongitude() > bottomRight.getLongitude()) {
+            coordinatesHeight = topLeft.getLongitude() - bottomRight.getLongitude();
+        } else {
+            coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
+        }
+        System.out.println("geht");
+        coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
+        coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
+        System.out.println("geht");
+        Coordinates newCoordinates = new Coordinates();
+        newCoordinates.setLatitude(topLeft.getLatitude() + (ypos - map.getY())*coordinatesPixelHeightDifference);
+        newCoordinates.setLongitude(topLeft.getLongitude() + (xpos - map.getX())*coordinatesPixelWidthDifference);
+        System.out.println("geht");
+        navPointsList.add(newCoordinates);
+
+        NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, newCoordinates, navPointsList.indexOf(newCoordinates), context);
         for(RALListener lis: targetSelectedList){
             lis.handleRALEvent(navEvent);
         }
         repaint();
+        System.out.println("point: " + newCoordinates.getLongitude() + "," + newCoordinates.getLatitude());
+        System.out.println("topleft: " + topLeft.getLongitude() + "," + topLeft.getLatitude());
     }
 
     public void addViewChangedListener(RALListener viewChangedListener) {
