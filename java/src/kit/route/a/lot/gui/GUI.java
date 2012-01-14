@@ -97,7 +97,7 @@ public class GUI extends JFrame implements ActionListener {
     private int newMousePosX;
     private int oldMousePosY;
     private int newMousePosY;
-    private int currentZoomLevel;
+    private int currentZoomLevel = 0;
     private Context context;
     private Coordinates middle;
     private Coordinates topLeft = new Coordinates();
@@ -286,18 +286,7 @@ public class GUI extends JFrame implements ActionListener {
                 mousePosXDist = newMousePosX - oldMousePosX;
                 mousePosYDist = newMousePosY - oldMousePosY;
                 
-                if(topLeft.getLatitude() > bottomRight.getLatitude()) {
-                    coordinatesWidth = topLeft.getLatitude() - bottomRight.getLatitude();
-                } else {
-                    coordinatesWidth = bottomRight.getLatitude() - bottomRight.getLatitude();
-                }
-                if(topLeft.getLongitude() > bottomRight.getLongitude()) {
-                    coordinatesHeight = topLeft.getLongitude() - bottomRight.getLongitude();
-                } else {
-                    coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
-                }
-                coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
-                coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
+                calculateCoordinatesDistances();
                 
                 double newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
                 double newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
@@ -317,16 +306,14 @@ public class GUI extends JFrame implements ActionListener {
                 System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
             }
         });
-        
-        MouseWheelListener listener = new MouseWheelListener() {
 
-            int colorCounter;
+        map.addMouseWheelListener(new MouseWheelListener() {
 
             int up = 1;
 
             int down = -1;
-
-
+            
+            @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 int direction;
                 int count = e.getWheelRotation();
@@ -335,20 +322,29 @@ public class GUI extends JFrame implements ActionListener {
                 } else {
                     direction = down;
                 }
+                calculateCoordinatesDistances();
                 if(direction == up && currentZoomLevel != 4) {
-                    currentZoomLevel += direction;
+                    currentZoomLevel++;
+                    topLeft.setLongitude(topLeft.getLongitude() - coordinatesWidth/2);
+                    topLeft.setLatitude(topLeft.getLatitude() - coordinatesHeight/2);
+                    bottomRight.setLongitude(bottomRight.getLongitude() + coordinatesWidth/2);
+                    bottomRight.setLatitude(bottomRight.getLatitude() + coordinatesHeight/2);
+                    
                 } else if(direction == down && currentZoomLevel != -4) {
-                    currentZoomLevel += direction;
+                    currentZoomLevel--;
+                    topLeft.setLongitude(topLeft.getLongitude() + coordinatesWidth/4);
+                    topLeft.setLatitude(topLeft.getLatitude() + coordinatesHeight/4);
+                    bottomRight.setLongitude(bottomRight.getLongitude() - coordinatesWidth/4);
+                    bottomRight.setLatitude(bottomRight.getLatitude() - coordinatesHeight/4);
                 }
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
                 for(RALListener lis: viewChangedList){
                     lis.handleRALEvent(viewEvent);
                 }
+                repaint();
             }
-        };
-
-        map.addMouseWheelListener(listener);
+        });
 
         tab1 = new JPanel();
         tab2 = new JPanel();
@@ -414,41 +410,30 @@ public class GUI extends JFrame implements ActionListener {
 
     private JMenuItem makeMenuItem(String label) {
         JMenuItem item = new JMenuItem(label);
-        item.addActionListener(this);
+        item.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("(" + xpos + "," + ypos + ")\n");
+                System.out.println("geht");
+                calculateCoordinatesDistances();
+                System.out.println("geht");
+                Coordinates newCoordinates = new Coordinates();
+                newCoordinates.setLatitude(topLeft.getLatitude() + (ypos - map.getY())*coordinatesPixelHeightDifference);
+                newCoordinates.setLongitude(topLeft.getLongitude() + (xpos - map.getX())*coordinatesPixelWidthDifference);
+                System.out.println("geht");
+                navPointsList.add(newCoordinates);
+
+                System.out.println("point: " + newCoordinates.getLongitude() + "," + newCoordinates.getLatitude());
+                System.out.println("topleft: " + topLeft.getLongitude() + "," + topLeft.getLatitude());
+                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, newCoordinates, navPointsList.indexOf(newCoordinates), context);
+                for(RALListener lis: targetSelectedList){
+                    lis.handleRALEvent(navEvent);
+                }
+                repaint();
+            }
+        });
         return item;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        System.out.println("(" + xpos + "," + ypos + ")\n");
-        System.out.println("geht");
-        if(topLeft.getLatitude() > bottomRight.getLatitude()) {
-            coordinatesWidth = topLeft.getLatitude() - bottomRight.getLatitude();
-        } else {
-            coordinatesWidth = bottomRight.getLatitude() - bottomRight.getLatitude();
-        }
-        if(topLeft.getLongitude() > bottomRight.getLongitude()) {
-            coordinatesHeight = topLeft.getLongitude() - bottomRight.getLongitude();
-        } else {
-            coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
-        }
-        System.out.println("geht");
-        coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
-        coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
-        System.out.println("geht");
-        Coordinates newCoordinates = new Coordinates();
-        newCoordinates.setLatitude(topLeft.getLatitude() + (ypos - map.getY())*coordinatesPixelHeightDifference);
-        newCoordinates.setLongitude(topLeft.getLongitude() + (xpos - map.getX())*coordinatesPixelWidthDifference);
-        System.out.println("geht");
-        navPointsList.add(newCoordinates);
-
-        NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, newCoordinates, navPointsList.indexOf(newCoordinates), context);
-        for(RALListener lis: targetSelectedList){
-            lis.handleRALEvent(navEvent);
-        }
-        repaint();
-        System.out.println("point: " + newCoordinates.getLongitude() + "," + newCoordinates.getLatitude());
-        System.out.println("topleft: " + topLeft.getLongitude() + "," + topLeft.getLatitude());
     }
 
     public void addViewChangedListener(RALListener viewChangedListener) {
@@ -467,6 +452,24 @@ public class GUI extends JFrame implements ActionListener {
         }
     }
     
+    public void updateGUI() {
+        repaint();
+    }
+    
+    private void calculateCoordinatesDistances() {
+        if(topLeft.getLatitude() > bottomRight.getLatitude()) {
+            coordinatesWidth = topLeft.getLatitude() - bottomRight.getLatitude();
+        } else {
+            coordinatesWidth = bottomRight.getLatitude() - topLeft.getLatitude();
+        }
+        if(topLeft.getLongitude() > bottomRight.getLongitude()) {
+            coordinatesHeight = topLeft.getLongitude() - bottomRight.getLongitude();
+        } else {
+            coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
+        }
+        coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
+        coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
+    }
     /*
      * private BufferedImage testImage(){ BufferedImage image = new BufferedImage(150, 150,
      * BufferedImage.TYPE_INT_RGB); for (int x = 0; x < 150; x++) { for(int y = 0; y < 150; y++) {

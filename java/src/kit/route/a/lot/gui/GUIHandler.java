@@ -50,6 +50,7 @@ public class GUIHandler {
      * @return
      */
     public void updateGUI() {
+        gui.updateGUI();
     }
 
     /**
