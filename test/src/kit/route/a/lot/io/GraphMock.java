@@ -91,5 +91,17 @@ public class GraphMock implements RoutingGraph {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public String getMetisRepresentation() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void readAreas(String areas) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }
