@@ -99,7 +99,7 @@ public class Precalculator {
 
             // read the output from the command
             while ((buffer = stdInput.readLine()) != null) {
-                logger.info(buffer);
+                logger.debug(buffer);
             }
             
             // read any errors from the attempted command

@@ -42,7 +42,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
         // ToDo: revise
-        logger.debug("Creating Routinggraph...");
+        logger.info("Creating Routinggraph...");
         if (startID.length != endID.length || endID.length != weight.length) {
             logger.error("The length of the arrays don't match, aborting.");
             return;
@@ -186,7 +186,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public void setArcFlag(int startID, int endID, byte area) {
         // Note: doesn't do anything if the edge is not found, maybe we should raise an error?
         if (startID > edgesPos.length || endID > edgesPos.length) {
-            logger.warn("ID's not within bounds");
+            logger.warn("ID's are not within bounds");
             return;
         }
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
