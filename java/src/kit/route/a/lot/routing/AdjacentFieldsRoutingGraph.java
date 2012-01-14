@@ -42,6 +42,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
         // ToDo: revise
+        logger.debug("Creating Routinggraph...");
         if (startID.length != endID.length || endID.length != weight.length) {
             logger.error("The length of the arrays don't match, aborting.");
             return;
@@ -127,13 +128,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             stream.writeLong(arcFlags[i]);
         }
     }
-
-    @Override
-    public Collection<Integer> getRelevantNeighbors(int node, byte destArea) {
-        // ToDo: obsolete?
-        logger.warn("This method should NOT be called; revise code!");
-        return getRelevantNeighbors(node, new byte[] {destArea});
-    }
     
     
     public Collection<Integer> getRelevantNeighbors(int node, byte[] destAreas) {
@@ -187,39 +181,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             return;
         }
         areaID[node] = id;
-    }
-
-    @Override
-    public long getArcFlags(int startID, int endID) {
-        // ToDo: obsolete?
-        logger.warn("This method should NOT be called; revise code!");
-        if (startID > edgesPos.length || endID > edgesPos.length) {
-            logger.warn("ID's not within bounds");
-            return 0;
-        }
-        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
-            if (endID == edges[i]) {
-                return arcFlags[i];
-            }
-        }
-        return (long) 0;
-    }
-
-    @Override
-    public void setArcFlags(int startID, int endID, long flags) {
-        // ToDo: obsolete?
-        logger.warn("This method should NOT be called; revise code!");
-        if (startID > edgesPos.length || endID > edgesPos.length) {
-            logger.warn("ID's not within bounds");
-            return;
-        }
-        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
-            if (endID == edges[i]) {
-                arcFlags[i] = flags;
-                // There might be multiple entries for the same edge, so don't abort yet
-                // to make it more robust.
-            }
-        }
     }
     
     public void setArcFlag(int startID, int endID, byte area) {

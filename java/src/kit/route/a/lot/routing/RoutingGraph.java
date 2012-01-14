@@ -38,17 +38,6 @@ public interface RoutingGraph {
     public void saveToStream(DataOutputStream stream) throws IOException;
 
     /**
-     * Operation getRelevantNeighbors
-     * 
-     * @param node
-     *            -
-     * @param destArea
-     *            -
-     * @return Collection<int>
-     */
-    Collection<Integer> getRelevantNeighbors(int node, byte destArea);
-
-    /**
      * Operation getAreaID
      * 
      * @param node
@@ -70,17 +59,6 @@ public interface RoutingGraph {
     void setAreaID(int node, byte id);
 
     /**
-     * Operation getArcFlags
-     * 
-     * @param startID
-     *            -
-     * @param endID
-     *            -
-     * @return int64
-     */
-    long getArcFlags(int startID, int endID);
-
-    /**
      * Operation setArcFlags
      * 
      * @param startID
@@ -92,7 +70,6 @@ public interface RoutingGraph {
      * @return
      * @return
      */
-    void setArcFlags(int startID, int endID, long flags);
 
 
     int getWeight(int first, int last);
