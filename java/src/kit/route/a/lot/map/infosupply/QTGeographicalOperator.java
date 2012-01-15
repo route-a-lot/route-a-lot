@@ -119,7 +119,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         return mapElements;
     }
-        
+
     @Override
     public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft, Coordinates bottomRight) {
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();

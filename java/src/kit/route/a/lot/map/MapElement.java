@@ -21,7 +21,7 @@ public abstract class MapElement {
     protected static final byte DESCRIPTOR_POI = 4;  
     
     /** the map element identifier */
-    private int id = -1;
+    protected int id = -1;
     
     /**
      * Returns the name of the map element.
@@ -42,8 +42,9 @@ public abstract class MapElement {
      * @param id the new MapElement ID
      * @return whether the ID was set
      */
+    // TODO not really good name
     public boolean initID(int id) {
-        if (id < 0) {
+        if (this.id < 0) {
             this.id = id;
             return true;
         }

@@ -15,6 +15,12 @@ public class Node extends MapElement {
         lat = pos.getLatitude();
         lon = pos.getLongitude();
     }
+    
+    public Node(float latitude, float longitude, int id) {
+        lat = latitude;
+        lon = longitude;
+        this.id = id;
+    }
 
     public Node() {
         this(null);

@@ -25,9 +25,9 @@ public class RendererTest {
     Coordinates bottomRight;
 
     public static void main(String[] args) {
-        new RendererTest().testDrawAreaAndNodes();
+        new RendererTest().testDrawCircle();
     }
-
+    
     public void testDrawAreaAndNodes() {
         renderer = new Renderer();
         topLeft = new Coordinates(12f, 12.f);
@@ -39,7 +39,7 @@ public class RendererTest {
         renderer.state = state;
 
         WayInfo wayInfo = new WayInfo();
-        wayInfo.setBuilding(true);
+        wayInfo.setStreet(true);
         Node node1 = new Node(new Coordinates(12.032f, 12.0333f));
         Node node2 = new Node(new Coordinates(12.1728f, 12.16663f));
         Node node3 = new Node(new Coordinates(12.1234f, 12.1458f));
@@ -60,10 +60,52 @@ public class RendererTest {
         mapInfo.addMapElement(node3);
         mapInfo.addMapElement(node4);
         mapInfo.addMapElement(area);
+        
+        mapInfo.addMapElement(new Node(topLeft));
+        mapInfo.addMapElement(new Node(bottomRight));
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
         context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+
+    }
+
+    public void testDrawCircle() {
+        renderer = new Renderer();
+        topLeft = new Coordinates(49.019887f, 8.394492f);
+        bottomRight = new Coordinates(49.008375f, 8.414061f);
+
+        StateMock state = new StateMock();
+        MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
+
+        renderer.state = state;
+
+        WayInfo wayInfo = new WayInfo();
+        wayInfo.setBuilding(true);
+        Node[] nodes = new Node[8];
+        nodes[0] = new Node(49.017945f, 8.404362f, 0);
+        nodes[1] = new Node(49.016397f, 8.408911f, 1);
+        nodes[2] = new Node(49.01423f, 8.410413f, 2);
+        nodes[3] = new Node(49.011866f, 8.409383f, 3);
+        nodes[4] = new Node(49.010036f, 8.404748f, 4);
+        nodes[5] = new Node(49.011584f, 8.399727f, 5);
+        nodes[6] = new Node(49.014118f, 8.398311f, 6);
+        nodes[7] = new Node(49.01696f, 8.400285f, 7);
+//        nodes[0] = new Node(0.01f, 0.0f, 0);
+//        nodes[1] = new Node(0.007f, 0.003f, 1);
+//        nodes[2] = new Node(0.0f, 0.01f, 2);
+//        nodes[3] = new Node(-0.007f, -0.003f, 3);
+//        nodes[4] = new Node(-0.01f, -0.01f, 4);
+//        nodes[5] = new Node(-0.007f, -0.003f, 5);
+//        nodes[6] = new Node(0.0f, 0.0f, 6);
+//        nodes[7] = new Node(0.007f, 0.003f, 7);
+        Street street = new Street("", wayInfo);
+        street.setNodes(nodes);
+        mapInfo.addMapElement(street);
+
+        TestGUI gui = new TestGUI(this);
+        gui.setVisible(true);
+        context = new ContextSW(500, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 

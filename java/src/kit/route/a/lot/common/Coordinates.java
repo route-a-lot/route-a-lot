@@ -28,5 +28,10 @@ public class Coordinates {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
+    
+    @Override
+    public String toString() {
+        return "latitude: " + latitude + " - longitude: " + longitude;
+    }
  
 }
