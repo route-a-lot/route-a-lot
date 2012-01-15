@@ -1,10 +1,12 @@
 package kit.route.a.lot.controller;
 
 import java.io.File;
+import java.io.IOException;
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.gui.GUIHandler;
+import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
 import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.rendering.Renderer;
@@ -67,7 +69,19 @@ public class Controller {
      * 
      * @return
      */
-    public void loadMap() {
+    public void loadMap(String mapPath) {
+        File mapFile = new File(mapPath);
+        if(!mapFile.exists()) {
+            logger.error("map File doesn't exist");
+        } else {
+            state.resetMap();
+            try {
+                MapIO.loadMap(mapFile);
+            } catch (IOException e) {
+                logger.fatal("IO Exception in MapIO");
+            }
+            guiHandler.updateGUI();
+        }
     }
 
     /**
@@ -75,15 +89,17 @@ public class Controller {
      * 
      * @return
      */
-    public void importMap(String osmPathfile) {
-        File osmFile = new File(osmPathfile);
+    public void importMap(String osmPath) {
+        File osmFile = new File(osmPath);
         if(!osmFile.exists()) {
             logger.error("osm File doesn't exist");
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
             guiHandler.updateGUI();
+            //TODO saveMap
         }
+       
     }
 
     /**
