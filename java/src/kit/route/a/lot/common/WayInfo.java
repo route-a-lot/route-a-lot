@@ -30,10 +30,10 @@ public class WayInfo {
 
     private Address address;
 
-    private static byte ELEMENT_TYPE_STREET;
-    private static byte ELEMENT_TYPE_AREA;
-    private static byte ELEMENT_TYPE_BUILDING;
-    private static byte ELEMENT_TYPE_OTHER;
+    private static byte ELEMENT_TYPE_STREET = 1;
+    private static byte ELEMENT_TYPE_AREA = 2;
+    private static byte ELEMENT_TYPE_BUILDING = 3;
+    private static byte ELEMENT_TYPE_OTHER = 4;
 
     public static final byte BICYCLE_NO = 1;
     public static final byte BICYCLE_YES = 2;
