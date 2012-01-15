@@ -20,7 +20,7 @@ import kit.route.a.lot.map.Street;
 
 public class Tile {
 
-    public static final float BASE_TILE_DIM = 0.001f;
+    public static final float BASE_TILE_DIM = 0.005f;
 
     private Coordinates topLeft;
     private Coordinates bottomRight; // DISCUSS: keep or drop?
@@ -28,6 +28,7 @@ public class Tile {
     private BufferedImage data;
     private int width; // DISCUSS: keep or drop?
     private int height;
+    private Projection projection;
 
     /**
      * Creates an new (empty) tile using the defined resolution.
@@ -50,6 +51,7 @@ public class Tile {
         this.width = width;
         this.height = height;
         this.data = null;
+        projection = new MercatorProjection(topLeft, bottomRight, width);
     }
 
     /**
@@ -82,8 +84,6 @@ public class Tile {
                 draw((Area) element);
             } else if (element instanceof Street) {
                 draw((Street) element);
-            //} else if (element instanceof Edge) {
-            //    draw((Edge) element);
             } else {
                 draw(element);
             }
@@ -141,7 +141,7 @@ public class Tile {
     protected void draw(Node node) {
         int size = 3;
 
-        Coordinates localCoordinates = geoCoordinatesToLocalCoordinates(node.getPos());
+        Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();
         graphics.setColor(Color.LIGHT_GRAY);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2, (int) localCoordinates
@@ -164,7 +164,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = projection.geoCoordinatesToLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -194,26 +194,6 @@ public class Tile {
         graphics.drawPolygon(xPoints, yPoints, nPoints);
     }
 
-    /*/**
-     * Draws a single street edge on the tile.
-     * 
-     * @param edge
-     *            the edge to be drawn
-     *./
-    protected void draw(Edge edge) {
-        Coordinates start = geoCoordinatesToLocalCoordinates(edge.getStart().getPos());
-        Coordinates end = geoCoordinatesToLocalCoordinates(edge.getEnd().getPos());
-
-        Graphics2D graphics = data.createGraphics();
-        graphics.setStroke(new BasicStroke(3));
-        graphics.setColor(Color.WHITE);
-        graphics.drawLine((int) start.getLatitude(), (int) start.getLongitude(), (int) end.getLatitude(),
-                (int) end.getLongitude());
-
-        draw(edge.getStart());
-        draw(edge.getEnd());
-    }*/
-
     /**
      * Draws a street on the tile, taking the street type into consideration.
      * 
@@ -229,7 +209,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = projection.geoCoordinatesToLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -240,7 +220,7 @@ public class Tile {
         graphics.setStroke(new BasicStroke(5));
         graphics.setColor(Color.DARK_GRAY);
         graphics.drawPolyline(xPoints, yPoints, nPoints);
-        
+
         WayInfo wayInfo = street.getWayInfo();
         switch (wayInfo.getType()) {
             case OSMType.HIGHWAY_MOTORWAY:
@@ -273,7 +253,31 @@ public class Tile {
         return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
     }
 
-    private Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
+}
+
+
+abstract class Projection {
+
+    abstract Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates);
+
+}
+
+class SimpleProjection extends Projection {
+
+    private Coordinates topLeft;
+    private Coordinates bottomRight;
+    private int width;
+    private int height;
+
+    SimpleProjection(Coordinates topLeft, Coordinates bottomRight, int width, int height) {
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
+        this.width = width;
+        this.height = height;
+    }
+
+    @Override
+    Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
         Coordinates localCoordinates = new Coordinates();
         localCoordinates.setLatitude((geoCoordinates.getLatitude() - topLeft.getLatitude()) * width
                 / (bottomRight.getLatitude() - topLeft.getLatitude()));
@@ -281,4 +285,40 @@ public class Tile {
                 / (bottomRight.getLongitude() - topLeft.getLongitude()));
         return localCoordinates;
     }
+}
+
+class MercatorProjection extends Projection {
+
+    private Coordinates topLeft;
+    float scale;
+
+    public MercatorProjection(Coordinates topLeft, Coordinates bottomRight, int width) {
+        this.topLeft = mercatorCoordinates(topLeft);
+        scale =
+                Math.abs(mercatorCoordinates(bottomRight).getLongitude() - this.topLeft.getLongitude())
+                        / width;
+        // System.out.println("scale = " + scale);
+    }
+
+    @Override
+    Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
+        Coordinates mercatorCoordinates = mercatorCoordinates(geoCoordinates);
+        Coordinates localCoordinates = new Coordinates();
+        localCoordinates.setLongitude((mercatorCoordinates.getLongitude() - topLeft.getLongitude()) / scale);
+        localCoordinates.setLatitude((topLeft.getLatitude() - mercatorCoordinates.getLatitude()) / scale);
+        return localCoordinates;
+    }
+
+    private Coordinates mercatorCoordinates(Coordinates geoCoordinates) {
+        Coordinates mercatorCoordinates = new Coordinates();
+        mercatorCoordinates.setLongitude((geoCoordinates.getLongitude()));
+        mercatorCoordinates.setLatitude((float) (arsinh(Math
+                .tan(geoCoordinates.getLatitude() * Math.PI / 180)) * 180 / Math.PI));
+        return mercatorCoordinates;
+    }
+
+    private double arsinh(double x) {
+        return Math.log(x + Math.sqrt(x * x + 1));
+    }
+
 }
