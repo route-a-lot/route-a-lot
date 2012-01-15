@@ -80,72 +80,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
         // create and return selection from the element
         return (closestElement != null) ? closestElement.getSelection(pos) : null;
     }
-    
-    
-    /*private Selection select(Coordinates pos, float radius) {
-        Selection selection = null;
-        Coordinates newUL = new Coordinates();  //Bounds for area to search in
-        Coordinates newBR = new Coordinates();
-        newUL.setLatitude(pos.getLatitude() + radius);
-        newUL.setLongitude(pos.getLongitude() - radius);
-        newBR.setLatitude(pos.getLatitude() - radius);
-        newBR.setLongitude(pos.getLongitude() + radius);
-        Collection<QTLeaf> matchingLeafs = zoomlevels[0].getLeafs(newUL, newBR);  //the mapElements in the new area
-        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());  
-        Edge currentClosest = null;
-        double distance = -1;
-        for (QTLeaf qtL : matchingLeafs) {
-            for (MapElement mapEle : qtL.getBaseLayer()) {
-                if (mapEle instanceof Edge) {
-                    Line2D.Double line = new Line2D.Double(((Edge) mapEle).getStart().getPos().getLongitude(),
-                                                           ((Edge) mapEle).getStart().getPos().getLatitude(),
-                                                           ((Edge) mapEle).getEnd().getPos().getLongitude(),
-                                                           ((Edge) mapEle).getEnd().getPos().getLatitude());
-                    if (distance == -1 
-                            || line.ptLineDist(selectedPoint) < distance) {  //we found an edge which is more closer to the point
-                        currentClosest = (Edge)mapEle;
-                        distance = line.ptLineDist(selectedPoint);
-                    }
-                }
-            }
-        }
-        if (currentClosest != null) {
-            selection = getSelectionfromPointAndEdge(currentClosest, pos);
-        }
-        return selection;
-    }*/ //TODO if we have Edges in QT, this is the method we need
-    
-    /*private Selection select(Coordinates pos, float radius) {
-        Selection selection = null;
-        Coordinates newUL = new Coordinates();  //Bounds for area to search in
-        Coordinates newBR = new Coordinates();
-        newUL.setLatitude(pos.getLatitude() + radius);
-        newUL.setLongitude(pos.getLongitude() - radius);
-        newBR.setLatitude(pos.getLatitude() - radius);
-        newBR.setLongitude(pos.getLongitude() + radius);
-        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());  
-        Edge currentClosest = null;
-        double distance = -1;
-        for (Edge mapEle : edges) {
-            Line2D.Double line = new Line2D.Double(((Edge) mapEle).getStart().getPos().getLongitude(),
-                                                  ((Edge) mapEle).getStart().getPos().getLatitude(),
-                                                  ((Edge) mapEle).getEnd().getPos().getLongitude(),
-                                                  ((Edge) mapEle).getEnd().getPos().getLatitude());
-            if (distance == -1 
-              || line.ptLineDist(selectedPoint) < distance) {  //we found an edge which is more closer to the point
-                currentClosest = (Edge)mapEle;
-                distance = line.ptLineDist(selectedPoint);    
-            }
-        }
-        if (currentClosest != null) {
-            selection = getSelectionfromPointAndEdge(currentClosest, pos);
-        }
-        return selection;
-    }*/
-    
-    /*private Selection getSelectionfromPointAndEdge(Edge edge, Coordinates point) {
-        return new Selection(edge.getStart().getID(), edge.getEnd().getID(), 0.0f, point); //TODO lot
-    }*/
        
     
     @Override
@@ -212,7 +146,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     /**
-     * Frankly, I've no idea.
+     * returns a string representing the quadtree
      * @return the same as above
      */
     public String print() {
