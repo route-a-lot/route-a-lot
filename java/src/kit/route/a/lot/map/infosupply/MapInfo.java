@@ -11,7 +11,6 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
@@ -85,7 +84,13 @@ public class MapInfo {
 
         if (wayInfo.isStreet()) {
             Street street = new Street(name, wayInfo);
-            addEdgesToStreet(street, ids);
+            
+            Node[] nodes = new Node[ids.size()];
+            for (int i = 0; i < ids.size(); i++) {
+                nodes[i] = getNode(ids.get(i));
+            }
+            street.setNodes(nodes);
+            
             elementDB.addMapElement(street);
             geographicalOperator.addToBaseLayer(street);
         } else {
@@ -100,20 +105,6 @@ public class MapInfo {
             geographicalOperator.addToBaseLayer(area);
         }
     }
-
-    private void addEdgesToStreet(Street street, List<Integer> ids) {
-        Edge[] edges = new Edge[ids.size() - 1];
-        for (int i = 0; i < ids.size() - 1; i++) {
-            Node start = elementDB.getNode(ids.get(i));
-            Node end = elementDB.getNode(ids.get(i + 1));
-            edges[i] = new Edge(start, end, street);
-            if (street.getWayInfo().getBicycle() == WayInfo.BICYCLE_YES) {
-                geographicalOperator.addEdge(edges[i]);
-            }
-            street.setEdges(edges);
-        }
-    }
-
 
     /**
      * Adds a point of interest to the data structures.
@@ -180,6 +171,17 @@ public class MapInfo {
      */
     public Coordinates getNodePosition(int nodeID) {
         return elementDB.getNodePosition(nodeID);
+    }
+    
+    /**
+     * Returns the Node with the given ID.
+     * 
+     * @param nodeID the id of the node
+     * @return the corresponding node object.
+     */
+    // TODO: not design true, but needed by MapElement load methods
+    public Node getNode(int nodeID) {
+        return elementDB.getNode(nodeID);
     }
 
     /**

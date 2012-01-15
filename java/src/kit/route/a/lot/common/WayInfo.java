@@ -1,5 +1,9 @@
 package kit.route.a.lot.common;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 
 public class WayInfo {
     
@@ -231,5 +235,20 @@ public class WayInfo {
     public void setAddress(Address address) {
         this.address = address;
     }
+
+    
+    public static WayInfo loadFromStream(DataInputStream stream) throws IOException {
+        WayInfo result = new WayInfo();
+        result.type = stream.readInt();
+        result.address = Address.loadFromStream(stream);
+        stream.read(result.data);
+        return result;
+    }
+    
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        stream.writeInt(this.type);
+        this.address.saveToStream(stream);
+        stream.write(this.data); 
+    }    
 
 }

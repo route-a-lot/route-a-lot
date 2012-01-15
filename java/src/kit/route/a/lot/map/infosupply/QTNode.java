@@ -27,6 +27,7 @@ public class QTNode extends QuadTree {
         Coordinates middleMiddle = new Coordinates();
         Coordinates middleRight = new Coordinates();
         Coordinates bottomMiddle = new Coordinates();
+        
         upMiddle.setLatitude(upLeft.getLatitude());
         upMiddle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
         middleLeft.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);

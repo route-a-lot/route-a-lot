@@ -1,5 +1,9 @@
 package kit.route.a.lot.common;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 
 public class Address {
     
@@ -94,4 +98,28 @@ public class Address {
         this.interpolation = interpolation;
     }
 
+
+    public static Address loadFromStream(DataInputStream stream) throws IOException {
+        Address result = new Address();
+        result.street = stream.readUTF();
+        result.housenumber = stream.readUTF();
+        result.state = stream.readUTF();
+        result.postcode = stream.readUTF();
+        result.city = stream.readUTF();
+        result.country = stream.readUTF();
+        result.fullAddress = stream.readUTF();
+        result.interpolation = stream.readUTF();
+        return result;
+    }
+
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        stream.writeUTF(this.street);
+        stream.writeUTF(this.housenumber);
+        stream.writeUTF(this.state);
+        stream.writeUTF(this.postcode);
+        stream.writeUTF(this.city);
+        stream.writeUTF(this.country);
+        stream.writeUTF(this.fullAddress);       
+        stream.writeUTF(this.interpolation);
+    }
 }

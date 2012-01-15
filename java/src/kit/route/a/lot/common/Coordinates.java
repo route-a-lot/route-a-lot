@@ -1,6 +1,5 @@
 package kit.route.a.lot.common;
 
-
 public class Coordinates {
 
     private float latitude;
@@ -29,4 +28,5 @@ public class Coordinates {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
-}// end class
+ 
+}

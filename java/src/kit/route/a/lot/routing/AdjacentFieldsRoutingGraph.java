@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Arrays;
 
@@ -15,77 +16,111 @@ import kit.route.a.lot.common.IntTuple;
 
 
 public class AdjacentFieldsRoutingGraph implements RoutingGraph {
-
-    /** Attributes */
-    /**
-     * 
-     */
-    private int[] edgesPos;
-    /**
-     * 
-     */
-    private byte[] areaID;
-    /**
-     * 
-     */
-    private int[] edges;
-    /**
-     * 
-     */
-    private int[] weights;
-    /**
-     * 
-     */
-    private long[] arcFlags;
+    
     private static Logger logger = Logger.getLogger(AdjacentFieldsRoutingGraph.class);
-
+    
+    private int[] edgesPos;
+    private byte[] areaID;
+    private int[] edges;
+    private int[] weights;
+    private long[] arcFlags;
+    
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
-        // ToDo: revise
-        logger.info("Creating Routinggraph...");
+        logger.info("Creating routing graph...");
+        // assert same non-null array size
+        if (startID.length == 0) {
+            logger.error("Array length is zero, aborting.");
+            return;
+        }
         if (startID.length != endID.length || endID.length != weight.length) {
-            logger.error("The length of the arrays don't match, aborting.");
+            logger.error("The lengths of the arrays don't match, aborting.");
             return;
         }
-        int max = 0;
-        for (int id: startID) {
-            // Get maxID = edgesPos.size = edgeList.size
-            max = Math.max(max, id);
+        // sort arrays simultaneously by startID
+        sortByKey(startID, endID, weight);
+        // find maximum node index
+        int maxNodeID = startID[startID.length - 1];
+        for (int i = 0; i < endID.length; i++) {
+            maxNodeID = Math.max(maxNodeID, endID[i]);
         }
-        if (max > startID.length) {
-            logger.error("ID's are NOT continuous, aborting.");
-            return;
-        }
-        // Initialize Arrays
-        edgesPos = new int[max];
-        areaID = new byte[max];
-        edges = new int[startID.length];
-        weights = new int[startID.length];
-        arcFlags = new long[startID.length];
-        // "You can't use generic array creation. It's a flaw/ feature of java generics." well, that sucks.
-        ArrayList<LinkedList<IntTuple>> edgeLists = new ArrayList<LinkedList<IntTuple>>();
-        // Create a bucket for each ID with a linked list full of Semi-Edges.// currentPath ALWAYS contains the shortest path to currentPath.getNode() (with regards to Arc-Flags). 
-        for (int i = 0; i < startID.length; i++) {
-            edgeLists.get(startID[i]).add(new IntTuple(endID[i], weight[i]));
-            // Create Mapping from ID => edge
-        }
-        Arrays.fill(edgesPos, 0);
-        int j = 0;  // Index of edges and weights
-        int i = 1;  // Index of edgeLists and edgesPos
-        logger.info("Creating edges...");
-        for (LinkedList<IntTuple> edgeList: edgeLists) {
-            logger.info("Creating edges for ID " + String.valueOf(i));
-            // Fill Arrays
-            for (IntTuple values: edgeList) {
-                edgesPos[i]++;
-                edges[j] = values.getFirst();
-                weights[j] = values.getLast();
-                arcFlags[j] = ~ ((long) 0);
-                j++;
+        
+        // copy data to internal structures
+        edgesPos = new int[maxNodeID + 1];
+        edgesPos[0] = 0;
+        for (int i = 1; i < startID.length; i++) {
+            if (startID[i] > startID[i - 1]) {
+                edgesPos[startID[i]] = i; 
             }
-            i++;
         }
+        areaID = new byte[maxNodeID + 1];
+        edges = endID.clone();
+        weights = weight.clone();
+        arcFlags = new long[startID.length];
+        Arrays.fill(arcFlags, ~ (long) 0);
+    }
+    
+    /**
+     * Sorts the given integer arrays via Quicksort, using the key array as reference
+     * while the data arrays are sorted in just the same manner.
+     * 
+     * @param key the reference array
+     * @param data1 the first data array
+     * @param data2 the second data array
+     * @throws IllegalArgumentException either argument is <code>null</code>
+     *          or the arrays are not of equal size
+     */
+    private void sortByKey(int[] key, int[] data1, int[] data2) {
+        if ((key == null) || (data1 == null) || (data2 == null)
+                || (key.length != data1.length) || (key.length != data2.length)) {
+            throw new IllegalArgumentException();
+        }
+        sortByKeyInternal(key, data1, data2, 0, key.length - 1);
+    }
+    
+    /**
+     * Sorts an index range of the given integer arrays via Quicksort, using the
+     * key array as reference while the data arrays are sorted in just the same manner.
+     * The arguments <code>low</code> and <code>high</code> define the index range.
+     * <i>This method should not be called directly. Use sortByKey() instead</i>.
+     * 
+     * @param key the reference array
+     * @param data1 the first data array
+     * @param data2 the second data array
+     * @param low the lowest index to be sorted
+     * @param high the highest index to be sorted
+     */
+    private void sortByKeyInternal(int[] key, int[] data1, int[] data2, int low, int high) {
+        int i = low, j = high;
+        int pivot = key[low + (high-low)/2];
 
+        while (i <= j) {
+            while (key[i] < pivot) {
+                i++;
+            }
+            while (key[j] > pivot) {
+                j--;
+            }
+            if (i <= j) {
+                int temp = key[i];
+                key[i] = key[j];
+                key[j] = temp;
+                temp = data1[i];
+                data1[i] = data1[j];
+                data1[j] = temp;
+                temp = data2[i];
+                data2[i] = data2[j];
+                data2[j] = temp;     
+                i++;
+                j--;
+            }
+        }
+        if (low < j) {
+            sortByKeyInternal(key, data1, data2, low, j);
+        }
+        if (i < high) {
+            sortByKeyInternal(key, data1, data2, i, high);
+        }
     }
 
     @Override

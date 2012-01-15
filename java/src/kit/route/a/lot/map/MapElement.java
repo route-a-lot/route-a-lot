@@ -26,13 +26,6 @@ public abstract class MapElement {
     abstract protected String getName();
 
     /**
-     * Calculates an appropriate {@link Selection} from the MapElement.
-     * @return a Selection
-     */
-    // used by AddressOperator
-    abstract protected Selection getSelection();
-
-    /**
      * Checks whether the <code>MapElement</code> is (fully or partially) within
      * the given {@link Coordinates} range.
      * 
@@ -44,6 +37,24 @@ public abstract class MapElement {
     // used by QuadTree
     abstract public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight);
 
+    /**
+     * Calculates an appropriate {@link Selection} from the MapElement
+     * and the selected position.
+     * @param pos the position
+     * @return a Selection
+     */
+    abstract public Selection getSelection(Coordinates pos);
+    
+    /**
+     * Calculates the distance between the <code>MapElement</code> and
+     * the given {@link Coordinates}.
+     * 
+     * @param pos the given coordinates
+     * @return the distance to the coordinates
+     */
+    abstract public float getDistanceTo(Coordinates pos);
+    
+    
     /**
      * Loads a {@link MapElement} from the stream. Before doing so determines
      * the map element type from the stream and creates the map element.
@@ -78,7 +89,7 @@ public abstract class MapElement {
      * @param element the {@link MapElement} that is to be saved
      * @throws IllegalArgumentException either argument is <code>null</code>
      * @throws UnsupportedOperationException <b>element</b> is of an unsupported type
-     * @throws IOException <b>element</b> could not be written to the stream
+     * @throws IOException <b>element</b> could not be saved to the stream
      */
     protected static void saveToStream(DataOutputStream stream, MapElement element) throws IOException {     
         if ((stream == null) || (element == null)) {
@@ -103,14 +114,18 @@ public abstract class MapElement {
      * Loads a map element from the stream.
      * 
      * @param stream the source stream
+     * @throws NullPointerException <b>stream</b> is <code>null</code>
+     * @throws IOException element could not be loaded from the stream  
      */
-    abstract protected void load(DataInputStream stream);
+    abstract protected void load(DataInputStream stream) throws IOException;
 
     /**
      * Saves a map element to the stream.
      * 
      * @param stream the destination stream
+     * @throws NullPointerException <b>stream</b> is <code>null</code>
+     * @throws IOException element could not be saved to the stream
      */
-    abstract protected void save(DataOutputStream stream);
-
+    abstract protected void save(DataOutputStream stream) throws IOException;
+ 
 }

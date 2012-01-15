@@ -3,13 +3,9 @@ package kit.route.a.lot.map.infosupply;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
 
 public interface GeographicalOperator {
@@ -24,7 +20,7 @@ public interface GeographicalOperator {
      * @return
      * @return
      */
-    void setBounds(Coordinates upLeft, Coordinates bottomRight);
+    public void setBounds(Coordinates upLeft, Coordinates bottomRight);
 
     /**
      * Operation buildZoomlevels
@@ -33,7 +29,7 @@ public interface GeographicalOperator {
      * 
      * @return
      */
-    void buildZoomlevels();
+    public void buildZoomlevels();
 
     /**
      * Operation select
@@ -42,7 +38,7 @@ public interface GeographicalOperator {
      *            -
      * @return Selection
      */
-    Selection select(Coordinates pos);
+    public Selection select(Coordinates pos);
 
     /**
      * Operation getBaseLayer
@@ -55,7 +51,7 @@ public interface GeographicalOperator {
      *            -
      * @return Set<MapElement>
      */
-    Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight);
 
     /**
@@ -69,10 +65,10 @@ public interface GeographicalOperator {
      *            -
      * @return Set<MapElement>
      */
-    Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight);
     
-    Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
+    public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
             Coordinates bottomRight);
 
     /**
@@ -83,7 +79,7 @@ public interface GeographicalOperator {
      * @return
      * @return
      */
-    void addToBaseLayer(MapElement element);
+    public void addToBaseLayer(MapElement element);
 
     /**
      * Operation addToOverlay
@@ -93,7 +89,7 @@ public interface GeographicalOperator {
      * @return
      * @return
      */
-    void addToOverlay(MapElement element);
+    public void addToOverlay(MapElement element);
 
     
     
@@ -102,14 +98,14 @@ public interface GeographicalOperator {
      * @param pos
      * @return
      */
-    int deleteFavorite(Coordinates pos);
+    public int deleteFavorite(Coordinates pos);
     
     /**
      * 
      * @param pos
      * @return
      */
-    POIDescription getPOIDescription(Coordinates pos);
+    public POIDescription getPOIDescription(Coordinates pos);
     
     /**
      * Operation loadFromStream
@@ -119,18 +115,14 @@ public interface GeographicalOperator {
      * @return
      * @return
      */
-    void loadFromStream(InputStream stream);
+    public void loadFromStream(InputStream stream);
 
     /**
      * Operation saveToStream
      * 
      * @param stream
      *            -
-     * @return
-     * @return
      */
-    void saveToStream(OutputStream stream);
+    public void saveToStream(OutputStream stream);
     
-    void addEdge(Edge edge); //TODO delete, or implement in a better way in classes 
-
 }

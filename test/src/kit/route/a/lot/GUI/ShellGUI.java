@@ -1,7 +1,7 @@
-package kit.route.a.lot.GUI;
+package kit.route.a.lot.gui;
 
 import kit.route.a.lot.gui.GUI;
-import kit.route.a.lot.common.Coordinates;;
+import kit.route.a.lot.common.Coordinates;
 
 
 public class ShellGUI {

@@ -13,7 +13,6 @@ import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.Edge;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.Street;
@@ -83,8 +82,8 @@ public class Tile {
                 draw((Area) element);
             } else if (element instanceof Street) {
                 draw((Street) element);
-            } else if (element instanceof Edge) {
-                draw((Edge) element);
+            //} else if (element instanceof Edge) {
+            //    draw((Edge) element);
             } else {
                 draw(element);
             }
@@ -195,12 +194,12 @@ public class Tile {
         graphics.drawPolygon(xPoints, yPoints, nPoints);
     }
 
-    /**
+    /*/**
      * Draws a single street edge on the tile.
      * 
      * @param edge
      *            the edge to be drawn
-     */
+     *./
     protected void draw(Edge edge) {
         Coordinates start = geoCoordinatesToLocalCoordinates(edge.getStart().getPos());
         Coordinates end = geoCoordinatesToLocalCoordinates(edge.getEnd().getPos());
@@ -213,7 +212,7 @@ public class Tile {
 
         draw(edge.getStart());
         draw(edge.getEnd());
-    }
+    }*/
 
     /**
      * Draws a street on the tile, taking the street type into consideration.
@@ -224,18 +223,13 @@ public class Tile {
     protected void draw(Street street) {
         int[] xPoints, yPoints;
         int nPoints;
-        Edge[] edges = street.getEdges();
-        List<Node> nodes = new ArrayList<Node>();
-        nodes.add(edges[0].getStart());
-        for (int i = 0; i < edges.length; i++) {
-            nodes.add(edges[i].getEnd());
-        }
-        nPoints = nodes.size();
+        Node[] nodes = street.getNodes();
+        nPoints = nodes.length;
         xPoints = new int[nPoints];
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes.get(i).getPos());
+            Coordinates curCoordinates = geoCoordinatesToLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }

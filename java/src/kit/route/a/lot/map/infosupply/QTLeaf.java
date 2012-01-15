@@ -1,7 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.util.ArrayList;import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;

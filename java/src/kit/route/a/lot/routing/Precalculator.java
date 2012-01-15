@@ -51,7 +51,7 @@ public class Precalculator {
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
         Route currentPath = null;
-        PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator());
+        PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
         Arrays.fill(seen, false);
         heap.add(new Route(node, 0));
         byte area = graph.getAreaID(node);

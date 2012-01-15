@@ -4,12 +4,13 @@ import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.infosupply.MapInfo;
 
 
 public class Area extends MapElement {
@@ -20,8 +21,6 @@ public class Area extends MapElement {
 
     private WayInfo wayInfo;
     
-    
-
 
     public Area(String name, WayInfo wayInfo) {
         this.name = name;
@@ -48,12 +47,6 @@ public class Area extends MapElement {
     @Override
     protected String getName() {
         return this.name;
-    }
-
-    @Override
-    protected Selection getSelection() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
@@ -85,15 +78,40 @@ public class Area extends MapElement {
         return inside || area.contains(box) || area.intersects(box);
 
     }
-
+    
     @Override
-    protected void load(DataInputStream stream) {
+    public Selection getSelection(Coordinates pos) {
         // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
-    protected void save(DataOutputStream stream) {
+    public float getDistanceTo(Coordinates pos) {
         // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    protected void load(DataInputStream stream) throws IOException {
+        this.name = stream.readUTF();
+        int len = stream.readInt();
+        this.nodes = new Node[len];
+        // TODO there must be some way without using state
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        for (int i = 0; i < len; i++) {        
+            this.nodes[i] = mapInfo.getNode(stream.readInt());
+        }
+        this.wayInfo = WayInfo.loadFromStream(stream);
+    }
+
+    @Override
+    protected void save(DataOutputStream stream) throws IOException {
+        stream.writeUTF(this.name);
+        stream.writeInt(this.nodes.length);
+        for (Node node: this.nodes) {
+            stream.writeInt(node.getID());
+        }
+        this.wayInfo.saveToStream(stream);
     }
 
 }

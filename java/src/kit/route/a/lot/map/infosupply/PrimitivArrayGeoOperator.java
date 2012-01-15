@@ -38,7 +38,7 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
 
     @Override
     public Selection select(Coordinates pos) {
-        Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());
+        /*Point2D.Double selectedPoint = new Point2D.Double(pos.getLongitude(), pos.getLatitude());
         Edge currentClosest = null;
         double distance = -1;
         for(MapElement mapEle: baseLayer) {
@@ -55,23 +55,25 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
             }
         }
         return new Selection(currentClosest.getStart().getID(), currentClosest.getEnd().getID(), 0.0f, pos);    //TODO lot
+        */
+        return null;
     }
 
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        logger.info("getBasseLayer called");
-        logger.info("upLeft long: " + upLeft.getLongitude());
-        logger.info("upLeft lal: " + upLeft.getLatitude());
-        logger.info("middle long: " + State.getInstance().getAreaCoord().getLongitude());
-        logger.info("middle lal: " + State.getInstance().getAreaCoord().getLatitude());
+        logger.info("called: getBaseLayer()");
+        logger.info(" upLeft Lon: " + upLeft.getLongitude());
+        logger.info(" upLeft Lat: " + upLeft.getLatitude());
+        logger.info(" middle Lon: " + State.getInstance().getAreaCoord().getLongitude());
+        logger.info(" middle Lat: " + State.getInstance().getAreaCoord().getLatitude());
         ArrayList<MapElement> baseLay = new ArrayList<MapElement>();
         for(MapElement mapEle: baseLayer){
             if(mapEle.isInBounds(upLeft, bottomRight)){
                 baseLay.add(mapEle);
             }
         }
-        logger.debug("BaseLayerSize: " + baseLay.size());
+        logger.debug(" Base Layer size: " + baseLay.size());
         return baseLay;
     }
 
@@ -128,12 +130,6 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
             Coordinates bottomRight) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void addEdge(Edge edge) {
-        // TODO Auto-generated method stub
-        
     }
 
 }

@@ -7,9 +7,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -17,10 +15,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -45,6 +39,8 @@ import kit.route.a.lot.controller.RALListener;
 
 public class GUI extends JFrame implements ActionListener {
 
+    private static final long serialVersionUID = 1L;
+    
     private ArrayList<RALListener> targetSelectedList;
     private ArrayList<RALListener> viewChangedList;
     private ArrayList<Coordinates> navPointsList;

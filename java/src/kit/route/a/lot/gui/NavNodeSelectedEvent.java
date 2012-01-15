@@ -5,7 +5,10 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 
 
-public class NavNodeSelectedEvent extends java.util.EventObject{
+public class NavNodeSelectedEvent extends java.util.EventObject {
+  
+    private static final long serialVersionUID = 1L;
+
     /*
      *describes the Coordinates of the selected point
      */ 
