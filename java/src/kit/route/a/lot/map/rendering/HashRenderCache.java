@@ -9,20 +9,20 @@ import kit.route.a.lot.map.rendering.RenderCache;
 public class HashRenderCache implements RenderCache {
 
     /**
-     * Maximale Anzahl an Kacheln, die im Cache gespeichert werden können.
+     * Maximale Anzahl an Kacheln, die im Cache gespeichert werden kï¿½nnen.
      */
     private static final int CACHE_SIZE = 20;
     
     /**
-     * Ermöglicht den Zugriff auf die Cacheeinträge über eine Hashmap.
+     * Ermï¿½glicht den Zugriff auf die Cacheeintrï¿½ge ï¿½ber eine Hashmap.
      */
     private HashMap<Tile, BufferedImage> map;
     
     /**
-     * Verwaltet eine FIFO-Liste der hinzugefügten Einträge, 
-     * so dass die ältesten Einträge ggfs. entfernt werden können.
+     * Verwaltet eine FIFO-Liste der hinzugefï¿½gten Eintrï¿½ge, 
+     * so dass die ï¿½ltesten Eintrï¿½ge ggfs. entfernt werden kï¿½nnen.
      */
-    private LinkedList<Tile> leastRecentlyUsed; // EXTEND: more elaborate aging algorithm
+    private LinkedList<Tile> leastRecentlyUsed; // TODO EXTEND: more elaborate aging algorithm
 
     public HashRenderCache() {
         map = new HashMap<Tile, BufferedImage>();

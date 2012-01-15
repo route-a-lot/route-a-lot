@@ -1,6 +1,7 @@
 package kit.route.a.lot.routing;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Route {
     /*
@@ -36,14 +37,14 @@ public class Route {
         return from;
     }
 
-    public LinkedList<Integer> toList() {
-        LinkedList<Integer> result = new LinkedList<Integer>();
+    public List<Integer> toList() {
+        List<Integer> result = new ArrayList<Integer>();
         result.add((Integer) to);
         if (from == null) {
             return result;
         }
         else {
-            LinkedList<Integer> tmp = from.toList();
+            List<Integer> tmp = from.toList();
             tmp.addAll(result);
             return tmp;
         }

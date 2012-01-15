@@ -1,7 +1,7 @@
 package kit.route.a.lot.routing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -10,7 +10,8 @@ import org.apache.log4j.Logger;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
-import kit.route.a.lot.routing.Route;
+
+import org.apache.log4j.Logger;
 
 
 public class Router {
@@ -22,8 +23,9 @@ public class Router {
      */
     
     private static Logger logger = Logger.getLogger(Router.class);
+    
     public static List<Integer> calculateRoute() {
-        List<Integer> route = new LinkedList<Integer>();
+        List<Integer> route = new ArrayList<Integer>();
         Selection prev = (Selection) null;
         for (Selection navPoint: State.getInstance().getNavigationNodes()) {
             logger.info("Calculating route from " + prev.toString() + " to " + navPoint.toString());

@@ -7,6 +7,7 @@ import java.lang.Math;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -166,7 +167,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
             return null;
         }
-        LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
+        Collection<Integer> relevantEdges = new ArrayList<Integer>();
         long flags = 0;
         for (byte area: destAreas) {
             // create bitmask
@@ -188,7 +189,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
             return null;
         }
-        LinkedList<Integer> relevantEdges = new LinkedList<Integer>();
+        Collection<Integer> relevantEdges = new ArrayList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
             // don't filter at all
             relevantEdges.add(edges[i]);
