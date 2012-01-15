@@ -1,10 +1,11 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -20,7 +21,7 @@ public class ArrayElementDB implements ElementDB {
     
     private ArrayList<POINode> favorites;
 
-    private int mapEleID = 0;   //counts mapElemnts
+    private int mapEleID = 0;   //counts mapElements
 
     
     public ArrayElementDB() {
@@ -29,16 +30,14 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public Coordinates getNodePosition(int nodeID) {
-        return nodes.get(nodeID).getPos();
-    }
-
-    @Override
-    public void addNode(Node node) throws IllegalArgumentException {
-        if (node.getID() > nodes.size()) {
+    public void addNode(int nodeID, Node node) {
+        if (nodeID > nodes.size()) {
             throw new IllegalArgumentException("Previous numbers weren't insert, yet");
         }
-        nodes.add(node.getID(), node);
+        if (nodeID < nodes.size()) {
+            nodes.remove(nodeID);
+        }
+        nodes.add(nodeID, node);
         logger.debug("NodeArraySize: " + nodes.size());
     }
 
@@ -61,12 +60,17 @@ public class ArrayElementDB implements ElementDB {
         return mapElements.get(id);
     }
     
+    @Override
     public void addFavorite(POINode favorite) {
         favorites.add(favorite);
+        favorite.initID(favorites.size() - 1);
+        
     }
     
+    @Override
     public void deleteFavorite(int id) {
-        favorites.remove(new POINode(id, null, null));
+        favorites.remove(id);
+        favorites.add(id, null); //TODO: some other way for preserving indices
     }
 
     @Override

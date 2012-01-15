@@ -90,7 +90,7 @@ public class Area extends MapElement {
         // TODO Auto-generated method stub
         return 0;
     }
-
+    
     @Override
     protected void load(DataInputStream stream) throws IOException {
         this.name = stream.readUTF();

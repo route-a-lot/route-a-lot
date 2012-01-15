@@ -8,22 +8,16 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 
 public class Node extends MapElement {
-    private int id;
     private float lat;
     private float lon;
 
-    public Node(int id, Coordinates pos) {
-        this.id = id;
+    public Node(Coordinates pos) {
         lat = pos.getLatitude();
         lon = pos.getLongitude();
     }
 
     public Node() {
-        this(-1, null);
-    }
-
-    public int getID() {
-        return this.id;
+        this(null);
     }
     
     public Coordinates getPos() {
@@ -58,14 +52,12 @@ public class Node extends MapElement {
    
     @Override
     protected void load(DataInputStream stream) throws IOException {
-        this.id = stream.readInt();
         this.lon = stream.readFloat();
         this.lat = stream.readFloat();
     }
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
-        stream.writeInt(this.id);
         stream.writeFloat(this.lon);
         stream.writeFloat(this.lat);
     }

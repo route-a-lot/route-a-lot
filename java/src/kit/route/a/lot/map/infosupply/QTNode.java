@@ -1,5 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;import java.util.Collection;
 import java.util.List;
 
@@ -8,7 +11,6 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
 public class QTNode extends QuadTree {
-    
     
     /*
      * 0: "upperLeft" child
@@ -138,9 +140,24 @@ public class QTNode extends QuadTree {
     @Override
     public int countElements() {
         int countElements = 0;
-        for (int i = 0; i < 4; i++) {
-            countElements += children[i].countElements();
+        for (QuadTree child: children) {
+            countElements += child.countElements();
         }
         return countElements;
     }
+
+    @Override
+    protected void load(DataInputStream stream) throws IOException {
+        for (int i = 0; i < 4; i++) {
+            children[i] = QuadTree.loadFromStream(stream);
+        }
+    }
+
+    @Override
+    protected void save(DataOutputStream stream) throws IOException {
+        for (QuadTree child: children) {
+            QuadTree.saveToStream(stream, child);
+        }
+    }
+
 }

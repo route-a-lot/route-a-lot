@@ -84,7 +84,6 @@ public class Street extends MapElement {
         return 0;
     }
     
-    
     @Override
     protected void load(DataInputStream stream) {
         // TODO Auto-generated method stub

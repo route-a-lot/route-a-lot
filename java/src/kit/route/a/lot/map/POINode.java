@@ -1,5 +1,9 @@
 package kit.route.a.lot.map;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 
@@ -7,13 +11,13 @@ public class POINode extends Node {
 
     private POIDescription info;
 
-    public POINode(int id, Coordinates position, POIDescription description){
-        super(id, position);
+    public POINode(Coordinates position, POIDescription description){
+        super(position);
         this.info = description;
     }
     
     public POINode() {
-        this(-1, null, null);
+        this(null, null);
     }
 
     public POIDescription getInfo() {
@@ -21,10 +25,15 @@ public class POINode extends Node {
     }
     
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof POINode) {
-            return ((POINode) obj).getID() == this.getID();
-        }
-        return false;
+    protected void load(DataInputStream stream) throws IOException {
+        this.info = new POIDescription(stream.readUTF(), stream.readInt(), stream.readUTF());
+    }
+
+    @Override
+    protected void save(DataOutputStream stream) throws IOException {
+        //TODO DISCUSS: implement POIDescription.saveToStream() etc. ?
+        stream.writeUTF(this.info.getName());
+        stream.writeInt(this.info.getCategory());
+        stream.writeUTF(this.info.getDescription());
     }
 }

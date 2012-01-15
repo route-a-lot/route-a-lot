@@ -63,8 +63,8 @@ public class MapInfo {
      *            the unique id of the node
      */
     public void addNode(Coordinates position, int id, Address address) {
-        Node newNode = new Node(id, position);
-        elementDB.addNode(newNode);
+        Node newNode = new Node(position);
+        elementDB.addNode(id, newNode);
         geographicalOperator.addToBaseLayer(newNode);
     }
 
@@ -119,8 +119,8 @@ public class MapInfo {
      *            the description of the POI
      */
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
-        POINode newPOI = new POINode(id, position, description);
-        elementDB.addNode(newPOI);
+        POINode newPOI = new POINode(position, description);
+        elementDB.addNode(id, newPOI);
         geographicalOperator.addToOverlay(newPOI);
     }
 
@@ -134,8 +134,8 @@ public class MapInfo {
      *            a description of the favorite
      */
     public void addFavorite(Coordinates pos, POIDescription description) {
-        POINode newFav = new POINode(0, pos, description);
-        elementDB.addMapElement(newFav);
+        POINode newFav = new POINode(pos, description);
+        elementDB.addFavorite(newFav);
         geographicalOperator.addToOverlay(newFav);
     }
 
@@ -170,7 +170,7 @@ public class MapInfo {
      * @return the coordinates of the node correspondenting to the give id.
      */
     public Coordinates getNodePosition(int nodeID) {
-        return elementDB.getNodePosition(nodeID);
+        return elementDB.getNode(nodeID).getPos();
     }
     
     /**
@@ -182,6 +182,16 @@ public class MapInfo {
     // TODO: not design true, but needed by MapElement load methods
     public Node getNode(int nodeID) {
         return elementDB.getNode(nodeID);
+    }
+    
+    /**
+     * Returns the MapElement (but no Node!) with the given ID.
+     * 
+     * @param nodeID the id of the node
+     * @return the corresponding node object.
+     */
+    public MapElement getMapElement(int elementID) {
+        return elementDB.getMapElement(elementID);
     }
 
     /**
@@ -195,7 +205,6 @@ public class MapInfo {
      * Operation suggestCompletions
      * 
      * @param expression
-     *            -
      * @return List<String>
      */
     public List<String> suggestCompletions(String expression) {
@@ -206,7 +215,6 @@ public class MapInfo {
      * Operation select
      * 
      * @param address
-     *            -
      * @return Selection
      */
     public Selection select(String address) {
@@ -216,9 +224,7 @@ public class MapInfo {
     /**
      * Returns a selection to a given coordinate.
      * 
-     * @param pos
-     *            the given coordinate
-     * 
+     * @param pos the given coordinate
      * @return the correspondenting selection
      */
     public Selection select(Coordinates pos) {
@@ -228,15 +234,9 @@ public class MapInfo {
     /**
      * Return the, to given coordinates, belonging MapElements of the base layer.
      * 
-     * @param zoomlevel
-     *            the zoomlevel of the view
-     * 
-     * @param upLeft
-     *            the coordinates of the upper left corner of the view
-     * 
-     * @param bottomRight
-     *            the coordinates of the bottom right corner of the view
-     * 
+     * @param zoomlevel the zoomlevel of the view
+     * @param upLeft the coordinates of the upper left corner of the view
+     * @param bottomRight the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
@@ -246,15 +246,9 @@ public class MapInfo {
     /**
      * Return the, to given coordinates, belonging MapElements of the overlay.
      * 
-     * @param zoomlevel
-     *            the zoomlevel of the view
-     * 
-     * @param upLeft
-     *            the coordinates of the upper left corner of the view
-     * 
-     * @param bottomRight
-     *            the coordinates of the bottom right corner of the view
-     * 
+     * @param zoomlevel the zoomlevel of the view
+     * @param upLeft the coordinates of the upper left corner of the view
+     * @param bottomRight the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
@@ -286,4 +280,5 @@ public class MapInfo {
     public String printQuadTree() {
         return ((QTGeographicalOperator) geographicalOperator).print();
     }
+
 }
