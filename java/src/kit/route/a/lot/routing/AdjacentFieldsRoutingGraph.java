@@ -3,11 +3,9 @@ package kit.route.a.lot.routing;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.Math;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.log4j.Logger;
 

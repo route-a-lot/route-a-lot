@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import org.apache.log4j.Logger;
-
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
@@ -46,7 +44,7 @@ public class Router {
 
     private static List<Integer> fromAToB(Selection a, Selection b) {
         // ToDo: rename?
-        RoutingGraph graph = State.getRoutingGraph();
+        RoutingGraph graph = State.getInstance().getRoutingGraph();
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
         Route currentPath = null;
         if (a == null || b == null) {
