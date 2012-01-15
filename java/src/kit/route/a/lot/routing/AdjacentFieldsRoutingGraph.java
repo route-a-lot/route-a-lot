@@ -49,8 +49,8 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         areaID = new byte[maxNodeID + 1];
-        edges = endID.clone();
-        weights = weight.clone();
+        edges = endID; //TODO DISCUSS: .clone()?
+        weights = weight;
         arcFlags = new long[startID.length];
         Arrays.fill(arcFlags, ~ (long) 0);
     }

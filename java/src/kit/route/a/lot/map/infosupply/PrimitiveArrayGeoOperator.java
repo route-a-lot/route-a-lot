@@ -1,8 +1,10 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;import java.io.OutputStream;import java.util.Collection;import java.util.ArrayList;
-// import java.awt.geom.Line2D;
-// import java.awt.geom.Point2D;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
@@ -14,12 +16,12 @@ import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.*;
 
 
-public class PrimitivArrayGeoOperator implements GeographicalOperator {
+public class PrimitiveArrayGeoOperator implements GeographicalOperator {
     private ArrayList<MapElement> overlay;
     private ArrayList<MapElement> baseLayer;
-    private Logger logger = Logger.getLogger(PrimitivArrayGeoOperator.class);
+    private Logger logger = Logger.getLogger(PrimitiveArrayGeoOperator.class);
      
-    public PrimitivArrayGeoOperator() {
+    public PrimitiveArrayGeoOperator() {
         overlay = new ArrayList<MapElement>();
         baseLayer = new ArrayList<MapElement>();
     }
@@ -102,13 +104,13 @@ public class PrimitivArrayGeoOperator implements GeographicalOperator {
     }
 
     @Override
-    public void loadFromStream(InputStream stream) {
+    public void loadFromStream(DataInputStream stream) throws IOException {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void saveToStream(OutputStream stream) {
+    public void saveToStream(DataOutputStream stream) throws IOException {
         // TODO Auto-generated method stub
 
     }

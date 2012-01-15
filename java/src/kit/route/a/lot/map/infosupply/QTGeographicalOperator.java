@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -23,36 +24,23 @@ public class QTGeographicalOperator implements GeographicalOperator {
     /** The QuadTree leafs that were used by the last query. */
     private Collection<QTLeaf> lastQuery;
 
-    /**
-     * Defines the map boundary, in the process creating the zoom level quad trees.
-     * 
-     * @param upLeft the northwestern corner of the map boundary
-     * @param bottomRight the southeastern corner of the map boundary
-     */
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         zoomlevels = new QuadTree[9];
         for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i] = new QTNode(upLeft, bottomRight);
+            zoomlevels[i] = new QTLeaf(upLeft, bottomRight);
         }
     }
 
-    /**
-     * Creates all zoom level quad trees, requiring a complete base
-     * zoom level quad tree in zoomlevels[0].
-     */
     @Override
     public void buildZoomlevels() {
-        // TODO Auto-generated method stub
+        //TODO: proper implementation
+        for (int i = 1; i < zoomlevels.length; i++) {
+            zoomlevels[i] = zoomlevels[0];
+        }
     }
 
-    /**
-     * Selects the map element nearest to the given position, incrementally increasing
-     * the search radius if needed.
-     * 
-     * @param pos the given position
-     * @return a {@link Selection} derived from the nearest map element
-     */
+    
     @Override
     public Selection select(Coordinates pos) {
         float radius = 0.01f;
@@ -159,15 +147,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return new Selection(edge.getStart().getID(), edge.getEnd().getID(), 0.0f, point); //TODO lot
     }*/
        
-    /**
-     * Retrieves all MapElements belonging to the base layer of the given
-     * zoom level within the given boundary.
-     * 
-     * @param zoomlevel the zoom level
-     * @param upLeft the northwestern corner of the boundary
-     * @param bottomRight the southeastern corner of the boundary
-     * @return a list containing all base layer MapElements in the queried section
-     */
+    
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
@@ -191,16 +171,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         logger.debug(" base layer size: " + mapElements.size());
         return mapElements;
     }
-
-    /**
-     * Retrieves all MapElements belonging to the overlay of the given
-     * zoom level within the given boundary.
-     * 
-     * @param zoomlevel the zoom level
-     * @param upLeft the northwestern corner of the boundary
-     * @param bottomRight the southeastern corner of the boundary
-     * @return a list containing all overlay MapElements in the queried section
-     */
+    
     @Override
     public ArrayList<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
@@ -214,36 +185,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         return mapElements;
     }
-    
-    /**
-     * Adds a MapElement belonging to the base layer.
-     * 
-     * @param element the MapElement to be added
-     */
-    @Override
-    public void addToBaseLayer(MapElement element) {
-        logger.info("called: addToBaseLayer()");
-        //logger.debug(element); // ?
-        zoomlevels[0].addToBaseLayer(element);
-    }
-
-    /**
-     * Adds a MapElement belonging to the overlay.
-     * 
-     * @param element the MapElement to be added
-     */
-    @Override
-    public void addToOverlay(MapElement element) {
-        zoomlevels[0].addToOverlay(element);
-    }
-
-    /**
-     * Returns the overlay corresponding to the last base layer query.
-     * 
-     * @param upLeft the northwestern corner of the queried boundary
-     * @param bottomRight the southeastern corner of the queried boundary
-     * @return a list containing all overlay MapElements in the queried section
-     */
+        
     @Override
     public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft, Coordinates bottomRight) {
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
@@ -256,6 +198,18 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         return mapElements;
     }
+        
+    @Override
+    public void addToBaseLayer(MapElement element) {
+        logger.info("called: addToBaseLayer()");
+        //logger.debug(element); // ?
+        zoomlevels[0].addToBaseLayer(element);
+    }
+
+    @Override
+    public void addToOverlay(MapElement element) {
+        zoomlevels[0].addToOverlay(element);
+    }
     
     /**
      * Frankly, I've no idea.
@@ -266,16 +220,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public void loadFromStream(InputStream stream) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void saveToStream(OutputStream stream) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
     public int deleteFavorite(Coordinates pos) {
         // TODO Auto-generated method stub
         return 0;
@@ -285,5 +229,19 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public POIDescription getPOIDescription(Coordinates pos) {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    @Override
+    public void loadFromStream(DataInputStream stream) throws IOException {
+        for(int i = 0; i < zoomlevels.length; i++) {
+            zoomlevels[i] = QuadTree.loadFromStream(stream);
+        }
+    }
+
+    @Override
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        for(int i = 0; i < zoomlevels.length; i++) {
+            QuadTree.saveToStream(stream, zoomlevels[i]);
+        }
     }
 }

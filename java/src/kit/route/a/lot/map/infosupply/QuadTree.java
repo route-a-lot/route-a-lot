@@ -36,28 +36,55 @@ public abstract class QuadTree {
         return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
     }
     
-    
-    protected abstract boolean addToOverlay(MapElement element);
-
-    protected abstract boolean addToBaseLayer(MapElement element);
-  
+    /**
+     * Returns the {@link Coordinates} of the northwestern corner of the QuadTree area.
+     * @return the nortwestern quad tree corner
+     */
     public Coordinates getUpLeft() {
         return upLeft;
     }
     
-    public void setUpLeft(Coordinates upLeft) {
-        this.upLeft = upLeft;
-    }
-    
+    /**
+     * Returns the {@link Coordinates} of the southeastern corner of the QuadTree area.
+     * @return the southeastern quad tree corner
+     */
     public Coordinates getBottomRight() {
         return bottomRight;
-    }
+    }   
     
-    public void setBottomRight(Coordinates bottomRight) {
-        this.bottomRight = bottomRight;
-    }
+    /**
+     * Adds the map element to the quad tree overlay, sorting it into all leaves
+     * that are intersected. Returns false if the quad tree needs to be splitted
+     * (only happens if the QuadTree consists of only one leaf).
+     * 
+     * @param element the map element
+     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
+     */
+    protected abstract boolean addToOverlay(MapElement element);
+
+    /**
+     * Adds the map element to the quad tree base layer, sorting it into all leaves
+     * that are intersected. Returns false if the quad tree needs to be splitted
+     * (only happens if the QuadTree consists of only one leaf).
+     * 
+     * @param element the map element
+     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
+     */
+    protected abstract boolean addToBaseLayer(MapElement element);
     
+    /**
+     * Go ask someone else.
+     * TODO
+     * @param offset some offset
+     * @param last a neat list
+     * @return the print output
+     */
     public abstract String print(int offset, List<Integer> last);
+    
+    /**
+     * Returns the number of {@link MapElement}s in the quad tree.
+     * @return the number of {@link MapElement}s in the quad tree
+     */
     public abstract int countElements();
     
     

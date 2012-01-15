@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
@@ -56,10 +55,10 @@ public class QTLeaf extends QuadTree {
     @Override
     protected boolean addToOverlay(MapElement element) {
         if (element.isInBounds(getUpLeft(), getBottomRight())) {
-            if (overlay.size() == limit) {
-                return false;
-            }
             overlay.add(element);
+            if (overlay.size() > limit) {
+                return false;
+            }      
         }
         return true;
     }
@@ -67,12 +66,23 @@ public class QTLeaf extends QuadTree {
     @Override
     protected boolean addToBaseLayer(MapElement element) {
         if (element.isInBounds(getUpLeft(), getBottomRight())) {
-            if (baseLayer.size() == limit) {
+            baseLayer.add(element);
+            if (baseLayer.size() > limit) {
                 return false;
             }
-            baseLayer.add(element);
         }
         return true;
+    }
+    
+    protected QTNode splitLeaf() {
+        QTNode result = new QTNode(getUpLeft(), getBottomRight());
+        for(MapElement element: getBaseLayer()) {
+            result.addToBaseLayer(element);
+        }
+        for(MapElement element: getOverlay()) {
+            result.addToOverlay(element);
+        }
+        return result;
     }
     
     @Override

@@ -64,15 +64,8 @@ public class QTNode extends QuadTree {
     protected boolean addToOverlay(MapElement element) {
         if(element.isInBounds(getUpLeft(), getBottomRight())) {
             for (int i = 0; i < children.length; i++) {
-                if (!children[i].addToOverlay(element)) {  //full leaf
-                    Collection<MapElement> temp = ((QTLeaf)children[i]).getOverlay();
-                    Coordinates childUL = children[i].getUpLeft();
-                    Coordinates childBR = children[i].getBottomRight();
-                    children[i] = new QTNode(childUL, childBR);
-                    for(MapElement ele: temp) {
-                        children[i].addToOverlay(ele);
-                    }
-                    children[i].addToOverlay(element);
+                if (!children[i].addToOverlay(element)) {
+                    children[i] = ((QTLeaf) children[i]).splitLeaf();
                 }
             }
         }
@@ -83,15 +76,8 @@ public class QTNode extends QuadTree {
     protected boolean addToBaseLayer(MapElement element) {
         if(element.isInBounds(getUpLeft(), getBottomRight())) {
             for (int i = 0; i < children.length; i++) {
-                if (!children[i].addToBaseLayer(element)) {  //full leaf
-                    Collection<MapElement> temp = ((QTLeaf)children[i]).getBaseLayer();
-                    Coordinates childUL = children[i].getUpLeft();
-                    Coordinates childBR = children[i].getBottomRight();
-                    children[i] = new QTNode(childUL, childBR);
-                    for(MapElement ele: temp) {
-                        children[i].addToBaseLayer(ele);
-                    }
-                    children[i].addToBaseLayer(element);
+                if (!children[i].addToBaseLayer(element)) {
+                    children[i] = ((QTLeaf) children[i]).splitLeaf();
                 }
             }
         }
