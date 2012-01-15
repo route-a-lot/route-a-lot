@@ -1,8 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.io.InputStream;import java.io.OutputStream;import java.util.Collection;import java.util.ArrayList;
-import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
+// import java.awt.geom.Line2D;
+// import java.awt.geom.Point2D;
 
 import org.apache.log4j.Logger;
 

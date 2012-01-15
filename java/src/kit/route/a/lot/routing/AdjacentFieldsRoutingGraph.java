@@ -4,15 +4,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.Math;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
-
-import kit.route.a.lot.common.IntTuple;
 
 
 public class AdjacentFieldsRoutingGraph implements RoutingGraph {

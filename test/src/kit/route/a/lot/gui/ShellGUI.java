@@ -1,4 +1,4 @@
-package kit.route.a.lot.mGUI;
+package kit.route.a.lot.gui;
 
 import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.common.Coordinates;
