@@ -15,11 +15,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -30,6 +32,9 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.ContextSW;
 import kit.route.a.lot.common.Coordinates;
@@ -37,7 +42,7 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.controller.RALListener;
 
 
-public class GUI extends JFrame implements ActionListener {
+public class GUI extends JFrame {
 
     private static final long serialVersionUID = 1L;
     
@@ -47,6 +52,11 @@ public class GUI extends JFrame implements ActionListener {
     
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
+    
+    private JFileChooser importFC;
+    private JFileChooser loadRoute;
+    private JFileChooser saveRoute;
+    private JFileChooser exportRoute;
 
     private JButton importOSM;
     private JButton load;
@@ -105,6 +115,10 @@ public class GUI extends JFrame implements ActionListener {
     private float coordinatesHeight;
     private float coordinatesPixelWidthDifference;
     private float coordinatesPixelHeightDifference;
+    private File importedMapFile;
+    private File loadedRouteFile;
+    private File savedRouteFile;
+    private File exportedRouteFile;
 
     public GUI(Coordinates middle) {
         super("Route-A-Lot");
@@ -136,11 +150,7 @@ public class GUI extends JFrame implements ActionListener {
         this.mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        this.map = new JPanel();
-        map.setPreferredSize(new Dimension(this.getSize()));
-        map.setBackground(Color.WHITE);
-        map.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
-        map.setVisible(true);
+        mapConstructor();
         
 
         this.navNodeMenu = new JPopupMenu("NavNodes");
@@ -175,12 +185,33 @@ public class GUI extends JFrame implements ActionListener {
 
         load = new JButton();
         load.setText("Laden");
+        load.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                GUI.this.loadRouteFileChooser();
+            }
+        });
 
         save = new JButton();
         save.setText("Speichern");
+        save.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                GUI.this.saveRouteFileChooser();
+            }
+        });
 
         kmlExport = new JButton();
         kmlExport.setText("KML-Export");
+        kmlExport.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                GUI.this.exportRouteKMLFileChooser();
+            }
+        });
 
         print = new JButton();
         print.setText("Ausdrucken");
@@ -220,127 +251,7 @@ public class GUI extends JFrame implements ActionListener {
         mapButtonPanel.add(graphics);
         mapButtonPanel.add(scrolling);
 
-        map.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseReleased(MouseEvent me) {
-                checkPopup(me);
-                newMousePosX = me.getX();
-                newMousePosY = me.getY();
-                mouseDragged = false;
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent me) {
-                checkPopup(me);
-                oldMousePosX = me.getX();
-                oldMousePosY = me.getY();
-                mouseDragged = true;
-            }
-
-            @Override
-            public void mouseExited(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                checkPopup(me);
-            }
-
-            private void checkPopup(MouseEvent e) {
-                if (e.isPopupTrigger()) {
-                    selectedComponent = e.getComponent();
-                    navNodeMenu.show(e.getComponent(), e.getX(), e.getY());
-
-                    xpos = e.getX();
-                    ypos = e.getY();
-                }
-            }
-        });
         
-        map.addMouseMotionListener(new MouseMotionListener() {
-            
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                newMousePosX = e.getX();
-                newMousePosY = e.getY();
-                mousePosXDist = newMousePosX - oldMousePosX;
-                mousePosYDist = newMousePosY - oldMousePosY;
-                
-                calculateCoordinatesDistances();
-                
-                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                float newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
-                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                float newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
-                
-                topLeft.setLongitude(newTopLeftLongitude);
-                topLeft.setLatitude(newTopLeftLatitude);
-                bottomRight.setLongitude(newBottomRightLongitude);
-                bottomRight.setLatitude(newBottomRightLatitude);
-                
-                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, 0);
-                for(RALListener lis: viewChangedList){
-                    lis.handleRALEvent(viewEvent);
-                }
-                
-                System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
-            }
-        });
-
-        map.addMouseWheelListener(new MouseWheelListener() {
-
-            int up = 1;
-
-            int down = -1;
-            
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                int direction;
-                int count = e.getWheelRotation();
-                if (count < 0) {
-                    direction = up;
-                } else {
-                    direction = down;
-                }
-                calculateCoordinatesDistances();
-                if(direction == up && currentZoomLevel != 4) {
-                    currentZoomLevel++;
-                    topLeft.setLongitude(topLeft.getLongitude() - coordinatesWidth/2);
-                    topLeft.setLatitude(topLeft.getLatitude() - coordinatesHeight/2);
-                    bottomRight.setLongitude(bottomRight.getLongitude() + coordinatesWidth/2);
-                    bottomRight.setLatitude(bottomRight.getLatitude() + coordinatesHeight/2);
-                    
-                } else if(direction == down && currentZoomLevel != -4) {
-                    currentZoomLevel--;
-                    topLeft.setLongitude(topLeft.getLongitude() + coordinatesWidth/4);
-                    topLeft.setLatitude(topLeft.getLatitude() + coordinatesHeight/4);
-                    bottomRight.setLongitude(bottomRight.getLongitude() - coordinatesWidth/4);
-                    bottomRight.setLatitude(bottomRight.getLatitude() - coordinatesHeight/4);
-                }
-                
-                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
-                for(RALListener lis: viewChangedList){
-                    lis.handleRALEvent(viewEvent);
-                }
-                repaint();
-            }
-        });
 
         tab1 = new JPanel();
         tab2 = new JPanel();
@@ -357,14 +268,37 @@ public class GUI extends JFrame implements ActionListener {
 
         startPoint = new JTextField();
         startPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
+        startPoint.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedStart = startPoint.getText();
+            }
+        });
+        
         endPoint = new JTextField();
         endPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
+        endPoint.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                String selectedEnd = endPoint.getText();
+            }
+        });
         addTextPoints = new JButton("+");
 
         optimizeRoute = new JButton("Reihenfolge optimieren");
 
         s_speed = new JSpinner(new SpinnerNumberModel(15, 0, null, 1));
         s_speed.setSize(new Dimension(30, 20));
+        s_speed.addChangeListener(new ChangeListener() {
+            
+            @Override
+            public void stateChanged(ChangeEvent ce) {
+                int newSpeed = 15;
+                System.out.println(newSpeed);
+            }
+        });
 
         l_speed = new JLabel("hm/h");
 
@@ -388,8 +322,14 @@ public class GUI extends JFrame implements ActionListener {
               alladdedNavPoints.get(key).setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
               tab1.add(alladdedNavPoints.get(key)); 
               tab1.add(alladdedButtons.get(key));
+              alladdedNavPoints.get(key).addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    String selectedPoint = alladdedNavPoints.get(key).getText();
+                }
+            });
               tab1.validate();
-          
           } });
          
 
@@ -397,11 +337,19 @@ public class GUI extends JFrame implements ActionListener {
 
         importOSM = new JButton("Importiere OSM-Karte");
         tab3.add(importOSM);
+        importOSM.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                GUI.this.importMapFileChooser();
+            }
+        });
         this.pack();
         this.validate();
         
         // The context needs to be queried / created in the very end.
         context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
+        calculateCoordinatesDistances();
     }
 
     private JMenuItem makeMenuItem(String label) {
@@ -466,16 +414,207 @@ public class GUI extends JFrame implements ActionListener {
         coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
         coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
     }
-    /*
-     * private BufferedImage testImage(){ BufferedImage image = new BufferedImage(150, 150,
-     * BufferedImage.TYPE_INT_RGB); for (int x = 0; x < 150; x++) { for(int y = 0; y < 150; y++) {
-     * image.setRGB(x, y, 100); } } return image; }
-     */
+    
+    private void mapConstructor() {
+        this.map = new JPanel();
+        map.setPreferredSize(new Dimension(this.getSize()));
+        map.setBackground(Color.WHITE);
+        map.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        map.setVisible(true);
+        map.addMouseListener(new MouseListener() {
 
-    @Override
-    public void actionPerformed(ActionEvent arg0) {
-        // TODO Auto-generated method stub
+            @Override
+            public void mouseReleased(MouseEvent me) {
+                checkPopup(me);
+                newMousePosX = me.getX();
+                newMousePosY = me.getY();
+                mouseDragged = false;
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent me) {
+                checkPopup(me);
+                oldMousePosX = me.getX();
+                oldMousePosY = me.getY();
+                mouseDragged = true;
+            }
+
+            @Override
+            public void mouseExited(MouseEvent arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent arg0) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                checkPopup(me);
+            }
+
+            private void checkPopup(MouseEvent e) {
+                if (e.isPopupTrigger()) {
+                    selectedComponent = e.getComponent();
+                    navNodeMenu.show(e.getComponent(), e.getX(), e.getY());
+
+                    xpos = e.getX();
+                    ypos = e.getY();
+                }
+            }
+        });
         
-    }
+        map.addMouseMotionListener(new MouseMotionListener() {
+            
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                newMousePosX = e.getX();
+                newMousePosY = e.getY();
+                mousePosXDist = newMousePosX - oldMousePosX;
+                mousePosYDist = newMousePosY - oldMousePosY;
+                
+                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
+                float newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
+                float newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
 
+                /*
+                if(Math.abs(newTopLeftLongitude) < Math.abs(context.getTopLeft().getLongitude()) - 0.001) {
+                    newTopLeftLongitude = context.getTopLeft().getLongitude();
+                    newBottomRightLongitude = newTopLeftLongitude + coordinatesWidth;
+                }
+                if(Math.abs(newTopLeftLatitude) > Math.abs(context.getTopLeft().getLatitude()) - 0.001) {
+                    newTopLeftLatitude = context.getTopLeft().getLatitude();
+                    newBottomRightLatitude = newTopLeftLatitude - coordinatesHeight;
+                }
+                if(Math.abs(newBottomRightLongitude) > Math.abs(context.getBottomRight().getLongitude()) - 0.001) {
+                    newBottomRightLongitude =  context.getBottomRight().getLongitude();
+                    newTopLeftLongitude = newBottomRightLongitude - coordinatesWidth;
+                }
+                if(Math.abs(newBottomRightLatitude) < Math.abs(context.getBottomRight().getLatitude()) - 0.001) {
+                    newBottomRightLatitude = context.getBottomRight().getLatitude();
+                    newTopLeftLatitude = newBottomRightLatitude + coordinatesHeight;
+                }
+                
+                float newCoordinatesWidth;
+                float newCoordinatesHeight;
+                
+                if(newTopLeftLatitude > newBottomRightLatitude) {
+                    newCoordinatesWidth = newTopLeftLatitude - newBottomRightLatitude;
+                } else {
+                    newCoordinatesWidth = newBottomRightLatitude - newTopLeftLatitude;
+                }
+                if(newTopLeftLongitude > newBottomRightLongitude) {
+                    newCoordinatesHeight = newTopLeftLongitude - newBottomRightLongitude;
+                } else {
+                    newCoordinatesHeight = newBottomRightLongitude - newTopLeftLongitude;
+                }
+                if(newCoordinatesHeight < coordinatesHeight - 0.0001 
+                        || newCoordinatesWidth < coordinatesWidth - 0.0001) {
+                    if(newCoordinatesHeight < coordinatesHeight - 0.0001) {
+                        newTopLeftLongitude = topLeft.getLongitude();
+                        newBottomRightLongitude = bottomRight.getLongitude(); 
+                    }
+                    if(newCoordinatesWidth < coordinatesWidth-0.0001) {
+                        newTopLeftLatitude = topLeft.getLatitude();
+                        newBottomRightLatitude = bottomRight.getLatitude();
+                    }
+                }*/
+                topLeft.setLongitude(newTopLeftLongitude);
+                topLeft.setLatitude(newTopLeftLatitude);
+                bottomRight.setLongitude(newBottomRightLongitude);
+                bottomRight.setLatitude(newBottomRightLatitude);
+                
+                
+                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, 0);
+                for(RALListener lis: viewChangedList){
+                    lis.handleRALEvent(viewEvent);
+                }
+                
+                System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
+            }
+        });
+
+        map.addMouseWheelListener(new MouseWheelListener() {
+
+            int up = 1;
+
+            int down = -1;
+            
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                int direction;
+                int count = e.getWheelRotation();
+                if (count < 0) {
+                    direction = up;
+                } else {
+                    direction = down;
+                }
+                if(direction == up && currentZoomLevel != 4) {
+                    currentZoomLevel++;
+                    topLeft.setLongitude(topLeft.getLongitude() - coordinatesWidth/2);
+                    topLeft.setLatitude(topLeft.getLatitude() - coordinatesHeight/2);
+                    bottomRight.setLongitude(bottomRight.getLongitude() + coordinatesWidth/2);
+                    bottomRight.setLatitude(bottomRight.getLatitude() + coordinatesHeight/2);
+                    
+                } else if(direction == down && currentZoomLevel != -4) {
+                    currentZoomLevel--;
+                    topLeft.setLongitude(topLeft.getLongitude() + coordinatesWidth/4);
+                    topLeft.setLatitude(topLeft.getLatitude() + coordinatesHeight/4);
+                    bottomRight.setLongitude(bottomRight.getLongitude() - coordinatesWidth/4);
+                    bottomRight.setLatitude(bottomRight.getLatitude() - coordinatesHeight/4);
+                }
+                
+                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
+                for(RALListener lis: viewChangedList){
+                    lis.handleRALEvent(viewEvent);
+                }
+                repaint();
+            }
+        });
+    }
+    
+    private void importMapFileChooser() {
+        importFC = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm", "osm");
+        importFC.setFileFilter(filter);
+        int returnValue = importFC.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION) {
+            importedMapFile = importFC.getSelectedFile();
+        }
+    }
+    
+    private void loadRouteFileChooser() {
+        loadRoute = new JFileChooser();
+        int returnValue = loadRoute.showOpenDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION) {
+            loadedRouteFile = loadRoute.getSelectedFile();
+        }
+    }
+    
+    private void saveRouteFileChooser() {
+        saveRoute = new JFileChooser();
+        int returnValue = saveRoute.showSaveDialog(this);
+        if(returnValue == JFileChooser.APPROVE_OPTION) {
+            savedRouteFile = saveRoute.getSelectedFile();
+        }
+    }
+    
+    private void exportRouteKMLFileChooser() {
+        exportRoute = new JFileChooser();
+        int returnValue = exportRoute.showDialog(this, "Exportieren");
+        if(returnValue == JFileChooser.APPROVE_OPTION) {
+            exportedRouteFile = exportRoute.getSelectedFile();
+        }
+    }
 }
