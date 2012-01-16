@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import kit.route.a.lot.common.Selection;
@@ -32,13 +33,13 @@ public class TrieAddressOperator implements AddressOperator {
     }
 
     @Override
-    public void loadFromStream(InputStream stream) {
+    public void loadFromStream(DataInputStream stream) throws IOException {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void saveToStream(OutputStream stream) {
+    public void saveToStream(DataOutputStream stream) throws IOException {
         // TODO Auto-generated method stub
 
     }

@@ -74,7 +74,7 @@ public abstract class QuadTree {
     
     /**
      * Go ask someone else.
-     * TODO
+     * TODO what is this for?
      * @param offset some offset
      * @param last a neat list
      * @return the print output

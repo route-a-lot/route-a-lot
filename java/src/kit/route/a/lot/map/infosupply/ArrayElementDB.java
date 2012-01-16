@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -15,19 +16,11 @@ public class ArrayElementDB implements ElementDB {
 
     private static Logger logger = Logger.getLogger(ArrayElementDB.class);
     
-    private ArrayList<Node> nodes;
+    private ArrayList<Node> nodes = new ArrayList<Node>();
    
-    private ArrayList<MapElement> mapElements;
+    private ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
     
-    private ArrayList<POINode> favorites;
-
-    private int mapEleID = 0;   //counts mapElements
-
-    
-    public ArrayElementDB() {
-        nodes = new ArrayList<Node>();
-        mapElements = new ArrayList<MapElement>();
-    }
+    private ArrayList<POINode> favorites = new ArrayList<POINode>();
 
     @Override
     public void addNode(int nodeID, Node node) {
@@ -49,13 +42,12 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public void addMapElement(MapElement element) throws IllegalArgumentException {
         mapElements.add(element);
-        mapEleID++;
     }
 
     @Override
     public MapElement getMapElement(int id) throws IllegalArgumentException {
         if (id >= mapElements.size()) { 
-            throw new IllegalArgumentException("There's no mapElement with this number");
+            throw new IllegalArgumentException("There's no map mlement with this ID.");
         }
         return mapElements.get(id);
     }
@@ -74,14 +66,43 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public void loadFromStream(InputStream stream) {
-        // TODO Auto-generated method stub
-
+    public void loadFromStream(DataInputStream stream) throws IOException {
+        int len = stream.readInt();
+        nodes = new ArrayList<Node>(len);
+        for (int i = 0; i < len; i++) {
+            Node node = (Node) MapElement.loadFromStream(stream, false);
+            node.initID(i);
+            nodes.add(node);
+        }
+        len = stream.readInt();
+        mapElements = new ArrayList<MapElement>(len);
+        for (int i = 0; i < len; i++) {
+            MapElement element = MapElement.loadFromStream(stream, false);
+            element.initID(i);
+            mapElements.add(element);
+        }
+        len = stream.readInt();
+        favorites = new ArrayList<POINode>(len);
+        for (int i = 0; i < len; i++) {
+            POINode favorite = (POINode) MapElement.loadFromStream(stream, false);
+            favorite.initID(i);
+            nodes.add(favorite);
+        }
     }
 
     @Override
-    public void saveToStream(OutputStream stream) {
-        // TODO Auto-generated method stub
-
+    public void saveToStream(DataOutputStream stream) throws IOException {  
+        stream.writeInt(nodes.size());
+        for (Node node: nodes) {
+            MapElement.saveToStream(stream, node, false);
+        }
+        stream.writeInt(mapElements.size());
+        for (MapElement element: mapElements) {
+            MapElement.saveToStream(stream, element, false);
+        }
+        stream.writeInt(favorites.size());
+        for (POINode favorite: favorites) {
+            MapElement.saveToStream(stream, favorite, false);
+        }
     }
 }

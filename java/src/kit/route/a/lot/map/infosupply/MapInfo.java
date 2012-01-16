@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.Collection;
 import java.util.List;
 
@@ -258,25 +259,27 @@ public class MapInfo {
     }
 
     /**
-     * Operation loadFromStream
+     * Loads the map from the given stream.
      * 
-     * @param stream
-     *            -
-     * @return
-     * @return
+     * @param stream the source stream.
+     * @throws IOException a stream read error occurred
      */
-    public void loadFromStream(InputStream stream) {
+    public void loadFromStream(DataInputStream stream) throws IOException {
+        elementDB.loadFromStream(stream);
+        geographicalOperator.loadFromStream(stream);
+        addressOperator.loadFromStream(stream);
     }
 
     /**
-     * Operation saveToStream
+     * Saves the map to the given stream.
      * 
-     * @param stream
-     *            -
-     * @return
-     * @return
+     * @param stream the destination stream.
+     * @throws IOException a stream write error occurred
      */
-    public void saveToStream(OutputStream stream) {
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        elementDB.saveToStream(stream);
+        geographicalOperator.saveToStream(stream);
+        addressOperator.saveToStream(stream);
     }
 
     public String printQuadTree() {

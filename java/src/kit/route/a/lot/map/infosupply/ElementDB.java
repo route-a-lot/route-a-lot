@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.MapElement;
@@ -49,15 +50,19 @@ public interface ElementDB {
     public void deleteFavorite(int id);
     
     /**
-     * Saves the elementDB to the given stream
-     * @param stream the stream
+     * Loads all elements from the given stream to the id store. 
+     * 
+     * @param stream the source stream
+     * @throws IOException a stream read error occurred
      */
-    public void loadFromStream(InputStream stream);
+    public void loadFromStream(DataInputStream stream) throws IOException;
 
     /**
-     * Loads a elementID from the give stream.
-     * @param stream the stream
+     * Saves all id stored elements to the given stream. 
+     * 
+     * @param stream the destination stream
+     * @throws IOException a stream write error occurred
      */
-    public void saveToStream(OutputStream stream);
+    public void saveToStream(DataOutputStream stream) throws IOException;
 
 }

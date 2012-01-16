@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.util.List;
 
 import kit.route.a.lot.common.Selection;
@@ -45,7 +46,7 @@ public interface AddressOperator {
      * @return
      * @return
      */
-    void loadFromStream(InputStream stream);
+    void loadFromStream(DataInputStream stream) throws IOException;
 
     /**
      * Operation saveToStream
@@ -55,6 +56,6 @@ public interface AddressOperator {
      * @return
      * @return
      */
-    void saveToStream(OutputStream stream);
+    void saveToStream(DataOutputStream stream) throws IOException;
 
 }
