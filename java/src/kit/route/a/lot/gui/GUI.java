@@ -576,19 +576,19 @@ public class GUI extends JFrame {
                 } else {
                     direction = down;
                 }
-                if(direction == up && currentZoomLevel != 4) {
-                    currentZoomLevel++;
-                    topLeft.setLongitude(topLeft.getLongitude() - coordinatesWidth/2);
-                    topLeft.setLatitude(topLeft.getLatitude() - coordinatesHeight/2);
-                    bottomRight.setLongitude(bottomRight.getLongitude() + coordinatesWidth/2);
-                    bottomRight.setLatitude(bottomRight.getLatitude() + coordinatesHeight/2);
-                    
-                } else if(direction == down && currentZoomLevel != -4) {
+                if(direction == up && currentZoomLevel != -4) {
                     currentZoomLevel--;
                     topLeft.setLongitude(topLeft.getLongitude() + coordinatesWidth/4);
                     topLeft.setLatitude(topLeft.getLatitude() + coordinatesHeight/4);
                     bottomRight.setLongitude(bottomRight.getLongitude() - coordinatesWidth/4);
                     bottomRight.setLatitude(bottomRight.getLatitude() - coordinatesHeight/4);
+                    
+                } else if(direction == down && currentZoomLevel != 4) {
+                    currentZoomLevel++;
+                    topLeft.setLongitude(topLeft.getLongitude() - coordinatesWidth/2);
+                    topLeft.setLatitude(topLeft.getLatitude() - coordinatesHeight/2);
+                    bottomRight.setLongitude(bottomRight.getLongitude() + coordinatesWidth/2);
+                    bottomRight.setLatitude(bottomRight.getLatitude() + coordinatesHeight/2);
                 }
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
