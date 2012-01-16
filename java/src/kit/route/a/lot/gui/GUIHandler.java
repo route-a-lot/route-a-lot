@@ -162,7 +162,8 @@ public class GUIHandler {
      * 
      * @return
      */
-    public void addListenerImportMap() {
+    public void addListenerImportMap(RALListener importOsmFileListener) {
+        gui.addImportOsmFileListener(importOsmFileListener);
     }
 
     /**
