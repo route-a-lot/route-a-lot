@@ -5,10 +5,13 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.infosupply.MapInfo;
 
 
 public class Street extends MapElement {
@@ -123,15 +126,25 @@ public class Street extends MapElement {
     }
     
     @Override
-    protected void load(DataInputStream stream) {
-        // TODO Auto-generated method stub
-
+    protected void load(DataInputStream stream) throws IOException {
+        this.name = stream.readUTF();
+        int len = stream.readInt();
+        nodes = new Node[len];
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        for (int i = 0; i < len; i++) {
+            nodes[i] = mapInfo.getNode(stream.readInt());
+        }
+        this.wayInfo = WayInfo.loadFromStream(stream);
     }
 
     @Override
-    protected void save(DataOutputStream stream) {
-        // TODO Auto-generated method stub
-
+    protected void save(DataOutputStream stream) throws IOException {
+        stream.writeUTF(this.name);
+        stream.writeInt(this.nodes.length);
+        for (Node node: this.nodes) {
+            stream.writeInt(node.getID());
+        }
+        this.wayInfo.saveToStream(stream);
     }
 
     @Override

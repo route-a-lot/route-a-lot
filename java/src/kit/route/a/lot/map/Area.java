@@ -84,7 +84,7 @@ public class Area extends MapElement {
         return null;
     }
     
-    @Override
+    @Override //TODO: attribs, load() and save() are identical to methods of same name in Street
     protected void load(DataInputStream stream) throws IOException {
         this.name = stream.readUTF();
         int len = stream.readInt();

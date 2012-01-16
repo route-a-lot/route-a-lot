@@ -43,6 +43,7 @@ public abstract class MapElement {
      * @return whether the ID was set
      */
     // TODO not really good name
+    // setID() makes reusability implications, so assignID() would be the only other name that i would agree on, as for now.
     public boolean initID(int id) {
         if (this.id < 0) {
             this.id = id;

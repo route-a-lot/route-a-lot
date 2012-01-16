@@ -26,11 +26,13 @@ public class POINode extends Node {
     
     @Override
     protected void load(DataInputStream stream) throws IOException {
+        super.load(stream);
         this.info = new POIDescription(stream.readUTF(), stream.readInt(), stream.readUTF());
     }
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
+        super.save(stream);
         //TODO DISCUSS: implement POIDescription.saveToStream() etc. ?
         stream.writeUTF(this.info.getName());
         stream.writeInt(this.info.getCategory());
