@@ -21,6 +21,7 @@ import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,6 +49,7 @@ public class GUI extends JFrame {
     
     private ArrayList<RALListener> targetSelectedList;
     private ArrayList<RALListener> viewChangedList;
+    private ArrayList<RALListener> importOsmFileList;
     private ArrayList<Coordinates> navPointsList;
     
     private JPopupMenu navNodeMenu;
@@ -66,6 +68,8 @@ public class GUI extends JFrame {
     private JButton graphics;
     private JButton addTextPoints;
     private JButton optimizeRoute;
+    
+    private JComboBox chooseImportedMap;
 
     private JLabel l_activeRoute;
     private JLabel l_routeText;
@@ -125,6 +129,7 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
+        importOsmFileList = new ArrayList<RALListener>();
         navPointsList = new ArrayList<Coordinates>();
         this.middle = middle;
         this.pack();
@@ -137,6 +142,7 @@ public class GUI extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
+        importOsmFileList = new ArrayList<RALListener>();
         navPointsList = new ArrayList<Coordinates>();
         this.middle = new Coordinates(0.0f, 0.0f);
         this.pack();
@@ -151,6 +157,7 @@ public class GUI extends JFrame {
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
         mapConstructor();
+        comboBoxConstructor();
         
 
         this.navNodeMenu = new JPopupMenu("NavNodes");
@@ -344,12 +351,18 @@ public class GUI extends JFrame {
                 GUI.this.importMapFileChooser();
             }
         });
+        tab3.add(chooseImportedMap);
         this.pack();
         this.validate();
         
         // The context needs to be queried / created in the very end.
         context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
         calculateCoordinatesDistances();
+    }
+
+    private void comboBoxConstructor() {
+        chooseImportedMap = new JComboBox();
+        chooseImportedMap.setEditable(true);
     }
 
     private JMenuItem makeMenuItem(String label) {
@@ -385,6 +398,9 @@ public class GUI extends JFrame {
     }
     public void addTargetSelectedListener(RALListener targetSelectedListener) {
         targetSelectedList.add(targetSelectedListener);
+    }
+    public void addImportOsmFileListener(RALListener importOsmFileListener) {
+        importOsmFileList.add(importOsmFileListener);
     }
     
     @Override
@@ -591,6 +607,10 @@ public class GUI extends JFrame {
         int returnValue = importFC.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedMapFile = importFC.getSelectedFile();
+            PathEvent pathEvent = new PathEvent(GUI.this, importFC.getSelectedFile().getPath());
+            for(RALListener lis: targetSelectedList){
+                lis.handleRALEvent(pathEvent);
+            }
         }
     }
     
