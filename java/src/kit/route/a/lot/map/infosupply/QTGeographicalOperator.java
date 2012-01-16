@@ -10,6 +10,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.Street;
 
 import org.apache.log4j.Logger;
 
@@ -49,12 +50,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     @Override
     public Selection select(Coordinates pos) {
+        logger.debug("ClickPositionCoordinates(long/lal): " + pos.getLongitude() + " / " + pos.getLatitude());
         float radius = 0.01f;
         Selection sel = null;
         while(sel == null && radius < 1000) {  //limit for avoiding errors on maps without edges
             sel = select(pos, radius);
-            radius *= 10;  // if we found no edge we have to search in a bigger area
+            radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
         }
+        logger.debug("StartNodeId: " + sel.getFrom());
+        logger.debug("EndNodeId: " + sel.getTo());
         return sel;
     }
     
@@ -68,22 +72,26 @@ public class QTGeographicalOperator implements GeographicalOperator {
      */
     private Selection select(Coordinates pos, float radius) {
         // get all elements coming into question
-        Collection<MapElement> elements = getBaseLayer(0,
-                new Coordinates (pos.getLongitude() - radius, pos.getLatitude() + radius),
-                new Coordinates(pos.getLongitude() + radius, pos.getLatitude() - radius));
+        Coordinates UL = new Coordinates();
+        Coordinates BR = new Coordinates();
+        UL.setLatitude(pos.getLatitude() + radius);
+        UL.setLongitude(pos.getLongitude() - radius);
+        BR.setLatitude(pos.getLatitude() - radius);
+        BR.setLongitude(pos.getLongitude() + radius);
+        Collection<MapElement> elements = getBaseLayer(0, UL, BR);
         
         // find element nearest to pos
         MapElement closestElement = null;
         float closestDistance = Float.MAX_VALUE;  
         for (MapElement element: elements) {
-            float distance = element.getDistanceTo(pos);
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestElement = element; 
-            } 
+            if(element instanceof Street) { //TODO only routeable streets
+                float distance = element.getDistanceTo(pos);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestElement = element; 
+                } 
+            }
         }
-        
-        // create and return selection from the element
         return (closestElement != null) ? closestElement.getSelection(pos) : null;
     }
        
@@ -143,7 +151,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         
     @Override
     public void addToBaseLayer(MapElement element) {
-        logger.info("called: addToBaseLayer()");
+        logger.debug("called: addToBaseLayer()");
         //logger.debug(element); // ?
         zoomlevels[0].addToBaseLayer(element);
     }

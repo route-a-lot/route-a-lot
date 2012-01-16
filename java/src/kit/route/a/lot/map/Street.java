@@ -1,6 +1,7 @@
 package kit.route.a.lot.map;
 
 import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -76,14 +77,50 @@ public class Street extends MapElement {
 
     @Override
     public Selection getSelection(Coordinates pos) {
-        // TODO Auto-generated method stub
-        return null;
+        int start = getClosestEdgeStartPosition(pos);
+        return new Selection(nodes[start].getID(),
+                nodes[start + 1].getID(),
+                getRatio(start, start + 1, pos),
+                pos);
     }
 
     @Override
     public float getDistanceTo(Coordinates pos) {
-        // TODO Auto-generated method stub
-        return 0;
+        int startNode = getClosestEdgeStartPosition(pos);   
+        return getDistanceFromNodeToEdge(startNode, startNode + 1, pos);
+    }
+    
+    /*
+     * returns the position in the array nodes of the startNode of the edge of this street, which is the closest to the given Coordinate
+     */
+    private int getClosestEdgeStartPosition(Coordinates pos) {
+        float nearestEdgeDistance = Float.MAX_VALUE;
+        int nearestEdgeStartNode = 0;
+        for(int i = 0; i < nodes.length - 1; i++) {
+            float currentDistance = getDistanceFromNodeToEdge(i, i + 1, pos);
+            if (currentDistance < nearestEdgeDistance) {
+                nearestEdgeDistance = currentDistance;
+                nearestEdgeStartNode = i;
+            }
+        }
+        return nearestEdgeStartNode;
+    }
+    
+    /*
+     * returns the distance from the given coordinate to the given edge
+     * edge is given by the position of the start - and endNode in the array nodes 
+     */
+    private float getDistanceFromNodeToEdge(int start, int end, Coordinates pos) {
+        Point2D selectedPos = new Point2D.Float(pos.getLongitude(), pos.getLatitude());
+        Line2D edge = new Line2D.Float(nodes[start].getPos().getLongitude(),
+                nodes[start].getPos().getLatitude(),
+                nodes[end].getPos().getLongitude(),
+                nodes[end].getPos().getLatitude());
+        return (float)edge.ptLineDist(selectedPos); //TODO double . . .
+    }
+    
+    private float getRatio(int startNode, int endNode, Coordinates pos) {
+        return 0.0f;
     }
     
     @Override

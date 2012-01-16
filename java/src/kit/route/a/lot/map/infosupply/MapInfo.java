@@ -64,6 +64,7 @@ public class MapInfo {
      */
     public void addNode(Coordinates position, int id, Address address) {
         Node newNode = new Node(position);
+        newNode.initID(id);
         elementDB.addNode(id, newNode);
         geographicalOperator.addToBaseLayer(newNode);
     }
@@ -120,6 +121,7 @@ public class MapInfo {
      */
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
         POINode newPOI = new POINode(position, description);
+        newPOI.initID(id);
         elementDB.addNode(id, newPOI);
         geographicalOperator.addToOverlay(newPOI);
     }

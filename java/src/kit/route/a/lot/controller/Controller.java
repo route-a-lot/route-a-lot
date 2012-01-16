@@ -108,7 +108,9 @@ public class Controller {
      * @return
      */
     public void addNavNode(Coordinates pos, int position, Context context) {
-        State state = State.getInstance();
+        //if (position < state.getNavigationNodes().size()) {   TODO ass soon as gui functionate 
+        //    state.getNavigationNodes().remove(position);
+        //}
         state.getNavigationNodes().add(position,
                 state.getLoadedMapInfo().select(pos));
         calculateRoute();
