@@ -75,7 +75,6 @@ public class Street extends MapElement {
         //TODO pos -> neg (e.g. -180° -> 180°)
     }
 
-    @Override
     public Selection getSelection(Coordinates pos) {
         int start = getClosestEdgeStartPosition(pos);
         return new Selection(nodes[start].getID(),
@@ -84,7 +83,7 @@ public class Street extends MapElement {
                 pos);
     }
 
-    @Override
+    
     public float getDistanceTo(Coordinates pos) {
         int startNode = getClosestEdgeStartPosition(pos);   
         return getDistanceFromNodeToEdge(startNode, startNode + 1, pos);
@@ -133,5 +132,11 @@ public class Street extends MapElement {
     protected void save(DataOutputStream stream) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public Selection getSelection() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

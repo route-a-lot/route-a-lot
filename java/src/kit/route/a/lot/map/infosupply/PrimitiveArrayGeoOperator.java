@@ -122,7 +122,7 @@ public class PrimitiveArrayGeoOperator implements GeographicalOperator {
     }
 
     @Override
-    public POIDescription getPOIDescription(Coordinates pos) {
+    public POIDescription getPOIDescription(Coordinates pos, float radius) {
         // TODO Auto-generated method stub
         return null;
     }

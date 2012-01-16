@@ -10,6 +10,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 
 import org.apache.log4j.Logger;
@@ -71,30 +72,32 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * @return a {@link Selection} derived from the nearest map element
      */
     private Selection select(Coordinates pos, float radius) {
-        // get all elements coming into question
-        Coordinates UL = new Coordinates();
-        Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() + radius);
-        UL.setLongitude(pos.getLongitude() - radius);
-        BR.setLatitude(pos.getLatitude() - radius);
-        BR.setLongitude(pos.getLongitude() + radius);
-        Collection<MapElement> elements = getBaseLayer(0, UL, BR);
+        Collection<MapElement> elements = getBaseLayerForAPositionAndRadius(pos, radius);
         
         // find element nearest to pos
         MapElement closestElement = null;
         float closestDistance = Float.MAX_VALUE;  
         for (MapElement element: elements) {
             if(element instanceof Street) { //TODO only routeable streets
-                float distance = element.getDistanceTo(pos);
+                float distance = ((Street) element).getDistanceTo(pos);
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     closestElement = element; 
                 } 
             }
         }
-        return (closestElement != null) ? closestElement.getSelection(pos) : null;
+        return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
     }
        
+    private ArrayList<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
+        Coordinates UL = new Coordinates();
+        Coordinates BR = new Coordinates();
+        UL.setLatitude(pos.getLatitude() + radius);
+        UL.setLongitude(pos.getLongitude() - radius);
+        BR.setLatitude(pos.getLatitude() - radius);
+        BR.setLongitude(pos.getLongitude() + radius);
+        return getBaseLayer(0, UL, BR);
+    }
     
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
@@ -169,6 +172,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return zoomlevels[0].print(0, new ArrayList<Integer>());
     }
     
+    private ArrayList<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
+        Coordinates UL = new Coordinates();
+        Coordinates BR = new Coordinates();
+        UL.setLatitude(pos.getLatitude() + radius);
+        UL.setLongitude(pos.getLongitude() - radius);
+        BR.setLatitude(pos.getLatitude() - radius);
+        BR.setLongitude(pos.getLongitude() + radius);
+        return getOverlay(0, UL, BR);
+    }
+    
     @Override
     public int deleteFavorite(Coordinates pos) {
         // TODO Auto-generated method stub
@@ -176,8 +189,13 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
 
     @Override
-    public POIDescription getPOIDescription(Coordinates pos) {
-        // TODO Auto-generated method stub
+    public POIDescription getPOIDescription(Coordinates pos, float radius) {
+        Collection<MapElement> elements = getOverlayForAPositionAndRadius(pos, radius);
+        for (MapElement element : elements) {
+            if (element instanceof POINode) {
+                return ((POINode) element).getInfo();
+            }
+        }
         return null;
     }
     

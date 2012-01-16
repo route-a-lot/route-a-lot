@@ -96,7 +96,7 @@ public interface GeographicalOperator {
      * @param pos the given position
      * @return the POI description
      */
-    public POIDescription getPOIDescription(Coordinates pos);
+    public POIDescription getPOIDescription(Coordinates pos, float radius);
     
     
     /**

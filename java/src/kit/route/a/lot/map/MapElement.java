@@ -66,11 +66,11 @@ public abstract class MapElement {
     /**
      * Calculates an appropriate {@link Selection} from the MapElement
      * and the selected position.
-     * @param pos the position
      * @return a Selection
      */
-    abstract public Selection getSelection(Coordinates pos);
+    abstract public Selection getSelection();
     
+    /*  //TODO only needed for Street
     /**
      * Calculates the distance between the <code>MapElement</code> and
      * the given {@link Coordinates}.
@@ -78,8 +78,9 @@ public abstract class MapElement {
      * @param pos the given coordinates
      * @return the distance to the coordinates
      */
-    abstract public float getDistanceTo(Coordinates pos);
-       
+     
+     //   abstract public float getDistanceTo(Coordinates pos);
+     
     
     /**
      * Loads a {@link MapElement} from the stream. Before doing so determines

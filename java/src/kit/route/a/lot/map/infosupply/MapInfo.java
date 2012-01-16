@@ -138,7 +138,7 @@ public class MapInfo {
     public void addFavorite(Coordinates pos, POIDescription description) {
         POINode newFav = new POINode(pos, description);
         elementDB.addFavorite(newFav);
-        geographicalOperator.addToOverlay(newFav);
+        geographicalOperator.addToOverlay(newFav);  //TODO i would prefer to keep this out of quadTree(deleting . . .)
     }
 
     /**
@@ -159,8 +159,8 @@ public class MapInfo {
      * 
      * @return the description of the POI
      */
-    public POIDescription getPOIDescription(Coordinates pos) {
-        return geographicalOperator.getPOIDescription(pos);
+    public POIDescription getPOIDescription(Coordinates pos, float radius) {
+        return geographicalOperator.getPOIDescription(pos, radius);
     }
 
     /**
@@ -210,7 +210,7 @@ public class MapInfo {
      * @return List<String>
      */
     public List<String> suggestCompletions(String expression) {
-        return null;
+        return addressOperator.suggestCompletions(expression);
     }
 
     /**
@@ -220,7 +220,7 @@ public class MapInfo {
      * @return Selection
      */
     public Selection select(String address) {
-        return null;
+        return addressOperator.select(address);
     }
 
     /**

@@ -1,7 +1,6 @@
 package kit.route.a.lot.map;
 
-import java.awt.Polygon;
-import java.awt.geom.Rectangle2D;
+import java.awt.Polygon;import java.awt.geom.Rectangle2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -80,15 +79,9 @@ public class Area extends MapElement {
     }
     
     @Override
-    public Selection getSelection(Coordinates pos) {
+    public Selection getSelection() {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public float getDistanceTo(Coordinates pos) {
-        // TODO Auto-generated method stub
-        return 0;
     }
     
     @Override
