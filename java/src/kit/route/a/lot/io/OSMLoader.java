@@ -88,12 +88,16 @@ public class OSMLoader {
                         minLon = Float.parseFloat(attributes.getValue("minlon"));
                         maxLon = Float.parseFloat(attributes.getValue("maxlon"));
                         noChange = true;
+                    } else if (qName.equals("way")) {
+                        throw new SAXException("finished with nodes");
                     }
                 }
 
             };
 
-            parser.parse(file, boundsHandler);
+            try {
+                parser.parse(file, boundsHandler);
+            } catch (SAXException e) { }    // TODO I know it's bad style...
 
             DefaultHandler handler = new DefaultHandler() {
 
@@ -814,21 +818,21 @@ public class OSMLoader {
                         // rendered
                         logger.debug("Ignored relation.");
                     } else if (qName.equalsIgnoreCase("bounds")) {
-                        Coordinates upLeft = new Coordinates();
-                        Coordinates bottomRight = new Coordinates();
-
-                        upLeft.setLatitude(Float.parseFloat(attributes.getValue("maxlat")));
-                        upLeft.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
-
-                        bottomRight.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
-                        bottomRight.setLongitude(Float.parseFloat(attributes.getValue("maxlon")));
-
-                        // state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
-
-                        Coordinates middle = new Coordinates();
-                        middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-                        middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-                        // state.setAreaCoord(middle);
+//                        Coordinates upLeft = new Coordinates();
+//                        Coordinates bottomRight = new Coordinates();
+//
+//                        upLeft.setLatitude(Float.parseFloat(attributes.getValue("maxlat")));
+//                        upLeft.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
+//
+//                        bottomRight.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
+//                        bottomRight.setLongitude(Float.parseFloat(attributes.getValue("maxlon")));
+//
+//                        state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
+//
+//                        Coordinates middle = new Coordinates();
+//                        middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
+//                        middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
+//                        state.setAreaCoord(middle);
 
                     } else if (qName.equalsIgnoreCase("osm")) {
                         String version = attributes.getValue("version");
