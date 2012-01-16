@@ -25,10 +25,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private Collection<QTLeaf> lastQuery;
 
     @Override
-    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
+    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
         zoomlevels = new QuadTree[9];
+        Coordinates newUL = new Coordinates();    
+        newUL.setLatitude(upLeft.getLatitude() + 0.1f);
+        newUL.setLongitude(upLeft.getLongitude() - 0.1f);
+        Coordinates newBR = new Coordinates();
+        newBR.setLatitude(bottomRight.getLatitude() - 0.1f);
+        newBR.setLongitude(bottomRight.getLongitude() + 0.1f);
         for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i] = new QTLeaf(upLeft, bottomRight);
+            zoomlevels[i] = new QTLeaf(newUL, newBR);
         }
     }
 
@@ -85,13 +91,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        logger.info("called: getBaseLayer()");
-        logger.info(" upLeft Lon: " + upLeft.getLongitude());
-        logger.info(" upLeft Lat: " + upLeft.getLatitude());
-        logger.info(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
-        logger.info(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
-        logger.info(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
-        logger.info(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+        logger.debug("called: getBaseLayer()");
+        logger.debug(" upLeft Lon: " + upLeft.getLongitude());
+        logger.debug(" upLeft Lat: " + upLeft.getLatitude());
+        logger.debug(" bottomRight Lon: " + bottomRight.getLongitude());
+        logger.debug(" bottomRight Lat: " + bottomRight.getLatitude());
+        logger.debug(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
+        logger.debug(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
+        logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
+        logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
         lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel

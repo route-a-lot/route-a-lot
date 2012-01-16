@@ -48,12 +48,14 @@ public class Street extends MapElement {
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
         boolean inBounds = false;
-        for (int i = 1; i < nodes.length; i++) {    
+        int i = 1;
+        while (i < nodes.length && inBounds == false) {    
             // TODO this is not very performant, as a new Coordinates object is created each time
             if (isEdgeInBounds(nodes[i - 1].getPos(), nodes[i].getPos(),
                     topLeft, bottomRight)) {
                 inBounds = true;
             }
+            i++;
         }
         return inBounds;
     }
