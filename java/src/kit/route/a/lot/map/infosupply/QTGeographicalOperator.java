@@ -29,14 +29,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
         zoomlevels = new QuadTree[9];
-        Coordinates newUL = new Coordinates();    
-        newUL.setLatitude(upLeft.getLatitude() + 0.1f);
-        newUL.setLongitude(upLeft.getLongitude() - 0.1f);
-        Coordinates newBR = new Coordinates();
-        newBR.setLatitude(bottomRight.getLatitude() - 0.1f);
-        newBR.setLongitude(bottomRight.getLongitude() + 0.1f);
         for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i] = new QTLeaf(newUL, newBR);
+            zoomlevels[i] = new QTLeaf(upLeft, bottomRight);
         }
     }
 
