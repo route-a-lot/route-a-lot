@@ -85,7 +85,7 @@ public class QTNode extends QuadTree {
     }
     
     @Override
-    public String print(int offset, List<Integer> last) {
+    public String toString(int offset, List<Integer> last) {
         if (offset > 50) {
             return "this seems like a good point to stop printing...\n";
         }
@@ -94,21 +94,21 @@ public class QTNode extends QuadTree {
         
         printOffset(offset, last, stringBuilder);
         stringBuilder.append("├──");
-        stringBuilder.append(children[0].print(offset + 1, last));
+        stringBuilder.append(children[0].toString(offset + 1, last));
         
         printOffset(offset, last, stringBuilder);
         stringBuilder.append("├──");
-        stringBuilder.append(children[1].print(offset + 1, last));
+        stringBuilder.append(children[1].toString(offset + 1, last));
         
         printOffset(offset, last, stringBuilder);
         stringBuilder.append("├──");
-        stringBuilder.append(children[2].print(offset + 1, last));
+        stringBuilder.append(children[2].toString(offset + 1, last));
         
         printOffset(offset, last, stringBuilder);
         stringBuilder.append("└──");
         List<Integer> newLast = new ArrayList<Integer>(last);
         newLast.add(offset);
-        stringBuilder.append(children[3].print(offset + 1, newLast));
+        stringBuilder.append(children[3].toString(offset + 1, newLast));
         
         return stringBuilder.toString();
     }

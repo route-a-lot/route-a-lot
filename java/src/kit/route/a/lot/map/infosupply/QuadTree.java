@@ -79,7 +79,7 @@ public abstract class QuadTree {
      * @param last a neat list
      * @return the print output
      */
-    public abstract String print(int offset, List<Integer> last);
+    public abstract String toString(int offset, List<Integer> last);
     
     /**
      * Returns the number of {@link MapElement}s in the quad tree.

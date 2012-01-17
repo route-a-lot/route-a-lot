@@ -282,8 +282,10 @@ public class MapInfo {
         addressOperator.saveToStream(stream);
     }
 
-    public String printQuadTree() {
-        return ((QTGeographicalOperator) geographicalOperator).print();
+    public void printQuadTree() {
+        if (geographicalOperator instanceof QTGeographicalOperator) {
+            ((QTGeographicalOperator) geographicalOperator).printQuadTree();
+        }
     }
 
 }

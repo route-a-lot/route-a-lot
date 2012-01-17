@@ -86,7 +86,7 @@ public class QTLeaf extends QuadTree {
     }
     
     @Override
-    public String print(int offset, List<Integer> last) {
+    public String toString(int offset, List<Integer> last) {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(" " + countElements() + "\n");
         return stringBuilder.toString();

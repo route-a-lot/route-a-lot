@@ -162,8 +162,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * returns a string representing the quadtree
      * @return the same as above
      */
-    public String print() {
-        return zoomlevels[0].print(0, new ArrayList<Integer>());
+    public void printQuadTree() {
+        System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
     }
     
     private ArrayList<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
