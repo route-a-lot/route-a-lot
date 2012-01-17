@@ -5,10 +5,10 @@ import java.awt.Image;
 
 public abstract class Context {
 
-    private int width; // in pixels
-    private int height; // in pixels
-    private Coordinates topLeft;
-    private Coordinates bottomRight;
+    protected int width; // in pixels
+    protected int height; // in pixels
+    protected Coordinates topLeft;
+    protected Coordinates bottomRight;
 
     public Context(int width, int height, Coordinates topLeft, Coordinates bottomRight) {
         if ((topLeft == null) || (bottomRight == null)) {
@@ -35,6 +35,8 @@ public abstract class Context {
      * @param image
      */
     public abstract void drawImage(Coordinates position, Image image);
+    
+    public abstract float getScale();
 
     public int getWidth() {
         return this.width;
