@@ -113,12 +113,46 @@ public class Street extends MapElement {
      * edge is given by the position of the start - and endNode in the array nodes 
      */
     private float getDistanceFromNodeToEdge(int start, int end, Coordinates pos) {
-        Point2D selectedPos = new Point2D.Float(pos.getLongitude(), pos.getLatitude());
-        Line2D edge = new Line2D.Float(nodes[start].getPos().getLongitude(),
-                nodes[start].getPos().getLatitude(),
-                nodes[end].getPos().getLongitude(),
-                nodes[end].getPos().getLatitude());
-        return (float)edge.ptLineDist(selectedPos); //TODO double . . .
+       double a = getDistance(nodes[start].getPos(), pos);
+       double b = getDistance(nodes[end].getPos(), pos);
+       double c = getDistance(nodes[start].getPos(), nodes[end].getPos());
+       float distance = (float)getDistancefromTriangle(a, b, c);
+       if (distance != -1) {
+           return distance;
+       }
+       return (float)Math.min(getDistance(nodes[start].getPos(), pos), getDistance(nodes[end].getPos(), pos));
+    }
+    
+    // a= side between start and pos, b = s. between pos and end and c = s. between start and end
+    private double getDistancefromTriangle(double a, double b, double c) {
+        double angleAB = Math.acos((b*b + c*c - a*a) / (2 * b * c)); 
+        if (angleAB > Math.PI / 2 || angleAB < Math.PI / 4) {  //
+            /*
+             * Not everything is in lot. No, seriously the min distance isn't between pos and a point ON the line
+             */
+            return - 1;   // if failure --> wrong angles, try: if(angleAB > Math.PI / 4 || angleAB < Math.PI / 8)
+        }
+        if (Math.sin(angleAB) * a < 100) {
+            System.err.println("\n\n\n\n\n\n");
+            System.err.println(Math.sin(angleAB) * a);
+            System.err.println("\n\n\n\n\n\n");
+        }
+        return Math.sin(angleAB) * a;   //hight of triangle  (a = "hypothenuse" and h = "gegenkathete")
+    }
+    
+    /*
+     * returns the distance beetween the given node and coordinate in meter
+     */
+    private static double getDistance(Coordinates pos1, Coordinates pos2) {
+        double pos1LongRad = Math.abs(pos1.getLongitude()) / 180 * Math.PI;    //coordinates in deg
+        double pos1LalRad = Math.abs(pos1.getLatitude()) / 180 * Math.PI;
+        double pos2LongRad = Math.abs(pos2.getLongitude()) / 180 * Math.PI;
+        double pos2LalRad = Math.abs(pos2.getLatitude()) / 180 * Math.PI;
+        
+        double distanceRad = Math.acos(Math.sin(pos1LalRad) * Math.sin(pos2LalRad)
+                                        + Math.cos(pos1LalRad) * Math.cos(pos2LalRad) * Math.cos(pos1LongRad - pos2LongRad)); //distance in deg 
+        return distanceRad * 6378137;   //6378137 is the "äquatorradius" in meter
+        
     }
     
     private float getRatio(int startNode, int endNode, Coordinates pos) {
@@ -151,5 +185,15 @@ public class Street extends MapElement {
     public Selection getSelection() {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public static void main(String[] args) {
+        Coordinates p1 = new Coordinates();
+        Coordinates p2 = new Coordinates();
+        p1.setLongitude(08.68194f);
+        p1.setLatitude(-50.11222f);
+        p2.setLongitude(13.29750f);
+        p2.setLatitude(52.52222f);
+        System.out.println(getDistance(p2, p1));
     }
 }

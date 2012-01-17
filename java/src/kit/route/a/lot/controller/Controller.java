@@ -96,7 +96,7 @@ public class Controller {
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
-            guiHandler.updateGUI();
+            guiHandler.setView(state.getTopLeftCoordinate());
             //TODO saveMap
         }
        
@@ -320,5 +320,6 @@ public class Controller {
         }
         ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
+        ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));
     }
 }

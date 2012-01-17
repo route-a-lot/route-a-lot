@@ -148,6 +148,13 @@ public class GUI extends JFrame {
         this.pack();
         this.setVisible(true);
     }
+    
+    //TODO right place??
+    public void setview(Coordinates coor) {
+        this.middle = coor;
+        repaint();
+    }
+    
 
     // private BufferedImage mapImage = testImage();
 
@@ -627,7 +634,7 @@ public class GUI extends JFrame {
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedMapFile = importFC.getSelectedFile();
             PathEvent pathEvent = new PathEvent(GUI.this, importFC.getSelectedFile().getPath());
-            for(RALListener lis: targetSelectedList){
+            for(RALListener lis: importOsmFileList){
                 lis.handleRALEvent(pathEvent);
             }
         }

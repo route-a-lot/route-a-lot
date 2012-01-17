@@ -330,4 +330,8 @@ public class GUIHandler {
      */
     public void addListenerImportHeightMap() {
     }
+    
+    public void setView(Coordinates coor) {
+        gui.setview(coor);
+    }
 }
