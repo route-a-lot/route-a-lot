@@ -4,7 +4,7 @@ import java.lang.Math;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.Heightmap;
 
-public class WeightCalculator {
+public class WeightCalculator{
     private static WeightCalculator instance;
     
     protected WeightCalculator() { }
@@ -61,7 +61,7 @@ public class WeightCalculator {
         
         
         int entf = 0;  
-        Converter converter = Converter.getInstance();
+        UTMConverter converter = UTMConverter.getInstance();
         int[] utmDatenStart = converter.utmConverter(lat1, lon1);
         int[] utmDatenEnd = converter.utmConverter(lat2, lon2);
         entf =  Math.round((float) Math.sqrt(
