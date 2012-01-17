@@ -31,7 +31,7 @@ public class Precalculator {
     
     public void precalculate() {
         logger.info("Starting precalculation...");
-        graph = State.getInstance().getRoutingGraph();
+        graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
         if (doAreas()) {
             for (int i = 0; i < graph.getIDCount(); i++) {

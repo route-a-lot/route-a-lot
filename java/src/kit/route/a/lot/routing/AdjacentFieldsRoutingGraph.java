@@ -19,6 +19,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private int[] edges;
     private int[] weights;
     private long[] arcFlags;
+    private int[] realID;
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
@@ -39,6 +40,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         for (int i = 0; i < endID.length; i++) {
             maxNodeID = Math.max(maxNodeID, endID[i]);
         }
+        doIDMapping();
         
         // copy data to internal structures
         edgesPos = new int[maxNodeID + 1];
@@ -55,6 +57,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         Arrays.fill(arcFlags, ~ (long) 0);
     }
     
+    private void doIDMapping() {
+        // TODO Auto-generated method stub
+        
+    }
+
     /**
      * Sorts the given integer arrays via Quicksort, using the key array as reference
      * while the data arrays are sorted in just the same manner.
@@ -177,6 +184,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 relevantEdges.add(edges[i]);
             }
         }
+        for (int neighbor: relevantEdges) {
+            logger.debug("Neighbor to " + node + ": " + neighbor);
+        }
         return relevantEdges;
     }
     
@@ -233,7 +243,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         logger.warn("No weight found from ID " + Integer.valueOf(from) + " to " + Integer.valueOf(to));
-        return 0;
+        return 1;
     }
     
     public int getIDCount() {
@@ -285,6 +295,18 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             areaID[i++] = (byte) Integer.parseInt(area);
         }
     }
+
+    @Override
+    public int getRoutingID(int id) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public int getRealID(int id) {
+        return realID[id];
+    }
+    
     
     
 
