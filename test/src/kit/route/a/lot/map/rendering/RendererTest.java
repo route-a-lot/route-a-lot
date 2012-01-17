@@ -3,6 +3,8 @@ package kit.route.a.lot.map.rendering;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -73,7 +75,9 @@ public class RendererTest {
     public void testDrawCircle() {
         renderer = new Renderer();
         topLeft = new Coordinates(49.019887f, 8.394492f);
+        topLeft = new Coordinates(0.012f, -0.012f);
         bottomRight = new Coordinates(49.008375f, 8.414061f);
+        bottomRight = new Coordinates(-0.012f, 0.012f);
 
         StateMock state = new StateMock();
         MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
@@ -91,21 +95,24 @@ public class RendererTest {
         nodes[5] = new Node(49.011584f, 8.399727f, 5);
         nodes[6] = new Node(49.014118f, 8.398311f, 6);
         nodes[7] = new Node(49.01696f, 8.400285f, 7);
-//        nodes[0] = new Node(0.01f, 0.0f, 0);
-//        nodes[1] = new Node(0.007f, 0.003f, 1);
-//        nodes[2] = new Node(0.0f, 0.01f, 2);
-//        nodes[3] = new Node(-0.007f, -0.003f, 3);
-//        nodes[4] = new Node(-0.01f, -0.01f, 4);
-//        nodes[5] = new Node(-0.007f, -0.003f, 5);
-//        nodes[6] = new Node(0.0f, 0.0f, 6);
-//        nodes[7] = new Node(0.007f, 0.003f, 7);
+        nodes[0] = new Node(0.01f, 0.0f, 0);
+        nodes[1] = new Node(0.007f, 0.003f, 1);
+        nodes[2] = new Node(0.0f, 0.01f, 2);
+        nodes[3] = new Node(-0.007f, -0.003f, 3);
+        nodes[4] = new Node(-0.01f, -0.01f, 4);
+        nodes[5] = new Node(-0.007f, -0.003f, 5);
+        nodes[6] = new Node(0.0f, 0.0f, 6);
+        nodes[7] = new Node(0.007f, 0.003f, 7);
         Street street = new Street("", wayInfo);
         street.setNodes(nodes);
-        mapInfo.addMapElement(street);
-
+//        mapInfo.addMapElement(street);
+        mapInfo.addMapElement(new Node(0.f, 0.f, 0));
+        mapInfo.addMapElement(new Node(bottomRight));
+        mapInfo.addMapElement(new Node(topLeft));
+        
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(500, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new ContextSW(600, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -154,14 +161,57 @@ public class RendererTest {
         public TestGUI(RendererTest rendererTest) {
             super("Test");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            this.setSize(250, 250);
+            this.setSize(650, 650);
             this.setLocation(new Point(500, 500));
             
             rendererdContent = this.add(new JPanel());
             rendererdContent.setVisible(true);
-            rendererdContent.setSize(250, 250);
+            rendererdContent.setSize(650, 650);
             
             this.rendererTest = rendererTest;
+            
+            this.addKeyListener(new KeyListener() {
+
+                @Override
+                public void keyPressed(KeyEvent arg0) {
+                    
+//                    System.out.println("Key pressed");
+                    
+                    float diffLat = 0;
+                    float diffLon = 0;
+                    switch (arg0.getKeyCode()) {
+                        case KeyEvent.VK_LEFT:
+                            diffLon = -0.002f;
+                            break;
+                        case KeyEvent.VK_RIGHT:
+                            diffLon = 0.002f;
+                            break;
+                        case KeyEvent.VK_UP:
+                            diffLat = 0.002f;
+                            break;
+                        case KeyEvent.VK_DOWN:
+                            diffLat = -0.002f;
+                            break;
+                    }
+                    topLeft.setLatitude(topLeft.getLatitude() + diffLat);
+                    topLeft.setLongitude(topLeft.getLongitude() + diffLon);
+                    bottomRight.setLatitude(bottomRight.getLatitude() + diffLat);
+                    bottomRight.setLongitude(bottomRight.getLongitude() + diffLon);
+                    
+                    repaint();
+                }
+
+                @Override
+                public void keyReleased(KeyEvent arg0) {
+//                    System.out.println("Key released");
+                }
+
+                @Override
+                public void keyTyped(KeyEvent arg0) {
+//                    System.out.println("Key typed");
+                }
+                
+            });
         }
         
         public Graphics getGraphicsForRenderedContent() {
