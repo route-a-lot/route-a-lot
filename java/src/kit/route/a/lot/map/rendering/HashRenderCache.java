@@ -1,6 +1,5 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -9,38 +8,35 @@ import kit.route.a.lot.map.rendering.RenderCache;
 public class HashRenderCache implements RenderCache {
 
     /**
-     * Maximale Anzahl an Kacheln, die im Cache gespeichert werden k�nnen.
+     * Maximum number of entries in the cache
      */
-    private static final int CACHE_SIZE = 20;
+    private static final int CACHE_SIZE = 50;
     
     /**
-     * Erm�glicht den Zugriff auf die Cacheeintr�ge �ber eine Hashmap.
+     * Map, mapping tile specifiers to tiles
      */
-    private HashMap<Tile, BufferedImage> map;
+    private HashMap<Integer, Tile> map;
     
     /**
-     * Verwaltet eine FIFO-Liste der hinzugef�gten Eintr�ge, 
-     * so dass die �ltesten Eintr�ge ggfs. entfernt werden k�nnen.
+     * a FIFO list for the cache replacement
      */
     private LinkedList<Tile> leastRecentlyUsed; // TODO EXTEND: more elaborate aging algorithm
 
     public HashRenderCache() {
-        map = new HashMap<Tile, BufferedImage>();
+        map = new HashMap<Integer, Tile>();
         leastRecentlyUsed = new LinkedList<Tile>();
     }
     
-    // specified in interface RenderCache
-    public boolean queryCache(Tile tileFrame) {
-        BufferedImage result = map.get(tileFrame);
-        tileFrame.setData(result);
-        return (result != null);
+    @Override
+    public Tile queryCache(int tileSpecifier) {
+        return map.get(tileSpecifier);
     }
     
-    // specified in interface RenderCache
+    @Override
     public void addToCache(Tile tile) {
-        map.put(tile, tile.getData());
+        map.put(tile.hashCode(), tile);
         if (leastRecentlyUsed.size() >= CACHE_SIZE) {
-            map.remove(leastRecentlyUsed.removeFirst());      
+            map.remove(leastRecentlyUsed.removeFirst().hashCode());   
         }
         leastRecentlyUsed.addLast(tile);
     }

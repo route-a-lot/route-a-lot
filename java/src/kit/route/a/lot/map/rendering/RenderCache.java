@@ -3,18 +3,19 @@ package kit.route.a.lot.map.rendering;
 public interface RenderCache {
 
     /**
-     * Fills tile data (in tileFrame) with the stored tile image on cache hit.
+     * Returns the tile for the given tile specifier if it is in the cache.
+     * Otherwise returns null.
      * 
-     * @param tileFrame an empty tile, offering coordinates and a level of detail
-     * @return true on cache hit
+     * @param tileSpecifier
+     *            an int as specifier for the tile (see Tile.getSpecifier(Coordinates, int))
      */
-    boolean queryCache(Tile tileFrame);
+    Tile queryCache(int tileSpecifier);
 
     /**
      * Adds the given tile to the cache.
      * 
-     * @param tile the given tile
      */
     void addToCache(Tile tile);
+
 
 }
