@@ -82,12 +82,6 @@ public class OSMLoader {
                         if (maxLon < curLon) {
                             maxLon = curLon;
                         }
-                    } else if (qName.equals("bounds")) {
-                        minLat = Float.parseFloat(attributes.getValue("minlat"));
-                        maxLat = Float.parseFloat(attributes.getValue("maxlat"));
-                        minLon = Float.parseFloat(attributes.getValue("minlon"));
-                        maxLon = Float.parseFloat(attributes.getValue("maxlon"));
-                        noChange = true;
                     } else if (qName.equals("way")) {
                         throw new SAXException("finished with nodes");
                     }
