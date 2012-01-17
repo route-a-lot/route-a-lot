@@ -33,5 +33,5 @@ public class Coordinates {
     public String toString() {
         return "latitude: " + latitude + " - longitude: " + longitude;
     }
- 
+    
 }
