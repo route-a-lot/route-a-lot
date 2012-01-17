@@ -4,10 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
+import kit.route.a.lot.map.rendering.MercatorProjection;
+import kit.route.a.lot.map.rendering.Projection;
+
 
 public class ContextSW extends Context {
 
     private Graphics output;
+    private Projection projection;
 
     public ContextSW(int width, int height, Coordinates topLeft, Coordinates bottomRight, Graphics surface) {
         super(width, height, topLeft, bottomRight);
@@ -15,6 +19,7 @@ public class ContextSW extends Context {
             throw new IllegalArgumentException();
         }
         this.output = surface;
+        projection = new MercatorProjection(topLeft, bottomRight, width);
     }
 
     @Override
@@ -25,8 +30,14 @@ public class ContextSW extends Context {
 
     @Override
     public void drawImage(Coordinates position, Image image) {
-        // TODO: Transformation Coordinates -> Pixelwerte
-        output.drawImage(image, 0/* x */, 0/* y */, null);
+        Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(position);
+        output.drawImage(image, (int) localCoordinates.getLongitude(), (int) localCoordinates.getLatitude(), null);
     }
-
+    
+    @Override
+    public float getScale() {
+        return projection.getScale();
+    }
+    
 }
+
