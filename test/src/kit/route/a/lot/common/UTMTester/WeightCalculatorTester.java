@@ -1,17 +1,18 @@
+package kit.route.a.lot.common.UTMTester;
 //package kit.route.a.lot.common;
 
 import java.lang.Math;
 //import kit.route.a.lot.controller.State;
 //import kit.route.a.lot.heightinfo.Heightmap;
 
-public class WeightCalculator {
-  	private static WeightCalculator instance;
+public class WeightCalculatorTester {
+  	private static WeightCalculatorTester instance;
     
-    	protected WeightCalculator() { }
+    	protected WeightCalculatorTester() { }
     
-    	public static WeightCalculator getInstance() {
+    	public static WeightCalculatorTester getInstance() {
         	if (instance == null) {
-            		instance = new WeightCalculator();
+            		instance = new WeightCalculatorTester();
         	}
         	return instance;
     	}

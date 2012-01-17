@@ -1,8 +1,10 @@
+package kit.route.a.lot.common.UTMTester;
+
 class Tester{
 
 public static void main(String[]arg){
 /*Test von http://www.kompf.de/gps/distcalc.html*/
-	WeightCalculator wCalc = WeightCalculator.getInstance();
+	WeightCalculatorTester wCalc = WeightCalculatorTester.getInstance();
 	double entf;
 	/*Test1*/
 	entf = wCalc.calcWeightWithUTM(	49.9917, 8.41321, 50.0049, 8.42182);
