@@ -24,10 +24,14 @@ public class Router {
     
     public static List<Integer> calculateRoute() {
         List<Integer> route = new ArrayList<Integer>();
-        Selection prev = (Selection) null;
+        Selection prev = null;
         for (Selection navPoint: State.getInstance().getNavigationNodes()) {
+            if (prev == null) {
+                continue;
+            }
             logger.info("Calculating route from " + prev.toString() + " to " + navPoint.toString());
             route.addAll(fromAToB(prev, navPoint));
+            prev = navPoint;
         }
         return route;
     }
