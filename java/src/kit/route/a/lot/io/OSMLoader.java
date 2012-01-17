@@ -32,11 +32,11 @@ public class OSMLoader {
     float minLat, maxLat, minLon, maxLon;
 
     State state;
-    WeightCalculator weightCalculator;
+    WeightCalculatorMock weightCalculator;
 
     public OSMLoader() {
         state = State.getInstance();
-        weightCalculator = WeightCalculator.getInstance();
+//        weightCalculator = WeightCalculator.getInstance();
         weightCalculator = new WeightCalculatorMock();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
