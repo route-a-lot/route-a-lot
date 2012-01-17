@@ -25,8 +25,45 @@ public class Router {
     private static Logger logger = Logger.getLogger(Router.class);
 
     public static List<Integer> calculateRoute() {
-        List<Integer> route = new ArrayList<Integer>();
-        List<Integer> tempRoute;
+        boolean optimised = false;
+        if (optimised) {
+            return optimisedRoute();
+        } else {
+            return simpleRoute();
+        }
+    }
+    
+    private static List<Integer> optimisedRoute() {
+        Route shortest = null;
+        List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
+        int size = navigationNodes.size();
+        Route[][] routes = new Route[size][size];   // Matrix containing the shortest routes
+        for (int j = 0; j < size; j++) {
+            for (int i = 0; i < size; i++) {
+                // Fill the Matrix
+                routes[j][i] = fromAToB(navigationNodes.get(i), navigationNodes.get(j));
+            }
+        }
+        for (List<Integer> permutation: permutations(size)) {
+            Route tempRoute = new Route();
+            int prev = permutation.get(0);
+            for (Integer path: parmutation) {
+                if (prev == path) {
+                    continue;
+                }
+                tempRoute.join(routes[prev][path]);
+                prev = path;
+            }
+            if (shortest == null || shortest.length() > tempRoute.length()) {
+                shortest = tempRoute;
+            }
+        }
+        return shortest.toList();
+    }
+
+    private static List<Integer> simpleRoute(){
+        Route route = new Route();
+        Route tempRoute;
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
         Selection prev = navigationNodes.get(0);
         for (Selection navPoint : navigationNodes) {
@@ -35,16 +72,15 @@ public class Router {
             }
             logger.info("Calculating route from " + prev.toString() + " to " + navPoint.toString());
             tempRoute = fromAToB(prev, navPoint);
-            if (tempRoute != null) {
-                route.addAll(tempRoute);
-            } else {
+            if (tempRoute == null) {
+                logger.warn("Failed to find route, returning null");
                 return null;
             }
-            System.out.println(route.size());
             prev = navPoint;
+            route = route.join(tempRoute);
         }
-
-        return route;
+        // System.out.println(route.size());
+        return route.toList();
     }
 
     /**
@@ -57,14 +93,14 @@ public class Router {
         return calculateRoute();
     }
 
-    private static List<Integer> fromAToB(Selection a, Selection b) {
+    private static Route fromAToB(Selection a, Selection b) {
         // ToDo: rename?
         RoutingGraph graph = State.getInstance().getLoadedGraph();
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
         Route currentPath = null;
         if (a == null || b == null) {
             logger.warn("Can't calculate route for one Selection only");
-            return (List<Integer>) null;
+            return new Route();
         }
         // This helps us to reduce redundancy at a low cost.
         boolean[] seen = new boolean[graph.getIDCount()];
@@ -97,7 +133,7 @@ public class Router {
             } else if (currentNode == -1) {
                 // This is the shortest path.
                 logger.info("Found route from " + a.toString() + " to " + b.toString());
-                return currentPath.toList();
+                return currentPath;
             }
             for (Integer to : graph.getRelevantNeighbors(currentNode,
                     new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
@@ -108,6 +144,6 @@ public class Router {
         // No path was found, maybe raise an error?
         logger.error("Couldn't find any route at all from " + a.toString() + " to " + b.toString()
                 + ". Are you sure it is even possible?");
-        return (List<Integer>) null;
+        return new Route();
     }
 }

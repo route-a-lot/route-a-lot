@@ -25,6 +25,13 @@ public class Route {
         from = route;
     }
 
+    public Route() {
+        // Dummy
+        to = 0;
+        weight = 0;
+        from = this;
+    }
+
     public int getNode() {
         return to;
     }
@@ -55,6 +62,26 @@ public class Route {
             return weight;
         } else {
             return weight + from.length();
+        }
+    }
+    
+    public Route join(Route route) {
+        // joins two routes
+        Route result = route.copy();
+        Route pos;
+        for (pos = result; pos != null; pos = pos.from) {
+            pos.weight += weight;
+        }
+        pos.from = this;
+        return result;
+    }
+
+    public Route copy() {
+        // creates a deep copy
+        if (from != null) {
+            return new Route (to, weight, from.copy());
+        } else {
+            return new Route (to, weight, null);
         }
     }
 }
