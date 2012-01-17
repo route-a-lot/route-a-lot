@@ -2,11 +2,14 @@ package kit.route.a.lot.map.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
@@ -21,6 +24,7 @@ import kit.route.a.lot.map.Street;
 public class Tile {
 
     public static final float BASE_TILE_DIM = 0.005f;
+    private static Logger logger = Logger.getLogger(Tile.class);
 
     private Coordinates topLeft;
     private Coordinates bottomRight; // DISCUSS: keep or drop?
@@ -29,6 +33,8 @@ public class Tile {
     private int width; // DISCUSS: keep or drop?
     private int height;
     private Projection projection;
+    
+    private static int num = 0;
 
     /**
      * Creates an new (empty) tile using the defined resolution.
@@ -66,10 +72,35 @@ public class Tile {
      */
     public Tile(Coordinates topLeft, Coordinates bottomRight, int detail) {
         this(topLeft, bottomRight, detail, 350, 350);
+        logger.info("Default resolution used for tile: 350px * 350px");
+    }
+
+    public Tile(Coordinates topLeft, Coordinates bottomRight, int detail, float scale) {
+        this(topLeft, bottomRight, detail);
+        projection = new MercatorProjection(topLeft, scale);
+        Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
+        Coordinates localBottomRight = projection.geoCoordinatesToLocalCoordinates(bottomRight);
+
+        width = (int) Math.abs(localTopLeft.getLongitude() - localBottomRight.getLongitude());
+        height = (int) Math.abs(localTopLeft.getLatitude() - localBottomRight.getLatitude());
     }
 
     public void prerender(State state) {
         reset();
+
+        Graphics2D graphics = data.createGraphics();
+        int c1 = Math.abs(this.hashCode()) % 256;
+        int c2 = Math.abs(data.hashCode()) % 256;
+        int c3 = (Math.abs(this.hashCode()) + Math.abs(data.hashCode())) % 256;
+        graphics.setColor(new Color(c1, c2, c3));
+        graphics.setStroke(new BasicStroke(3));
+        graphics.fillRect(0, 0, this.width, this.height);
+        graphics.drawLine(0, this.height, this.width, 0);
+        graphics.setColor(Color.BLACK);
+        graphics.setFont(new Font("Arial", Font.BOLD, 32));
+        graphics.drawChars((new Integer(num)).toString().concat("   ").toCharArray(), 0, 4, 5, 50);
+        num++;
+
         /*
          * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way
          * (but we can use a other collection, too)
@@ -88,6 +119,7 @@ public class Tile {
                 draw(element);
             }
         }
+
     }
 
     /**
@@ -144,9 +176,8 @@ public class Tile {
         Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();
         graphics.setColor(Color.LIGHT_GRAY);
-        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2, (int) localCoordinates
-                .getLatitude()
-                - size / 2, size, size);
+        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
+                (int) localCoordinates.getLatitude() - size / 2, size, size);
     }
 
     /**
@@ -250,75 +281,20 @@ public class Tile {
     @Override
     public int hashCode() {
         // EXTEND: better hash code derivation
+        return getSpecifier(topLeft, detail);
+    }
+
+    public Coordinates getTopLeft() {
+        return topLeft;
+    }
+
+
+    public Projection getProjection() {
+        return projection;
+    }
+
+    public static int getSpecifier(Coordinates topLeft, int detail) {
         return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
-    }
-
-}
-
-
-abstract class Projection {
-
-    abstract Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates);
-
-}
-
-class SimpleProjection extends Projection {
-
-    private Coordinates topLeft;
-    private Coordinates bottomRight;
-    private int width;
-    private int height;
-
-    SimpleProjection(Coordinates topLeft, Coordinates bottomRight, int width, int height) {
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
-        this.width = width;
-        this.height = height;
-    }
-
-    @Override
-    Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
-        Coordinates localCoordinates = new Coordinates();
-        localCoordinates.setLatitude((geoCoordinates.getLatitude() - topLeft.getLatitude()) * width
-                / (bottomRight.getLatitude() - topLeft.getLatitude()));
-        localCoordinates.setLongitude((geoCoordinates.getLongitude() - topLeft.getLongitude()) * height
-                / (bottomRight.getLongitude() - topLeft.getLongitude()));
-        return localCoordinates;
-    }
-}
-
-class MercatorProjection extends Projection {
-
-    private Coordinates topLeft;
-    float scale;
-
-    public MercatorProjection(Coordinates topLeft, Coordinates bottomRight, int width) {
-        this.topLeft = mercatorCoordinates(topLeft);
-        scale =
-                Math.abs(mercatorCoordinates(bottomRight).getLongitude() - this.topLeft.getLongitude())
-                        / width;
-        // System.out.println("scale = " + scale);
-    }
-
-    @Override
-    Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
-        Coordinates mercatorCoordinates = mercatorCoordinates(geoCoordinates);
-        Coordinates localCoordinates = new Coordinates();
-        localCoordinates.setLongitude((mercatorCoordinates.getLongitude() - topLeft.getLongitude()) / scale);
-        localCoordinates.setLatitude((topLeft.getLatitude() - mercatorCoordinates.getLatitude()) / scale);
-        return localCoordinates;
-    }
-
-    private Coordinates mercatorCoordinates(Coordinates geoCoordinates) {
-        Coordinates mercatorCoordinates = new Coordinates();
-        mercatorCoordinates.setLongitude((geoCoordinates.getLongitude()));
-        mercatorCoordinates.setLatitude((float) (arsinh(Math
-                .tan(geoCoordinates.getLatitude() * Math.PI / 180)) * 180 / Math.PI));
-        return mercatorCoordinates;
-    }
-
-    private double arsinh(double x) {
-        return Math.log(x + Math.sqrt(x * x + 1));
     }
 
 }
