@@ -113,35 +113,31 @@ public class Street extends MapElement {
      * edge is given by the position of the start - and endNode in the array nodes 
      */
     private float getDistanceFromNodeToEdge(int start, int end, Coordinates pos) {
-       double a = getDistance(nodes[start].getPos(), pos);
-       double b = getDistance(nodes[end].getPos(), pos);
+       double b = getDistance(nodes[start].getPos(), pos);
+       double a = getDistance(nodes[end].getPos(), pos);
        double c = getDistance(nodes[start].getPos(), nodes[end].getPos());
        float distance = (float)getDistancefromTriangle(a, b, c);
-       if (distance != -1) {
+       if (!(distance < 0)) {
            return distance;
        }
        return (float)Math.min(getDistance(nodes[start].getPos(), pos), getDistance(nodes[end].getPos(), pos));
     }
     
-    // a= side between start and pos, b = s. between pos and end and c = s. between start and end
+    // a= side between end and pos, b = s. between pos and start, c = s. between start and end
     private double getDistancefromTriangle(double a, double b, double c) {
-        double angleAB = Math.acos((b*b + c*c - a*a) / (2 * b * c)); 
-        if (angleAB > Math.PI / 2 || angleAB < Math.PI / 4) {  //
+        double angleBC= Math.acos((b*b + c*c - a*a) / (2 * b * c));
+        double angleAB = Math.acos((a*a + c*c - b*b) / (2 * a * c));
+        if (angleBC > Math.PI / 2 || angleAB > Math.PI / 2) {  //
             /*
              * Not everything is in lot. No, seriously the min distance isn't between pos and a point ON the line
              */
             return - 1;   // if failure --> wrong angles, try: if(angleAB > Math.PI / 4 || angleAB < Math.PI / 8)
         }
-        if (Math.sin(angleAB) * a < 100) {
-            System.err.println("\n\n\n\n\n\n");
-            System.err.println(Math.sin(angleAB) * a);
-            System.err.println("\n\n\n\n\n\n");
-        }
-        return Math.sin(angleAB) * a;   //hight of triangle  (a = "hypothenuse" and h = "gegenkathete")
+        return Math.sin(angleBC) * b;   //height of triangle  (a = "hypothenuse" and h = "gegenkathete")
     }
     
     /*
-     * returns the distance beetween the given node and coordinate in meter
+     * returns the distance between the given node and coordinate in meter
      */
     private static double getDistance(Coordinates pos1, Coordinates pos2) {
         double pos1LongRad = Math.abs(pos1.getLongitude()) / 180 * Math.PI;    //coordinates in deg
@@ -156,7 +152,21 @@ public class Street extends MapElement {
     }
     
     private float getRatio(int startNode, int endNode, Coordinates pos) {
-        return 0.0f;
+        double b = getDistance(nodes[startNode].getPos(), pos);
+        double a = getDistance(nodes[endNode].getPos(), pos);
+        double c = getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
+        float h = (float)getDistancefromTriangle(a, b, c);
+        double angleBC = Math.acos((b*b + c*c - a*a) / (2 * b * c)); 
+        double angleAB = Math.acos((a*a + c*c - b*b) / (2 * a * c));
+       if (angleBC > Math.PI / 4 || angleAB > Math.PI / 2 ) {
+            if (getDistance(nodes[startNode].getPos(), pos) < getDistance(nodes[endNode].getPos(), pos)) {
+                return 0.0f;
+            } else {
+                return 1.0f;
+            }
+        }
+        double fromStartToLot = Math.cos(angleBC) * b; //cos(AngleAB) * "hypothenuse"
+        return (float) (fromStartToLot / c);   
     }
     
     @Override
