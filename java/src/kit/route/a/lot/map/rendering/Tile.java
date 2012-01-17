@@ -119,6 +119,8 @@ public class Tile {
                 draw(element);
             }
         }
+        
+        state.getLoadedMapInfo().printQuadTree();
 
     }
 

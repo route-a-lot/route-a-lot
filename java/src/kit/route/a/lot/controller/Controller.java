@@ -308,12 +308,12 @@ public class Controller {
             StateIO.loadState(stateFile);
         } else {
             logger.warn("No state file found. Go on withloading map of Karlsruhe");
-            File karlsruheMap = new File("test/resources/karlsruhe_small.osm");
+            File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
             if(karlsruheMap.exists()) {
                 logger.info("file exists");
                 OSMLoader osmLoader = new OSMLoader();
                 osmLoader.importMap(karlsruheMap);
-                ctrl.guiHandler.createGUI(ctrl.state.getAreaCoord());
+                ctrl.guiHandler.createGUI(ctrl.state.getTopLeftCoordinate());
             } else {
                 logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
             }

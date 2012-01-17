@@ -7,6 +7,8 @@ public abstract class Projection {
 
     public abstract Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates);
     
+    public abstract Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates);
+    
     public abstract float getScale();
 
 }

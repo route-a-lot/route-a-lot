@@ -257,106 +257,17 @@ public class GUI extends JFrame {
         mapButtonPanel.add(print);
         mapButtonPanel.add(graphics);
         mapButtonPanel.add(scrolling);
-
         
-
-        tab1 = new JPanel();
-        tab2 = new JPanel();
-        tab3 = new JPanel();
-
-        tabbpane.addTab("Planen", null, tab1, "1");
-        // tabbpane.setMnemonicAt(1, KeyEvent.VK_2);
-        tabbpane.addTab("Beschreibung", null, tab2, "2");
-        // tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
-        tabbpane.addTab("Karten", null, tab3, "3");
-        // tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
-
-        tab1.setLayout(new GridLayout(0,2));
-
-        startPoint = new JTextField();
-        startPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
-        startPoint.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String selectedStart = startPoint.getText();
-            }
-        });
+        createTab1();
+        createTab2();
+        createTab3();
         
-        endPoint = new JTextField();
-        endPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
-        endPoint.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                String selectedEnd = endPoint.getText();
-            }
-        });
-        addTextPoints = new JButton("+");
-
-        optimizeRoute = new JButton("Reihenfolge optimieren");
-
-        s_speed = new JSpinner(new SpinnerNumberModel(15, 0, null, 1));
-        s_speed.setSize(new Dimension(30, 20));
-        s_speed.addChangeListener(new ChangeListener() {
-            
-            @Override
-            public void stateChanged(ChangeEvent ce) {
-                int newSpeed = 15;
-                System.out.println(newSpeed);
-            }
-        });
-
-        l_speed = new JLabel("hm/h");
-
-        tab1.add(startPoint);
-        tab1.add(endPoint);
-        tab1.add(addTextPoints);
-        tab1.add(optimizeRoute);
-        tab1.add(s_speed);
-        tab1.add(l_speed);
-
-        alladdedNavPoints = new Hashtable<Integer, JTextField>();
-        alladdedButtons = new Hashtable<Integer, JButton>();
-        
-        addTextPoints.addActionListener(new ActionListener() {
-          
-          @Override 
-          public void actionPerformed(ActionEvent arg0) { 
-              key++; 
-              alladdedNavPoints.put(key, new JTextField()); 
-              alladdedButtons.put(key, new JButton("x"));
-              alladdedNavPoints.get(key).setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
-              tab1.add(alladdedNavPoints.get(key)); 
-              tab1.add(alladdedButtons.get(key));
-              alladdedNavPoints.get(key).addActionListener(new ActionListener() {
-                
-                @Override
-                public void actionPerformed(ActionEvent arg0) {
-                    String selectedPoint = alladdedNavPoints.get(key).getText();
-                }
-            });
-              tab1.validate();
-          } });
-         
-
-        tab3.setLayout(new FlowLayout());
-
-        importOSM = new JButton("Importiere OSM-Karte");
-        tab3.add(importOSM);
-        importOSM.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                GUI.this.importMapFileChooser();
-            }
-        });
-        tab3.add(chooseImportedMap);
         this.pack();
         this.validate();
         
         // The context needs to be queried / created in the very end.
         context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
+        //context = new ContextSW(topLeft, this.getWidth() - 10, this.getHeight() - 10, 20.f, map.getGraphics());
         calculateCoordinatesDistances();
     }
 
@@ -598,6 +509,114 @@ public class GUI extends JFrame {
                 repaint();
             }
         });
+    }
+    
+    private void createTab1() {
+        tab1 = new JPanel();
+        tabbpane.addTab("Planen", null, tab1, "1");
+        // tabbpane.setMnemonicAt(1, KeyEvent.VK_2);
+        tab1.setLayout(new GridLayout(0,2));
+        startPoint = new JTextField();
+        startPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
+        startPoint.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedStart = startPoint.getText();
+            }
+        });
+        
+        endPoint = new JTextField();
+        endPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
+        endPoint.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                String selectedEnd = endPoint.getText();
+            }
+        });
+        addTextPoints = new JButton("+");
+
+        optimizeRoute = new JButton("Reihenfolge optimieren");
+
+        s_speed = new JSpinner(new SpinnerNumberModel(15, 0, null, 1));
+        s_speed.setSize(new Dimension(30, 20));
+        s_speed.addChangeListener(new ChangeListener() {
+            
+            @Override
+            public void stateChanged(ChangeEvent ce) {
+                int newSpeed = 15;
+                System.out.println(newSpeed);
+            }
+        });
+
+        l_speed = new JLabel("hm/h");
+
+        tab1.add(startPoint);
+        tab1.add(endPoint);
+        tab1.add(addTextPoints);
+        tab1.add(optimizeRoute);
+        tab1.add(s_speed);
+        tab1.add(l_speed);
+
+        alladdedNavPoints = new Hashtable<Integer, JTextField>();
+        alladdedButtons = new Hashtable<Integer, JButton>();
+        
+        addTextPoints.addActionListener(new ActionListener() {
+          
+          @Override 
+          public void actionPerformed(ActionEvent arg0) { 
+              key++; 
+              alladdedNavPoints.put(key, new JTextField()); 
+              alladdedButtons.put(key, new JButton("x"));
+              alladdedNavPoints.get(key).setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
+              tab1.add(alladdedNavPoints.get(key)); 
+              tab1.add(alladdedButtons.get(key));
+              alladdedNavPoints.get(key).addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    String selectedPoint = alladdedNavPoints.get(key).getText();
+                }
+              });
+              alladdedButtons.get(key).addActionListener(new ActionListener() {
+                
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    alladdedButtons.get(key).setVisible(false);
+                    alladdedButtons.get(key).setEnabled(false);
+                    alladdedNavPoints.get(key).setVisible(false);
+                    alladdedNavPoints.get(key).setEnabled(false);
+                }
+            });
+              tab1.validate();
+           }
+        });
+    }
+    
+    private void createTab2() {
+        tab2 = new JPanel();
+        tabbpane.addTab("Beschreibung", null, tab2, "2");
+        // tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
+    }
+    
+    private void createTab3() {
+
+        tab3 = new JPanel();
+        tabbpane.addTab("Karten", null, tab3, "3");
+        // tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
+        
+        tab3.setLayout(new FlowLayout());
+
+        importOSM = new JButton("Importiere OSM-Karte");
+        tab3.add(importOSM);
+        importOSM.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                GUI.this.importMapFileChooser();
+            }
+        });
+        tab3.add(chooseImportedMap);
     }
     
     private void importMapFileChooser() {

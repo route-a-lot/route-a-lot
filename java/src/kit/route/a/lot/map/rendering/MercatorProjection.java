@@ -29,6 +29,14 @@ public class MercatorProjection extends Projection {
         localCoordinates.setLatitude((mTopLeft.getLatitude() - mercatorCoordinates.getLatitude()) / scale);
         return localCoordinates;
     }
+    
+    @Override
+    public Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates) {
+        mTopLeft = mercatorCoordinates(topLeft);
+        Coordinates mercatorCoordinates = new Coordinates();
+        //mercatorCoordinates.setLatitude(latitude);
+        return mercatorCoordinates;
+    }
 
     private static Coordinates mercatorCoordinates(Coordinates geoCoordinates) {
         Coordinates mercatorCoordinates = new Coordinates();

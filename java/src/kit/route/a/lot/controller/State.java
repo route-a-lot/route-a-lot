@@ -47,7 +47,7 @@ public class State {
     /**
      * 
      */
-    private Coordinates areaCoord;
+    private Coordinates topLeftCoordinate;
     /**
      * 
      */
@@ -99,7 +99,7 @@ public class State {
         loadedHeightmap = null; //TODO heightmap
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        areaCoord = null;
+        topLeftCoordinate = null;
         detailLevel = 1;
         clickRadius = 1;  //TODO use it
         routeDescription = new RouteDescription();
@@ -189,13 +189,13 @@ public class State {
     }
 
     
-    public Coordinates getAreaCoord() {
-        return areaCoord;
+    public Coordinates getTopLeftCoordinate() {
+        return topLeftCoordinate;
     }
 
     
-    public void setAreaCoord(Coordinates areaCoord) {
-        this.areaCoord = areaCoord;
+    public void setTopLeftCoordinate(Coordinates areaCoord) {
+        this.topLeftCoordinate = areaCoord;
     }
 
     
@@ -284,7 +284,7 @@ public class State {
         loadedGraph = new AdjacentFieldsRoutingGraph();
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        areaCoord = new Coordinates();
+        topLeftCoordinate = new Coordinates();
         detailLevel = 0;
         routeDescription = new RouteDescription();
     }

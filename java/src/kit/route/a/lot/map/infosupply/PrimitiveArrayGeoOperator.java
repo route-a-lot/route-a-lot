@@ -67,8 +67,8 @@ public class PrimitiveArrayGeoOperator implements GeographicalOperator {
         logger.info("called: getBaseLayer()");
         logger.info(" upLeft Lon: " + upLeft.getLongitude());
         logger.info(" upLeft Lat: " + upLeft.getLatitude());
-        logger.info(" middle Lon: " + State.getInstance().getAreaCoord().getLongitude());
-        logger.info(" middle Lat: " + State.getInstance().getAreaCoord().getLatitude());
+        logger.info(" middle Lon: " + State.getInstance().getTopLeftCoordinate().getLongitude());
+        logger.info(" middle Lat: " + State.getInstance().getTopLeftCoordinate().getLatitude());
         ArrayList<MapElement> baseLay = new ArrayList<MapElement>();
         for(MapElement mapEle: baseLayer){
             if(mapEle.isInBounds(upLeft, bottomRight)){

@@ -22,6 +22,15 @@ public class ContextSW extends Context {
         projection = new MercatorProjection(topLeft, bottomRight, width);
     }
 
+    public ContextSW(Coordinates topLeft, int width, int height, float scale, Graphics surface) {
+        super(width, height, topLeft, null);
+        this.output = surface;
+        projection = new MercatorProjection(topLeft, scale);
+        Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
+        Coordinates localBottomRight = new Coordinates(localTopLeft.getLatitude() - height, localTopLeft.getLongitude() + width);
+        this.bottomRight = projection.localCoordinatesToGeoCoordinates(localBottomRight);
+    }
+
     @Override
     public void fillBackground(Color color) {
         output.setColor(color);
@@ -31,13 +40,13 @@ public class ContextSW extends Context {
     @Override
     public void drawImage(Coordinates position, Image image) {
         Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(position);
-        output.drawImage(image, (int) localCoordinates.getLongitude(), (int) localCoordinates.getLatitude(), null);
+        output.drawImage(image, (int) localCoordinates.getLongitude(), (int) localCoordinates.getLatitude(),
+                null);
     }
-    
+
     @Override
     public float getScale() {
         return projection.getScale();
     }
-    
-}
 
+}

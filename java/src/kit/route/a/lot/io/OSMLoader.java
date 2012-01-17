@@ -839,7 +839,7 @@ public class OSMLoader {
                         middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
                         middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
                         state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
-                        state.setAreaCoord(middle);
+                        state.setTopLeftCoordinate(middle);
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }
