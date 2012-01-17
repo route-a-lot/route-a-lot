@@ -45,6 +45,10 @@ public class Selection {
     	}
 	
     	public Coordinates getPosition(){
-		return this.position;	
-    	}	
+    	    return this.position;	
+    	}
+    	
+    	public String toString() {
+    	    return "Selection from " + fromID + " to " + toID;
+    	}
 }

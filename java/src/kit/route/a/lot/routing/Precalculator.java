@@ -93,7 +93,7 @@ public class Precalculator {
         //calculate areas with Metis
         String buffer = "";
         try {
-            Process process = Runtime.getRuntime().exec("kmetis "+ FILE + " " + AREAS);
+            Process process = Runtime.getRuntime().exec("gpmetis "+ FILE + " " + AREAS);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 

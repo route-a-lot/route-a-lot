@@ -86,9 +86,5 @@ public interface RoutingGraph {
     public String getMetisRepresentation();
 
     public void readAreas(String areas);
-    
-    public int getRoutingID(int id);
-    
-    public int getRealID(int id);
 
 }

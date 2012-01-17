@@ -19,7 +19,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private int[] edges;
     private int[] weights;
     private long[] arcFlags;
-    private int[] realID;
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight) {
@@ -40,7 +39,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         for (int i = 0; i < endID.length; i++) {
             maxNodeID = Math.max(maxNodeID, endID[i]);
         }
-        doIDMapping();
         
         // copy data to internal structures
         edgesPos = new int[maxNodeID + 1];
@@ -295,19 +293,4 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             areaID[i++] = (byte) Integer.parseInt(area);
         }
     }
-
-    @Override
-    public int getRoutingID(int id) {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int getRealID(int id) {
-        return realID[id];
-    }
-    
-    
-    
-
 }
