@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.WeightCalculatorMock;
 
@@ -36,6 +37,9 @@ public class Router {
     private static List<Integer> optimisedRoute() {
         Route shortest = null;
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
+        if (navigationNodes.size() < 4) {
+            return simpleRoute();
+        }
         int size = navigationNodes.size();
         Route[][] routes = new Route[size][size];   // Matrix containing the shortest routes
         for (int j = 0; j < size; j++) {
@@ -44,19 +48,24 @@ public class Router {
                 routes[j][i] = fromAToB(navigationNodes.get(i), navigationNodes.get(j));
             }
         }
-        for (List<Integer> permutation: permutations(size)) {
+        int currentFirst, currentLast;
+        int prev;
+        for (int[] permutation: permutations(size - 2)) {
             Route tempRoute = new Route();
-            int prev = permutation.get(0);
-            for (Integer path: parmutation) {
+            prev = permutation[0];
+            for (Integer path: permutation) {
                 if (prev == path) {
                     continue;
                 }
-                tempRoute.join(routes[prev][path]);
+                tempRoute = tempRoute.join(routes[prev + 1][path + 1]);
                 prev = path;
             }
             if (shortest == null || shortest.length() > tempRoute.length()) {
                 shortest = tempRoute;
+                currentFirst = permutation[0];
+                currentLast = permutation[permutation.length - 1];
             }
+            shortest = routes[0][currentFirst + 1].join(shortest).join(routes[currentLast + 1][routes.length - 1]);
         }
         return shortest.toList();
     }
