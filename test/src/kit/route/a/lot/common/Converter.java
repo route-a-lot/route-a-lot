@@ -1,3 +1,6 @@
+package kit.route.a.lot.common;
+
+
 import java.lang.Math;
 import java.lang.Integer;
 
