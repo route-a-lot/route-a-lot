@@ -90,6 +90,7 @@ public class GUI extends JFrame {
 
     private JPanel mapContents;
     private JPanel map;
+    private JPanel drawMap;
     private JPanel mapButtonPanel;
     private JPanel tab1;
     private JPanel tab2;
@@ -276,8 +277,8 @@ public class GUI extends JFrame {
         
         // The context needs to be queried / created in the very end.
         topLeft = new Coordinates(0,0);
-        bottomRight = new Coordinates(map.getVisibleRect().width, map.getVisibleRect().height);
-        context = new ContextSW(topLeft, bottomRight, map.getGraphics());
+        bottomRight = new Coordinates(drawMap.getVisibleRect().width, drawMap.getVisibleRect().height);
+        context = new ContextSW(topLeft, bottomRight, drawMap.getGraphics());
         calculateCoordinatesDistances();
     }
 
@@ -349,10 +350,15 @@ public class GUI extends JFrame {
     
     private void mapConstructor() {
         this.map = new JPanel();
+        map.setLayout(new BorderLayout());
         map.setPreferredSize(new Dimension(this.getSize()));
         map.setBackground(Color.WHITE);
         map.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
         map.setVisible(true);
+        drawMap =  new JPanel();
+        drawMap.setPreferredSize(new Dimension(map.getSize()));
+        drawMap.setVisible(true);
+        map.add(drawMap, BorderLayout.CENTER);
         map.addMouseListener(new MouseListener() {
 
             @Override
@@ -416,55 +422,13 @@ public class GUI extends JFrame {
                 mousePosYDist = newMousePosY - oldMousePosY;
                 
                 float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                float newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                float newTopLeftLatitude = topLeft.getLatitude() - coordinatesPixelHeightDifference * mousePosYDist;
                 float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                float newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                float newBottomRightLatitude = bottomRight.getLatitude() - coordinatesPixelHeightDifference * mousePosYDist;
                 
                 oldMousePosX = newMousePosX;
                 oldMousePosY = newMousePosY;
-
-                /*
-                if(Math.abs(newTopLeftLongitude) < Math.abs(context.getTopLeft().getLongitude()) - 0.001) {
-                    newTopLeftLongitude = context.getTopLeft().getLongitude();
-                    newBottomRightLongitude = newTopLeftLongitude + coordinatesWidth;
-                }
-                if(Math.abs(newTopLeftLatitude) > Math.abs(context.getTopLeft().getLatitude()) - 0.001) {
-                    newTopLeftLatitude = context.getTopLeft().getLatitude();
-                    newBottomRightLatitude = newTopLeftLatitude - coordinatesHeight;
-                }
-                if(Math.abs(newBottomRightLongitude) > Math.abs(context.getBottomRight().getLongitude()) - 0.001) {
-                    newBottomRightLongitude =  context.getBottomRight().getLongitude();
-                    newTopLeftLongitude = newBottomRightLongitude - coordinatesWidth;
-                }
-                if(Math.abs(newBottomRightLatitude) < Math.abs(context.getBottomRight().getLatitude()) - 0.001) {
-                    newBottomRightLatitude = context.getBottomRight().getLatitude();
-                    newTopLeftLatitude = newBottomRightLatitude + coordinatesHeight;
-                }
                 
-                float newCoordinatesWidth;
-                float newCoordinatesHeight;
-                
-                if(newTopLeftLatitude > newBottomRightLatitude) {
-                    newCoordinatesWidth = newTopLeftLatitude - newBottomRightLatitude;
-                } else {
-                    newCoordinatesWidth = newBottomRightLatitude - newTopLeftLatitude;
-                }
-                if(newTopLeftLongitude > newBottomRightLongitude) {
-                    newCoordinatesHeight = newTopLeftLongitude - newBottomRightLongitude;
-                } else {
-                    newCoordinatesHeight = newBottomRightLongitude - newTopLeftLongitude;
-                }
-                if(newCoordinatesHeight < coordinatesHeight - 0.0001 
-                        || newCoordinatesWidth < coordinatesWidth - 0.0001) {
-                    if(newCoordinatesHeight < coordinatesHeight - 0.0001) {
-                        newTopLeftLongitude = topLeft.getLongitude();
-                        newBottomRightLongitude = bottomRight.getLongitude(); 
-                    }
-                    if(newCoordinatesWidth < coordinatesWidth-0.0001) {
-                        newTopLeftLatitude = topLeft.getLatitude();
-                        newBottomRightLatitude = bottomRight.getLatitude();
-                    }
-                }*/
                 topLeft.setLongitude(newTopLeftLongitude);
                 topLeft.setLatitude(newTopLeftLatitude);
                 bottomRight.setLongitude(newBottomRightLongitude);
