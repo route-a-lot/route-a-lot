@@ -16,6 +16,8 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.rendering.MercatorProjection;
+import kit.route.a.lot.map.rendering.Projection;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -59,6 +61,7 @@ public class OSMLoader {
 
             maxLon = maxLat = Float.MIN_VALUE;
             minLon = minLat = Float.MAX_VALUE;
+            
 
             DefaultHandler boundsHandler = new DefaultHandler() {
 
@@ -95,6 +98,7 @@ public class OSMLoader {
                 parser.parse(file, boundsHandler);
             } catch (SAXException e) { }    // TODO I know it's bad style...
 
+
             DefaultHandler handler = new DefaultHandler() {
 
                 Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the
@@ -114,6 +118,8 @@ public class OSMLoader {
                 Coordinates curNodeCoordinates;
                 int curNodeId;
                 POIDescription curNodePOIDescription;
+
+                Projection projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
 
                 long ignoredKeys = 0;
 
@@ -784,11 +790,12 @@ public class OSMLoader {
                     }
 
                     if (qName.equalsIgnoreCase("node")) {
-                        curNodeCoordinates = new Coordinates();
+                        Coordinates geoCoordinates = new Coordinates();
 
-                        curNodeCoordinates.setLatitude(Float.parseFloat(attributes.getValue("lat")));
-                        curNodeCoordinates.setLongitude(Float.parseFloat(attributes.getValue("lon")));
+                        geoCoordinates.setLatitude(Float.parseFloat(attributes.getValue("lat")));
+                        geoCoordinates.setLongitude(Float.parseFloat(attributes.getValue("lon")));
 
+                        curNodeCoordinates = projection.geoCoordinatesToLocalCoordinates(geoCoordinates);
                         curNodeId = idMap.size();
                         if (curNodeId >= Integer.MAX_VALUE) {
                             logger.error("Tried to import more than " + curNodeId + " nodes!");
@@ -840,8 +847,8 @@ public class OSMLoader {
                         Coordinates middle = new Coordinates();
                         middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
                         middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-                        state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
-                        state.setTopLeftCoordinate(middle);
+                        state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
+                        state.setTopLeftCoordinate(projection.geoCoordinatesToLocalCoordinates(middle));
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }

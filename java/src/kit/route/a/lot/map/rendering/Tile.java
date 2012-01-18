@@ -32,7 +32,7 @@ public class Tile {
     private BufferedImage data;
     private int width; // DISCUSS: keep or drop?
     private int height;
-    private Projection projection;
+//    private Projection projection;
     
     private static int num = 0;
 
@@ -57,7 +57,7 @@ public class Tile {
         this.width = width;
         this.height = height;
         this.data = null;
-        projection = new MercatorProjection(topLeft, bottomRight, width);
+//        projection = new MercatorProjection(topLeft, bottomRight, width);
     }
 
     /**
@@ -76,13 +76,13 @@ public class Tile {
     }
 
     public Tile(Coordinates topLeft, Coordinates bottomRight, int detail, float scale) {
-        this(topLeft, bottomRight, detail);
-        projection = new MercatorProjection(topLeft, scale);
-        Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
-        Coordinates localBottomRight = projection.geoCoordinatesToLocalCoordinates(bottomRight);
+        this(topLeft, bottomRight, detail, 0, 0);
+//        projection = new MercatorProjection(topLeft, scale);
+//        Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
+//        Coordinates localBottomRight = projection.geoCoordinatesToLocalCoordinates(bottomRight);
 
-        width = (int) Math.abs(localTopLeft.getLongitude() - localBottomRight.getLongitude());
-        height = (int) Math.abs(localTopLeft.getLatitude() - localBottomRight.getLatitude());
+        width = (int) Math.abs(topLeft.getLongitude() - bottomRight.getLongitude());
+        height = (int) Math.abs(topLeft.getLatitude() - bottomRight.getLatitude());
     }
 
     public void prerender(State state) {
@@ -91,7 +91,7 @@ public class Tile {
         Graphics2D graphics = data.createGraphics();
         int c1 = Math.abs(this.hashCode()) % 256;
         int c2 = Math.abs(data.hashCode()) % 256;
-        int c3 = (Math.abs(this.hashCode()) + Math.abs(data.hashCode())) % 256;
+        int c3 = ((c1 + c2) * 34) % 256;
         graphics.setColor(new Color(c1, c2, c3));
         graphics.setStroke(new BasicStroke(3));
         graphics.fillRect(0, 0, this.width, this.height);
@@ -171,13 +171,20 @@ public class Tile {
      *            the node to be drawn
      */
     protected void draw(Node node) {
-        int size = 3;
+        int size = 30;
 
-        Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(node.getPos());
+        Coordinates localCoordinates = getTileCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();
         graphics.setColor(Color.LIGHT_GRAY);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
+    }
+    
+    private Coordinates getTileCoordinates(Coordinates position) {
+        Coordinates tileCoordinates = new Coordinates();
+        tileCoordinates.setLatitude(position.getLatitude() - topLeft.getLatitude());
+        tileCoordinates.setLongitude(position.getLongitude() - topLeft.getLongitude());
+        return tileCoordinates;
     }
 
     /**
@@ -195,7 +202,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = projection.geoCoordinatesToLocalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = getTileCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -240,7 +247,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = projection.geoCoordinatesToLocalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = getTileCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -286,11 +293,6 @@ public class Tile {
 
     public Coordinates getTopLeft() {
         return topLeft;
-    }
-
-
-    public Projection getProjection() {
-        return projection;
     }
 
     public static int getSpecifier(Coordinates topLeft, int detail) {

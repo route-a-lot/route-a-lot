@@ -275,8 +275,9 @@ public class GUI extends JFrame {
         this.validate();
         
         // The context needs to be queried / created in the very end.
-        context = new ContextSW(this.getWidth() - 10, this.getHeight() - 10, topLeft, bottomRight, map.getGraphics());
-        //context = new ContextSW(topLeft, this.getWidth() - 10, this.getHeight() - 10, 20.f, map.getGraphics());
+        topLeft = new Coordinates(0,0);
+        bottomRight = new Coordinates(map.getVisibleRect().width, map.getVisibleRect().height);
+        context = new ContextSW(topLeft, bottomRight, map.getGraphics());
         calculateCoordinatesDistances();
     }
 

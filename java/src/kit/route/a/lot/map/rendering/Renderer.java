@@ -36,13 +36,16 @@ public class Renderer {
      */
     public void render(Context context, int detail) {
         float tileDim = (float) (Tile.BASE_TILE_DIM * Math.exp(detail * Math.log(2)));
+        tileDim = 200;
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
-        int maxLat = (int) Math.floor(context.getTopLeft().getLatitude() / tileDim) + 1;
-        for (int i = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim); i <= maxLon; i++) {
-            for (int k = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim) + 1; k <= maxLat; k++) {
+        int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim) - 1;
+        int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
+        int minLat = (int) Math.floor(context.getTopLeft().getLatitude() / tileDim) - 1;
+        for (int i = minLon; i <= maxLon; i++) {
+            for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates((k + 1) * tileDim, i * tileDim);
                 Coordinates bottomRight = new Coordinates(k * tileDim, (i + 1) * tileDim);
-                Tile currentTile = prerenderTile(topLeft, bottomRight, detail, context.getScale());
+                Tile currentTile = prerenderTile(topLeft, bottomRight, detail);
                 context.drawImage(topLeft, currentTile.getData());
             }
         }
@@ -54,10 +57,10 @@ public class Renderer {
      * 
      * @return the rendered tile
      */
-    private Tile prerenderTile(Coordinates topLeft, Coordinates bottomRight, int detail, float scale) {
+    private Tile prerenderTile(Coordinates topLeft, Coordinates bottomRight, int detail) {
         Tile tile = cache.queryCache(Tile.getSpecifier(topLeft, detail));
         if (tile == null) {
-            tile = new Tile(topLeft, bottomRight, detail, scale);
+            tile = new Tile(topLeft, bottomRight, detail, 1.f);
             tile.prerender(state);
             cache.addToCache(tile);
         }

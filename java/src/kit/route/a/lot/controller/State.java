@@ -14,10 +14,13 @@ import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
 
-    private ArrayList<String> importetMaps = new ArrayList<String>();  /*we need this list for the to know which maps can
-                                                                         be loaded, I would save patch, names will be saved 
-                                                                         implicit*/
-    
+    private ArrayList<String> importetMaps = new ArrayList<String>(); /*
+                                                                       * we need this list for the to know
+                                                                       * which maps can be loaded, I would
+                                                                       * save patch, names will be saved
+                                                                       * implicit
+                                                                       */
+
     private static State singleton = null;
     /** Attributes */
     /**
@@ -55,7 +58,7 @@ public class State {
     /**
      * 
      */
-    private int clickRadius;    // TODO needed?
+    private int clickRadius; // TODO needed?
     /**
      * 
      */
@@ -83,25 +86,23 @@ public class State {
      * @return State
      */
     public static State getInstance() {
-        if(singleton == null) {
+        if (singleton == null) {
             singleton = new State();
         }
         return singleton;
     }
 
-    
-    
-    
+
     public State() {
         loadedMapName = "";
         loadedMapInfo = new MapInfo();
         loadedGraph = new AdjacentFieldsRoutingGraph();
-        loadedHeightmap = null; //TODO heightmap
+        loadedHeightmap = null; // TODO heightmap
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         topLeftCoordinate = null;
         detailLevel = 1;
-        clickRadius = 1;  //TODO use it
+        clickRadius = 1; // TODO use it
         routeDescription = new RouteDescription();
         speed = 15;
         duration = 0;
@@ -111,159 +112,151 @@ public class State {
     }
 
 
-
-
-    
     public ArrayList<String> getImportetMaps() {
         return importetMaps;
     }
 
 
-
-
-    
     public void setImportetMaps(ArrayList<String> importetMaps) {
         this.importetMaps = importetMaps;
     }
-
-
 
 
     public String getLoadedMapName() {
         return loadedMapName;
     }
 
-    
+
     public void setLoadedMapName(String loadedMapName) {
         this.loadedMapName = loadedMapName;
     }
 
-    
+
     public MapInfo getLoadedMapInfo() {
         return loadedMapInfo;
     }
 
-    
+
     public void setLoadedMapInfo(MapInfo loadedMapInfo) {
         this.loadedMapInfo = loadedMapInfo;
     }
 
-    
+
     public RoutingGraph getLoadedGraph() {
         return loadedGraph;
     }
 
-    
+
     public void setLoadedGraph(RoutingGraph loadedGraph) {
         this.loadedGraph = loadedGraph;
     }
 
-    
+
     public IHeightmap getLoadedHeightmap() {
         return loadedHeightmap;
     }
 
-    
+
     public void setLoadedHeightmap(IHeightmap loadedHeightmap) {
         this.loadedHeightmap = loadedHeightmap;
     }
 
-    
+
     public List<Selection> getNavigationNodes() {
         return navigationNodes;
     }
 
-    
+
     public void setNavigationNodes(List<Selection> navigationNodes) {
         this.navigationNodes = navigationNodes;
     }
 
-    
+
     public List<Integer> getCurrentRoute() {
         return currentRoute;
     }
 
-    
+
     public void setCurrentRoute(List<Integer> currentRoute) {
         this.currentRoute = currentRoute;
     }
 
-    
+
     public Coordinates getTopLeftCoordinate() {
         return topLeftCoordinate;
     }
 
-    
+
     public void setTopLeftCoordinate(Coordinates areaCoord) {
         this.topLeftCoordinate = areaCoord;
     }
 
-    
+
     public int getDetailLevel() {
         return detailLevel;
     }
 
-    
+
     public void setDetailLevel(int detailLevel) {
         this.detailLevel = detailLevel;
     }
 
-    
+
     public int getClickRadius() {
         return clickRadius;
     }
 
-    
+
     public void setClickRadius(int clickRadius) {
         this.clickRadius = clickRadius;
     }
 
-    
+
     public RouteDescription getRouteDescription() {
         return routeDescription;
     }
 
-    
+
     public void setRouteDescription(RouteDescription routeDescription) {
         this.routeDescription = routeDescription;
     }
 
-    
+
     public int getSpeed() {
         return speed;
     }
 
-    
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }
 
-    
+
     public int getDuration() {
         return duration;
     }
 
-    
+
     public void setDuration(int duration) {
         this.duration = duration;
     }
 
-    
+
     public int getHeightMalus() {
         return heightMalus;
     }
 
-    
+
     public void setHeightMalus(int heightMalus) {
         this.heightMalus = heightMalus;
     }
 
-    
+
     public int getHeighwayMalus() {
         return heighwayMalus;
     }
 
-    
+
     public void setHeighwayMalus(int heighwayMalus) {
         this.heighwayMalus = heighwayMalus;
     }
@@ -273,7 +266,7 @@ public class State {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     public void resetMap() {
         loadedMapName = "";
         loadedMapInfo = new MapInfo();

@@ -78,6 +78,9 @@ public class RendererTest {
         topLeft = new Coordinates(0.012f, -0.012f);
         bottomRight = new Coordinates(49.008375f, 8.414061f);
         bottomRight = new Coordinates(-0.012f, 0.012f);
+        Projection projection = new MercatorProjection(new Coordinates(49.019887f, 8.394492f), 2.9E-5f);
+        topLeft = projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.019887f, 8.394492f));
+        bottomRight = new Coordinates(550, 550);
 
         StateMock state = new StateMock();
         MapInfoMock mapInfo = (MapInfoMock) state.getLoadedMapInfo();
@@ -106,13 +109,13 @@ public class RendererTest {
         Street street = new Street("", wayInfo);
         street.setNodes(nodes);
 //        mapInfo.addMapElement(street);
-        mapInfo.addMapElement(new Node(0.f, 0.f, 0));
+//        mapInfo.addMapElement(new Node(projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.017945f, 8.404362f))));
         mapInfo.addMapElement(new Node(bottomRight));
         mapInfo.addMapElement(new Node(topLeft));
         
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(600, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new ContextSW(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -166,7 +169,7 @@ public class RendererTest {
             
             rendererdContent = this.add(new JPanel());
             rendererdContent.setVisible(true);
-            rendererdContent.setSize(650, 650);
+            rendererdContent.setSize(1650, 1150);
             
             this.rendererTest = rendererTest;
             
@@ -181,16 +184,16 @@ public class RendererTest {
                     float diffLon = 0;
                     switch (arg0.getKeyCode()) {
                         case KeyEvent.VK_LEFT:
-                            diffLon = -0.002f;
+                            diffLon = -5f;
                             break;
                         case KeyEvent.VK_RIGHT:
-                            diffLon = 0.002f;
+                            diffLon = 5f;
                             break;
                         case KeyEvent.VK_UP:
-                            diffLat = 0.002f;
+                            diffLat = -5f;
                             break;
                         case KeyEvent.VK_DOWN:
-                            diffLat = -0.002f;
+                            diffLat = 5f;
                             break;
                     }
                     topLeft.setLatitude(topLeft.getLatitude() + diffLat);
