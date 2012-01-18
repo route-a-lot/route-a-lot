@@ -440,7 +440,6 @@ public class GUI extends JFrame {
                     lis.handleRALEvent(viewEvent);
                 }
                 
-                System.out.println("x = " + newMousePosX + ", y = " + newMousePosY);
             }
         });
 

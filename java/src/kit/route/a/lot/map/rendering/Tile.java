@@ -171,7 +171,7 @@ public class Tile {
      *            the node to be drawn
      */
     protected void draw(Node node) {
-        int size = 30;
+        int size = 3;
 
         Coordinates localCoordinates = getTileCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();

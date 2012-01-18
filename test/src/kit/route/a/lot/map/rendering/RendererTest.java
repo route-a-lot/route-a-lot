@@ -3,6 +3,7 @@ package kit.route.a.lot.map.rendering;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -109,12 +110,15 @@ public class RendererTest {
         Street street = new Street("", wayInfo);
         street.setNodes(nodes);
 //        mapInfo.addMapElement(street);
-//        mapInfo.addMapElement(new Node(projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.017945f, 8.404362f))));
-        mapInfo.addMapElement(new Node(bottomRight));
+        mapInfo.addMapElement(new Node(projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.017945f, 8.404362f))));
         mapInfo.addMapElement(new Node(topLeft));
         
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
+        bottomRight = new Coordinates();
+        bottomRight.setLatitude(gui.getVisibleRectangleOfContent().height);
+        bottomRight.setLongitude(gui.getVisibleRectangleOfContent().width);
+        mapInfo.addMapElement(new Node(bottomRight));
         context = new ContextSW(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
@@ -158,7 +162,7 @@ public class RendererTest {
 
         private static final long serialVersionUID = 1L;
         
-        Component rendererdContent;
+        JPanel rendererdContent;
         RendererTest rendererTest;
 
         public TestGUI(RendererTest rendererTest) {
@@ -167,9 +171,10 @@ public class RendererTest {
             this.setSize(650, 650);
             this.setLocation(new Point(500, 500));
             
-            rendererdContent = this.add(new JPanel());
+            rendererdContent = new JPanel();
+            this.add(rendererdContent);
             rendererdContent.setVisible(true);
-            rendererdContent.setSize(1650, 1150);
+            rendererdContent.setPreferredSize(getSize());
             
             this.rendererTest = rendererTest;
             
@@ -224,6 +229,10 @@ public class RendererTest {
         public void paint(Graphics g) {
             super.paint(g);
             rendererTest.repaint();
+        }
+        
+        public Rectangle getVisibleRectangleOfContent() {
+            return rendererdContent.getVisibleRect();
         }
 
     }

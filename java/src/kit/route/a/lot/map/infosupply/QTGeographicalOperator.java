@@ -97,23 +97,23 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        /*logger.debug("called: getBaseLayer()");
-        logger.debug(" upLeft Lon: " + upLeft.getLongitude());
-        logger.debug(" upLeft Lat: " + upLeft.getLatitude());
-        logger.debug(" bottomRight Lon: " + bottomRight.getLongitude());
-        logger.debug(" bottomRight Lat: " + bottomRight.getLatitude());
+        logger.debug("called: getBaseLayer()");
+        logger.debug(" upLeft: " + upLeft);
+        logger.debug(" bottomRight: " + bottomRight);
         logger.debug(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
         logger.debug(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
         logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
-        logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());*/
+        logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         
         Collection<MapElement> mapElements = new HashSet<MapElement>();
         lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
+        System.out.println("last query: " + lastQuery);
         for (QTLeaf qtL : lastQuery) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
                 mapElements.add(mapEle);
             }
         }
+        logger.debug(mapElements);
         return mapElements;
     }
     

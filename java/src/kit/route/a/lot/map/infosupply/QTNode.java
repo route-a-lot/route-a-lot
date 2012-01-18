@@ -51,7 +51,7 @@ public class QTNode extends QuadTree {
     protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
             Coordinates bottomRight) {
         ArrayList<QTLeaf> leafList = new ArrayList<QTLeaf>();
-        if (isInBounds(upLeft, bottomRight)) {    
+        if (isInBounds(upLeft, bottomRight)) {      // TODO nicht immer alle adden
             for(QuadTree qt : children) {
                 leafList.addAll(qt.getLeafs(upLeft, bottomRight));
             }

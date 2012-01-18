@@ -8,6 +8,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 
 public class Node extends MapElement {
+
     private float lat;
     private float lon;
 
@@ -15,7 +16,7 @@ public class Node extends MapElement {
         lat = pos.getLatitude();
         lon = pos.getLongitude();
     }
-    
+
     public Node(float latitude, float longitude, int id) {
         lat = latitude;
         lon = longitude;
@@ -25,7 +26,7 @@ public class Node extends MapElement {
     public Node() {
         this(null);
     }
-    
+
     public Coordinates getPos() {
         return new Coordinates(lat, lon);
     }
@@ -37,20 +38,20 @@ public class Node extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        return (lat <= topLeft.getLatitude() && lat >= bottomRight.getLatitude()
-                && lon >= topLeft.getLongitude() && lon <= bottomRight.getLongitude());
-
-        // TODO pos -> neg (e.g. -180° -> 180°), but this is to do for every isInBounds-Fkt. for the
-        // mapElements
+        float minLat = (float) Math.min(topLeft.getLatitude(), bottomRight.getLatitude());
+        float maxLat = (float) Math.max(topLeft.getLatitude(), bottomRight.getLatitude());
+        float minLon = (float) Math.min(topLeft.getLongitude(), bottomRight.getLongitude());
+        float maxLon = (float) Math.max(topLeft.getLongitude(), bottomRight.getLongitude());
+        return (lat <= maxLat && lat >= minLat && lon >= minLon && lon <= maxLon);
     }
-        
+
     @Override
     public Selection getSelection() {
         // TODO Auto-generated method stub
         return null;
     }
 
-   
+
     @Override
     protected void load(DataInputStream stream) throws IOException {
         this.lon = stream.readFloat();

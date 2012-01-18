@@ -796,6 +796,7 @@ public class OSMLoader {
                         geoCoordinates.setLongitude(Float.parseFloat(attributes.getValue("lon")));
 
                         curNodeCoordinates = projection.geoCoordinatesToLocalCoordinates(geoCoordinates);
+//                        System.out.println("coordinates " + curNodeCoordinates);
                         curNodeId = idMap.size();
                         if (curNodeId >= Integer.MAX_VALUE) {
                             logger.error("Tried to import more than " + curNodeId + " nodes!");
@@ -844,11 +845,8 @@ public class OSMLoader {
                         }
                         Coordinates upLeft = new Coordinates(maxLat, minLon);
                         Coordinates bottomRight = new Coordinates(minLat, maxLon);
-                        Coordinates middle = new Coordinates();
-                        middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-                        middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
                         state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
-                        state.setTopLeftCoordinate(projection.geoCoordinatesToLocalCoordinates(middle));
+                        state.setTopLeftCoordinate(projection.geoCoordinatesToLocalCoordinates(upLeft));
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }
@@ -890,6 +888,7 @@ public class OSMLoader {
                             state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                         }
 
+                        System.out.println(curNodeCoordinates);
                         inNode = false;
                     }
                 }

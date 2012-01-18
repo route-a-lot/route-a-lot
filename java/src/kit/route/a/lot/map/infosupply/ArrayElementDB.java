@@ -31,7 +31,7 @@ public class ArrayElementDB implements ElementDB {
             nodes.remove(nodeID);
         }
         nodes.add(nodeID, node);
-        logger.debug("NodeArraySize: " + nodes.size());
+//        logger.debug("NodeArraySize: " + nodes.size());
     }
 
     @Override
