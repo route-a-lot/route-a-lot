@@ -65,9 +65,10 @@ public class Area extends MapElement {
         }
         Polygon area = new Polygon(x, y, nodes.length);
         Rectangle2D.Double box =
-                new Rectangle2D.Double(topLeft.getLongitude() * 10000000 - 1, bottomRight.getLatitude() * 10000000 - 1,
-                        (bottomRight.getLongitude() - topLeft.getLongitude()) * 10000000 + 1,
-                        (topLeft.getLatitude() - bottomRight.getLatitude()) * 10000000 + 1);
+                new Rectangle2D.Double(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()) * 10000000 - 1, 
+                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()) * 10000000 - 1,
+                        (Math.abs(bottomRight.getLongitude() - topLeft.getLongitude())) * 10000000 + 1,
+                        (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude())) * 10000000 + 1);
         boolean inside = false;
         for (Node node : nodes) {
             if (node.isInBounds(topLeft, bottomRight)) {
