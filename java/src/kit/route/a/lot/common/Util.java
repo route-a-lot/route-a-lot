@@ -1,5 +1,7 @@
 package kit.route.a.lot.common;
 
+import kit.route.a.lot.map.Node;
+
 
 public class Util {
     public static int[][] permutations(int p) {
@@ -43,6 +45,16 @@ public class Util {
         for (int i = pos; i < result.length; i++) {
             result[i+1] = array[i];
         }
+        return result;
+    }
+    
+    public static Node[] append(Node[] array, Node element) {
+        Node[] result = new Node[array.length + 1];
+        int i;
+        for (i = 0; i < array.length; i++) {
+            result[i] = array[i];
+        }
+        result[i] = element;
         return result;
     }
 

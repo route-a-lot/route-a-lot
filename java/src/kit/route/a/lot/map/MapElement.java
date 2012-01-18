@@ -63,6 +63,8 @@ public abstract class MapElement {
      */
     // used by QuadTree
     abstract public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight);
+    
+    abstract public MapElement getReduced(int detail, float rang);
 
     /**
      * Calculates an appropriate {@link Selection} from the MapElement

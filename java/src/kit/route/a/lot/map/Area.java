@@ -107,4 +107,10 @@ public class Area extends MapElement {
         this.wayInfo.saveToStream(stream);
     }
 
+    @Override
+    public MapElement getReduced(int detail, float rang) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

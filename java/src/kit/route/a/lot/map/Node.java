@@ -63,4 +63,10 @@ public class Node extends MapElement {
         stream.writeFloat(this.lat);
     }
 
+    @Override
+    public MapElement getReduced(int detail, float rang) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
