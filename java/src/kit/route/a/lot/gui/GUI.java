@@ -84,6 +84,7 @@ public class GUI extends JFrame {
     private JTextField startPoint;
     private JTextField endPoint;
 
+    private JSlider highwayMalus;
     private JSlider reliefmalus;
     private JSlider scrolling;
 
@@ -93,8 +94,6 @@ public class GUI extends JFrame {
     private JPanel tab1;
     private JPanel tab2;
     private JPanel tab3;
-
-    //private JCheckBox highwayMalus;
 
     private JSpinner s_speed;
 
@@ -252,7 +251,7 @@ public class GUI extends JFrame {
         scrolling = new JSlider();
         scrolling.setMaximum(10);
         scrolling.setMinimum(1);
-        scrolling.setValue(10);
+        scrolling.setValue(1);
         scrolling.setMajorTickSpacing(1);
         scrolling.setMinorTickSpacing(1);
         scrolling.setLabelTable(allScrollingTicks);
@@ -625,10 +624,26 @@ public class GUI extends JFrame {
         tab3.setLayout(new FlowLayout());
 
         l_highwayMalus = new JLabel("Fernstraßenmalus");
-        //highwayMalus = new JCheckBox();
+        highwayMalus = new JSlider();
+        highwayMalus.setMaximum(5);
+        highwayMalus.setMinimum(1);
+        highwayMalus.setValue(1);
+        highwayMalus.setMajorTickSpacing(1);
+        highwayMalus.setMinorTickSpacing(1);
+        highwayMalus.setPaintTicks(true);
+        highwayMalus.setSnapToTicks(true);
+        
         
         l_heightMalus = new JLabel("Reliefmalus");
         reliefmalus = new JSlider();
+        reliefmalus.setMaximum(5);
+        reliefmalus.setMinimum(1);
+        reliefmalus.setValue(1);
+        reliefmalus.setMajorTickSpacing(1);
+        reliefmalus.setMinorTickSpacing(1);
+        reliefmalus.setPaintTicks(true);
+        reliefmalus.setSnapToTicks(true);
+        
         importOSM = new JButton("Importiere OSM-Karte");
         importOSM.addActionListener(new ActionListener() {
             
@@ -647,6 +662,10 @@ public class GUI extends JFrame {
                 choosenMap = chooseImportedMap.getSelectedItem().toString();
             }
         });
+        tab3.add(l_highwayMalus);
+        tab3.add(highwayMalus);
+        tab3.add(l_heightMalus);
+        tab3.add(reliefmalus);
         tab3.add(importOSM);
         tab3.add(chooseImportedMap);
     }
