@@ -34,4 +34,14 @@ public class Coordinates {
         return "latitude: " + latitude + " - longitude: " + longitude;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Coordinates) {
+            Coordinates other = (Coordinates) obj;
+            return latitude == other.latitude && longitude == other.longitude;
+        } else {
+            return false;
+        }
+    }
+    
 }
