@@ -26,16 +26,12 @@ public class Router {
     private static Logger logger = Logger.getLogger(Router.class);
 
     public static List<Integer> calculateRoute() {
-        // boolean optimized = false;
-        // if (optimized) {
-        //    return optimizedRoute();
-        // } else {
             return simpleRoute();
-        // }
     }
     
-    private static List<Selection> optimizeRoute() {
+    public static List<Selection> optimizeRoute() {
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
+        Route route;
         int size = navigationNodes.size();
         if (size < 4) {
             return navigationNodes;
@@ -44,25 +40,46 @@ public class Router {
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
                 // Fill the Matrix
-                routes[j][i] = fromAToB(navigationNodes.get(j), navigationNodes.get(i)).length();
+                route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
+                if (route == null) {
+                    logger.warn("Ignoring route ...");
+                    routes[j][i] = -1;
+                } else {
+                    routes[j][i] = route.length();
+                }
             }
         }
-        int[] shortest = null;
-        int shortestLength = -1;
-        int length;
-        int i;
-        int count = 0;
-        int[] permutation;
+        int[] shortest = null;  // The shortest permutation (so far)
+        int shortestLength = -1;    // The length of the shortest permutation (so far)
+        int length, i, routeLength; // The length of the current permutation / current Route /
+                                    // a counter for the elements of the permutation
+        int count = 0;  // saves at which permutation we are
+        int[] permutation;  // the permutation
+        boolean skip;
         while (count < fak(size)) {
+            // Iterate over all permutations
+            skip = false;
             permutation = permutation(size - 1, count++);
-            length = 0;
-            length += routes[0][permutation[0]];
-            i = 0;
+            length = i = 0;
             while(i + 1 < permutation.length) {
-                length += routes[permutation[i]][permutation[++i]];
+                routeLength = routes[permutation[i]][permutation[++i]];
+                if (routeLength == -1) {
+                    // permutation is not routable
+                    skip = true;
+                    break;
+                } else {
+                    length += routeLength;
+                }
             }
-            length += routes[permutation[i-1]][size - 1];
-            if (length < shortestLength || shortestLength == -1) {
+            if (skip) {
+                logger.warn("Skipping route");
+                continue;
+            }
+            // We're still missing the length from the start to the permutation as well 
+            // as from the permutation to  the target.
+            if (length + routes[permutation[i-1]][size - 1] +  routes[0][permutation[0]] < shortestLength
+                    || shortestLength == -1) {
+                // We got a shorter permutation!
                 shortest = permutation;
             }
         }
