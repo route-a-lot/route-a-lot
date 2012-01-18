@@ -241,7 +241,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         logger.warn("No weight found from ID " + Integer.valueOf(from) + " to " + Integer.valueOf(to));
-        return 1;
+        return -1;
     }
     
     public int getIDCount() {

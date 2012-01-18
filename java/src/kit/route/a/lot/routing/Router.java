@@ -30,6 +30,7 @@ public class Router {
     }
     
     public static List<Selection> optimizeRoute() {
+        // returns an optimized ordering of NavigationNodes
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
         Route route;
         int size = navigationNodes.size();
@@ -103,8 +104,9 @@ public class Router {
     }
 
     private static List<Integer> simpleRoute(){
-        Route route = new Route();
-        Route tempRoute;
+        // Calculates a route via several navNodes
+        List<Integer> result = new ArrayList<Integer>();
+        Route route;
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
         Selection prev = navigationNodes.get(0);
         for (Selection navPoint : navigationNodes) {
@@ -112,16 +114,16 @@ public class Router {
                 continue;
             }
             logger.info("Calculating route from " + prev.toString() + " to " + navPoint.toString());
-            tempRoute = fromAToB(prev, navPoint);
-            if (tempRoute == null) {
+            route = fromAToB(prev, navPoint);
+            if (route == null) {
                 logger.warn("Failed to find route, returning null");
                 return null;
             }
             prev = navPoint;
-            route = route.join(tempRoute);
+            result.addAll(route.toList());
         }
         // System.out.println(route.size());
-        return route.toList();
+        return result;
     }
 
     /**
@@ -141,13 +143,16 @@ public class Router {
         Route currentPath = null;
         if (a == null || b == null) {
             logger.warn("Can't calculate route for one Selection only");
-            return new Route();
+            return null;
         }
         // This helps us to reduce redundancy at a low cost.
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false); // Is this necessary?
         // Initialize heap
-        heap.add(new Route(a.getFrom(), (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio())));
+        float weight = graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio();
+        if (weight != -1) {
+            heap.add(new Route(a.getFrom(), (int) (weight)));
+        }
         heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
         // start the calculation.
         int currentNode;
@@ -185,6 +190,6 @@ public class Router {
         // No path was found, maybe raise an error?
         logger.error("Couldn't find any route at all from " + a.toString() + " to " + b.toString()
                 + ". Are you sure it is even possible?");
-        return new Route();
+        return null;
     }
 }
