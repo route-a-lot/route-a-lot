@@ -31,4 +31,14 @@ public class SimpleProjection extends Projection {
     public float getScale() {
         return 1;
     }
+
+    @Override
+    public Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates) {
+        Coordinates geoCoordinates = new Coordinates();
+        geoCoordinates.setLatitude((localCoordinates.getLatitude()
+                * (bottomRight.getLatitude() - topLeft.getLatitude())) / width + topLeft.getLatitude());
+        geoCoordinates.setLongitude((localCoordinates.getLongitude()
+                * (bottomRight.getLongitude() - topLeft.getLongitude())) / height + topLeft.getLongitude());
+        return geoCoordinates;
+    }
 }

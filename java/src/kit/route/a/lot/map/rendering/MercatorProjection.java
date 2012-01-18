@@ -29,13 +29,15 @@ public class MercatorProjection extends Projection {
         localCoordinates.setLatitude((mTopLeft.getLatitude() - mercatorCoordinates.getLatitude()) / scale);
         return localCoordinates;
     }
-    
+
     @Override
     public Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates) {
         mTopLeft = mercatorCoordinates(topLeft);
-        Coordinates mercatorCoordinates = new Coordinates();
-        //mercatorCoordinates.setLatitude(latitude);
-        return mercatorCoordinates;
+        Coordinates newLocalCoordinates = new Coordinates();
+        newLocalCoordinates.setLatitude(mTopLeft.getLatitude() - (scale * localCoordinates.getLatitude()));
+        newLocalCoordinates.setLongitude((scale * localCoordinates.getLongitude()) + mTopLeft.getLongitude());
+        Coordinates reverseMercatorCoordinates = reverseMercatorCoordinates(newLocalCoordinates);
+        return reverseMercatorCoordinates;
     }
 
     private static Coordinates mercatorCoordinates(Coordinates geoCoordinates) {
@@ -44,6 +46,14 @@ public class MercatorProjection extends Projection {
         mercatorCoordinates.setLatitude((float) (arsinh(Math
                 .tan(geoCoordinates.getLatitude() * Math.PI / 180)) * 180 / Math.PI));
         return mercatorCoordinates;
+    }
+    
+    private static Coordinates reverseMercatorCoordinates(Coordinates localCoordinates) {
+        Coordinates reverseMercatorCoordinates = new Coordinates();
+        reverseMercatorCoordinates.setLongitude(localCoordinates.getLongitude());
+        reverseMercatorCoordinates.setLatitude((float) (Math.atan(Math.sinh(localCoordinates.getLatitude() * Math.PI
+                / 180)) * 180 / Math.PI));
+        return reverseMercatorCoordinates;
     }
 
     private static double arsinh(double x) {
@@ -54,15 +64,17 @@ public class MercatorProjection extends Projection {
     public float getScale() {
         return scale;
     }
-    
+
     public static float calculateScaleFromWidth(Coordinates topLeft, Coordinates bottomRight, int width) {
         return Math.abs(mercatorCoordinates(bottomRight).getLongitude()
-                - mercatorCoordinates(topLeft).getLongitude()) / width;
+                - mercatorCoordinates(topLeft).getLongitude())
+                / width;
     }
-    
+
     public static float calculateScaleFromHeight(Coordinates topLeft, Coordinates bottomRight, int height) {
         return Math.abs(mercatorCoordinates(bottomRight).getLatitude()
-                - mercatorCoordinates(topLeft).getLatitude()) / height;
+                - mercatorCoordinates(topLeft).getLatitude())
+                / height;
     }
 
 }
