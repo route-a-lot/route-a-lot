@@ -10,6 +10,8 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -21,6 +23,7 @@ import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -51,6 +54,7 @@ public class GUI extends JFrame {
     private ArrayList<RALListener> viewChangedList;
     private ArrayList<RALListener> importOsmFileList;
     private ArrayList<Coordinates> navPointsList;
+    private ArrayList<RALListener> optimizeRouteList;
     
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
@@ -80,6 +84,7 @@ public class GUI extends JFrame {
     private JTextField startPoint;
     private JTextField endPoint;
 
+    private JSlider reliefmalus;
     private JSlider scrolling;
 
     private JPanel mapContents;
@@ -89,14 +94,12 @@ public class GUI extends JFrame {
     private JPanel tab2;
     private JPanel tab3;
 
-    // private JCheckBox highwayMalus;
+    //private JCheckBox highwayMalus;
 
     private JSpinner s_speed;
 
     private Hashtable<Integer, JTextField> alladdedNavPoints;
     private Hashtable<Integer, JButton> alladdedButtons;
-
-    private JSlider reliefmalus;
 
     private Component selectedComponent;
 
@@ -108,17 +111,18 @@ public class GUI extends JFrame {
     private int oldMousePosY;
     private int newMousePosY;
     private int currentZoomLevel = 0;
-    private Context context;
-    private Coordinates middle;
-    private Coordinates topLeft = new Coordinates();
-    private Coordinates bottomRight = new Coordinates();
-    private boolean mouseDragged = false;
     private int mousePosXDist;
     private int mousePosYDist;
     private float coordinatesWidth;
     private float coordinatesHeight;
     private float coordinatesPixelWidthDifference;
     private float coordinatesPixelHeightDifference;
+    private boolean mouseDragged = false;
+    private String choosenMap;
+    private Context context;
+    private Coordinates middle;
+    private Coordinates topLeft = new Coordinates();
+    private Coordinates bottomRight = new Coordinates();
     private File importedMapFile;
     private File loadedRouteFile;
     private File savedRouteFile;
@@ -164,7 +168,6 @@ public class GUI extends JFrame {
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
         mapConstructor();
-        comboBoxConstructor();
         
 
         this.navNodeMenu = new JPopupMenu("NavNodes");
@@ -278,11 +281,6 @@ public class GUI extends JFrame {
         calculateCoordinatesDistances();
     }
 
-    private void comboBoxConstructor() {
-        chooseImportedMap = new JComboBox();
-        chooseImportedMap.setEditable(true);
-    }
-
     private JMenuItem makeMenuItem(String label) {
         JMenuItem item = new JMenuItem(label);
         item.addActionListener(new ActionListener() {
@@ -321,6 +319,10 @@ public class GUI extends JFrame {
         importOsmFileList.add(importOsmFileListener);
     }
     
+    public void addOptimizeRouteListener(RALListener optimizeRouteListener) {
+        optimizeRouteList.add(optimizeRouteListener);
+    }
+    
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -328,10 +330,6 @@ public class GUI extends JFrame {
         for(RALListener lis: viewChangedList){
             lis.handleRALEvent(viewEvent);
         }
-    }
-    
-    public void updateGUI() {
-        repaint();
     }
     
     private void calculateCoordinatesDistances() {
@@ -417,10 +415,13 @@ public class GUI extends JFrame {
                 mousePosXDist = newMousePosX - oldMousePosX;
                 mousePosYDist = newMousePosY - oldMousePosY;
                 
-                float newTopLeftLongitude = topLeft.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
+                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
                 float newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
-                float newBottomRightLongitude = bottomRight.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
+                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
                 float newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
+                
+                oldMousePosX = newMousePosX;
+                oldMousePosY = newMousePosY;
 
                 /*
                 if(Math.abs(newTopLeftLongitude) < Math.abs(context.getTopLeft().getLongitude()) - 0.001) {
@@ -543,8 +544,17 @@ public class GUI extends JFrame {
             }
         });
         addTextPoints = new JButton("+");
-
+        
         optimizeRoute = new JButton("Reihenfolge optimieren");
+        optimizeRoute.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                /*
+                 * Event hier einbauen
+                 */
+            }
+        });
 
         s_speed = new JSpinner(new SpinnerNumberModel(15, 0, null, 1));
         s_speed.setSize(new Dimension(30, 20));
@@ -614,8 +624,12 @@ public class GUI extends JFrame {
         
         tab3.setLayout(new FlowLayout());
 
+        l_highwayMalus = new JLabel("Fernstraßenmalus");
+        //highwayMalus = new JCheckBox();
+        
+        l_heightMalus = new JLabel("Reliefmalus");
+        reliefmalus = new JSlider();
         importOSM = new JButton("Importiere OSM-Karte");
-        tab3.add(importOSM);
         importOSM.addActionListener(new ActionListener() {
             
             @Override
@@ -623,6 +637,17 @@ public class GUI extends JFrame {
                 GUI.this.importMapFileChooser();
             }
         });
+        
+        chooseImportedMap = new JComboBox();
+        chooseImportedMap.setEditable(true);
+        chooseImportedMap.addItemListener(new ItemListener() {
+            
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                choosenMap = chooseImportedMap.getSelectedItem().toString();
+            }
+        });
+        tab3.add(importOSM);
         tab3.add(chooseImportedMap);
     }
     
@@ -661,6 +686,18 @@ public class GUI extends JFrame {
         int returnValue = exportRoute.showDialog(this, "Exportieren");
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             exportedRouteFile = exportRoute.getSelectedFile();
+        }
+    }
+    
+    public void updateGUI() {
+        repaint();
+    }
+    
+    public void updateMapChooser(String[] maps) {
+        chooseImportedMap.removeAllItems();
+        
+        for(int i = 0; i < maps.length; i++) {
+            chooseImportedMap.addItem(maps[i]);
         }
     }
 }
