@@ -293,8 +293,8 @@ public class GUI extends JFrame {
                 calculateCoordinatesDistances();
                 System.out.println("geht");
                 Coordinates newCoordinates = new Coordinates();
-                newCoordinates.setLatitude(topLeft.getLatitude() + (ypos - map.getY())*coordinatesPixelHeightDifference);
-                newCoordinates.setLongitude(topLeft.getLongitude() + (xpos - map.getX())*coordinatesPixelWidthDifference);
+                newCoordinates.setLatitude(topLeft.getLatitude() + (ypos - drawMap.getY())*coordinatesPixelHeightDifference);
+                newCoordinates.setLongitude(topLeft.getLongitude() + (xpos - drawMap.getX())*coordinatesPixelWidthDifference);
                 System.out.println("geht");
                 navPointsList.add(newCoordinates);
 
@@ -344,8 +344,8 @@ public class GUI extends JFrame {
         } else {
             coordinatesHeight = bottomRight.getLongitude() - topLeft.getLongitude();
         }
-        coordinatesPixelWidthDifference = coordinatesWidth / map.getWidth();
-        coordinatesPixelHeightDifference = coordinatesHeight / map.getHeight();
+        coordinatesPixelWidthDifference = coordinatesWidth / drawMap.getWidth();
+        coordinatesPixelHeightDifference = coordinatesHeight / drawMap.getHeight();
     }
     
     private void mapConstructor() {
@@ -359,7 +359,7 @@ public class GUI extends JFrame {
         drawMap.setPreferredSize(new Dimension(map.getSize()));
         drawMap.setVisible(true);
         map.add(drawMap, BorderLayout.CENTER);
-        map.addMouseListener(new MouseListener() {
+        drawMap.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseReleased(MouseEvent me) {
@@ -406,7 +406,7 @@ public class GUI extends JFrame {
             }
         });
         
-        map.addMouseMotionListener(new MouseMotionListener() {
+        drawMap.addMouseMotionListener(new MouseMotionListener() {
             
             @Override
             public void mouseMoved(MouseEvent e) {
@@ -444,7 +444,7 @@ public class GUI extends JFrame {
             }
         });
 
-        map.addMouseWheelListener(new MouseWheelListener() {
+        drawMap.addMouseWheelListener(new MouseWheelListener() {
 
             int up = 1;
 
