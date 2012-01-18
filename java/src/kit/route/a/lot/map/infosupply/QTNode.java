@@ -3,7 +3,8 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
@@ -19,8 +20,6 @@ public class QTNode extends QuadTree {
      * 3: "bottomRight" child
      */
     private QuadTree[] children = new QuadTree[4];  
-    
-   
 
     public QTNode(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
@@ -144,6 +143,13 @@ public class QTNode extends QuadTree {
         for (QuadTree child: children) {
             QuadTree.saveToStream(stream, child);
         }
+    }
+
+    @Override
+    protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Collection<MapElement> elememts) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

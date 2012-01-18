@@ -31,7 +31,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
         zoomlevels = new QuadTree[9];
         for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i] = new QTLeaf(upLeft, bottomRight);
+            zoomlevels[i] = new QTNode(upLeft, bottomRight);
         }
     }
 
@@ -97,7 +97,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        logger.debug("called: getBaseLayer()");
+        /*logger.debug("called: getBaseLayer()");
         logger.debug(" upLeft Lon: " + upLeft.getLongitude());
         logger.debug(" upLeft Lat: " + upLeft.getLatitude());
         logger.debug(" bottomRight Lon: " + bottomRight.getLongitude());
@@ -105,20 +105,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
         logger.debug(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
         logger.debug(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
         logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
-        logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+        logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());*/
         
         Collection<MapElement> mapElements = new HashSet<MapElement>();
         lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
-        if (zoomlevels[0] instanceof QTLeaf && ((QTLeaf) zoomlevels[0]).getBaseLayer().size() > 64) {
-            logger.error("I really don't like to tell you, but: The quadtree is broken!");
-            System.err.println("Printing quadtree:\n" + quadTreeAsString(0));
-        }
         for (QTLeaf qtL : lastQuery) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
                 mapElements.add(mapEle);
             }
         }
-        logger.debug(" base layer size: " + mapElements.size());
         return mapElements;
     }
     
@@ -151,8 +146,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
         
     @Override
     public void addToBaseLayer(MapElement element) {
-        logger.debug("called: addToBaseLayer()");
-        //logger.debug(element); // ?
         zoomlevels[0].addToBaseLayer(element);
     }
 

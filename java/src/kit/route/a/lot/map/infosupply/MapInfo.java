@@ -67,7 +67,7 @@ public class MapInfo {
         Node newNode = new Node(position);
         newNode.initID(id);
         elementDB.addNode(id, newNode);
-        geographicalOperator.addToBaseLayer(newNode);
+        //geographicalOperator.addToBaseLayer(newNode);
     }
 
     /**

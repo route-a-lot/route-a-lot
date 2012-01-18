@@ -66,7 +66,7 @@ public class QTLeaf extends QuadTree {
     @Override
     protected boolean addToBaseLayer(MapElement element) {
         if (element.isInBounds(getUpLeft(), getBottomRight())) {
-            baseLayer.add(element);
+            baseLayer.add(element);           
             if (baseLayer.size() > limit) {
                 return false;
             }
@@ -125,5 +125,12 @@ public class QTLeaf extends QuadTree {
         for (MapElement element: baseLayer) {
             MapElement.saveToStream(stream, element, true);
         }
+    }
+
+    @Override
+    protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Collection<MapElement> elememts) {
+        // TODO Auto-generated method stub
+        
     }
 }

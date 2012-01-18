@@ -78,6 +78,7 @@ public class Street extends MapElement {
         //TODO pos -> neg (e.g. -180° -> 180°)
     }
 
+    
     public Selection getSelection(Coordinates pos) {
         int start = getClosestEdgeStartPosition(pos);
         return new Selection(nodes[start].getID(),
@@ -116,15 +117,15 @@ public class Street extends MapElement {
        double b = getDistance(nodes[start].getPos(), pos);
        double a = getDistance(nodes[end].getPos(), pos);
        double c = getDistance(nodes[start].getPos(), nodes[end].getPos());
-       float distance = (float)getDistancefromTriangle(a, b, c);
+       float distance = (float) getTriangleCHeight(a, b, c);
        if (!(distance < 0)) {
            return distance;
        }
-       return (float)Math.min(getDistance(nodes[start].getPos(), pos), getDistance(nodes[end].getPos(), pos));
+       return (float) Math.min(getDistance(nodes[start].getPos(), pos), getDistance(nodes[end].getPos(), pos));
     }
     
     // a= side between end and pos, b = s. between pos and start, c = s. between start and end
-    private double getDistancefromTriangle(double a, double b, double c) {
+    private double getTriangleCHeight(double a, double b, double c) {
         double angleBC= Math.acos((b*b + c*c - a*a) / (2 * b * c));
         double angleAB = Math.acos((a*a + c*c - b*b) / (2 * a * c));
         if (angleBC > Math.PI / 2 || angleAB > Math.PI / 2) {  //
@@ -155,7 +156,7 @@ public class Street extends MapElement {
         double b = getDistance(nodes[startNode].getPos(), pos);
         double a = getDistance(nodes[endNode].getPos(), pos);
         double c = getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
-        float h = (float)getDistancefromTriangle(a, b, c);
+        float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b*b + c*c - a*a) / (2 * b * c)); 
         double angleAB = Math.acos((a*a + c*c - b*b) / (2 * a * c));
        if (angleBC > Math.PI / 4 || angleAB > Math.PI / 2 ) {
@@ -197,13 +198,4 @@ public class Street extends MapElement {
         return null;
     }
     
-    public static void main(String[] args) {
-        Coordinates p1 = new Coordinates();
-        Coordinates p2 = new Coordinates();
-        p1.setLongitude(08.68194f);
-        p1.setLatitude(-50.11222f);
-        p2.setLongitude(13.29750f);
-        p2.setLatitude(52.52222f);
-        System.out.println(getDistance(p2, p1));
-    }
 }
