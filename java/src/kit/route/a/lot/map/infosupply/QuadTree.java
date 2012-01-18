@@ -26,6 +26,8 @@ public abstract class QuadTree {
 
     protected abstract Collection<QTLeaf> getLeafs(Coordinates upLeft, Coordinates bottomRight);
     
+    protected abstract void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight, Collection<MapElement> elememts);
+    
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
         Rectangle2D.Double thiss = new Rectangle2D.Double(this.upLeft.getLongitude(), this.bottomRight.getLatitude(),    
                 this.bottomRight.getLongitude() - this.upLeft.getLongitude(),

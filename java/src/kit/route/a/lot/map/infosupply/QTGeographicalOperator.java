@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -83,7 +84,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
     }
        
-    private ArrayList<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
+    private Collection<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
         UL.setLatitude(pos.getLatitude() + radius);
@@ -94,7 +95,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public ArrayList<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         logger.debug("called: getBaseLayer()");
         logger.debug(" upLeft Lon: " + upLeft.getLongitude());
@@ -106,7 +107,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
         logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         
-        ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
+        Collection<MapElement> mapElements = new HashSet<MapElement>();
         lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
         if (zoomlevels[0] instanceof QTLeaf && ((QTLeaf) zoomlevels[0]).getBaseLayer().size() > 64) {
             logger.error("I really don't like to tell you, but: The quadtree is broken!");
@@ -114,9 +115,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         for (QTLeaf qtL : lastQuery) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
-                if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
-                    mapElements.add(mapEle);
-                }
+                mapElements.add(mapEle);
             }
         }
         logger.debug(" base layer size: " + mapElements.size());
