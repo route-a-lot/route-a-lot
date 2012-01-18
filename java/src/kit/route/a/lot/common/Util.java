@@ -2,30 +2,31 @@ package kit.route.a.lot.common;
 
 
 public class Util {
-    public int[][] permutations(int p) {
-        // Steinhaus–Johnson–Trotter algorithm
-        if (p == 0) {
-            return new int[][] {{0}};
+    public static int[][] permutations(int p) {
+        // Steinhaus–Johnson–Trotter algorithm'
+        if (p == 1) {
+            return new int[][] {{1}};
         }
         int[][] result = new int[fak(p)][p];
-        boolean toggle = false;
         int y = 0;
         for (int[] permutation: permutations(p-1)) {
-            if (toggle) {
-                for (int i = 0; i <= p; i++) {
-                    result[y++] = insert(permutation, p, i);
-                }
-            } else {
-                for (int i = p; i >= 0; i--) {
-                    result[y++] = insert(permutation, p, i);
-                }
+            for (int i = 0; i <= p; i++) {
+                result[y++] = insert(permutation, p, i);
             }
-            toggle ^= true;
         }
         return result;
     }
     
-    public int fak (int i) {
+    public static int[] permutation(int p, int n) {
+        // returns the nth permutation of all integers below p (and above 0).
+        if (p == 0) {
+            return new int[] {1};
+        } else {
+            return insert(permutation(p-1, n / p), p, n % p);
+        }
+    }
+    
+    public static int fak (int i) {
         if (i == 1) {
             return 1;
         } else {
@@ -33,7 +34,7 @@ public class Util {
         }
     }
     
-    private int[] insert(int[] array, int element, int pos) {
+    public static int[] insert(int[] array, int element, int pos) {
         int[] result = new int[array.length + 1];
         for (int i = 0; i < pos; i++) {
             result[i] = array[i];

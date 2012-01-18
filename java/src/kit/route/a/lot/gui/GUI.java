@@ -417,9 +417,9 @@ public class GUI extends JFrame {
                 mousePosXDist = newMousePosX - oldMousePosX;
                 mousePosYDist = newMousePosY - oldMousePosY;
                 
-                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
+                float newTopLeftLongitude = topLeft.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
                 float newTopLeftLatitude = topLeft.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
-                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
+                float newBottomRightLongitude = bottomRight.getLongitude() + coordinatesPixelWidthDifference * mousePosXDist;
                 float newBottomRightLatitude = bottomRight.getLatitude() + coordinatesPixelHeightDifference * mousePosYDist;
 
                 /*

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
+import static kit.route.a.lot.common.Util.*;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.WeightCalculatorMock;
 
@@ -26,48 +26,63 @@ public class Router {
     private static Logger logger = Logger.getLogger(Router.class);
 
     public static List<Integer> calculateRoute() {
-        boolean optimised = false;
-        if (optimised) {
-            return optimisedRoute();
-        } else {
+        // boolean optimized = false;
+        // if (optimized) {
+        //    return optimizedRoute();
+        // } else {
             return simpleRoute();
-        }
+        // }
     }
     
-    private static List<Integer> optimisedRoute() {
-        Route shortest = null;
+    private static List<Selection> optimizeRoute() {
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
-        if (navigationNodes.size() < 4) {
-            return simpleRoute();
-        }
         int size = navigationNodes.size();
-        Route[][] routes = new Route[size][size];   // Matrix containing the shortest routes
+        if (size < 4) {
+            return navigationNodes;
+        }
+        int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
                 // Fill the Matrix
-                routes[j][i] = fromAToB(navigationNodes.get(i), navigationNodes.get(j));
+                routes[j][i] = fromAToB(navigationNodes.get(j), navigationNodes.get(i)).length();
             }
         }
-        int currentFirst, currentLast;
-        int prev;
-        for (int[] permutation: permutations(size - 2)) {
-            Route tempRoute = new Route();
-            prev = permutation[0];
-            for (Integer path: permutation) {
-                if (prev == path) {
-                    continue;
-                }
-                tempRoute = tempRoute.join(routes[prev + 1][path + 1]);
-                prev = path;
+        int[] shortest = null;
+        int shortestLength = -1;
+        int length;
+        int i;
+        int count = 0;
+        int[] permutation;
+        while (count < fak(size)) {
+            permutation = permutation(size - 1, count++);
+            length = 0;
+            length += routes[0][permutation[0]];
+            i = 0;
+            while(i + 1 < permutation.length) {
+                length += routes[permutation[i]][permutation[++i]];
             }
-            if (shortest == null || shortest.length() > tempRoute.length()) {
-                shortest = tempRoute;
-                currentFirst = permutation[0];
-                currentLast = permutation[permutation.length - 1];
+            length += routes[permutation[i-1]][size - 1];
+            if (length < shortestLength || shortestLength == -1) {
+                shortest = permutation;
             }
-            shortest = routes[0][currentFirst + 1].join(shortest).join(routes[currentLast + 1][routes.length - 1]);
         }
-        return shortest.toList();
+        return setSelection(shortest);
+    }
+    
+    private static List<Selection> setSelection(int[] mapping) {
+        // Reorders the navigationNodes
+        List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
+        if (mapping == null) {
+            logger.warn("Got empty mapping, something failed.");
+            return navigationNodes;
+        }
+        List<Selection> newNavigationNodes = new ArrayList<Selection>();
+        newNavigationNodes.add(navigationNodes.get(0));
+        for (int i = 0; i < mapping.length; i++) {
+            newNavigationNodes.add(navigationNodes.get(mapping[i]));
+        }
+        newNavigationNodes.add(navigationNodes.get(navigationNodes.size() - 1));
+        return newNavigationNodes;
     }
 
     private static List<Integer> simpleRoute(){
