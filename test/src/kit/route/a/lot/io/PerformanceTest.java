@@ -100,7 +100,7 @@ public class PerformanceTest {
                 mapInfo.addNode(new Coordinates(40, 40), i, null);
             }
         } catch (Error e) {
-            System.out.println(mapInfo.printQuadTree());
+            mapInfo.printQuadTree();
         }
     }
 }

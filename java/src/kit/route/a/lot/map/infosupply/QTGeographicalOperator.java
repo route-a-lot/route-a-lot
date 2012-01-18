@@ -108,6 +108,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
         
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
         lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
+        if (zoomlevels[0] instanceof QTLeaf && ((QTLeaf) zoomlevels[0]).getBaseLayer().size() > 64) {
+            logger.error("I really don't like to tell you, but: The quadtree is broken!");
+            System.err.println("Printing quadtree:\n" + quadTreeAsString(0));
+        }
         for (QTLeaf qtL : lastQuery) {
             for (MapElement mapEle : qtL.getBaseLayer()) {
                 if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
@@ -159,11 +163,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     /**
-     * returns a string representing the quadtree
-     * @return the same as above
+     * prints a string representing the quadtree
      */
     public void printQuadTree() {
-        System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
+        System.out.println(quadTreeAsString(0));
+    }
+    
+    private String quadTreeAsString(int level) {
+        return zoomlevels[level].toString(0, new ArrayList<Integer>());
     }
     
     private ArrayList<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
