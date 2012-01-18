@@ -48,11 +48,22 @@ public class ContextSW extends Context {
     public void drawImage(Coordinates position, Image image) {
         // Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(position);
         output.drawImage(image, (int) (position.getLongitude() - topLeft.getLongitude()), (int) (position.getLatitude() - topLeft.getLatitude()), null);
+        System.out.println("painted");
     }
 
     @Override
     public float getScale() {
         return 1;
     }
+    
+    @Override
+    public void setBottomRight(Coordinates bottomRight) {
+        super.setBottomRight(bottomRight);
+        width = (int) Math.abs(bottomRight.getLongitude() - topLeft.getLongitude());
+        height = (int) Math.abs(bottomRight.getLatitude() - topLeft.getLatitude());
+    }
 
+    public void setSurface(Graphics surface) {
+        output = surface;
+    }
 }

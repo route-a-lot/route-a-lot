@@ -10,6 +10,8 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
@@ -17,6 +19,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -113,13 +117,15 @@ public class GUI extends JFrame {
     private int currentZoomLevel = 0;
     private int mousePosXDist;
     private int mousePosYDist;
+    private int drawMapWidth;
+    private int drawMapHeight;
     private float coordinatesWidth;
     private float coordinatesHeight;
     private float coordinatesPixelWidthDifference;
     private float coordinatesPixelHeightDifference;
     private boolean mouseDragged = false;
     private String choosenMap;
-    private Context context;
+    private ContextSW context;
     private Coordinates middle;
     private Coordinates topLeft = new Coordinates();
     private Coordinates bottomRight = new Coordinates();
@@ -280,6 +286,39 @@ public class GUI extends JFrame {
         bottomRight = new Coordinates(drawMap.getVisibleRect().width, drawMap.getVisibleRect().height);
         context = new ContextSW(topLeft, bottomRight, drawMap.getGraphics());
         calculateCoordinatesDistances();
+        this.addComponentListener(new ComponentListener() {
+            
+            @Override
+            public void componentShown(ComponentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void componentResized(ComponentEvent e) {
+                bottomRight = new Coordinates(drawMap.getVisibleRect().width + topLeft.getLongitude(), drawMap.getVisibleRect().height + topLeft.getLatitude());
+                context.setBottomRight(bottomRight);
+                context.setSurface(drawMap.getGraphics());
+
+                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, 0);
+                for(RALListener lis: viewChangedList){
+                    lis.handleRALEvent(viewEvent);
+                }
+                System.out.println("resized");
+            }
+            
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+        }); 
     }
 
     private JMenuItem makeMenuItem(String label) {
@@ -357,6 +396,7 @@ public class GUI extends JFrame {
         map.setVisible(true);
         drawMap =  new JPanel();
         drawMap.setPreferredSize(new Dimension(map.getSize()));
+        drawMap.setBackground(Color.green);
         drawMap.setVisible(true);
         map.add(drawMap, BorderLayout.CENTER);
         drawMap.addMouseListener(new MouseListener() {
