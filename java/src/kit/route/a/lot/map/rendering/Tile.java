@@ -117,7 +117,7 @@ public class Tile {
      * (Re-)Creates the tile image, filling it with a background color.
      */
     protected void reset() {
-        data = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        data = new BufferedImage(width / (detail + 1), height / (detail + 1), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = data.createGraphics();
         graphics.setColor(new Color(210, 230, 190));
         graphics.fillRect(0, 0, this.width, this.height);
