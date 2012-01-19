@@ -104,24 +104,30 @@ public class QTGeographicalOperator implements GeographicalOperator {
         logger.debug(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
         logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
         logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+        HashSet<MapElement> elements = new HashSet<MapElement>();
+        zoomlevels[0].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
+        return elements;
         
-        Collection<MapElement> mapElements = new HashSet<MapElement>();
-        lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
-        System.out.println("last query: " + lastQuery);
-        for (QTLeaf qtL : lastQuery) {
-            for (MapElement mapEle : qtL.getBaseLayer()) {
-                mapElements.add(mapEle);
-            }
-        }
-        logger.debug(mapElements);
-        return mapElements;
+// odl method:        
+//        Collection<MapElement> mapElements = new HashSet<MapElement>();
+//        lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
+//        System.out.println("last query: " + lastQuery);
+//        for (QTLeaf qtL : lastQuery) {
+//            for (MapElement mapEle : qtL.getBaseLayer()) {
+//                mapElements.add(mapEle);
+//            }
+//        }
+//        logger.debug(mapElements);
+//        printQuadTree();
+//        return mapElements;
+        
     }
     
     @Override
     public ArrayList<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
-        for (QTLeaf qtL : zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight)) {
+        for (QTLeaf qtL : zoomlevels[0].getLeafs(upLeft, bottomRight)) {
             for (MapElement mapEle : qtL.getOverlay()) {
                 if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
                     mapElements.add(mapEle);

@@ -148,8 +148,11 @@ public class QTNode extends QuadTree {
     @Override
     protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
             Collection<MapElement> elememts) {
-        // TODO Auto-generated method stub
-        
+            // TODO nicht immer alle adden??
+            for(QuadTree qt : children) {
+                qt.addBaseLayerElementsToCollection(upLeft, bottomRight, elememts);
+      
+        } 
     }
 
 }

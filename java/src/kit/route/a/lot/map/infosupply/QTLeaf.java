@@ -130,7 +130,8 @@ public class QTLeaf extends QuadTree {
     @Override
     protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
             Collection<MapElement> elememts) {
-        // TODO Auto-generated method stub
-        
+        if(isInBounds(upLeft, bottomRight)) {
+            elememts.addAll(baseLayer);
+        }
     }
 }
