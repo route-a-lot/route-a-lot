@@ -96,6 +96,7 @@ public class Controller {
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
+            renderer.resetRenderCache();
             guiHandler.setView(state.getTopLeftCoordinate());
             //TODO saveMap
         }
@@ -308,7 +309,7 @@ public class Controller {
             StateIO.loadState(stateFile);
         } else {
             logger.warn("No state file found. Go on withloading map of Karlsruhe");
-            File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
+            File karlsruheMap = new File("test/resources/karlsruhe_big.osm");
             if(karlsruheMap.exists()) {
                 logger.info("file exists");
                 OSMLoader osmLoader = new OSMLoader();

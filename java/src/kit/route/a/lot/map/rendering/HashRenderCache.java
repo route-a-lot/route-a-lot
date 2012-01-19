@@ -27,6 +27,8 @@ public class HashRenderCache implements RenderCache {
         leastRecentlyUsed = new LinkedList<Tile>();
     }
     
+    
+    
     @Override
     public Tile queryCache(int tileSpecifier) {
         return map.get(tileSpecifier);
@@ -39,6 +41,14 @@ public class HashRenderCache implements RenderCache {
             map.remove(leastRecentlyUsed.removeFirst().hashCode());   
         }
         leastRecentlyUsed.addLast(tile);
+    }
+
+
+
+    @Override
+    public void resetCache() {
+        map = new HashMap<Integer, Tile>();
+        leastRecentlyUsed = new LinkedList<Tile>();
     }
     
 }

@@ -55,20 +55,20 @@ public class Area extends MapElement {
         int y[] = new int[nodes.length];
         int i = 0;
         for (Node node : nodes) {
-            x[i] = (int) (node.getPos().getLongitude() * 10000000); // 100000000 is a random factor, can be changed
+            x[i] = (int) (node.getPos().getLongitude() * 1000); // 100000000 is a random factor, can be changed
             i++;
         }
         i = 0;
         for (Node node : nodes) {
-            y[i] = (int) (node.getPos().getLatitude() * 10000000);
+            y[i] = (int) (node.getPos().getLatitude() * 1000);
             i++;
         }
         Polygon area = new Polygon(x, y, nodes.length);
         Rectangle2D.Double box =
-                new Rectangle2D.Double(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()) * 10000000 - 1, 
-                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()) * 10000000 - 1,
-                        (Math.abs(bottomRight.getLongitude() - topLeft.getLongitude())) * 10000000 + 1,
-                        (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude())) * 10000000 + 1);
+                new Rectangle2D.Double(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()) * 1000 - 1, 
+                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()) * 1000 - 1,
+                        (Math.abs(bottomRight.getLongitude() - topLeft.getLongitude())) * 1000 + 1,
+                        (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude())) * 1000 + 1);
         boolean inside = false;
         for (Node node : nodes) {
             if (node.isInBounds(topLeft, bottomRight)) {

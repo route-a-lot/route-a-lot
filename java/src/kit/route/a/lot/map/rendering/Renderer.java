@@ -105,5 +105,9 @@ public class Renderer {
     public void inheritCache(Renderer source) {
         this.cache = source.cache;
     }
+    
+    public void resetRenderCache() {
+        cache.resetCache();
+    }
 
 }

@@ -18,4 +18,8 @@ public interface RenderCache {
     void addToCache(Tile tile);
 
 
+    /**
+     * resets the cahe
+     */
+    void resetCache();
 }
