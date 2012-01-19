@@ -313,6 +313,7 @@ public class Controller {
                 logger.info("file exists");
                 OSMLoader osmLoader = new OSMLoader();
                 osmLoader.importMap(karlsruheMap);
+                State.getInstance().getLoadedMapInfo().buildZoomlevels();
                 ctrl.guiHandler.createGUI(ctrl.state.getTopLeftCoordinate());
             } else {
                 logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
