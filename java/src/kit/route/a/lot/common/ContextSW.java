@@ -46,9 +46,9 @@ public class ContextSW extends Context {
 
     @Override
     public void drawImage(Coordinates position, Image image) {
-        // Coordinates localCoordinates = projection.geoCoordinatesToLocalCoordinates(position);
-        output.drawImage(image, (int) (position.getLongitude() - topLeft.getLongitude()), (int) (position.getLatitude() - topLeft.getLatitude()), null);
-        System.out.println("painted");
+        int x = (int) (position.getLongitude() - topLeft.getLongitude());
+        int y = (int) (position.getLatitude() - topLeft.getLatitude());
+        output.drawImage(image, x, y, null);
     }
 
     @Override

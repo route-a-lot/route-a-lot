@@ -296,7 +296,7 @@ public class GUI extends JFrame {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                bottomRight = new Coordinates(drawMap.getVisibleRect().width + topLeft.getLongitude(), drawMap.getVisibleRect().height + topLeft.getLatitude());
+                bottomRight = new Coordinates(drawMap.getVisibleRect().height + topLeft.getLatitude(), drawMap.getVisibleRect().width + topLeft.getLongitude());
                 context.setBottomRight(bottomRight);
                 context.setSurface(drawMap.getGraphics());
 
@@ -304,7 +304,8 @@ public class GUI extends JFrame {
                 for(RALListener lis: viewChangedList){
                     lis.handleRALEvent(viewEvent);
                 }
-                System.out.println("resized");
+                
+//                System.out.println("resized");
             }
             
             @Override
