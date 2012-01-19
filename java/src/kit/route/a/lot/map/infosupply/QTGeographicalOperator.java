@@ -26,11 +26,13 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     /** The QuadTree leafs that were used by the last query. */
     private Collection<QTLeaf> lastQuery;
+    
+    private static int countZoomlevel = 9;
 
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
-        zoomlevels = new QuadTree[9];
-        for (int i = 0; i < zoomlevels.length; i++) {
+        zoomlevels = new QuadTree[countZoomlevel];
+        for (int i = 0; i < countZoomlevel; i++) {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);
         }
     }
@@ -38,7 +40,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void buildZoomlevels() {
         //TODO: proper implementation
-        for (int i = 1; i < zoomlevels.length; i++) {
+        for (int i = 1; i < countZoomlevel; i++) {
             zoomlevels[i] = zoomlevels[0];
         }
     }
@@ -104,6 +106,11 @@ public class QTGeographicalOperator implements GeographicalOperator {
         logger.debug(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
         logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
         logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+
+        if (zoomlevel >= countZoomlevel) {
+            zoomlevel = countZoomlevel - 1;
+        }
+        
         HashSet<MapElement> elements = new HashSet<MapElement>();
         zoomlevels[zoomlevel].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
         return elements;

@@ -43,6 +43,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.ZoneView;
 
 import kit.route.a.lot.common.ContextSW;
 import kit.route.a.lot.common.Coordinates;
@@ -297,8 +298,8 @@ public class GUI extends JFrame {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                bottomRight.setLatitude(drawMap.getVisibleRect().height + topLeft.getLatitude());
-                bottomRight.setLongitude(drawMap.getVisibleRect().width + topLeft.getLongitude());
+                bottomRight.setLatitude(drawMap.getVisibleRect().height * (currentZoomLevel + 1) + topLeft.getLatitude());
+                bottomRight.setLongitude(drawMap.getVisibleRect().width * (currentZoomLevel + 1) + topLeft.getLongitude());
                 context.recalculateSize();
                 context.setSurface(drawMap.getGraphics());
 
@@ -464,10 +465,10 @@ public class GUI extends JFrame {
                 mousePosXDist = newMousePosX - oldMousePosX;
                 mousePosYDist = newMousePosY - oldMousePosY;
                 
-                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                float newTopLeftLatitude = topLeft.getLatitude() - coordinatesPixelHeightDifference * mousePosYDist;
-                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * mousePosXDist;
-                float newBottomRightLatitude = bottomRight.getLatitude() - coordinatesPixelHeightDifference * mousePosYDist;
+                float newTopLeftLongitude = topLeft.getLongitude() - coordinatesPixelWidthDifference * (currentZoomLevel + 1) * mousePosXDist;
+                float newTopLeftLatitude = topLeft.getLatitude() - coordinatesPixelHeightDifference * (currentZoomLevel + 1) * mousePosYDist;
+                float newBottomRightLongitude = bottomRight.getLongitude() - coordinatesPixelWidthDifference * (currentZoomLevel + 1) * mousePosXDist;
+                float newBottomRightLatitude = bottomRight.getLatitude() - coordinatesPixelHeightDifference * (currentZoomLevel + 1) * mousePosYDist;
                 
                 oldMousePosX = newMousePosX;
                 oldMousePosY = newMousePosY;
@@ -518,6 +519,9 @@ public class GUI extends JFrame {
 
                 // TODO change to not using State (pass detail level with event to controller)
                 State.getInstance().setDetailLevel(currentZoomLevel);
+                bottomRight.setLatitude(drawMap.getVisibleRect().height * (currentZoomLevel + 1) + topLeft.getLatitude());
+                bottomRight.setLongitude(drawMap.getVisibleRect().width * (currentZoomLevel + 1) + topLeft.getLongitude());
+                context.recalculateSize();
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
                 for(RALListener lis: viewChangedList){
