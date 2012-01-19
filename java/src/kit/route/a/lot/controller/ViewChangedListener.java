@@ -15,7 +15,7 @@ public class ViewChangedListener implements RALListener {
     @Override
     public void handleRALEvent(EventObject event) {
         if(event instanceof ViewChangedEvent) {
-            ctrl.render(((ViewChangedEvent) event).getContext(), ((ViewChangedEvent) event).getZoomLevelChange());
+            ctrl.render(((ViewChangedEvent) event).getContext(), ((ViewChangedEvent) event).getZoomLevel());
         }
     }
 

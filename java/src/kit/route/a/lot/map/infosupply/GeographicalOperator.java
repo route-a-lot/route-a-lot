@@ -20,6 +20,12 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the map boundary
      */
     public void setBounds(Coordinates upLeft, Coordinates bottomRight);
+    
+    /**
+     * Writes the topLeft and bottomRight values of the current map to the given variables.
+     * 
+     */
+    public void getBounds(Coordinates upLeft, Coordinates bottomRight);
 
     /**
      * Creates all zoom level layers, requiring a complete base

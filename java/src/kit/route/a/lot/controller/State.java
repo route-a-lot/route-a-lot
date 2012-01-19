@@ -50,7 +50,7 @@ public class State {
     /**
      * 
      */
-    private Coordinates topLeftCoordinate;
+    private Coordinates centerCoordinate;
     /**
      * 
      */
@@ -100,7 +100,7 @@ public class State {
         loadedHeightmap = null; // TODO heightmap
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        topLeftCoordinate = null;
+        centerCoordinate = null;
         detailLevel = 0;
         clickRadius = 1; // TODO use it
         routeDescription = new RouteDescription();
@@ -182,24 +182,24 @@ public class State {
     }
 
 
-    public Coordinates getTopLeftCoordinate() {
-        return topLeftCoordinate;
+    public Coordinates getCenterCoordinate() {
+        return centerCoordinate;
     }
 
 
-    public void setTopLeftCoordinate(Coordinates areaCoord) {
-        this.topLeftCoordinate = areaCoord;
+    public void setCenterCoordinate(Coordinates areaCoord) {
+        this.centerCoordinate = areaCoord;
     }
 
 
-    public int getDetailLevel() {
-        return detailLevel;
-    }
-
-
-    public void setDetailLevel(int detailLevel) {
-        this.detailLevel = detailLevel;
-    }
+//    public int getDetailLevel() {
+//        return detailLevel;
+//    }
+//
+//
+//    public void setDetailLevel(int detailLevel) {
+//        this.detailLevel = detailLevel;
+//    }
 
 
     public int getClickRadius() {
@@ -273,7 +273,7 @@ public class State {
         loadedGraph = new AdjacentFieldsRoutingGraph();
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        topLeftCoordinate = new Coordinates();
+        centerCoordinate = new Coordinates();
         detailLevel = 0;
         routeDescription = new RouteDescription();
     }

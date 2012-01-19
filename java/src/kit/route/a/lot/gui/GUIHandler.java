@@ -29,8 +29,6 @@ public class GUIHandler {
     public void createGUI(Coordinates middle) {
         gui = new GUI(middle);
         gui.setBounds(0, 25, 500, 500);
-        System.out.println(gui.getWidth());
-        System.out.println(gui.getHeight());
         gui.setVisible(true);
         gui.addContents();
     }
@@ -152,7 +150,7 @@ public class GUIHandler {
         gui.addOptimizeRouteListener(optimizeRouteListener);
     }
     
-    public void setView(Coordinates coor) {
-        gui.setview(coor);
+    public void setView(Coordinates topLeft) {
+        gui.setView(topLeft);
     }
 }

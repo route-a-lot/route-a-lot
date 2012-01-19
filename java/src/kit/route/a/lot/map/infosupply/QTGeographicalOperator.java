@@ -29,13 +29,21 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private Collection<QTLeaf> lastQuery;
     
     private static int countZoomlevel = 9;
-
+    
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
         zoomlevels = new QuadTree[countZoomlevel];
         for (int i = 0; i < countZoomlevel; i++) {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);
         }
+    }
+    
+    @Override
+    public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
+        upLeft.setLatitude(zoomlevels[0].getUpLeft().getLatitude());
+        upLeft.setLongitude(zoomlevels[0].getUpLeft().getLongitude());
+        bottomRight.setLatitude(zoomlevels[0].getBottomRight().getLatitude());
+        bottomRight.setLongitude(zoomlevels[0].getBottomRight().getLongitude());
     }
 
     @Override

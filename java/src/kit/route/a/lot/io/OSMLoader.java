@@ -846,7 +846,7 @@ public class OSMLoader {
                         Coordinates upLeft = new Coordinates(maxLat, minLon);
                         Coordinates bottomRight = new Coordinates(minLat, maxLon);
                         state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
-                        state.setTopLeftCoordinate(projection.geoCoordinatesToLocalCoordinates(upLeft));
+                        state.setCenterCoordinate(projection.geoCoordinatesToLocalCoordinates(upLeft));
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }

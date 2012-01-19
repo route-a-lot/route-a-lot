@@ -53,6 +53,14 @@ public class MapInfo {
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         geographicalOperator.setBounds(upLeft, bottomRight);
     }
+    
+    /**
+     * Writes the topLeft and bottomRight values of the current map to the given variables.
+     * 
+     */
+    public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
+        geographicalOperator.getBounds(upLeft, bottomRight);
+    }
 
     /**
      * Adds a node to the data structures.

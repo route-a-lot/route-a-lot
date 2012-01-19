@@ -47,6 +47,16 @@ public class Controller {
     public void setView() {
         guiHandler.updateMap(); // TODO needed?
     }
+    
+    public void setViewToMapCenter() {
+        Coordinates upLeft = new Coordinates();
+        Coordinates bottomRight = new Coordinates();
+        state.getLoadedMapInfo().getBounds(upLeft, bottomRight);
+        Coordinates center = new Coordinates();
+        center.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
+        center.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
+        state.setCenterCoordinate(center);
+    }
 
     /**
      * Operation setZoomLevel
@@ -96,8 +106,8 @@ public class Controller {
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
+            guiHandler.setView(state.getCenterCoordinate());
             renderer.resetRenderCache();
-            guiHandler.setView(state.getTopLeftCoordinate());
             //TODO saveMap
         }
        
@@ -276,10 +286,8 @@ public class Controller {
      * @return
      */
     public void render(Context context, int zoomLevel) {
-        //if(zoomLevel != -1) {
-        //    State.getInstance().setDetailLevel(zoomLevel);    //TODO zoomlevels in geoOperator
-        //}
-        renderer.render(context, State.getInstance().getDetailLevel()); 
+//        state.setDetailLevel(zoomLevel);
+        renderer.render(context, zoomLevel); 
     }
 
     /**
@@ -314,8 +322,9 @@ public class Controller {
                 logger.info("file exists");
                 OSMLoader osmLoader = new OSMLoader();
                 osmLoader.importMap(karlsruheMap);
-                State.getInstance().getLoadedMapInfo().buildZoomlevels();
-                ctrl.guiHandler.createGUI(ctrl.state.getTopLeftCoordinate());
+                ctrl.state.getLoadedMapInfo().buildZoomlevels();
+                ctrl.setViewToMapCenter();
+                ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinate());
             } else {
                 logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
             }
