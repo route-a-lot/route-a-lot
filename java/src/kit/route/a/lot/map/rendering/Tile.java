@@ -280,15 +280,19 @@ public class Tile {
     @Override
     public int hashCode() {
         // EXTEND: better hash code derivation
-        return getSpecifier(topLeft, detail);
+        return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
     }
-
+    
     public Coordinates getTopLeft() {
         return topLeft;
     }
 
-    public static int getSpecifier(Coordinates topLeft, int detail) {
-        return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
+    public static long getSpecifier(Coordinates topLeft, int detail) {
+        return (long) Math.floor((topLeft.getLongitude() + topLeft.getLatitude() * 10000) * 100000) + detail;
+    }
+    
+    public long getSpecifier() {
+        return getSpecifier(topLeft, detail);
     }
 
 }

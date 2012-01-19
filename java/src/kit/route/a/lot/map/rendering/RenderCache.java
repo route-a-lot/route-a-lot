@@ -7,9 +7,9 @@ public interface RenderCache {
      * Otherwise returns null.
      * 
      * @param tileSpecifier
-     *            an int as specifier for the tile (see Tile.getSpecifier(Coordinates, int))
+     *            an long as specifier for the tile (see Tile.getSpecifier(Coordinates, int))
      */
-    Tile queryCache(int tileSpecifier);
+    Tile queryCache(long tileSpecifier);
 
     /**
      * Adds the given tile to the cache.

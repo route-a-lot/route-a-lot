@@ -15,7 +15,7 @@ public class HashRenderCache implements RenderCache {
     /**
      * Map, mapping tile specifiers to tiles
      */
-    private HashMap<Integer, Tile> map;
+    private HashMap<Long, Tile> map;
     
     /**
      * a FIFO list for the cache replacement
@@ -23,31 +23,26 @@ public class HashRenderCache implements RenderCache {
     private LinkedList<Tile> leastRecentlyUsed; // TODO EXTEND: more elaborate aging algorithm
 
     public HashRenderCache() {
-        map = new HashMap<Integer, Tile>();
-        leastRecentlyUsed = new LinkedList<Tile>();
+        resetCache();
     }
     
-    
-    
     @Override
-    public Tile queryCache(int tileSpecifier) {
+    public Tile queryCache(long tileSpecifier) {
         return map.get(tileSpecifier);
     }
     
     @Override
     public void addToCache(Tile tile) {
-        map.put(tile.hashCode(), tile);
+        map.put(tile.getSpecifier(), tile);
         if (leastRecentlyUsed.size() >= CACHE_SIZE) {
             map.remove(leastRecentlyUsed.removeFirst().hashCode());   
         }
         leastRecentlyUsed.addLast(tile);
     }
 
-
-
     @Override
     public void resetCache() {
-        map = new HashMap<Integer, Tile>();
+        map = new HashMap<Long, Tile>();
         leastRecentlyUsed = new LinkedList<Tile>();
     }
     
