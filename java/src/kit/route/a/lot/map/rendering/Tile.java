@@ -61,7 +61,7 @@ public class Tile {
     }
 
     /**
-     * Creates an new (empty) tile using the default resolution (350px*350px).
+     * Creates an new (empty) tile using a calculated resolution
      * 
      * @param topLeft
      *            the northwestern corner of the tile
@@ -71,16 +71,7 @@ public class Tile {
      *            the desired level of detail
      */
     public Tile(Coordinates topLeft, Coordinates bottomRight, int detail) {
-        this(topLeft, bottomRight, detail, 350, 350);
-        logger.info("Default resolution used for tile: 350px * 350px");
-    }
-
-    public Tile(Coordinates topLeft, Coordinates bottomRight, int detail, float scale) {
         this(topLeft, bottomRight, detail, 0, 0);
-//        projection = new MercatorProjection(topLeft, scale);
-//        Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
-//        Coordinates localBottomRight = projection.geoCoordinatesToLocalCoordinates(bottomRight);
-
         width = (int) Math.abs(topLeft.getLongitude() - bottomRight.getLongitude());
         height = (int) Math.abs(topLeft.getLatitude() - bottomRight.getLatitude());
     }
@@ -173,19 +164,13 @@ public class Tile {
     protected void draw(Node node) {
         int size = 3;
 
-        Coordinates localCoordinates = getTileCoordinates(node.getPos());
+        Coordinates localCoordinates = getTileCoordinatesFromGlobalCoordinates(node.getPos());
         Graphics2D graphics = data.createGraphics();
         graphics.setColor(Color.LIGHT_GRAY);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
     }
     
-    private Coordinates getTileCoordinates(Coordinates position) {
-        Coordinates tileCoordinates = new Coordinates();
-        tileCoordinates.setLatitude(position.getLatitude() - topLeft.getLatitude());
-        tileCoordinates.setLongitude(position.getLongitude() - topLeft.getLongitude());
-        return tileCoordinates;
-    }
 
     /**
      * Draws an area on the tile.
@@ -202,7 +187,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = getTileCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = getTileCoordinatesFromGlobalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -247,7 +232,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = getTileCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = getTileCoordinatesFromGlobalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -277,6 +262,13 @@ public class Tile {
         graphics.setStroke(new BasicStroke(3));
         graphics.drawPolyline(xPoints, yPoints, nPoints);
 
+    }
+
+    private Coordinates getTileCoordinatesFromGlobalCoordinates(Coordinates position) {
+        Coordinates tileCoordinates = new Coordinates();
+        tileCoordinates.setLatitude((position.getLatitude() - topLeft.getLatitude()) / (detail + 1));
+        tileCoordinates.setLongitude((position.getLongitude() - topLeft.getLongitude()) / (detail + 1));
+        return tileCoordinates;
     }
 
     /**

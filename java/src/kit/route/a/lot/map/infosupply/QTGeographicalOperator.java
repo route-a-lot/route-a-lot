@@ -105,12 +105,12 @@ public class QTGeographicalOperator implements GeographicalOperator {
         logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
         logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[0].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
+        zoomlevels[zoomlevel].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
         return elements;
         
 // odl method:        
 //        Collection<MapElement> mapElements = new HashSet<MapElement>();
-//        lastQuery = zoomlevels[0].getLeafs(upLeft, bottomRight);//TODO zoomlevel
+//        lastQuery = zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);//TODO zoomlevel
 //        System.out.println("last query: " + lastQuery);
 //        for (QTLeaf qtL : lastQuery) {
 //            for (MapElement mapEle : qtL.getBaseLayer()) {
@@ -120,7 +120,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
 //        logger.debug(mapElements);
 //        printQuadTree();
 //        return mapElements;
-        
     }
     
     @Override

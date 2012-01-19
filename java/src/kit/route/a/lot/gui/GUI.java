@@ -48,6 +48,7 @@ import kit.route.a.lot.common.ContextSW;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.controller.RALListener;
+import kit.route.a.lot.controller.State;
 
 
 public class GUI extends JFrame {
@@ -296,8 +297,9 @@ public class GUI extends JFrame {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                bottomRight = new Coordinates(drawMap.getVisibleRect().height + topLeft.getLatitude(), drawMap.getVisibleRect().width + topLeft.getLongitude());
-                context.setBottomRight(bottomRight);
+                bottomRight.setLatitude(drawMap.getVisibleRect().height + topLeft.getLatitude());
+                bottomRight.setLongitude(drawMap.getVisibleRect().width + topLeft.getLongitude());
+                context.recalculateSize();
                 context.setSurface(drawMap.getGraphics());
 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, 0);
@@ -499,20 +501,23 @@ public class GUI extends JFrame {
                 } else {
                     direction = down;
                 }
-                if(direction == up && currentZoomLevel != -4) {
+                if(direction == up && currentZoomLevel != 0) {
                     currentZoomLevel--;
                     topLeft.setLongitude(topLeft.getLongitude() + coordinatesWidth/4);
                     topLeft.setLatitude(topLeft.getLatitude() + coordinatesHeight/4);
                     bottomRight.setLongitude(bottomRight.getLongitude() - coordinatesWidth/4);
                     bottomRight.setLatitude(bottomRight.getLatitude() - coordinatesHeight/4);
                     
-                } else if(direction == down && currentZoomLevel != 4) {
+                } else if (direction == down) {
                     currentZoomLevel++;
                     topLeft.setLongitude(topLeft.getLongitude() - coordinatesWidth/2);
                     topLeft.setLatitude(topLeft.getLatitude() - coordinatesHeight/2);
                     bottomRight.setLongitude(bottomRight.getLongitude() + coordinatesWidth/2);
                     bottomRight.setLatitude(bottomRight.getLatitude() + coordinatesHeight/2);
                 }
+
+                // TODO change to not using State (pass detail level with event to controller)
+                State.getInstance().setDetailLevel(currentZoomLevel);
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, direction);
                 for(RALListener lis: viewChangedList){

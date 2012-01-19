@@ -36,7 +36,7 @@ public class Renderer {
      */
     public void render(Context context, int detail) {
         float tileDim = (float) (Tile.BASE_TILE_DIM * Math.exp(detail * Math.log(2)));
-        tileDim = 200;
+        tileDim = 200 * (detail + 1);
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
         int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim) - 1;
         int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
@@ -46,7 +46,7 @@ public class Renderer {
                 Coordinates topLeft = new Coordinates((k + 1) * tileDim, i * tileDim);
                 Coordinates bottomRight = new Coordinates(k * tileDim, (i + 1) * tileDim);
                 Tile currentTile = prerenderTile(topLeft, bottomRight, detail);
-                context.drawImage(topLeft, currentTile.getData());
+                context.drawImage(topLeft, currentTile.getData(), detail);
             }
         }
     }
@@ -60,7 +60,7 @@ public class Renderer {
     private Tile prerenderTile(Coordinates topLeft, Coordinates bottomRight, int detail) {
         Tile tile = cache.queryCache(Tile.getSpecifier(topLeft, detail));
         if (tile == null) {
-            tile = new Tile(topLeft, bottomRight, detail, 1.f);
+            tile = new Tile(topLeft, bottomRight, detail);
             tile.prerender(state);
             cache.addToCache(tile);
         }

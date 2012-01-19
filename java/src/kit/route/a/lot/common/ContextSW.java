@@ -45,9 +45,9 @@ public class ContextSW extends Context {
     }
 
     @Override
-    public void drawImage(Coordinates position, Image image) {
-        int x = (int) (position.getLongitude() - topLeft.getLongitude());
-        int y = (int) (position.getLatitude() - topLeft.getLatitude());
+    public void drawImage(Coordinates position, Image image, int detail) {
+        int x = (int) (position.getLongitude() - topLeft.getLongitude()) / (detail + 1);
+        int y = (int) (position.getLatitude() - topLeft.getLatitude()) / (detail + 1);
         output.drawImage(image, x, y, null);
     }
 
@@ -59,6 +59,11 @@ public class ContextSW extends Context {
     @Override
     public void setBottomRight(Coordinates bottomRight) {
         super.setBottomRight(bottomRight);
+        recalculateSize();
+    }
+    
+    @Override
+    public void recalculateSize() {
         width = (int) Math.abs(bottomRight.getLongitude() - topLeft.getLongitude());
         height = (int) Math.abs(bottomRight.getLatitude() - topLeft.getLatitude());
     }

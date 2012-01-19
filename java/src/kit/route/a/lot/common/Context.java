@@ -31,7 +31,9 @@ public abstract class Context {
      * @param y
      * @param image
      */
-    public abstract void drawImage(Coordinates position, Image image);
+    public abstract void drawImage(Coordinates position, Image image, int detail);
+    
+    public abstract void recalculateSize();
     
     public abstract float getScale();
 
