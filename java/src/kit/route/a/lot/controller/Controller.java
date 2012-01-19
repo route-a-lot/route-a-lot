@@ -106,6 +106,8 @@ public class Controller {
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
+            state.getLoadedMapInfo().buildZoomlevels();
+            setViewToMapCenter();
             guiHandler.setView(state.getCenterCoordinate());
             renderer.resetRenderCache();
             //TODO saveMap
@@ -125,7 +127,7 @@ public class Controller {
         state.getNavigationNodes().add(position,
                 state.getLoadedMapInfo().select(pos));
         calculateRoute();
-        render(context, -1);
+        render(context, state.getDetailLevel());
     }
 
     /**
@@ -286,7 +288,7 @@ public class Controller {
      * @return
      */
     public void render(Context context, int zoomLevel) {
-//        state.setDetailLevel(zoomLevel);
+        state.setDetailLevel(zoomLevel);
         renderer.render(context, zoomLevel); 
     }
 
@@ -317,7 +319,7 @@ public class Controller {
             StateIO.loadState(stateFile);
         } else {
             logger.warn("No state file found. Go on withloading map of Karlsruhe");
-            File karlsruheMap = new File("test/resources/karlsruhe_big.osm");
+            File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
             if(karlsruheMap.exists()) {
                 logger.info("file exists");
                 OSMLoader osmLoader = new OSMLoader();

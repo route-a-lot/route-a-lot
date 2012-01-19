@@ -25,9 +25,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     private QuadTree zoomlevels[];
     
-    /** The QuadTree leafs that were used by the last query. */
-    private Collection<QTLeaf> lastQuery;
-    
     private static int countZoomlevel = 9;
     
     @Override
@@ -122,6 +119,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         
         HashSet<MapElement> elements = new HashSet<MapElement>();
         zoomlevels[zoomlevel].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
+       // printQuadTree();
         return elements;
     }
     

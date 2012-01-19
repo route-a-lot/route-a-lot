@@ -192,14 +192,14 @@ public class State {
     }
 
 
-//    public int getDetailLevel() {
-//        return detailLevel;
-//    }
-//
-//
-//    public void setDetailLevel(int detailLevel) {
-//        this.detailLevel = detailLevel;
-//    }
+    public int getDetailLevel() {
+        return detailLevel;
+    }
+
+
+    public void setDetailLevel(int detailLevel) {
+        this.detailLevel = detailLevel;
+    }
 
 
     public int getClickRadius() {
