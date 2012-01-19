@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -128,10 +129,13 @@ public class PrimitiveArrayGeoOperator implements GeographicalOperator {
     }
 
     @Override
-    public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
-            Coordinates bottomRight) {
+    public void getOverlayAndBaseLayer(int zoomLevel, Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> baseLayer, Set<MapElement> overlay) {
         // TODO Auto-generated method stub
-        return null;
+        
     }
+
+
+
 
 }

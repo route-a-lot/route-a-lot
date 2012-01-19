@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
@@ -129,9 +130,27 @@ public class QTLeaf extends QuadTree {
 
     @Override
     protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Collection<MapElement> elememts) {
+            Set<MapElement> elememts) {
         if(isInBounds(upLeft, bottomRight)) {
             elememts.addAll(baseLayer);
+        }
+    }
+
+    @Override
+    protected void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> elememts) {
+        if(isInBounds(upLeft, bottomRight)) {
+            elememts.addAll(overlay);
+        }
+        
+    }
+
+    @Override
+    protected void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> baseLayer, Set<MapElement> overlay) {
+        if(isInBounds(upLeft, bottomRight)) {
+            baseLayer.addAll(baseLayer);
+            overlay.addAll(overlay);
         }
     }
 }

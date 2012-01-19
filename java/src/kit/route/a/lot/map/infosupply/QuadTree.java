@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.awt.geom.Rectangle2D;
 
 import kit.route.a.lot.common.Coordinates;
@@ -27,7 +28,13 @@ public abstract class QuadTree {
     protected abstract Collection<QTLeaf> getLeafs(Coordinates upLeft, Coordinates bottomRight);
 
     protected abstract void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Collection<MapElement> elememts);
+            Set<MapElement> elememts);
+    
+    protected abstract void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> elememts);
+    
+    protected abstract void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> baseLayer, Set<MapElement> overlay);
 
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
         double width = Math.abs(this.bottomRight.getLongitude() - this.upLeft.getLongitude());

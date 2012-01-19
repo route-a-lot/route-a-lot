@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
@@ -65,8 +67,8 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the queried boundary
      * @return a list containing all overlay MapElements in the queried section
      */
-    public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft,
-            Coordinates bottomRight);
+    public void getOverlayAndBaseLayer(int zoomLevel, Coordinates upLeft,
+            Coordinates bottomRight, Set<MapElement> baseLayer, Set<MapElement> overlay);
 
     /**
      * Adds a {@link MapElement} to the base layer.

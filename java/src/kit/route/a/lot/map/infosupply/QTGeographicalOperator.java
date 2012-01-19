@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -114,46 +115,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
         HashSet<MapElement> elements = new HashSet<MapElement>();
         zoomlevels[zoomlevel].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
         return elements;
-        
-// odl method:        
-//        Collection<MapElement> mapElements = new HashSet<MapElement>();
-//        lastQuery = zoomlevels[zoomlevel].getLeafs(upLeft, bottomRight);//TODO zoomlevel
-//        System.out.println("last query: " + lastQuery);
-//        for (QTLeaf qtL : lastQuery) {
-//            for (MapElement mapEle : qtL.getBaseLayer()) {
-//                mapElements.add(mapEle);
-//            }
-//        }
-//        logger.debug(mapElements);
-//        printQuadTree();
-//        return mapElements;
     }
     
     @Override
-    public ArrayList<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
-        for (QTLeaf qtL : zoomlevels[0].getLeafs(upLeft, bottomRight)) {
-            for (MapElement mapEle : qtL.getOverlay()) {
-                if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
-                    mapElements.add(mapEle);
-                }
-            }
-        }
-        return mapElements;
-    }
-
-    @Override
-    public Collection<MapElement> getOverlayToLastBaseLayer(Coordinates upLeft, Coordinates bottomRight) {
-        ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
-        for (QTLeaf qtL : lastQuery) {
-            for (MapElement mapEle : qtL.getBaseLayer()) {
-                if(mapEle.isInBounds(upLeft, bottomRight) && !mapElements.contains(mapEle)) { //TODO use set
-                    mapElements.add(mapEle); 
-                }
-            }
-        }
-        return mapElements;
+        HashSet<MapElement> elements = new HashSet<MapElement>();
+        zoomlevels[zoomlevel].addOverlayElementsToCollection(upLeft, bottomRight, elements);
+        return elements;
     }
         
     @Override
@@ -177,7 +146,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return zoomlevels[level].toString(0, new ArrayList<Integer>());
     }
     
-    private ArrayList<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
+    private Collection<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
         UL.setLatitude(pos.getLatitude() + radius);
@@ -216,5 +185,11 @@ public class QTGeographicalOperator implements GeographicalOperator {
         for(int i = 0; i < zoomlevels.length; i++) {
             QuadTree.saveToStream(stream, zoomlevels[i]);
         }
+    }
+
+    @Override
+    public void getOverlayAndBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> baseLayer, Set<MapElement> overlay) {
+        zoomlevels[zoomlevel].addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
     }
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
@@ -147,12 +148,36 @@ public class QTNode extends QuadTree {
 
     @Override
     protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Collection<MapElement> elememts) {
-            // TODO nicht immer alle adden??
+            Set<MapElement> elememts) {
+        if (isInBounds(upLeft, bottomRight)) {
             for(QuadTree qt : children) {
                 qt.addBaseLayerElementsToCollection(upLeft, bottomRight, elememts);
-      
-        } 
+          
+            }    
+        }
+    }
+
+    @Override
+    protected void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> elememts) {
+        if (isInBounds(upLeft, bottomRight)) {
+            for(QuadTree qt : children) {
+                qt.addOverlayElementsToCollection(upLeft, bottomRight, elememts);
+          
+            }    
+        }
+        
+    }
+
+    @Override
+    protected void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> baseLayer, Set<MapElement> overlay) {
+        if (isInBounds(upLeft, bottomRight)) {
+            for(QuadTree qt : children) {
+                qt.addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
+          
+            }    
+        }
     }
 
 }
