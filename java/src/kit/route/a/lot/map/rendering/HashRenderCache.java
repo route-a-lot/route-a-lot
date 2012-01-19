@@ -10,7 +10,7 @@ public class HashRenderCache implements RenderCache {
     /**
      * Maximum number of entries in the cache
      */
-    private static final int CACHE_SIZE = 50;
+    private static final int CACHE_SIZE = 96;
     
     /**
      * Map, mapping tile specifiers to tiles
