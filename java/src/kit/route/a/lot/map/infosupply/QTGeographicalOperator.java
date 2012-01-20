@@ -47,10 +47,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void buildZoomlevels() {
         //TODO: proper implementation
+        MapElement reduced;
         float multiplier = 300;
         for (int i = 1; i < countZoomlevel; i++) {
             for (MapElement element: State.getInstance().getLoadedMapInfo().getAllElements()) {
-                zoomlevels[i].addToBaseLayer(element.getReduced(i, i * multiplier));
+                reduced = element.getReduced(i, i * multiplier);
+                if (reduced == null) {
+                    logger.info("Ignoring " + element + " for zoomlevel " + i);
+                } else {
+                    zoomlevels[i].addToBaseLayer(reduced);
+                }
             }
         }
     }

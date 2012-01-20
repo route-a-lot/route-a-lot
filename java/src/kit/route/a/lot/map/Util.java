@@ -21,7 +21,8 @@ public class Util {
             }
         }
         newNodes.add(last);
-        return (Node[]) newNodes.toArray();
+        Node[] resultArray = new Node[newNodes.size()];
+        return newNodes.toArray(resultArray);
     }
 
     private static boolean isInTube(Node current, Node last, Node node, float range) {

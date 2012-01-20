@@ -110,9 +110,10 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public MapElement[] getAllElements() {
         List<MapElement> result = new ArrayList<MapElement>();
+        MapElement[] resultArray = new MapElement[nodes.size() + mapElements.size() + favorites.size()];
         result.addAll(nodes);
         result.addAll(mapElements);
         result.addAll(favorites);
-        return (MapElement[]) result.toArray();
+        return (MapElement[]) result.toArray(resultArray);
     }
 }
