@@ -4,7 +4,8 @@ import kit.route.a.lot.map.Node;
 
 
 public class Util {
-    public static int[][] permutations(int p) {
+    private static int[][] permutations(int p) {
+        // Try not to use this
         // Steinhaus–Johnson–Trotter algorithm'
         if (p == 1) {
             return new int[][] {{1}};
@@ -36,7 +37,7 @@ public class Util {
         }
     }
     
-    public static int[] insert(int[] array, int element, int pos) {
+    private static int[] insert(int[] array, int element, int pos) {
         int[] result = new int[array.length + 1];
         for (int i = 0; i < pos; i++) {
             result[i] = array[i];
@@ -45,16 +46,6 @@ public class Util {
         for (int i = pos; i < result.length; i++) {
             result[i+1] = array[i];
         }
-        return result;
-    }
-    
-    public static Node[] append(Node[] array, Node element) {
-        Node[] result = new Node[array.length + 1];
-        int i;
-        for (i = 0; i < array.length; i++) {
-            result[i] = array[i];
-        }
-        result[i] = element;
         return result;
     }
 
