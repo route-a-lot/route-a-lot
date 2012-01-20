@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -104,5 +105,14 @@ public class ArrayElementDB implements ElementDB {
         for (POINode favorite: favorites) {
             MapElement.saveToStream(stream, favorite, false);
         }
+    }
+
+    @Override
+    public MapElement[] getAllElements() {
+        List<MapElement> result = new ArrayList<MapElement>();
+        result.addAll(nodes);
+        result.addAll(mapElements);
+        result.addAll(favorites);
+        return (MapElement[]) result.toArray();
     }
 }

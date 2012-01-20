@@ -296,4 +296,8 @@ public class MapInfo {
         }
     }
 
+    public MapElement[] getAllElements() {
+        return elementDB.getAllElements();
+    }
+
 }

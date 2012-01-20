@@ -65,4 +65,6 @@ public interface ElementDB {
      */
     public void saveToStream(DataOutputStream stream) throws IOException;
 
+    public MapElement[] getAllElements();
+
 }

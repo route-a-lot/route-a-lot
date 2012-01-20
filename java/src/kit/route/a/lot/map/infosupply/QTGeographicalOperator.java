@@ -11,6 +11,7 @@ import java.util.Set;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
@@ -46,8 +47,11 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void buildZoomlevels() {
         //TODO: proper implementation
+        float multiplier = 300;
         for (int i = 1; i < countZoomlevel; i++) {
-            zoomlevels[i] = zoomlevels[0];
+            for (MapElement element: State.getInstance().getLoadedMapInfo().getAllElements()) {
+                zoomlevels[i].addToBaseLayer(element.getReduced(i, i * multiplier));
+            }
         }
     }
 
