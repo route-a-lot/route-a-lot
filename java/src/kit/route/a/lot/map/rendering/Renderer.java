@@ -175,7 +175,7 @@ public class Renderer {
                 routeImage = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
             }
         } else {
-            System.out.println("Get route from cache");
+            System.out.println("Getting route from cache");
         }
         
         context.drawImage(routeTopLeft, routeImage, detail);
@@ -207,8 +207,6 @@ public class Renderer {
             graphics.setColor(Color.RED);
             graphics.fillOval(0, 0, 5, 5);
             context.drawImage(point.getPosition(), image, detail);
-            
-            System.out.println("Hier: " + point.getFrom() + " und " + point.getTo());
         }
     }
 

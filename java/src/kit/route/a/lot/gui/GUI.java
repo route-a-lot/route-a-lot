@@ -319,12 +319,9 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("(" + xpos + "," + ypos + ")\n");
 
-                // TODO Matthias evtl. nicht hier, sondern schon bei Klick
                 Coordinates clickPos = calculateClickPos(xpos - drawMap.getX(), ypos - drawMap.getY());
                 navPointsList.add(clickPos);
 
-                System.out.println("point: " + clickPos.getLongitude() + "," + clickPos.getLatitude());
-                System.out.println("center: " + center.getLongitude() + "," + center.getLatitude());
                 NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, clickPos, navPointsList.indexOf(clickPos), context);
                 for(RALListener lis: targetSelectedList){
                     lis.handleRALEvent(navEvent);
