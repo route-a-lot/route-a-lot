@@ -4,7 +4,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WeightCalculator;
 
 
-public class WeightCalculatorMock /*extends WeightCalculator*/ {
+public class WeightCalculatorMock extends WeightCalculator {
 
     //@Override
     public int calcWeight(int fromID, int toID) {
