@@ -299,5 +299,9 @@ public class MapInfo {
     public MapElement[] getAllElements() {
         return elementDB.getAllElements();
     }
+    
+    public void trimm() {
+        geographicalOperator.trimm();
+    }
 
 }

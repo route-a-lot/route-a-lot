@@ -173,5 +173,7 @@ public abstract class QuadTree {
      *             quadtree could not be saved to the stream
      */
     protected abstract void save(DataOutputStream stream) throws IOException;
+    
+    protected abstract void trimm();
 
 }

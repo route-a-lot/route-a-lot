@@ -124,4 +124,6 @@ public interface GeographicalOperator {
      */
     public void saveToStream(DataOutputStream stream) throws IOException;
     
+    public void trimm();
+    
 }

@@ -208,4 +208,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
             Set<MapElement> baseLayer, Set<MapElement> overlay) {
         zoomlevels[zoomlevel].addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
     }
+
+    @Override
+    public void trimm() {
+        // TODO Auto-generated method stub
+        
+    }
 }

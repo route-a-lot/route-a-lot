@@ -66,6 +66,7 @@ public class QTNode extends QuadTree {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addToOverlay(element)) {
                     children[i] = ((QTLeaf) children[i]).splitLeaf();
+                    children[i].addToOverlay(element); //l.o.
                 }
             }
         }
@@ -78,6 +79,7 @@ public class QTNode extends QuadTree {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addToBaseLayer(element)) {
                     children[i] = ((QTLeaf) children[i]).splitLeaf();
+                    children[i].addToBaseLayer(element);  //we cant't add this directly in QTLeaf (array -> outOfBounds)
                 }
             }
         }
@@ -176,7 +178,14 @@ public class QTNode extends QuadTree {
             for(QuadTree qt : children) {
                 qt.addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
           
-            }    
+            }  
+        }
+    }
+
+    @Override
+    protected void trimm() {
+        for(QuadTree qt : children) {
+            qt.trimm();
         }
     }
 

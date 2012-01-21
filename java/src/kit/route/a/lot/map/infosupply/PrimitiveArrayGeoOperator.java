@@ -141,4 +141,10 @@ public class PrimitiveArrayGeoOperator implements GeographicalOperator {
         
     }
 
+    @Override
+    public void trimm() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }
