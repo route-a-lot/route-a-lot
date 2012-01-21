@@ -425,7 +425,6 @@ public class Controller {
                 ctrl.state.getLoadedMapInfo().buildZoomlevels();
                 ctrl.state.getLoadedMapInfo().trimm();
                 ctrl.setViewToMapCenter();
-                ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinate());
                 
                 try {
                     StateIO.saveState(stateFile);
@@ -437,6 +436,7 @@ public class Controller {
             }
         }
         
+        ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinate());
         ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
         ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));
