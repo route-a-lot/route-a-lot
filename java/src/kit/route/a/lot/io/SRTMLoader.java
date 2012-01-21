@@ -1,7 +1,10 @@
 package kit.route.a.lot.io;
 
 import kit.route.a.lot.heightinfo.HeightTile;
+import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.controller.State;
+
 import java.io.File;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -13,22 +16,34 @@ import java.io.EOFException;
 
 public class SRTMLoader implements HeightLoader {
     
-        int count = 0;
-        int input;
-        int width = 1201;
-        int height = 1201;
-        int lat = 0;
-        int lon = 0;
+    /**
+     * Operation load
+     * 
+     * @param file
+     *            -
+     * @return
+     * @return
+     **/
+    State state;
+    private int width;
+    private int height;
 
-        HeightTile tile;
-        FileInputStream in;
-        DataInputStream bin;
-        Coordinates origin;
+    public SRTMLoader(){
+        this.width = 1201;
+        this.height = 1201;
+        state = State.getInstance();
+    }
 
         @Override
         public void load(File file) {
         
             File[] dateien = file.listFiles();
+            HeightTile tile;
+            FileInputStream in;
+            DataInputStream bin;
+            Coordinates origin;
+            int lat = 0;
+            int lon = 0;
             
             for(int k = 0; k < dateien.length; k++){
                 String[] arr = dateien[k].getName().split("");
@@ -68,7 +83,8 @@ public class SRTMLoader implements HeightLoader {
               } catch (IOException e) {
                   System.out.println(e);
               }
-          
+              /*in HeightMap einfügen*/
+              state.getLoadedHeightmap().addHeightTile(tile);
       }//end for dateien
     }
 }
