@@ -19,15 +19,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -43,13 +40,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.ZoneView;
 
 import kit.route.a.lot.common.ContextSW;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Context;
 import kit.route.a.lot.controller.RALListener;
-import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.rendering.Projection;
 
 
@@ -114,19 +108,8 @@ public class GUI extends JFrame {
     private int ypos;
     private int key = 0;
     private int oldMousePosX;
-    private int newMousePosX;
     private int oldMousePosY;
-    private int newMousePosY;
     private int currentZoomLevel = 0;
-    private int mousePosXDist;
-    private int mousePosYDist;
-    private int drawMapWidth;
-    private int drawMapHeight;
-    private float coordinatesHeight;
-    private float coordinatesWidth;
-    private float coordinatesPixelHeightDifference;
-    private float coordinatesPixelWidthDifference;
-    private boolean mouseDragged = false;
     private String choosenMap;
     private ContextSW context;
     private Coordinates center;
@@ -165,11 +148,11 @@ public class GUI extends JFrame {
     //TODO right place??
     public void setView(Coordinates center) {
         this.center = center;
-        adjustView();
+        recalculateView();
         repaint();
     }
     
-    private void adjustView() {
+    private void recalculateView() {
         topLeft.setLatitude(center.getLatitude() - drawMap.getVisibleRect().height * Projection.getZoomFactor(currentZoomLevel) / 2.f);
         topLeft.setLongitude(center.getLongitude() - drawMap.getVisibleRect().width * Projection.getZoomFactor(currentZoomLevel) / 2.f);
         bottomRight.setLatitude(drawMap.getVisibleRect().height * Projection.getZoomFactor(currentZoomLevel) / 2.f + center.getLatitude());
@@ -291,10 +274,8 @@ public class GUI extends JFrame {
         
         // The context needs to be queried / created in the very end.
         context = new ContextSW(topLeft, bottomRight, drawMap.getGraphics());
-        adjustView();
+        recalculateView();
         
-        calculateCoordinatesDistances();
-
         this.addComponentListener(new ComponentListener() {
             
             @Override
@@ -305,7 +286,7 @@ public class GUI extends JFrame {
             
             @Override
             public void componentResized(ComponentEvent e) {
-                adjustView();
+                recalculateView();
                 context.setSurface(drawMap.getGraphics());
 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, currentZoomLevel);
@@ -337,18 +318,14 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println("(" + xpos + "," + ypos + ")\n");
-                System.out.println("geht");
-                calculateCoordinatesDistances();
-                System.out.println("geht");
-                Coordinates newCoordinates = new Coordinates();
-                newCoordinates.setLatitude(center.getLatitude() + (ypos - drawMap.getY())*coordinatesPixelHeightDifference);
-                newCoordinates.setLongitude(center.getLongitude() + (xpos - drawMap.getX())*coordinatesPixelWidthDifference);
-                System.out.println("geht");
-                navPointsList.add(newCoordinates);
 
-                System.out.println("point: " + newCoordinates.getLongitude() + "," + newCoordinates.getLatitude());
-                System.out.println("topleft: " + center.getLongitude() + "," + center.getLatitude());
-                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, newCoordinates, navPointsList.indexOf(newCoordinates), context);
+                // TODO Matthias evtl. nicht hier, sondern schon bei Klick
+                Coordinates clickPos = calculateClickPos(xpos - drawMap.getX(), ypos - drawMap.getY());
+                navPointsList.add(clickPos);
+
+                System.out.println("point: " + clickPos.getLongitude() + "," + clickPos.getLatitude());
+                System.out.println("center: " + center.getLongitude() + "," + center.getLatitude());
+                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, clickPos, navPointsList.indexOf(clickPos), context);
                 for(RALListener lis: targetSelectedList){
                     lis.handleRALEvent(navEvent);
                 }
@@ -381,21 +358,6 @@ public class GUI extends JFrame {
         }
     }
     
-    private void calculateCoordinatesDistances() {
-        if(center.getLatitude() > bottomRight.getLatitude()) {
-            coordinatesHeight = topLeft.getLatitude() - bottomRight.getLatitude();
-        } else {
-            coordinatesHeight = bottomRight.getLatitude() - topLeft.getLatitude();
-        }
-        if(center.getLongitude() > bottomRight.getLongitude()) {
-            coordinatesWidth = topLeft.getLongitude() - bottomRight.getLongitude();
-        } else {
-            coordinatesWidth = bottomRight.getLongitude() - topLeft.getLongitude();
-        }
-        coordinatesPixelHeightDifference = coordinatesHeight / drawMap.getWidth();
-        coordinatesPixelWidthDifference = coordinatesWidth / drawMap.getHeight();
-    }
-    
     private void mapConstructor() {
         this.map = new JPanel();
         map.setLayout(new BorderLayout());
@@ -413,10 +375,6 @@ public class GUI extends JFrame {
             @Override
             public void mouseReleased(MouseEvent me) {
                 checkPopup(me);
-                newMousePosX = me.getX();
-                newMousePosY = me.getY();
-                mouseDragged = false;
-
             }
 
             @Override
@@ -424,19 +382,16 @@ public class GUI extends JFrame {
                 checkPopup(me);
                 oldMousePosX = me.getX();
                 oldMousePosY = me.getY();
-                mouseDragged = true;
             }
 
             @Override
             public void mouseExited(MouseEvent arg0) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
             public void mouseEntered(MouseEvent arg0) {
                 // TODO Auto-generated method stub
-
             }
 
             @Override
@@ -451,6 +406,8 @@ public class GUI extends JFrame {
 
                     xpos = e.getX();
                     ypos = e.getY();
+                    
+                    System.out.println("geklickt");
                 }
             }
         });
@@ -465,13 +422,13 @@ public class GUI extends JFrame {
             
             @Override
             public void mouseDragged(MouseEvent e) {
-                newMousePosX = e.getX();
-                newMousePosY = e.getY();
-                mousePosXDist = newMousePosX - oldMousePosX;
-                mousePosYDist = newMousePosY - oldMousePosY;
+                int newMousePosX = e.getX();
+                int newMousePosY = e.getY();
+                int mousePosXDist = newMousePosX - oldMousePosX;
+                int mousePosYDist = newMousePosY - oldMousePosY;
                 
-                float newCenterLongitude = center.getLongitude() - coordinatesPixelHeightDifference * (currentZoomLevel + 1) * mousePosXDist;
-                float newCenterLatitude = center.getLatitude() - coordinatesPixelWidthDifference * (currentZoomLevel + 1) * mousePosYDist;
+                float newCenterLongitude = center.getLongitude() - mousePosXDist * Projection.getZoomFactor(currentZoomLevel);
+                float newCenterLatitude = center.getLatitude() - mousePosYDist * Projection.getZoomFactor(currentZoomLevel);
                 
                 oldMousePosX = newMousePosX;
                 oldMousePosY = newMousePosY;
@@ -479,7 +436,7 @@ public class GUI extends JFrame {
                 center.setLongitude(newCenterLongitude);
                 center.setLatitude(newCenterLatitude);
                 
-                adjustView();
+                recalculateView();
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, currentZoomLevel);
                 for(RALListener lis: viewChangedList){
@@ -504,10 +461,19 @@ public class GUI extends JFrame {
                     direction = down;
                 }
                 
+                Coordinates clickPos = calculateClickPos(e.getX() - drawMap.getX(), e.getY() - drawMap.getY());
+                int yDiff = e.getY() - drawMap.getY() - drawMap.getVisibleRect().height / 2;
+                int xDiff = e.getX() - drawMap.getX() - drawMap.getVisibleRect().width / 2;
+
                 currentZoomLevel -= direction;
                 currentZoomLevel = currentZoomLevel < 0 ? 0 : currentZoomLevel;
 
-                adjustView();
+                float newCenterLat = clickPos.getLatitude() - yDiff*Projection.getZoomFactor(currentZoomLevel);
+                float newCenterLon = clickPos.getLongitude() - xDiff*Projection.getZoomFactor(currentZoomLevel);
+                center.setLatitude(newCenterLat);
+                center.setLongitude(newCenterLon);
+
+                recalculateView();
                 
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, currentZoomLevel);
                 for(RALListener lis: viewChangedList){
@@ -718,5 +684,12 @@ public class GUI extends JFrame {
         for(int i = 0; i < maps.length; i++) {
             chooseImportedMap.addItem(maps[i]);
         }
+    }
+
+    private Coordinates calculateClickPos(int x, int y) {
+        Coordinates clickPos = new Coordinates();
+        clickPos.setLatitude(center.getLatitude() + (y - drawMap.getVisibleRect().height / 2)*Projection.getZoomFactor(currentZoomLevel));
+        clickPos.setLongitude(center.getLongitude() + (x - drawMap.getVisibleRect().width / 2)*Projection.getZoomFactor(currentZoomLevel));
+        return clickPos;
     }
 }
