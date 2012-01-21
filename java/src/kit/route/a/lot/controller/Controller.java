@@ -407,15 +407,18 @@ public class Controller {
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
-        File stateFile = new File("./state.state");
+        /*File stateFile = new File("./state.state");
         if (stateFile.exists()) {    
             try {
+                logger.info("Load state file...");
                 StateIO.loadState(stateFile);
+                MapIO.loadMap(new File(State.getInstance().getLoadedMapName()));
+                //ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinate());
             } catch (IOException e) {
                 logger.error("Read error occurred when loading state. Aborting...");
                 return;
             }
-        } else {
+        } else */{
             logger.warn("No state file found. Go on with loading map of Karlsruhe");
             File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
             if(karlsruheMap.exists()) {
@@ -426,11 +429,11 @@ public class Controller {
                 ctrl.state.getLoadedMapInfo().trimm();
                 ctrl.setViewToMapCenter();
                 
-                try {
+                /*try {
                     StateIO.saveState(stateFile);
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*/
             } else {
                 logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
             }
