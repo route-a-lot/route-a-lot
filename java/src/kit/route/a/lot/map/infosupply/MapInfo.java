@@ -307,6 +307,7 @@ public class MapInfo {
     }
     
     public void swapNodeIds(int id1, int id2) {
+        elementDB.swapNodeIds(id1, id2);
         System.out.println("Swapping node " + id1 + " and " + id2);
     }
 

@@ -67,5 +67,7 @@ public interface ElementDB {
     public void saveToStream(DataOutputStream stream) throws IOException;
 
     public MapElement[] getAllElements();
+    
+    public void swapNodeIds(int id1, int id2);
 
 }

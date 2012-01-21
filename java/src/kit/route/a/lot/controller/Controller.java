@@ -428,7 +428,7 @@ public class Controller {
                 ctrl.state.getLoadedMapInfo().buildZoomlevels();
                 ctrl.state.getLoadedMapInfo().trimm();
                 ctrl.setViewToMapCenter();
-                
+                System.out.println(ctrl.state.getLoadedMapName());
                 /*try {
                     StateIO.saveState(stateFile);
                 } catch (IOException e) {

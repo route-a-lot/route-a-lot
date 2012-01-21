@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -27,7 +28,7 @@ public class ArrayElementDB implements ElementDB {
 
     @Override
     public void addNode(int nodeID, Node node) {
-        if (nodeID > nodes.size()) {
+        if (nodeID != nodes.size()) {
             throw new IllegalArgumentException("Previous numbers weren't insert, yet");
         }
         if (nodeID < nodes.size()) {
@@ -127,5 +128,16 @@ public class ArrayElementDB implements ElementDB {
         result.addAll(mapElements);
         result.addAll(favorites);
         return (MapElement[]) result.toArray(resultArray);
+    }
+
+    @Override
+    public void swapNodeIds(int id1, int id2) {
+        
+//        nodes.get(id1).setID(id2);
+//        nodes.get(id2).setID(id1);
+//        Collections.swap(nodes, id1, id2);
+//        if (nodes.get(id1).getID() != id1 || nodes.get(id2).getID() != id2) {
+//            System.err.println("WAAAAAARUUUUUM???????");
+//        }
     }
 }

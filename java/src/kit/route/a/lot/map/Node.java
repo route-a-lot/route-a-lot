@@ -70,4 +70,7 @@ public class Node extends MapElement {
         return this;
     }
 
+    public void setID(int id) {
+        this.id = id;
+    }
 }

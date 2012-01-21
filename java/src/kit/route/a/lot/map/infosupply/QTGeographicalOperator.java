@@ -17,6 +17,7 @@ import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class QTGeographicalOperator implements GeographicalOperator {
@@ -31,6 +32,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
+        logger.setLevel(Level.OFF);
         zoomlevels = new QuadTree[countZoomlevel];
         for (int i = 0; i < countZoomlevel; i++) {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);
