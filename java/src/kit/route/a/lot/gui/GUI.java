@@ -50,6 +50,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.controller.RALListener;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.rendering.Projection;
 
 
 public class GUI extends JFrame {
@@ -169,10 +170,10 @@ public class GUI extends JFrame {
     }
     
     private void adjustView() {
-        topLeft.setLatitude(center.getLatitude() - drawMap.getVisibleRect().height * (currentZoomLevel + 1) / 2.f);
-        topLeft.setLongitude(center.getLongitude() - drawMap.getVisibleRect().width * (currentZoomLevel + 1) / 2.f);
-        bottomRight.setLatitude(drawMap.getVisibleRect().height * (currentZoomLevel + 1) / 2.f + center.getLatitude());
-        bottomRight.setLongitude(drawMap.getVisibleRect().width * (currentZoomLevel + 1) / 2.f + center.getLongitude());
+        topLeft.setLatitude(center.getLatitude() - drawMap.getVisibleRect().height * Projection.getZoomFactor(currentZoomLevel) / 2.f);
+        topLeft.setLongitude(center.getLongitude() - drawMap.getVisibleRect().width * Projection.getZoomFactor(currentZoomLevel) / 2.f);
+        bottomRight.setLatitude(drawMap.getVisibleRect().height * Projection.getZoomFactor(currentZoomLevel) / 2.f + center.getLatitude());
+        bottomRight.setLongitude(drawMap.getVisibleRect().width * Projection.getZoomFactor(currentZoomLevel) / 2.f + center.getLongitude());
         context.recalculateSize();
     }
     

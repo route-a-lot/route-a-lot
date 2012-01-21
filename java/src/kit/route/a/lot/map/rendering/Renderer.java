@@ -2,6 +2,8 @@ package kit.route.a.lot.map.rendering;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Selection;
@@ -16,9 +18,10 @@ public class Renderer {
      * A cache storing tiles that were previously drawn.
      */
     private RenderCache cache;
+    private static Logger logger = Logger.getLogger(Renderer.class);
 
     protected State state = State.getInstance();
-    
+
     /**
      * Creates a new renderer.
      */
@@ -35,8 +38,10 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context, int detail) {
-        float tileDim = (float) (Tile.BASE_TILE_DIM * Math.exp(detail * Math.log(2)));
-        tileDim = 200 * (detail + 1);
+        int tileDim = (int) (200 * Projection.getZoomFactor(detail));
+        if (tileDim < 0) {
+            logger.error("tileDim < 0 => seems like an overflow");
+        }
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
         int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim) - 1;
         int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
@@ -105,7 +110,7 @@ public class Renderer {
     public void inheritCache(Renderer source) {
         this.cache = source.cache;
     }
-    
+
     public void resetRenderCache() {
         cache.resetCache();
     }

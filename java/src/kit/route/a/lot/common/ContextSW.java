@@ -46,8 +46,8 @@ public class ContextSW extends Context {
 
     @Override
     public void drawImage(Coordinates position, Image image, int detail) {
-        int x = (int) (position.getLongitude() - topLeft.getLongitude()) / (detail + 1);
-        int y = (int) (position.getLatitude() - topLeft.getLatitude()) / (detail + 1);
+        int x = (int) ((position.getLongitude() - topLeft.getLongitude()) / Projection.getZoomFactor(detail));
+        int y = (int) ((position.getLatitude() - topLeft.getLatitude()) / Projection.getZoomFactor(detail));
         output.drawImage(image, x, y, null);
     }
 

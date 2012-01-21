@@ -117,7 +117,7 @@ public class Tile {
      * (Re-)Creates the tile image, filling it with a background color.
      */
     protected void reset() {
-        data = new BufferedImage(width / (detail + 1), height / (detail + 1), BufferedImage.TYPE_INT_RGB);
+        data = new BufferedImage(width / Projection.getZoomFactor(detail), height / Projection.getZoomFactor(detail), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = data.createGraphics();
         graphics.setColor(new Color(210, 230, 190));
         graphics.fillRect(0, 0, this.width, this.height);
@@ -266,8 +266,8 @@ public class Tile {
 
     private Coordinates getTileCoordinatesFromGlobalCoordinates(Coordinates position) {
         Coordinates tileCoordinates = new Coordinates();
-        tileCoordinates.setLatitude((position.getLatitude() - topLeft.getLatitude()) / (detail + 1));
-        tileCoordinates.setLongitude((position.getLongitude() - topLeft.getLongitude()) / (detail + 1));
+        tileCoordinates.setLatitude((float) ((position.getLatitude() - topLeft.getLatitude()) / Projection.getZoomFactor(detail)));
+        tileCoordinates.setLongitude((float) ((position.getLongitude() - topLeft.getLongitude()) / Projection.getZoomFactor(detail)));
         return tileCoordinates;
     }
 

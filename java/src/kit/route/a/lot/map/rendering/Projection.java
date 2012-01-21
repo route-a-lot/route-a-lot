@@ -10,5 +10,9 @@ public abstract class Projection {
     public abstract Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates);
     
     public abstract float getScale();
+    
+    public static int getZoomFactor(int detail) {
+        return (int) Math.pow(2, detail);
+    }
 
 }
