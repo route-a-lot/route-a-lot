@@ -131,15 +131,15 @@ public class QTLeaf extends QuadTree {
     protected void load(DataInputStream stream) throws IOException {
         // load each overlay element via type and ID
         int len = stream.readInt();
-        overlay.ensureCapacity(len);
+        overlay = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            overlay.add(MapElement.loadFromStream(stream, true));
+            overlay[i] = MapElement.loadFromStream(stream, true);
         }
         // load each base layer element via type and ID
         len = stream.readInt();
-        baseLayer.ensureCapacity(len);
+        baseLayer = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            baseLayer.add(MapElement.loadFromStream(stream, true));
+            baseLayer[i] = MapElement.loadFromStream(stream, true);
         }
     }
 
