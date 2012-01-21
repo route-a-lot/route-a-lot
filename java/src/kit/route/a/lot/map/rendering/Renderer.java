@@ -1,5 +1,11 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -54,6 +60,8 @@ public class Renderer {
                 context.drawImage(topLeft, currentTile.getData(), detail);
             }
         }
+        
+        drawNavPoints(context, detail);
     }
 
 
@@ -100,6 +108,26 @@ public class Renderer {
      *            the POI to be drawn
      */
     private void drawPOI(POINode poi) {
+    }
+    
+    private void drawNavPoints(Context context, int detail) {
+        List<Selection> points = state.getNavigationNodes();
+        for (Selection point : points) {
+            BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = image.createGraphics();
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            graphics.setColor(Color.ORANGE);
+            graphics.fillOval(0, 0, 5, 5);
+            Coordinates from = state.getLoadedMapInfo().getNode(point.getFrom()).getPos();
+            Coordinates to = state.getLoadedMapInfo().getNode(point.getTo()).getPos();
+            context.drawImage(from, image, detail);
+            context.drawImage(to, image, detail);
+
+            graphics.setColor(Color.RED);
+            graphics.fillOval(0, 0, 5, 5);
+            context.drawImage(point.getPosition(), image, detail);
+        }
     }
 
     /**
