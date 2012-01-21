@@ -24,7 +24,8 @@ public class Node extends MapElement {
     }
 
     public Node() {
-        this(null);
+        lat = 0;
+        lon = 0;
     }
 
     public Coordinates getPos() {

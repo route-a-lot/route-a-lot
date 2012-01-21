@@ -102,7 +102,10 @@ public class Area extends MapElement {
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
-        stream.writeUTF(this.name);
+        // TODO: remove null check
+        if (this.name == null) {
+            stream.writeUTF("");
+        } else stream.writeUTF(this.name);
         stream.writeInt(this.nodes.length);
         for (Node node: this.nodes) {
             stream.writeInt(node.getID());

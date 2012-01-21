@@ -20,7 +20,7 @@ public class Address {
     
 
     public String getStreet() {
-        return street;
+        return (street != null) ? street : "";
     }
 
     
@@ -30,7 +30,7 @@ public class Address {
 
     
     public String getHousenumber() {
-        return housenumber;
+        return (housenumber != null) ? housenumber : "";
     }
 
     
@@ -40,7 +40,7 @@ public class Address {
 
     
     public String getState() {
-        return state;
+        return (state != null) ? state : "";
     }
 
     
@@ -50,7 +50,7 @@ public class Address {
 
     
     public String getPostcode() {
-        return postcode;
+        return (postcode != null) ? postcode: "";
     }
 
     
@@ -60,7 +60,7 @@ public class Address {
 
     
     public String getCity() {
-        return city;
+        return (city != null) ? city : "";
     }
 
     
@@ -70,7 +70,7 @@ public class Address {
 
     
     public String getCountry() {
-        return country;
+        return (country != null) ? country : "";
     }
 
     
@@ -80,7 +80,7 @@ public class Address {
 
     
     public String getFullAddress() {
-        return fullAddress;
+        return (fullAddress != null) ? fullAddress :"";
     }
 
     
@@ -90,7 +90,7 @@ public class Address {
 
     
     public String getInterpolation() {
-        return interpolation;
+        return (interpolation != null) ? interpolation : "";
     }
 
     
@@ -113,13 +113,13 @@ public class Address {
     }
 
     public void saveToStream(DataOutputStream stream) throws IOException {
-        stream.writeUTF(this.street);
-        stream.writeUTF(this.housenumber);
-        stream.writeUTF(this.state);
-        stream.writeUTF(this.postcode);
-        stream.writeUTF(this.city);
-        stream.writeUTF(this.country);
-        stream.writeUTF(this.fullAddress);       
-        stream.writeUTF(this.interpolation);
+        stream.writeUTF(getStreet());
+        stream.writeUTF(getHousenumber());
+        stream.writeUTF(getState());
+        stream.writeUTF(getPostcode());
+        stream.writeUTF(getCity());
+        stream.writeUTF(getCountry());
+        stream.writeUTF(getFullAddress());       
+        stream.writeUTF(getInterpolation());
     }
 }

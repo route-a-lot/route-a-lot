@@ -7,9 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import kit.route.a.lot.controller.State;
 
 public class MapIO {
+    
+    private static Logger logger = Logger.getLogger(MapIO.class);
 
     /**
      * Loads the given SRAL map file into the MapInfo and RoutingGraph data
@@ -20,7 +24,6 @@ public class MapIO {
      * 
      * @param file the file to be loaded
      * @throws IOException
-     * @throws DataFormatException
      */
     public static void loadMap(File file) throws IOException {
         // Verify requirements
@@ -77,7 +80,7 @@ public class MapIO {
         DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
         
         // Write data to stream, abort on error
-        stream.writeBytes("SRAL");  // magic number
+        stream.writeChars("SRAL");  // magic number
         stream.writeUTF("0.5");     // version number
         // TODO: maybe add date
         stream.writeUTF(State.getInstance().getLoadedMapName());

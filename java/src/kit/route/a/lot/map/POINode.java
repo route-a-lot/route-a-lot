@@ -34,8 +34,13 @@ public class POINode extends Node {
     protected void save(DataOutputStream stream) throws IOException {
         super.save(stream);
         //TODO DISCUSS: implement POIDescription.saveToStream() etc. ?
-        stream.writeUTF(this.info.getName());
-        stream.writeInt(this.info.getCategory());
-        stream.writeUTF(this.info.getDescription());
+      //TODO: remove null checks
+        if (this.info.getName() == null) {
+            stream.writeUTF(""); 
+        } else stream.writeUTF(this.info.getName());
+        stream.writeInt(this.info.getCategory());       
+        if (this.info.getDescription() == null) {
+           stream.writeUTF(""); 
+        } else stream.writeUTF(this.info.getDescription());
     }
 }

@@ -148,18 +148,22 @@ public class QTLeaf extends QuadTree {
         // for each overlay element, save type and ID
         stream.writeInt(countArrayElementsSize(overlay));
         for (MapElement element: overlay) {
-            MapElement.saveToStream(stream, element, true);
+            if (element != null) {
+                MapElement.saveToStream(stream, element, true);
+            }
         }
         // for each base layer element, save type and ID
         stream.writeInt(countArrayElementsSize(baseLayer));
         for (MapElement element: baseLayer) {
-            MapElement.saveToStream(stream, element, true);
+            if (element != null) {
+                MapElement.saveToStream(stream, element, true);
+            }
         }
     }
 
     @Override
     protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts) {
+        Set<MapElement> elememts) {
         if(isInBounds(upLeft, bottomRight)) {
             for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {
                 elememts.add(baseLayer[i]);

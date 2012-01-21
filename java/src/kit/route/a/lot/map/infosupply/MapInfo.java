@@ -275,7 +275,8 @@ public class MapInfo {
     public void loadFromStream(DataInputStream stream) throws IOException {
         elementDB.loadFromStream(stream);
         geographicalOperator.loadFromStream(stream);
-        addressOperator.loadFromStream(stream);
+        //TODO: load address operator
+        //addressOperator.loadFromStream(stream);
     }
 
     /**
@@ -287,7 +288,8 @@ public class MapInfo {
     public void saveToStream(DataOutputStream stream) throws IOException {
         elementDB.saveToStream(stream);
         geographicalOperator.saveToStream(stream);
-        addressOperator.saveToStream(stream);
+        //TODO: save address operator
+        //addressOperator.saveToStream(stream);
     }
 
     public void printQuadTree() {

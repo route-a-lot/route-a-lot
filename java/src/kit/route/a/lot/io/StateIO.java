@@ -71,6 +71,8 @@ public class StateIO {
         }
         state.setImportedMaps(importedMaps);        
         */
+        
+        stream.close();
     }
 
     /**
@@ -111,5 +113,7 @@ public class StateIO {
         stream.writeInt(state.getHeightMalus());
         stream.writeInt(state.getHighwayMalus());
         stream.writeInt(state.getSpeed());
+        
+        stream.close();
     }
 }

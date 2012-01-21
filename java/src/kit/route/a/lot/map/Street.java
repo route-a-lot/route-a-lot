@@ -1,16 +1,12 @@
 package kit.route.a.lot.map;
 
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import static kit.route.a.lot.common.Util.*;
 import static kit.route.a.lot.map.Util.*;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
@@ -161,7 +157,7 @@ public class Street extends MapElement {
         double b = getDistance(nodes[startNode].getPos(), pos);
         double a = getDistance(nodes[endNode].getPos(), pos);
         double c = getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
-        float h = (float)getTriangleCHeight(a, b, c);
+        //float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b*b + c*c - a*a) / (2 * b * c)); 
         double angleAB = Math.acos((a*a + c*c - b*b) / (2 * a * c));
        if (angleBC > Math.PI / 4 || angleAB > Math.PI / 2 ) {
@@ -189,7 +185,11 @@ public class Street extends MapElement {
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
-        stream.writeUTF(this.name);
+        if (this.name == null) {
+            stream.writeUTF("");
+        } else {
+            stream.writeUTF(this.name);
+        }
         stream.writeInt(this.nodes.length);
         for (Node node: this.nodes) {
             stream.writeInt(node.getID());
