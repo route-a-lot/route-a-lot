@@ -39,7 +39,7 @@ public class OSMLoader {
     State state;
     WeightCalculator weightCalculator;
     
-    Projection projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
+    Projection projection;
 
     public OSMLoader() {
         state = State.getInstance();
@@ -103,6 +103,8 @@ public class OSMLoader {
             } catch (SAXException e) { }    // TODO I know it's bad style...
 
 
+            projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
+            
             DefaultHandler handler = new DefaultHandler() {
 
                 Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the
