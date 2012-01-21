@@ -195,10 +195,10 @@ public class QTLeaf extends QuadTree {
             overlay[i] = tempOverlay[i];
         }
         
-        MapElement[] tempBaseLyer = baseLayer;
-        overlay = new MapElement[countArrayElementsSize(baseLayer)];
+        MapElement[] tempBaseLayer = baseLayer;
+        baseLayer = new MapElement[countArrayElementsSize(baseLayer)];
         for (int i = 0; i < baseLayer.length; i++) {
-            baseLayer[i] = tempOverlay[i];
+            baseLayer[i] = tempBaseLayer[i];
         }
     }
 }
