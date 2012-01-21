@@ -75,7 +75,7 @@ public class MapInfo {
         Node newNode = new Node(position);
         newNode.initID(id);
         elementDB.addNode(id, newNode);
-        //geographicalOperator.addToBaseLayer(newNode);
+//        geographicalOperator.addToBaseLayer(newNode);
     }
 
     /**
@@ -304,6 +304,10 @@ public class MapInfo {
     
     public void trimm() {
         geographicalOperator.trimm();
+    }
+    
+    public void swapNodeIds(int id1, int id2) {
+        System.out.println("Swapping node " + id1 + " and " + id2);
     }
 
 }

@@ -40,9 +40,9 @@ public class WayInfo {
     public static final byte BICYCLE_OFFICIAL = 3;
     public static final byte BICYCLE_DISMOUNT = 4;
     public static final byte BICYCLE_DESTINATION = 5;
-    public static final byte ONEWAY_NO = 1;
-    public static final byte ONEWAY_YES = 2;
-    public static final byte ONEWAY_OPPOSITE = 3;
+    public static final byte ONEWAY_NO = 0;
+    public static final byte ONEWAY_YES = 1;
+    public static final byte ONEWAY_OPPOSITE = 2;
     public static final byte BRIDGE = 1;
     public static final byte TUNNEL = 1;
 

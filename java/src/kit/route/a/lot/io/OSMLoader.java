@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jws.Oneway;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -31,16 +32,19 @@ public class OSMLoader {
 
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
+    private int maxWayNodeId = -1;
 
     float minLat, maxLat, minLon, maxLon;
 
     State state;
-    WeightCalculatorMock weightCalculator;
+    WeightCalculator weightCalculator;
+    
+    Projection projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
 
     public OSMLoader() {
         state = State.getInstance();
-//        weightCalculator = WeightCalculator.getInstance();
-        weightCalculator = new WeightCalculatorMock();
+        weightCalculator = WeightCalculator.getInstance();
+//        weightCalculator = new WeightCalculatorMock();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
         logger.setLevel(Level.OFF);
@@ -118,8 +122,6 @@ public class OSMLoader {
                 Coordinates curNodeCoordinates;
                 int curNodeId;
                 POIDescription curNodePOIDescription;
-
-                Projection projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
 
                 long ignoredKeys = 0;
 
@@ -805,7 +807,7 @@ public class OSMLoader {
                         idMap.put(Long.parseLong(attributes.getValue("id")), curNodeId);
 
                         curAddress = new Address();
-                        curNodePOIDescription = new POIDescription(null, 0, null);
+                        curNodePOIDescription = new POIDescription("", 0, "");
                         curType = 0;
 
                         inNode = true;
@@ -866,18 +868,43 @@ public class OSMLoader {
                         }
 
                         if (curWayInfo.isStreet()) {
-                            startIds.add(curWayIds.get(0));
-                            for (int i = 1; i < curWayIds.size() - 1; i++) {
-                                startIds.add(curWayIds.get(i));
-                                endIds.add(curWayIds.get(i));
+                            
+                            for (int i = 0; i < curWayIds.size(); i++) {
+                                int curId = curWayIds.get(i);
+                                if (curId > maxWayNodeId) {
+                                    maxWayNodeId++;
+                                    state.getLoadedMapInfo().swapNodeIds(curId, maxWayNodeId);
+                                    curId = maxWayNodeId;
+                                    curWayIds.set(i, curId);
+                                }
                             }
-                            endIds.add(curWayIds.get(curWayIds.size() - 1));
+                            
+                            if (curWayInfo.getOneway() == WayInfo.ONEWAY_NO
+                                    || curWayInfo.getOneway() == WayInfo.ONEWAY_YES) {
+                                startIds.add(curWayIds.get(0));
+                                for (int i = 1; i < curWayIds.size() - 1; i++) {
+                                    endIds.add(curWayIds.get(i));
+                                    startIds.add(curWayIds.get(i));
+                                }
+                                endIds.add(curWayIds.get(curWayIds.size() - 1));
+                            }
+                            
+                            if (curWayInfo.getOneway() == WayInfo.ONEWAY_NO
+                                    || curWayInfo.getOneway() == WayInfo.ONEWAY_OPPOSITE) {
+                                startIds.add(curWayIds.get(curWayIds.size() - 1));
+                                for (int i = curWayIds.size() - 2; i > 0; i--) {
+                                    endIds.add(curWayIds.get(i));
+                                    startIds.add(curWayIds.get(i));
+                                }
+                                endIds.add(curWayIds.get(0));
+                            }
+                            
                         }
 
                         inWay = false;
                         inPolyline = false;
                         curWayIds = null;
-                        curWayName = null;
+                        curWayName = "";
                     } else if (inNode && qName.equalsIgnoreCase("node")) {
 
                         if (curType != 0) {
@@ -888,11 +915,11 @@ public class OSMLoader {
                             state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                         }
 
-                        System.out.println(curNodeCoordinates);
+//                        System.out.println(curNodeCoordinates);
                         inNode = false;
                     }
                 }
-
+                
                 public void characters(char ch[], int start, int length) throws SAXException {
                 }
 
@@ -900,6 +927,8 @@ public class OSMLoader {
 
             parser.parse(file, handler);
 
+            weightCalculator.setProjection(projection);
+            
             int countIDs = startIds.size();
             int[] startIDs = new int[countIDs];
             int[] endIDs = new int[countIDs];
@@ -908,9 +937,12 @@ public class OSMLoader {
                 startIDs[i] = startIds.get(i);
                 endIDs[i] = endIds.get(i);
                 weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
+                if (weights[i] == 0) {
+                    logger.warn("Added edge with 0 weight.");
+                }
             }
 
-            state.getLoadedGraph().buildGraph(startIDs, endIDs, weights);
+            state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
 
 
         } catch (Exception e) {

@@ -14,7 +14,7 @@ public class GraphMock implements RoutingGraph {
     int[] weights;
 
     @Override
-    public void buildGraph(int[] startID, int[] endID, int[] weight) {
+    public void buildGraph(int[] startID, int[] endID, int[] weight, int maxId) {
         startIDs = startID;
         endIDs = endID;
         weights = weight;

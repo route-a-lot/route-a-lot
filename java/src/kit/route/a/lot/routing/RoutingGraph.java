@@ -20,7 +20,7 @@ public interface RoutingGraph {
      * @return
      * @return
      */
-    public void buildGraph(int[] startID, int[] endID, int[] weight);
+    public void buildGraph(int[] startID, int[] endID, int[] weight, int maxId);
 
     /**
      * Loads the underlying routing graph from the given stream.

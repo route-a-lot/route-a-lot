@@ -21,7 +21,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private long[] arcFlags;
     
     @Override
-    public void buildGraph(int[] startID, int[] endID, int[] weight) {
+    public void buildGraph(int[] startID, int[] endID, int[] weight, int maxId) {
         logger.info("Creating routing graph...");
         // assert same non-null array size
         if (startID.length == 0) {
