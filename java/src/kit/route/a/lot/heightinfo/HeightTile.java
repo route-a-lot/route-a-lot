@@ -16,10 +16,20 @@ public class HeightTile implements IHeightTile {
      * 
      */
     private int[][] data;
+    /**
+    *
+    */
+    private int width;
+    /**
+    *
+    */
+    private int height;
 
     public HeightTile(int width, int height, Coordinates origin) {
         this.data = new int[height][width]; 
         this.origin = origin;
+        this.width = width;
+        this.height = height;
     }
 
     @Override
@@ -42,10 +52,9 @@ public class HeightTile implements IHeightTile {
         das origin ist ganzzahlig */
         float lat = pos.getLatitude() - origin.getLatitude();
         float lon = pos.getLongitude() - origin.getLongitude();
-        /*Intervallänge: 1°/1200*/
-        float interval = 1/1200;
-        int x = (int)(lat/interval);
-        int y = (int)(lon/interval);
+        /*Intervallänge: 1°/1201*/
+        int x = (int)(lat*width);
+        int y = (int)(lon*width);
         
         return data[x][y];
     }
@@ -54,10 +63,9 @@ public class HeightTile implements IHeightTile {
     public void setHeight(Coordinates pos, int height) {
         float lat = pos.getLatitude() - origin.getLatitude();
         float lon = pos.getLongitude() - origin.getLongitude();
-        /*Intervallänge: 1°/1200 */
-        float interval = 1/1200;
-        int x = (int)(lat/interval);
-        int y = (int)(lon/interval);
+        /*Intervallänge: 1°/1201 */
+        int x = (int)(lat*width);
+        int y = (int)(lon*width);
         
         data[x][y] = height;
 
