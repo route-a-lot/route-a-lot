@@ -1,6 +1,8 @@
-package kit.route.a.lot.controller;
+package kit.route.a.lot.controller.listener;
 
 import java.util.EventObject;
+
+import kit.route.a.lot.controller.Controller;
 import kit.route.a.lot.gui.ViewChangedEvent;
 
 

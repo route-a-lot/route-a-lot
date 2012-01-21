@@ -97,7 +97,7 @@ public class State {
         loadedMapName = "";
         loadedMapInfo = new MapInfo();
         loadedGraph = new AdjacentFieldsRoutingGraph();
-        loadedHeightmap = null; // TODO heightmap
+        loadedHeightmap = new Heightmap();
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         centerCoordinate = null;

@@ -8,10 +8,12 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
+import kit.route.a.lot.controller.State;
 
 public class ArrayElementDB implements ElementDB {
 
@@ -61,9 +63,19 @@ public class ArrayElementDB implements ElementDB {
     }
     
     @Override
-    public void deleteFavorite(int id) {
-        favorites.remove(id);
-        favorites.add(id, null); //TODO: some other way for preserving indices
+    public void deleteFavorite(Coordinates pos) {
+        for (int i = 0; i < favorites.size(); i++) {
+            Coordinates topLeft = new Coordinates();
+            Coordinates bottomRight = new Coordinates();
+            topLeft.setLatitude(pos.getLatitude() - State.getInstance().getClickRadius());
+            topLeft.setLongitude(pos.getLatitude() - State.getInstance().getClickRadius());
+            bottomRight.setLatitude(pos.getLatitude() + State.getInstance().getClickRadius());
+            topLeft.setLongitude(pos.getLatitude() + State.getInstance().getClickRadius());
+            if(favorites.get(i).isInBounds(topLeft, bottomRight)) {
+                favorites.remove(i);
+                favorites.add(i, null); //TODO: some other way for preserving indices
+            }
+        }
     }
 
     @Override

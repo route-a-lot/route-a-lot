@@ -147,7 +147,7 @@ public class MapInfo {
     public void addFavorite(Coordinates pos, POIDescription description) {
         POINode newFav = new POINode(pos, description);
         elementDB.addFavorite(newFav);
-        geographicalOperator.addToOverlay(newFav);  //TODO i would prefer to keep this out of quadTree(deleting . . .)
+        //geographicalOperator.addToOverlay(newFav);  //TODO i would prefer to keep this out of quadTree(deleting . . .)
     }
 
     /**
@@ -157,7 +157,7 @@ public class MapInfo {
      *            the position of the favorite
      */
     public void deleteFavorite(Coordinates position) {
-        elementDB.deleteFavorite(geographicalOperator.deleteFavorite(position));
+        elementDB.deleteFavorite(position);
     }
 
     /**

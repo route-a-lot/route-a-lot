@@ -1,15 +1,28 @@
 package kit.route.a.lot.controller;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.File;import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.controller.listener.ImportOsmFileListener;
+import kit.route.a.lot.controller.listener.TargetSelectedListener;
+import kit.route.a.lot.controller.listener.ViewChangedListener;
 import kit.route.a.lot.gui.GUIHandler;
+import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
+import kit.route.a.lot.io.Printer;
+import kit.route.a.lot.io.RouteIO;
+import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
+import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
+import kit.route.a.lot.map.Node;
 import kit.route.a.lot.routing.Router;
 
 import org.apache.log4j.Logger;
@@ -74,6 +87,16 @@ public class Controller {
     public void toggle3D() {
     }
 
+    
+    public void saveMap(String mapPath) {
+        File mapFile = new File(mapPath);
+        try {
+            MapIO.saveMap(mapFile);
+        } catch (IOException e) {
+            logger.fatal("saveMap: IO Exception in MapIO");
+        }
+    }
+    
     /**
      * Operation loadMap
      * 
@@ -88,9 +111,12 @@ public class Controller {
             try {
                 MapIO.loadMap(mapFile);
             } catch (IOException e) {
-                logger.fatal("IO Exception in MapIO");
+                logger.fatal("loadMap: IO Exception in MapIO");
             }
-            guiHandler.updateGUI();
+            state.getLoadedMapInfo().buildZoomlevels();
+            setViewToMapCenter();
+            guiHandler.setView(state.getCenterCoordinate());
+            renderer.resetRenderCache();
         }
     }
 
@@ -135,7 +161,25 @@ public class Controller {
      * 
      * @return
      */
-    public void deleteNavNode() {
+    public void deleteNavNode(int pos) {
+        if (pos < state.getNavigationNodes().size()) {
+            state.getNavigationNodes().remove(pos);
+        }
+    }
+    
+    public void deleteNavNode(Coordinates pos) {
+        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
+            Node node = new Node(state.getNavigationNodes().get(i).getPosition());
+            Coordinates topLeft = new Coordinates();
+            Coordinates bottomRight = new Coordinates();
+            topLeft.setLatitude(pos.getLatitude() - state.getClickRadius());
+            topLeft.setLongitude(pos.getLatitude() - state.getClickRadius());
+            bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
+            topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
+            if (node.isInBounds(topLeft, bottomRight)) {
+                state.getNavigationNodes().remove(i);
+            }
+        }
     }
 
     /**
@@ -143,7 +187,15 @@ public class Controller {
      * 
      * @return
      */
-    public void switchNavNodes() {
+    public void switchNavNodes(int one, int two) {
+        if (one < state.getNavigationNodes().size() && two < state.getNavigationNodes().size()) {
+            Selection tempOne = state.getNavigationNodes().get(one);    //I know could be shorter . . .
+            Selection tempTwo = state.getNavigationNodes().get(two);
+            state.getNavigationNodes().remove(one);
+            state.getNavigationNodes().add(one, tempTwo);
+            state.getNavigationNodes().remove(two);
+            state.getNavigationNodes().add(two, tempOne);
+        }
     }
 
     /**
@@ -151,7 +203,10 @@ public class Controller {
      * 
      * @return
      */
-    public void orderNavNodes() {   
+    public void orderNavNodes() {  
+        Collection<Selection> col = Router.optimizeRoute();         //TODO better
+        state.setNavigationNodes(new ArrayList<Selection>());
+        state.getNavigationNodes().addAll(col);
     }
 
     /**
@@ -159,7 +214,8 @@ public class Controller {
      * 
      * @return
      */
-    public void addFavorite() {
+    public void addFavorite(Coordinates pos, String name, String description) {  
+        state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, 0, description));  //TODO category
     }
 
     /**
@@ -167,7 +223,8 @@ public class Controller {
      * 
      * @return
      */
-    public void deleteFavorite() {
+    public void deleteFavorite(Coordinates pos) {
+        state.getLoadedMapInfo().deleteFavorite(pos);
     }
 
     /**
@@ -175,7 +232,11 @@ public class Controller {
      * 
      * @return
      */
-    public void saveRoute() {
+    public void saveRoute(String path) {
+        File routeFile = new File(path);
+        if (state.getCurrentRoute().size() != 0) {
+            RouteIO.saveCurrentRoute(routeFile);
+        }
     }
 
     /**
@@ -183,7 +244,13 @@ public class Controller {
      * 
      * @return
      */
-    public void loadRoute() {
+    public void loadRoute(String path) {
+        File routeFile = new File(path);
+        if (!routeFile.exists()) {
+            logger.error("RouteFile existiert nicht");
+        } else {
+            RouteIO.loadCurrentRoute(routeFile);
+        }
     }
 
     /**
@@ -191,7 +258,11 @@ public class Controller {
      * 
      * @return
      */
-    public void exportRoute() {
+    public void exportRoute(String path) {
+        File routeFile = new File(path);
+        if (state.getCurrentRoute().size() != 0) {
+            RouteIO.exportCurrentRouteToKML(routeFile);
+        }
     }
 
     /**
@@ -200,6 +271,9 @@ public class Controller {
      * @return
      */
     public void printRoute() {
+        if (state.getCurrentRoute().size() != 0) {
+            Printer.printRouteDescription();
+        }
     }
 
     /**
@@ -207,7 +281,7 @@ public class Controller {
      * 
      * @return
      */
-    public void typeAddress() {
+    public void typeAddress() {  //TODO
     }
 
     /**
@@ -215,7 +289,8 @@ public class Controller {
      * 
      * @return
      */
-    public void searchAddress() {
+    public void searchAddress() {   //TODO
+        
     }
 
     /**
@@ -223,7 +298,7 @@ public class Controller {
      * 
      * @return
      */
-    public void searchPOI() {
+    public void searchPOI() {   //TODO
     }
 
     /**
@@ -231,7 +306,7 @@ public class Controller {
      * 
      * @return
      */
-    public void searchFavorite() {
+    public void searchFavorite() {  //TODO
     }
 
     /**
@@ -239,7 +314,10 @@ public class Controller {
      * 
      * @return
      */
-    public void setSpeed() {
+    public void setSpeed(int speed) {
+        if(speed >= 0) {
+            state.setSpeed(speed);
+        }
     }
 
     /**
@@ -247,7 +325,8 @@ public class Controller {
      * 
      * @return
      */
-    public void getPOIInfo() {
+    public void getPOIInfo(Coordinates pos) {   //TODO 
+        
     }
 
     /**
@@ -255,7 +334,8 @@ public class Controller {
      * 
      * @return
      */
-    public void showTextRoute() {
+    public void showTextRoute() {   //TODO
+        
     }
 
     /**
@@ -263,7 +343,10 @@ public class Controller {
      * 
      * @return
      */
-    public void setHeightMalus() {
+    public void setHeightMalus(int newMalus) {
+        if (newMalus >= 0) {
+            state.setHeightMalus(newMalus);
+        }
     }
 
     /**
@@ -271,7 +354,10 @@ public class Controller {
      * 
      * @return
      */
-    public void setHighwayMalus() {
+    public void setHighwayMalus(int newMalus) {
+        if (newMalus >= 0) {
+            state.setHighwayMalus(newMalus);
+        }
     }
 
     /**
@@ -279,7 +365,10 @@ public class Controller {
      * 
      * @return
      */
-    public void importHeightMap() {
+    public void importHeightMap(String path) {
+        File heightFile = new File(path);
+        HeightLoader loader = new SRTMLoader();
+        loader.load(heightFile);
     }
 
     /**
