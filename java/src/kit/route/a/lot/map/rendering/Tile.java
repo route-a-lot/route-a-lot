@@ -283,10 +283,6 @@ public class Tile {
         return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
     }
     
-    public Coordinates getTopLeft() {
-        return topLeft;
-    }
-
     public static long getSpecifier(Coordinates topLeft, int detail) {
         return (long) Math.floor((topLeft.getLongitude() + topLeft.getLatitude() * 10000) * 100000) + detail;
     }

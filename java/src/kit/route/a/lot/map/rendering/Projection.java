@@ -12,7 +12,7 @@ public abstract class Projection {
     public abstract float getScale();
     
     public static int getZoomFactor(int detail) {
-        return (int) Math.pow(2, detail);
+        return (int) Math.pow(1.7, detail);
     }
 
 }

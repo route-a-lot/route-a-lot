@@ -13,6 +13,7 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 
@@ -51,9 +52,12 @@ public class QTGeographicalOperator implements GeographicalOperator {
         float multiplier = 300;
         for (int i = 1; i < countZoomlevel; i++) {
             for (MapElement element: State.getInstance().getLoadedMapInfo().getAllElements()) {
+                if (element instanceof Node) {
+                    continue;
+                }
                 reduced = element.getReduced(i, i * multiplier);
                 if (reduced == null) {
-                    logger.info("Ignoring " + element + " for zoomlevel " + i);
+                    logger.debug("Ignoring " + element + " for zoomlevel " + i);
                 } else {
                     zoomlevels[i].addToBaseLayer(reduced);
                 }
@@ -211,7 +215,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void trimm() {
-        // TODO Auto-generated method stub
-        
+        for (int i = 0; i < zoomlevels.length; i++) {
+            zoomlevels[i].trimm();
+        }
     }
 }
