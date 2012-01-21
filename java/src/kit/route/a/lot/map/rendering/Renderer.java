@@ -114,6 +114,7 @@ public class Renderer {
                 routeTopLeft = new Coordinates(Float.MAX_VALUE, Float.MAX_VALUE);
                 Coordinates routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
                 
+                // find route bounding rectangle dimensions
                 for (int i = 0; i < routeNodes.length; i++) {
                     routeNodes[i] = mapInfo.getNode(drawnRoute[i]);
                     Coordinates curPos = routeNodes[i].getPos();
@@ -133,15 +134,19 @@ public class Renderer {
                         routeBottomRight.setLongitude(curLon + buffer);
                     }
                 }
-                
+
+                // define bounding rectangle TODO: this can be very inefficient
                 int width = (int) Math.abs(routeTopLeft.getLongitude() - routeBottomRight.getLongitude());
                 int height = (int) Math.abs(routeTopLeft.getLatitude() - routeBottomRight.getLatitude());
                 routeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                
+                // configure rendering context
                 Graphics2D graphics = routeImage.createGraphics();
                 graphics.setComposite(AlphaComposite.Src);
                 graphics.setColor(new Color(0, true));
                 graphics.fillRect(0, 0, width, height);
                 
+                // draw route nodes
                 graphics.setColor(Color.BLUE);
                 int size = 12;
                 for (int i = 0; i < routeNodes.length; i++) {
@@ -150,6 +155,7 @@ public class Renderer {
                     graphics.fillOval(curX - size/2, curY - size/2, size, size);
                 }
                 
+                // draw route shadow
                 graphics.setStroke(new BasicStroke(6));
                 graphics.setColor(Color.GREEN);
                 for (int i = 1; i < routeNodes.length; i++) {
@@ -160,6 +166,7 @@ public class Renderer {
                     graphics.drawLine(startX, startY, endX, endY);
                 }
                 
+                // draw route
                 graphics.setStroke(new BasicStroke(4));
                 graphics.setColor(Color.BLUE);
                 for (int i = 1; i < routeNodes.length; i++) {

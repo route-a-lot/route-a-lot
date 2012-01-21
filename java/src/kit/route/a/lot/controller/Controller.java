@@ -315,10 +315,15 @@ public class Controller {
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
         File stateFile = new File("./state.state");
-        if (stateFile.exists()) {
-            StateIO.loadState(stateFile);
+        if (stateFile.exists()) {    
+            try {
+                StateIO.loadState(stateFile);
+            } catch (IOException e) {
+                logger.error("Read error occurred when loading state. Aborting...");
+                return;
+            }
         } else {
-            logger.warn("No state file found. Go on withloading map of Karlsruhe");
+            logger.warn("No state file found. Go on with loading map of Karlsruhe");
             File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
             if(karlsruheMap.exists()) {
                 logger.info("file exists");

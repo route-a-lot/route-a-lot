@@ -27,7 +27,7 @@ public abstract class MapElement {
      * Returns the name of the map element.
      * @return the name of the map element
      */
-    abstract protected String getName();
+    protected abstract String getName();
 
     /**
      * Returns the MapElement ID.
@@ -62,7 +62,7 @@ public abstract class MapElement {
      * @throws IllegalArgumentException either argument is <code>null</code>
      */
     // used by QuadTree
-    abstract public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight);
+    public abstract boolean isInBounds(Coordinates topLeft, Coordinates bottomRight);
     
     abstract public MapElement getReduced(int detail, float rang);
 
@@ -71,7 +71,7 @@ public abstract class MapElement {
      * and the selected position.
      * @return a Selection
      */
-    abstract public Selection getSelection();
+    public abstract Selection getSelection();
     
     /*  //TODO only needed for Street
     /**
@@ -154,7 +154,7 @@ public abstract class MapElement {
      * @throws NullPointerException <b>stream</b> is <code>null</code>
      * @throws IOException element could not be loaded from the stream  
      */
-    abstract protected void load(DataInputStream stream) throws IOException;
+    protected abstract void load(DataInputStream stream) throws IOException;
 
     /**
      * Saves a map element to the stream.
@@ -163,6 +163,6 @@ public abstract class MapElement {
      * @throws NullPointerException <b>stream</b> is <code>null</code>
      * @throws IOException element could not be saved to the stream
      */
-    abstract protected void save(DataOutputStream stream) throws IOException;
+    protected abstract void save(DataOutputStream stream) throws IOException;
  
 }

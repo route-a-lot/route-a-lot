@@ -14,7 +14,7 @@ import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
 
-    private ArrayList<String> importetMaps = new ArrayList<String>(); /*
+    private ArrayList<String> importedMaps = new ArrayList<String>(); /*
                                                                        * we need this list for the to know
                                                                        * which maps can be loaded, I would
                                                                        * save patch, names will be saved
@@ -78,7 +78,7 @@ public class State {
     /**
      * 
      */
-    private int heighwayMalus;
+    private int highwayMalus;
 
     /**
      * Operation getInstance
@@ -107,18 +107,18 @@ public class State {
         speed = 15;
         duration = 0;
         heightMalus = 0;
-        heighwayMalus = 0;
-        importetMaps = new ArrayList<String>();
+        highwayMalus = 0;
+        importedMaps = new ArrayList<String>();
     }
 
 
-    public ArrayList<String> getImportetMaps() {
-        return importetMaps;
+    public ArrayList<String> getImportedMaps() {
+        return importedMaps;
     }
 
 
-    public void setImportetMaps(ArrayList<String> importetMaps) {
-        this.importetMaps = importetMaps;
+    public void setImportedMaps(ArrayList<String> importedMaps) {
+        this.importedMaps = importedMaps;
     }
 
 
@@ -252,13 +252,13 @@ public class State {
     }
 
 
-    public int getHeighwayMalus() {
-        return heighwayMalus;
+    public int getHighwayMalus() {
+        return highwayMalus;
     }
 
 
-    public void setHeighwayMalus(int heighwayMalus) {
-        this.heighwayMalus = heighwayMalus;
+    public void setHighwayMalus(int heighwayMalus) {
+        this.highwayMalus = heighwayMalus;
     }
 
 
