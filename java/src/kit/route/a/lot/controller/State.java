@@ -1,5 +1,6 @@
 package kit.route.a.lot.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class State {
     /**
      * 
      */
-    private String loadedMapName;
+    private File loadedMapFile;
     /**
      * 
      */
@@ -50,7 +51,7 @@ public class State {
     /**
      * 
      */
-    private Coordinates centerCoordinate;
+    private Coordinates centerCoordinates;
     /**
      * 
      */
@@ -94,13 +95,13 @@ public class State {
 
 
     public State() {
-        loadedMapName = "";
+        loadedMapFile = null;
         loadedMapInfo = new MapInfo();
         loadedGraph = new AdjacentFieldsRoutingGraph();
         loadedHeightmap = new Heightmap();
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        centerCoordinate = null;
+        centerCoordinates = null;
         detailLevel = 0;
         clickRadius = 1; // TODO use it
         routeDescription = new RouteDescription();
@@ -122,13 +123,13 @@ public class State {
     }
 
 
-    public String getLoadedMapName() {
-        return loadedMapName;
+    public File getLoadedMapFile() {
+        return this.loadedMapFile;
     }
 
 
-    public void setLoadedMapName(String loadedMapName) {
-        this.loadedMapName = loadedMapName;
+    public void setLoadedMapFile(File loadedMapFile) {
+        this.loadedMapFile = loadedMapFile;
     }
 
 
@@ -182,13 +183,13 @@ public class State {
     }
 
 
-    public Coordinates getCenterCoordinate() {
-        return centerCoordinate;
+    public Coordinates getCenterCoordinates() {
+        return centerCoordinates;
     }
 
 
-    public void setCenterCoordinate(Coordinates areaCoord) {
-        this.centerCoordinate = areaCoord;
+    public void setCenterCoordinates(Coordinates areaCoord) {
+        this.centerCoordinates = areaCoord;
     }
 
 
@@ -268,12 +269,12 @@ public class State {
     }
 
     public void resetMap() {
-        loadedMapName = "";
+        loadedMapFile = null;
         loadedMapInfo = new MapInfo();
         loadedGraph = new AdjacentFieldsRoutingGraph();
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        centerCoordinate = new Coordinates();
+        centerCoordinates = new Coordinates();
         detailLevel = 0;
         routeDescription = new RouteDescription();
     }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
@@ -18,49 +18,55 @@ import kit.route.a.lot.controller.State;
 
 public class ArrayElementDB implements ElementDB {
 
-    private static Logger logger = Logger.getLogger(ArrayElementDB.class);
+    //private static Logger logger = Logger.getLogger(ArrayElementDB.class);
     
     private ArrayList<Node> nodes = new ArrayList<Node>();
    
     private ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
     
     private ArrayList<POINode> favorites = new ArrayList<POINode>();
-
-    @Override
-    public void addNode(int nodeID, Node node) {
-        if (nodeID != nodes.size()) {
-            throw new IllegalArgumentException("Previous numbers weren't insert, yet");
-        }
-        if (nodeID < nodes.size()) {
-            nodes.remove(nodeID);
-        }
-        nodes.add(nodeID, node);
-//        logger.debug("NodeArraySize: " + nodes.size());
-    }
-
-    @Override
-    public Node getNode(int nodeID) {
-        return nodes.get(nodeID);
-    }
-
-    @Override
-    public void addMapElement(MapElement element) throws IllegalArgumentException {
-        mapElements.add(element);
-    }
-
+ 
+    
     @Override
     public MapElement getMapElement(int id) throws IllegalArgumentException {
-        if (id >= mapElements.size()) { 
-            throw new IllegalArgumentException("There's no map mlement with this ID.");
+        if (id < 0 || id >= mapElements.size()) { 
+            throw new IllegalArgumentException("Illegal ID: " + id);
         }
         return mapElements.get(id);
     }
     
     @Override
+    public void addMapElement(MapElement element) throws IllegalArgumentException {
+        if (mapElements.add(element)) {
+            element.assignID(mapElements.size() - 1);
+        }
+    }
+
+    
+    @Override
+    public Node getNode(int nodeID) {
+        return nodes.get(nodeID);
+    }
+    
+    @Override
+    public void addNode(int nodeID, Node node) {
+        if (nodeID > nodes.size()) {
+            throw new IllegalStateException("Node ID out of range: " + nodeID);
+        }
+        if (nodeID < nodes.size()) {
+            nodes.remove(nodeID);
+            throw new IllegalStateException("Node ID conflict: " + nodeID);
+        }
+        nodes.add(nodeID, node);
+        node.assignID(nodeID);
+        //logger.debug("NodeArraySize: " + nodes.size());
+    }
+    
+    
+    @Override
     public void addFavorite(POINode favorite) {
         favorites.add(favorite);
-        favorite.initID(favorites.size() - 1);
-        
+        favorite.assignID(favorites.size() - 1);     
     }
     
     @Override
@@ -79,27 +85,25 @@ public class ArrayElementDB implements ElementDB {
         }
     }
 
+    
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
         int len = stream.readInt();
         nodes = new ArrayList<Node>(len);
         for (int i = 0; i < len; i++) {
             Node node = (Node) MapElement.loadFromStream(stream, false);
-            node.initID(i);
             nodes.add(node);
         }
         len = stream.readInt();
         mapElements = new ArrayList<MapElement>(len);
         for (int i = 0; i < len; i++) {
             MapElement element = MapElement.loadFromStream(stream, false);
-            element.initID(i);
             mapElements.add(element);
         }
         len = stream.readInt();
         favorites = new ArrayList<POINode>(len);
         for (int i = 0; i < len; i++) {
             POINode favorite = (POINode) MapElement.loadFromStream(stream, false);
-            favorite.initID(i);
             nodes.add(favorite);
         }
     }
@@ -120,6 +124,7 @@ public class ArrayElementDB implements ElementDB {
         }
     }
 
+    
     @Override
     public MapElement[] getAllElements() {
         List<MapElement> result = new ArrayList<MapElement>();

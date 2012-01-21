@@ -115,10 +115,11 @@ public abstract class QuadTree {
     public static QuadTree loadFromStream(DataInputStream stream) throws IOException {
         stream.readLong(); // skip value => ignore
 
-        Coordinates upLeft = new Coordinates(stream.readFloat(), stream.readFloat());
-        Coordinates bottomRight = new Coordinates(stream.readFloat(), stream.readFloat());
+        Coordinates upLeft = Coordinates.loadFromStream(stream);
+        Coordinates bottomRight = Coordinates.loadFromStream(stream);
         QuadTree tree;
-        switch (stream.readByte()) {
+        byte descriptor = stream.readByte();
+        switch (descriptor) {
             case DESCRIPTOR_QUADTREE_NODE:
                 tree = new QTNode(upLeft, bottomRight);
                 break;
@@ -139,10 +140,8 @@ public abstract class QuadTree {
      */
     public static void saveToStream(DataOutputStream stream, QuadTree tree) throws IOException {
         stream.writeLong(0); // TODO: reserved for skip value => implement
-        stream.writeFloat(tree.upLeft.getLongitude());
-        stream.writeFloat(tree.upLeft.getLatitude());
-        stream.writeFloat(tree.bottomRight.getLongitude());
-        stream.writeFloat(tree.bottomRight.getLatitude());
+        tree.upLeft.saveToStream(stream);
+        tree.bottomRight.saveToStream(stream);
         if (tree instanceof QTNode) {
             stream.writeByte(DESCRIPTOR_QUADTREE_NODE);
         } else {

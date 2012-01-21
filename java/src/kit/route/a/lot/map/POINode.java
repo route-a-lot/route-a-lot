@@ -17,7 +17,8 @@ public class POINode extends Node {
     }
     
     public POINode() {
-        this(null, null);
+        super();
+        this.info = null;
     }
 
     public POIDescription getInfo() {

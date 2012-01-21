@@ -47,7 +47,7 @@ public class Area extends MapElement {
 
     @Override
     protected String getName() {
-        return this.name;
+        return (this.name != null) ? this.name : "";
     }
 
     @Override
@@ -102,7 +102,7 @@ public class Area extends MapElement {
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
-        stream.writeUTF(this.name);
+        stream.writeUTF(getName());
         stream.writeInt(this.nodes.length);
         for (Node node: this.nodes) {
             stream.writeInt(node.getID());

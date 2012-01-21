@@ -35,7 +35,7 @@ public class MapIOTest {
             Coordinates center = new Coordinates();
             center.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
             center.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-            state.setCenterCoordinate(center);
+            state.setCenterCoordinates(center);
             
             logger.info("TEST: Save SRAL map.");
             try {

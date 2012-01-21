@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.jws.Oneway;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -850,7 +849,7 @@ public class OSMLoader {
                         Coordinates upLeft = new Coordinates(maxLat, minLon);
                         Coordinates bottomRight = new Coordinates(minLat, maxLon);
                         state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
-                        state.setCenterCoordinate(projection.geoCoordinatesToLocalCoordinates(upLeft));
+                        state.setCenterCoordinates(projection.geoCoordinatesToLocalCoordinates(upLeft));
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }

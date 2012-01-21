@@ -1,10 +1,7 @@
 package kit.route.a.lot.common;
 
-import kit.route.a.lot.map.Node;
-
-
 public class Util {
-    private static int[][] permutations(int p) {
+    /*private static int[][] permutations(int p) {
         // Try not to use this
         // Steinhaus–Johnson–Trotter algorithm'
         if (p == 1) {
@@ -18,7 +15,7 @@ public class Util {
             }
         }
         return result;
-    }
+    }*/
     
     public static int[] permutation(int p, int n) {
         // returns the nth permutation of all integers below p (and above 0).
@@ -47,6 +44,28 @@ public class Util {
             result[i+1] = array[i];
         }
         return result;
+    }
+
+    /**
+     * Removes a file extension from a file name.
+     * @param s the filename
+     * @return the filename without the file extension
+     */
+    public static String removeExtension(String s) {
+        String separator = System.getProperty("file.separator");
+        String filename;
+        // Remove the path upto the filename.
+        int lastSeparatorIndex = s.lastIndexOf(separator);
+        if (lastSeparatorIndex == -1) {
+            filename = s;
+        } else {
+            filename = s.substring(lastSeparatorIndex + 1);
+        }
+        // Remove the extension.
+        int extensionIndex = filename.lastIndexOf(".");
+        if (extensionIndex == -1)
+            return filename;
+        return filename.substring(0, extensionIndex);
     }
 
 }

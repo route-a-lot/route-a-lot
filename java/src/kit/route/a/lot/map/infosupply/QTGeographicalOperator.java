@@ -25,14 +25,17 @@ public class QTGeographicalOperator implements GeographicalOperator {
     /** The warning and error console output for this class */
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     
-    /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
-    private QuadTree zoomlevels[];
+    static {
+        logger.setLevel(Level.OFF);
+    }
     
     private static int countZoomlevel = 9;
     
+    /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
+    private QuadTree zoomlevels[] = new QuadTree[countZoomlevel];
+    
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
-        logger.setLevel(Level.OFF);
         zoomlevels = new QuadTree[countZoomlevel];
         for (int i = 0; i < countZoomlevel; i++) {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);

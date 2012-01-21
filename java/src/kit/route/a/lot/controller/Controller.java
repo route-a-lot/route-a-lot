@@ -9,6 +9,7 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.TargetSelectedListener;
 import kit.route.a.lot.controller.listener.ViewChangedListener;
@@ -20,7 +21,6 @@ import kit.route.a.lot.io.Printer;
 import kit.route.a.lot.io.RouteIO;
 import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
-import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.routing.Router;
@@ -68,7 +68,7 @@ public class Controller {
         Coordinates center = new Coordinates();
         center.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
         center.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-        state.setCenterCoordinate(center);
+        state.setCenterCoordinates(center);
     }
 
     /**
@@ -102,8 +102,8 @@ public class Controller {
      * 
      * @return
      */
-    public void loadMap(String mapPath) {
-        File mapFile = new File(mapPath);
+    public void loadMap(File file) {
+        File mapFile = file;
         if(!mapFile.exists()) {
             logger.error("map File doesn't exist");
         } else {
@@ -113,9 +113,8 @@ public class Controller {
             } catch (IOException e) {
                 logger.fatal("loadMap: IO Exception in MapIO");
             }
-            state.getLoadedMapInfo().buildZoomlevels();
-            setViewToMapCenter();
-            guiHandler.setView(state.getCenterCoordinate());
+            setViewToMapCenter(); // TODO: likely incorrect place
+            //guiHandler.setView(state.getCenterCoordinates());
             renderer.resetRenderCache();
         }
     }
@@ -125,18 +124,24 @@ public class Controller {
      * 
      * @return
      */
-    public void importMap(String osmPath) {
-        File osmFile = new File(osmPath);
+    public void importMap(File osmFile) {
         if(!osmFile.exists()) {
             logger.error("osm File doesn't exist");
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
             state.getLoadedMapInfo().buildZoomlevels();
+            state.getLoadedMapInfo().trimm();
             setViewToMapCenter();
-            guiHandler.setView(state.getCenterCoordinate());
+            //guiHandler.setView(state.getCenterCoordinates());
             renderer.resetRenderCache();
-            //TODO saveMap
+            state.setLoadedMapFile(new File(Util.removeExtension(osmFile.getPath()) + ".sral"));
+            try {
+                MapIO.saveMap(state.getLoadedMapFile());
+            } catch (IOException e) {
+                logger.error("Could not save imported map to file.");
+                e.printStackTrace();
+            }
         }
        
     }
@@ -407,41 +412,36 @@ public class Controller {
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
-        /*File stateFile = new File("./state.state");
-        if (stateFile.exists()) {    
-            try {
-                logger.info("Load state file...");
-                StateIO.loadState(stateFile);
-                MapIO.loadMap(new File(State.getInstance().getLoadedMapName()));
-                //ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinate());
+        File stateFile = new File("./state.state");
+        File defaultMap = new File("test/resources/karlsruhe_small_current.osm");
+        if (stateFile.exists()) {   
+            logger.info("Load state file..."); 
+            try { 
+                StateIO.loadState(stateFile); 
             } catch (IOException e) {
-                logger.error("Read error occurred when loading state. Aborting...");
-                return;
+                logger.error("State loading: Read error occurred.");
+                e.printStackTrace();
             }
-        } else */{
-            logger.warn("No state file found. Go on with loading map of Karlsruhe");
-            File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
-            if(karlsruheMap.exists()) {
-                logger.info("file exists");
-                OSMLoader osmLoader = new OSMLoader();
-                osmLoader.importMap(karlsruheMap);
-                ctrl.state.getLoadedMapInfo().buildZoomlevels();
-                ctrl.state.getLoadedMapInfo().trimm();
-                ctrl.setViewToMapCenter();
-                System.out.println(ctrl.state.getLoadedMapName());
-                /*try {
-                    StateIO.saveState(stateFile);
+            ctrl.loadMap(ctrl.state.getLoadedMapFile());
+        } else {
+            if (defaultMap.exists()) {
+                logger.info("Import default map...");
+                ctrl.importMap(defaultMap);
+                try {
+                    StateIO.saveState(stateFile); // TODO: move saveState call to program exit
                 } catch (IOException e) {
+                    logger.error("State saving: Write error occurred.");
                     e.printStackTrace();
-                }*/
+                }
             } else {
-                logger.warn("Not even KarlsruheMap found. Going on without loading map."); //TODO not loading map 
+                logger.warn("No map loaded."); //TODO not loading map 
             }
         }
         
-        ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinate());
+        ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinates());
         ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
         ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));
+                
     }
 }

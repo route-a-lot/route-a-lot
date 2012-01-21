@@ -35,15 +35,16 @@ public class StateIO {
         State state = State.getInstance();
         
         // essential data
-        state.setLoadedMapName(stream.readUTF());
-        state.setCenterCoordinate(new Coordinates(stream.readFloat(), stream.readFloat()));
+        String path = stream.readUTF();
+        state.setLoadedMapFile((path == null) ? null : new File(path));
+        state.setCenterCoordinates(Coordinates.loadFromStream(stream));
         state.setDetailLevel(stream.readInt());
         
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
         for (int i = 0; i < len; i++) {
-            navNodes.add(new Selection(stream.readInt(), stream.readInt(), stream.readFloat(),
-                    new Coordinates(stream.readFloat(), stream.readFloat())));
+            navNodes.add(new Selection(stream.readInt(), stream.readInt(),
+                    stream.readFloat(), Coordinates.loadFromStream(stream)));
         }
         state.setNavigationNodes(navNodes);
         
@@ -93,9 +94,13 @@ public class StateIO {
         State state = State.getInstance();
         
         // essential data
-        stream.writeUTF(state.getLoadedMapName());
-        stream.writeFloat(state.getCenterCoordinate().getLongitude());
-        stream.writeFloat(state.getCenterCoordinate().getLatitude());
+        if (state.getLoadedMapFile() == null) {
+            stream.writeUTF("");
+        } else {
+            stream.writeUTF(state.getLoadedMapFile().getPath());
+        }
+        
+        state.getCenterCoordinates().saveToStream(stream);
         stream.writeInt(state.getDetailLevel());
         
         List<Selection> navNodes = state.getNavigationNodes();
@@ -104,8 +109,7 @@ public class StateIO {
             stream.writeInt(navNode.getFrom());
             stream.writeInt(navNode.getTo());
             stream.writeFloat(navNode.getRatio());
-            stream.writeFloat(navNode.getPosition().getLongitude());
-            stream.writeFloat(navNode.getPosition().getLatitude());
+            navNode.getPosition().saveToStream(stream);
         }
 
         // miscellaneous data

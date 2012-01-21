@@ -34,7 +34,7 @@ public class Street extends MapElement {
 
     @Override
     protected String getName() {
-        return name;
+        return (this.name != null) ? this.name : "";
     }
 
     public Node[] getNodes() {
@@ -185,7 +185,7 @@ public class Street extends MapElement {
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
-        stream.writeUTF(this.name);
+        stream.writeUTF(getName());
         stream.writeInt(this.nodes.length);
         for (Node node: this.nodes) {
             stream.writeInt(node.getID());

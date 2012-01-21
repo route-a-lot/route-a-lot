@@ -1,5 +1,9 @@
 package kit.route.a.lot.common;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 public class Coordinates {
 
     private float latitude;
@@ -42,6 +46,18 @@ public class Coordinates {
         } else {
             return false;
         }
+    }
+    
+    public static Coordinates loadFromStream(DataInputStream stream) throws IOException {
+        Coordinates result = new Coordinates();
+        result.latitude = stream.readFloat();
+        result.longitude = stream.readFloat();
+        return result;
+    }
+    
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        stream.writeFloat(this.latitude);
+        stream.writeFloat(this.longitude);
     }
     
 }

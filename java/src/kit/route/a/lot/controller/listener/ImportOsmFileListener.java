@@ -1,5 +1,6 @@
 package kit.route.a.lot.controller.listener;
 
+import java.io.File;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
@@ -17,7 +18,7 @@ public class ImportOsmFileListener implements RALListener {
     @Override
     public void handleRALEvent(EventObject event) {
         if (event instanceof PathEvent) {
-            ctrl.importMap(((PathEvent) event).getPath());
+            ctrl.importMap(new File(((PathEvent) event).getPath()));
         }
     }
 

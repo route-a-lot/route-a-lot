@@ -1,6 +1,5 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -47,10 +46,10 @@ public class RendererTest {
         Node node2 = new Node(new Coordinates(12.1728f, 12.16663f));
         Node node3 = new Node(new Coordinates(12.1234f, 12.1458f));
         Node node4 = new Node(new Coordinates(12.0788f, 12.1234f));
-        node1.initID(0);
-        node2.initID(1);
-        node3.initID(2);
-        node4.initID(3);
+        node1.assignID(0);
+        node2.assignID(1);
+        node3.assignID(2);
+        node4.assignID(3);
         Area area = new Area("", wayInfo);
         Node[] nodes = new Node[4];
         nodes[0] = node1;
@@ -140,10 +139,10 @@ public class RendererTest {
         nodes[1] = new Node(new Coordinates(12.0788f, 12.1234f));
         nodes[2] = new Node(new Coordinates(12.1234f, 12.1458f));
         nodes[3] = new Node(new Coordinates(12.1728f, 12.16663f));
-        nodes[0].initID(0);
-        nodes[1].initID(1);
-        nodes[2].initID(2);
-        nodes[3].initID(3);
+        nodes[0].assignID(0);
+        nodes[1].assignID(1);
+        nodes[2].assignID(2);
+        nodes[3].assignID(3);
         Street street = new Street("", wayInfo);
         street.setNodes(nodes);
         mapInfo.addMapElement(street);

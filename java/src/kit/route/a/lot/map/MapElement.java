@@ -42,14 +42,13 @@ public abstract class MapElement {
      * @param id the new MapElement ID
      * @return whether the ID was set
      */
-    // TODO not really good name
-    // setID() makes reusability implications, so assignID() would be the only other name that i would agree on, as for now.
-    public boolean initID(int id) {
-        if (this.id < 0) {
-            this.id = id;
-            return true;
+    public boolean assignID(int id) {
+        if (this.id >= 0) {
+            throw new IllegalStateException("Element ID already assigned."); 
+            //return false;   
         }
-        return false;
+        this.id = id;
+        return true;    
     }
     
     /**
@@ -81,8 +80,7 @@ public abstract class MapElement {
      * @param pos the given coordinates
      * @return the distance to the coordinates
      */
-     
-     //   abstract public float getDistanceTo(Coordinates pos);
+     //abstract public float getDistanceTo(Coordinates pos);
      
     
     /**
@@ -90,7 +88,7 @@ public abstract class MapElement {
      * the map element type from the stream and creates the map element.
      * 
      * @param stream the source stream
-     * @param whether the element is stored indirectly via ID
+     * @param asID whether the element is stored indirectly via ID
      * @return the loaded {@link MapElement}
      * @throws IllegalArgumentException <b>stream</b> is <code>null</code>
      * @throws UnsupportedOperationException element type could not be determined
@@ -102,11 +100,12 @@ public abstract class MapElement {
         }
         MapElement result;
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
-        switch (stream.readByte()) {
+        byte descriptor = stream.readByte();
+        switch (descriptor) {
+            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getNode(stream.readInt()) : new POINode(); break;
             case DESCRIPTOR_NODE: result = (asID) ? mapInfo.getNode(stream.readInt()) : new Node(); break;
             case DESCRIPTOR_STREET: result = (asID) ? mapInfo.getMapElement(stream.readInt()) : new Street(); break;
             case DESCRIPTOR_AREA: result = (asID) ? mapInfo.getMapElement(stream.readInt()) : new Area(); break;
-            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getNode(stream.readInt()) : new POINode(); break;
             default: throw new UnsupportedOperationException("Cannot determine element type from stream.");         
         }
         if (!asID) {
@@ -130,14 +129,16 @@ public abstract class MapElement {
             throw new IllegalArgumentException();
         }
         byte descriptor = 0;
-        if (element instanceof Node) {
+        if (element instanceof POINode) {
+            descriptor = DESCRIPTOR_POI;  
+        } else if (element instanceof Node) {
            descriptor = DESCRIPTOR_NODE; 
         } else if (element instanceof Street) {
            descriptor = DESCRIPTOR_STREET; 
         } else if (element instanceof Area) {
            descriptor = DESCRIPTOR_AREA; 
-        } else if (element instanceof POINode) {
-           descriptor = DESCRIPTOR_POI; 
+        } else {
+           throw new UnsupportedOperationException("Cannot save element: " + element.getName());
         }
         stream.writeByte(descriptor);
         if (asID) {

@@ -17,12 +17,16 @@ import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 
 public class MapInfo {
 
     private static Logger logger = Logger.getLogger(MapInfo.class);
+    static {
+        logger.setLevel(Level.INFO);
+    }
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
@@ -73,9 +77,8 @@ public class MapInfo {
      */
     public void addNode(Coordinates position, int id, Address address) {
         Node newNode = new Node(position);
-        newNode.initID(id);
         elementDB.addNode(id, newNode);
-//        geographicalOperator.addToBaseLayer(newNode);
+        // geographicalOperator.addToBaseLayer(newNode);
     }
 
     /**
@@ -130,7 +133,6 @@ public class MapInfo {
      */
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
         POINode newPOI = new POINode(position, description);
-        newPOI.initID(id);
         elementDB.addNode(id, newPOI);
         geographicalOperator.addToOverlay(newPOI);
     }
@@ -273,7 +275,9 @@ public class MapInfo {
      * @throws IOException a stream read error occurred
      */
     public void loadFromStream(DataInputStream stream) throws IOException {
+        logger.debug("load element db...");
         elementDB.loadFromStream(stream);
+        logger.debug("load geo operator...");
         geographicalOperator.loadFromStream(stream);
         //TODO: load address operator
         //addressOperator.loadFromStream(stream);
@@ -286,7 +290,9 @@ public class MapInfo {
      * @throws IOException a stream write error occurred
      */
     public void saveToStream(DataOutputStream stream) throws IOException {
+        logger.debug("save element db...");
         elementDB.saveToStream(stream);
+        logger.debug("save geo operator...");
         geographicalOperator.saveToStream(stream);
         //TODO: save address operator
         //addressOperator.saveToStream(stream);
@@ -308,7 +314,7 @@ public class MapInfo {
     
     public void swapNodeIds(int id1, int id2) {
         elementDB.swapNodeIds(id1, id2);
-        System.out.println("Swapping node " + id1 + " and " + id2);
+        logger.debug("Swapping node " + id1 + " and " + id2);
     }
 
 }

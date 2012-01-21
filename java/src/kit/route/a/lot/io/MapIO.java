@@ -26,19 +26,17 @@ public class MapIO {
      * @throws IOException
      */
     public static void loadMap(File file) throws IOException {
+        
         // Verify requirements
         if (file == null) {
             throw new IllegalArgumentException();
         }
         State state = State.getInstance();
-        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)
-                || (state.getLoadedMapName() == null)) {
+        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)) {
             throw new IllegalStateException("No map initialized!");
         }
-        
         // Open file stream, abort on failure
-        DataInputStream stream;
-        stream = new DataInputStream(new FileInputStream(file));
+        DataInputStream stream = new DataInputStream(new FileInputStream(file));
         
         // Read data from stream, abort on error
         if ((stream.readChar() != 'S') || (stream.readChar() != 'R')
@@ -47,11 +45,14 @@ public class MapIO {
         }
         if (!stream.readUTF().equals("0.5")) {
             throw new IOException("Wrong format version: " + file.getName());
-        }
-        state.setLoadedMapName(stream.readUTF());
+        } 
+
+        logger.debug("load map info...");
         state.getLoadedMapInfo().loadFromStream(stream);
+        logger.debug("load routing graph...");
         state.getLoadedGraph().loadFromStream(stream);
         stream.close();
+        logger.debug("map loading finished");
     }
 
     /**
@@ -71,8 +72,7 @@ public class MapIO {
             throw new IllegalArgumentException();
         }
         State state = State.getInstance();
-        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)
-                || (state.getLoadedMapName() == null)) {
+        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)) {
             throw new IllegalStateException("No map loaded!");
         }
         
@@ -82,10 +82,12 @@ public class MapIO {
         // Write data to stream, abort on error
         stream.writeChars("SRAL");  // magic number
         stream.writeUTF("0.5");     // version number
-        // TODO: maybe add date
-        stream.writeUTF(State.getInstance().getLoadedMapName());
+        // TODO: maybe add date or name
+        logger.debug("save map info...");
         state.getLoadedMapInfo().saveToStream(stream);
+        logger.debug("save graph...");
         state.getLoadedGraph().saveToStream(stream); 
-        stream.close();      
+        stream.close();     
+        logger.debug("map saving finished");
     }
 }

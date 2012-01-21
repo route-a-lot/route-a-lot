@@ -55,14 +55,14 @@ public class Node extends MapElement {
 
     @Override
     protected void load(DataInputStream stream) throws IOException {
-        this.lon = stream.readFloat();
         this.lat = stream.readFloat();
+        this.lon = stream.readFloat();
     }
 
     @Override
     protected void save(DataOutputStream stream) throws IOException {
-        stream.writeFloat(this.lon);
         stream.writeFloat(this.lat);
+        stream.writeFloat(this.lon);
     }
 
     @Override

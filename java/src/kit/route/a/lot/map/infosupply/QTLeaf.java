@@ -133,13 +133,13 @@ public class QTLeaf extends QuadTree {
         int len = stream.readInt();
         overlay = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            overlay[i] = MapElement.loadFromStream(stream, true);
+            overlay[i] = MapElement.loadFromStream(stream, stream.readBoolean());
         }
         // load each base layer element via type and ID
         len = stream.readInt();
         baseLayer = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            baseLayer[i] = MapElement.loadFromStream(stream, true);
+            baseLayer[i] = MapElement.loadFromStream(stream, stream.readBoolean());
         }
     }
 
@@ -149,14 +149,16 @@ public class QTLeaf extends QuadTree {
         stream.writeInt(countArrayElementsSize(overlay));
         for (MapElement element: overlay) {
             if (element != null) {
-                MapElement.saveToStream(stream, element, true);
+                stream.writeBoolean(element.getID() >= 0);
+                MapElement.saveToStream(stream, element, element.getID() >= 0);
             }
         }
         // for each base layer element, save type and ID
         stream.writeInt(countArrayElementsSize(baseLayer));
         for (MapElement element: baseLayer) {
             if (element != null) {
-                MapElement.saveToStream(stream, element, true);
+                stream.writeBoolean(element.getID() >= 0);
+                MapElement.saveToStream(stream, element, element.getID() >= 0);
             }
         }
     }
