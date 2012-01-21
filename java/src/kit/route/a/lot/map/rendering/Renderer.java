@@ -1,5 +1,7 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -14,7 +16,9 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
+import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.RenderCache;
 
@@ -62,6 +66,7 @@ public class Renderer {
         }
         
         drawNavPoints(context, detail);
+        drawRoute(context, detail);
     }
 
 
@@ -89,16 +94,91 @@ public class Renderer {
     public boolean prerenderIdle() {
         return false; // TODO: implement
     }
+    
+    private BufferedImage routeImage;
+    private Coordinates routeTopLeft = new Coordinates();
+    private Integer[] drawnRoute;
 
     /**
-     * Draws the given route on the current rendering context.
+     * Draws the given route on the given rendering context.
      * 
-     * @param route
-     *            node ids of the route nodes
-     * @param selection
-     *            navigation point list
      */
-    private void drawRoute(List<Integer> route, List<Selection> selection) {
+    private void drawRoute(Context context, int detail) {
+        List<Integer> route = state.getCurrentRoute();
+        if (route != null && !route.toArray().equals(drawnRoute)) {
+            drawnRoute = route.toArray(new Integer[route.size()]);
+            
+            if (drawnRoute.length > 0) {
+                MapInfo mapInfo = state.getLoadedMapInfo();
+                Node[] routeNodes = new Node[drawnRoute.length];
+                routeTopLeft = new Coordinates(Float.MAX_VALUE, Float.MAX_VALUE);
+                Coordinates routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
+                
+                for (int i = 0; i < routeNodes.length; i++) {
+                    routeNodes[i] = mapInfo.getNode(drawnRoute[i]);
+                    Coordinates curPos = routeNodes[i].getPos();
+                    float curLat = curPos.getLatitude();
+                    float curLon = curPos.getLongitude();
+                    int buffer = 10;
+                    if (curLat < routeTopLeft.getLatitude()) {
+                        routeTopLeft.setLatitude(curLat - buffer);
+                    }
+                    if (curLat > routeBottomRight.getLatitude()) {
+                        routeBottomRight.setLatitude(curLat + buffer);
+                    }
+                    if (curLon < routeTopLeft.getLongitude()) {
+                        routeTopLeft.setLongitude(curLon - buffer);
+                    }
+                    if (curLon > routeBottomRight.getLongitude()) {
+                        routeBottomRight.setLongitude(curLon + buffer);
+                    }
+                }
+                
+                int width = (int) Math.abs(routeTopLeft.getLongitude() - routeBottomRight.getLongitude());
+                int height = (int) Math.abs(routeTopLeft.getLatitude() - routeBottomRight.getLatitude());
+                routeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D graphics = routeImage.createGraphics();
+                graphics.setComposite(AlphaComposite.Src);
+                graphics.setColor(new Color(0, true));
+                graphics.fillRect(0, 0, width, height);
+                
+                graphics.setColor(Color.BLUE);
+                int size = 12;
+                for (int i = 0; i < routeNodes.length; i++) {
+                    int curX = (int) (routeNodes[i].getPos().getLongitude() - routeTopLeft.getLongitude());
+                    int curY = (int) (routeNodes[i].getPos().getLatitude() - routeTopLeft.getLatitude());
+                    graphics.fillOval(curX - size/2, curY - size/2, size, size);
+                }
+                
+                graphics.setStroke(new BasicStroke(6));
+                graphics.setColor(Color.GREEN);
+                for (int i = 1; i < routeNodes.length; i++) {
+                    int startX = (int) (routeNodes[i-1].getPos().getLongitude() - routeTopLeft.getLongitude());
+                    int startY = (int) (routeNodes[i-1].getPos().getLatitude() - routeTopLeft.getLatitude());
+                    int endX = (int) (routeNodes[i].getPos().getLongitude() - routeTopLeft.getLongitude());
+                    int endY = (int) (routeNodes[i].getPos().getLatitude() - routeTopLeft.getLatitude());
+                    graphics.drawLine(startX, startY, endX, endY);
+                }
+                
+                graphics.setStroke(new BasicStroke(4));
+                graphics.setColor(Color.BLUE);
+                for (int i = 1; i < routeNodes.length; i++) {
+                    int startX = (int) (routeNodes[i-1].getPos().getLongitude() - routeTopLeft.getLongitude());
+                    int startY = (int) (routeNodes[i-1].getPos().getLatitude() - routeTopLeft.getLatitude());
+                    int endX = (int) (routeNodes[i].getPos().getLongitude() - routeTopLeft.getLongitude());
+                    int endY = (int) (routeNodes[i].getPos().getLatitude() - routeTopLeft.getLatitude());
+                    graphics.drawLine(startX, startY, endX, endY);
+                }
+                
+                graphics.dispose();
+            } else {
+                routeImage = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
+            }
+        } else {
+            System.out.println("Get route from cache");
+        }
+        
+        context.drawImage(routeTopLeft, routeImage, detail);
     }
 
     /**
@@ -127,6 +207,8 @@ public class Renderer {
             graphics.setColor(Color.RED);
             graphics.fillOval(0, 0, 5, 5);
             context.drawImage(point.getPosition(), image, detail);
+            
+            System.out.println("Hier: " + point.getFrom() + " und " + point.getTo());
         }
     }
 
