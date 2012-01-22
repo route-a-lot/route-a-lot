@@ -6,11 +6,7 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-
-//import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
@@ -28,12 +24,11 @@ public class Tile {
     //private static Logger logger = Logger.getLogger(Tile.class);
 
     private Coordinates topLeft;
-    private Coordinates bottomRight; // DISCUSS: keep or drop?
+    private Coordinates bottomRight;
     private int detail;
     private BufferedImage data;
-    private int width; // DISCUSS: keep or drop?
+    private int width;
     private int height;
-//    private Projection projection;
     
     private static int num = 0;
 
@@ -58,7 +53,6 @@ public class Tile {
         this.width = width;
         this.height = height;
         this.data = null;
-//        projection = new MercatorProjection(topLeft, bottomRight, width);
     }
 
     /**
@@ -93,7 +87,9 @@ public class Tile {
         graphics.drawChars((new Integer(num)).toString().concat("   ").toCharArray(), 0, 4, 5, 50);
         num++;
 
+        long start = System.nanoTime();
         Collection<MapElement> map = state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight);
+        long middle = System.nanoTime();
         for (MapElement element : map) {
             if (element instanceof Node) {
                 draw((Node) element);
@@ -105,7 +101,10 @@ public class Tile {
                 draw(element);
             }
         }
-
+        long end = System.nanoTime();
+        double mapElements = (middle - start) / 1000000;
+        double drawing = (end - middle) / 1000000;
+        System.out.println("time for mapElements " + mapElements + "ms; for drawing " + drawing + "ms");
     }
 
     /**
