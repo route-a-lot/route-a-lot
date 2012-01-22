@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//import org.apache.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.infosupply.ElementDB;
@@ -18,7 +19,11 @@ import kit.route.a.lot.controller.State;
 
 public class ArrayElementDB implements ElementDB {
 
-    //private static Logger logger = Logger.getLogger(ArrayElementDB.class);
+    private static Logger logger = Logger.getLogger(ArrayElementDB.class);
+    
+    static {
+        logger.setLevel(Level.INFO);
+    }
     
     private ArrayList<Node> nodes = new ArrayList<Node>();
    
@@ -88,36 +93,45 @@ public class ArrayElementDB implements ElementDB {
     
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
+        logger.info("load node array...");
         int len = stream.readInt();
         nodes = new ArrayList<Node>(len);
         for (int i = 0; i < len; i++) {
             Node node = (Node) MapElement.loadFromStream(stream, false);
             nodes.add(node);
+            node.assignID(i);
         }
+        logger.info("load map element array...");
         len = stream.readInt();
         mapElements = new ArrayList<MapElement>(len);
         for (int i = 0; i < len; i++) {
             MapElement element = MapElement.loadFromStream(stream, false);
             mapElements.add(element);
+            element.assignID(i);
         }
+        logger.info("load favorite array...");
         len = stream.readInt();
         favorites = new ArrayList<POINode>(len);
         for (int i = 0; i < len; i++) {
             POINode favorite = (POINode) MapElement.loadFromStream(stream, false);
             nodes.add(favorite);
+            favorite.assignID(i); // TODO: necessary?
         }
     }
 
     @Override
     public void saveToStream(DataOutputStream stream) throws IOException {  
+        logger.info("save node array...");
         stream.writeInt(nodes.size());
         for (Node node: nodes) {
             MapElement.saveToStream(stream, node, false);
         }
+        logger.info("save map element array...");
         stream.writeInt(mapElements.size());
         for (MapElement element: mapElements) {
             MapElement.saveToStream(stream, element, false);
         }
+        logger.info("save favorite array...");
         stream.writeInt(favorites.size());
         for (POINode favorite: favorites) {
             MapElement.saveToStream(stream, favorite, false);
@@ -136,10 +150,11 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public void swapNodeIds(int id1, int id2) {
-        
-        nodes.get(id1).setID(id2);
-        nodes.get(id2).setID(id1);
+    public void swapNodeIds(int id1, int id2) {  
+        nodes.get(id1).assignID(-1);
+        nodes.get(id2).assignID(-1);
+        nodes.get(id1).assignID(id2);
+        nodes.get(id2).assignID(id1);
         Collections.swap(nodes, id1, id2);
         if (nodes.get(id1).getID() != id1 || nodes.get(id2).getID() != id2) {
             System.err.println("WAAAAAARUUUUUM???????");

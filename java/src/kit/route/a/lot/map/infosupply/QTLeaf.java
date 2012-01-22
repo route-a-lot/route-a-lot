@@ -3,8 +3,6 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -41,16 +39,6 @@ public class QTLeaf extends QuadTree {
      */
     protected MapElement[] getOverlay() {
         return overlay;
-    }
-
-    @Override
-    protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
-            Coordinates bottomRight) {
-        ArrayList<QTLeaf> ret = new ArrayList<QTLeaf>();
-        if(isInBounds(upLeft, bottomRight)) {
-            ret.add(this);
-        }
-        return ret;
     }
 
     @Override

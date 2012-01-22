@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -27,7 +26,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     
     static {
-        logger.setLevel(Level.OFF);
+        logger.setLevel(Level.INFO);
     }
     
     private static int countZoomlevel = 9;
@@ -202,6 +201,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
         for(int i = 0; i < zoomlevels.length; i++) {
+            logger.info("load zoom level " + i + "...");
             zoomlevels[i] = QuadTree.loadFromStream(stream);
         }
     }
@@ -209,20 +209,21 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void saveToStream(DataOutputStream stream) throws IOException {
         for(int i = 0; i < zoomlevels.length; i++) {
+            logger.info("save zoom level " + i + "...");
             QuadTree.saveToStream(stream, zoomlevels[i]);
         }
     }
-
-    @Override
+    
+    /*@Override
     public void getOverlayAndBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> baseLayer, Set<MapElement> overlay) {
         zoomlevels[zoomlevel].addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
-    }
+    }*/
 
     @Override
     public void trimm() {
         for (int i = 0; i < zoomlevels.length; i++) {
             zoomlevels[i].trimm();
         }
-    }
+    } 
 }

@@ -29,6 +29,10 @@ public class OSMLoader {
 
     private static Logger logger = Logger.getLogger(OSMLoader.class);
 
+    static {
+        logger.setLevel(Level.INFO);
+    }
+    
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
     private int maxWayNodeId = -1;
@@ -37,7 +41,6 @@ public class OSMLoader {
 
     State state;
     WeightCalculator weightCalculator;
-    
     Projection projection;
     
     int nodeCount;
@@ -46,18 +49,14 @@ public class OSMLoader {
     public OSMLoader() {
         state = State.getInstance();
         weightCalculator = WeightCalculator.getInstance();
-//        weightCalculator = new WeightCalculatorMock();
+        // weightCalculator = new WeightCalculatorMock();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
-        logger.setLevel(Level.OFF);
     }
 
     /**
-     * 
-     * @param file
-     *            -
-     * @return
-     * @return
+     * Imports an osm map from file.
+     * @param file the osm File to be imported
      */
     public void importMap(File file) {
 
@@ -71,10 +70,8 @@ public class OSMLoader {
             nodeCount = 0;
 
             DefaultHandler boundsHandler = new DefaultHandler() {
-
                 public void startElement(String uri, String localName, String qName, Attributes attributes)
                         throws SAXException {
-
                     if (qName.equals("node")) {
                         nodeCount++;
                         if (nodeCount < 0) {
@@ -84,14 +81,12 @@ public class OSMLoader {
                         
                         float curLat = Float.parseFloat(attributes.getValue("lat"));
                         float curLon = Float.parseFloat(attributes.getValue("lon"));
-
                         if (minLat > curLat) {
                             minLat = curLat;
                         }
                         if (maxLat < curLat) {
                             maxLat = curLat;
                         }
-
                         if (minLon > curLon) {
                             minLon = curLon;
                         }
@@ -102,8 +97,7 @@ public class OSMLoader {
                         throw new SAXException("finished with nodes");
                     }
                 }
-
-            };
+            }; // boundsHandler end
 
             try {
                 parser.parse(file, boundsHandler);
@@ -119,8 +113,7 @@ public class OSMLoader {
             
             DefaultHandler handler = new DefaultHandler() {
 
-                Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the
-                // new id
+                Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the new id
 
                 boolean inWay;
                 boolean inPolyline;
@@ -327,7 +320,7 @@ public class OSMLoader {
                                 } else if (value.equalsIgnoreCase("watering_place")) {
                                     curType = OSMType.AMENITY_WATERING_PLACE;
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                                 return;
                             }
@@ -392,7 +385,7 @@ public class OSMLoader {
                                 } else if (value.equalsIgnoreCase("video")) {
                                     curType = OSMType.SHOP_VIDEO;
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                                 return;
                             }
@@ -403,7 +396,7 @@ public class OSMLoader {
                                 } else if (value.equalsIgnoreCase("monument")) {
                                     curType = OSMType.HISTORIC_MONUMENT;
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                                 return;
                             }
@@ -415,10 +408,10 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("traffic_signals")) {
                                         // not really important => ignore
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else {
-                                    logger.warn("Encountered a crossing tag but no HIGHWAY_CROSSING. value: "
+                                    logger.debug("Encountered a crossing tag but no HIGHWAY_CROSSING. value: "
                                             + value);
                                 }
                                 return;
@@ -440,7 +433,7 @@ public class OSMLoader {
                                 } else if (value.equalsIgnoreCase("track")) {
                                     curType = OSMType.LEISURE_TRACK;
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                                 return;
                             }
@@ -516,7 +509,7 @@ public class OSMLoader {
                                         curType = OSMType.HIGHWAY_UNCLASSIFIED;
                                     } else {
                                         curType = OSMType.HIGHWAY_IGNORED;
-                                        logger.warn("Highway type ignored: " + value);
+                                        logger.debug("Highway type ignored: " + value);
                                     }
                                     curWayInfo.setStreet(true);
                                 } else if (key.equalsIgnoreCase("bicycle")) {
@@ -533,7 +526,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("destination")) {
                                         curWayInfo.setBicycle(WayInfo.BICYCLE_DESTINATION);
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("oneway")) {
                                     if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true")) {
@@ -544,7 +537,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("-1")) {
                                         curWayInfo.setOneway(WayInfo.ONEWAY_OPPOSITE);
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("natural")) {
                                     if (value.equalsIgnoreCase("bay")) {
@@ -584,7 +577,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("wood")) {
                                         curType = OSMType.NATURAL_WOOD;
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("waterway")) {
                                     if (value.equalsIgnoreCase("canal")) {
@@ -606,7 +599,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("waterfall")) {
                                         curType = OSMType.WATERWAY_WATERFALL;
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("cycleway")) {
                                     if (value.equalsIgnoreCase("track")) {
@@ -620,7 +613,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("opposite_track")) {
                                         curType = OSMType.CYCLEWAY_OPPOSITE_TRACK;
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("railway")) {
                                     if (value.equalsIgnoreCase("light_rail")) {
@@ -636,7 +629,7 @@ public class OSMLoader {
                                         curWayInfo.setOther(true);
                                         curType = OSMType.RAILWAY_TRAM;
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("building")) {
                                     curWayInfo.setBuilding(true); // TODO here and with the following: check
@@ -650,7 +643,7 @@ public class OSMLoader {
                                     if (value.equalsIgnoreCase("yes")) {
                                         curWayInfo.setArea(true);
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("barrier")) {
                                     curWayInfo.setOther(true);
@@ -672,7 +665,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("no")) {
                                         curWayInfo.setAccess(WayInfo.ACCESS_NO);
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("surface")) {
                                     if (value.equalsIgnoreCase("paved")) {
@@ -700,7 +693,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("compacted")) {
                                         curWayInfo.setAccess(WayInfo.SURFACE_COMPACTED);
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("segregated")) {
                                     if (value.equalsIgnoreCase("yes")) {
@@ -708,7 +701,7 @@ public class OSMLoader {
                                     } else if (value.equalsIgnoreCase("no")) {
                                         curWayInfo.setSegregated(WayInfo.SEGREGATED_NO);
                                     } else {
-                                        logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                        logger.debug("Unknown value for " + key + " key in tags: " + value);
                                     }
                                 } else if (key.equalsIgnoreCase("layer")) {
                                     try {
@@ -741,7 +734,7 @@ public class OSMLoader {
                                             + ignoredKeys);
                                 }
                             } else {
-                                logger.warn("Element ignored in polyline: " + qName);
+                                logger.debug("Element ignored in polyline: " + qName);
                             }
                         } else {
                             if (qName.equalsIgnoreCase("nd")) {
@@ -774,7 +767,7 @@ public class OSMLoader {
                                     // TODO cycle_barrier could be interesting...
                                     // also: check for bicycle == yes or no
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                             } else if (key.equalsIgnoreCase("natural")) {
                                 if (value.equalsIgnoreCase("tree")) {
@@ -782,26 +775,26 @@ public class OSMLoader {
                                     // if not the node can probably be ignored
                                     // if yes this 'tree information' should not be ignored
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                             } else if (key.equalsIgnoreCase("highway")) {
                                 if (value.equalsIgnoreCase("traffic_signals")) {
                                     // ignore
                                     // TODO would be nice not ignoring it
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                             } else if (key.equalsIgnoreCase("railway")) {
                                 if (value.equalsIgnoreCase("level_crossing")) {
                                     // TODO should be drawn, but is no POI
                                 } else {
-                                    logger.warn("Unknown value for " + key + " key in tags: " + value);
+                                    logger.debug("Unknown value for " + key + " key in tags: " + value);
                                 }
                             } else if (key.equalsIgnoreCase("source") || key.equalsIgnoreCase("created_by")
                                     || key.equalsIgnoreCase("note") || key.equalsIgnoreCase("source_ref")) {
                                 // ignore
                             } else {
-                                logger.warn("Unknown key in tags in a node: key: " + key + ", value: "
+                                logger.debug("Unknown key in tags in a node: key: " + key + ", value: "
                                         + value);
                             }
                         } else {
@@ -848,7 +841,7 @@ public class OSMLoader {
                     } else if (qName.equalsIgnoreCase("osm")) {
                         String version = attributes.getValue("version");
                         if (!version.equals("0.6")) {
-                            logger.warn("OSM-Version is " + version);
+                            logger.debug("OSM-Version is " + version);
                         }
                         Coordinates upLeft = new Coordinates(maxLat, minLon);
                         Coordinates bottomRight = new Coordinates(minLat, maxLon);
@@ -942,6 +935,8 @@ public class OSMLoader {
 
             weightCalculator.setProjection(projection);
             
+            logger.info("create adjacient fields...");
+            
             int countIDs = startIds.size();
             int[] startIDs = new int[countIDs];
             int[] endIDs = new int[countIDs];
@@ -951,7 +946,7 @@ public class OSMLoader {
                 endIDs[i] = endIds.get(i);
                 weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
                 if (weights[i] == 0) {
-                    logger.warn("Added edge with 0 weight.");
+                    logger.debug("Added edge with 0 weight.");
                 }
             }
 

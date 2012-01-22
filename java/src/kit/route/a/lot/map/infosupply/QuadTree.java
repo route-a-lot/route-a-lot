@@ -3,7 +3,6 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.awt.geom.Rectangle2D;
@@ -24,8 +23,6 @@ public abstract class QuadTree {
         this.upLeft = upLeft;
         this.bottomRight = bottomRight;
     }
-
-    protected abstract Collection<QTLeaf> getLeafs(Coordinates upLeft, Coordinates bottomRight);
 
     protected abstract void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elememts);
@@ -103,7 +100,6 @@ public abstract class QuadTree {
      */
     public abstract int countElements();
 
-
     /**
      * Loads a new quad tree from the given stream.
      * 
@@ -157,6 +153,7 @@ public abstract class QuadTree {
      * 
      * @param stream
      *            the source stream
+     * @param recursive 
      * @throws IOException
      *             quadtree could not be loaded from the stream
      */

@@ -275,9 +275,9 @@ public class MapInfo {
      * @throws IOException a stream read error occurred
      */
     public void loadFromStream(DataInputStream stream) throws IOException {
-        logger.debug("load element db...");
+        logger.info("load element db...");
         elementDB.loadFromStream(stream);
-        logger.debug("load geo operator...");
+        logger.info("load geo operator...");
         geographicalOperator.loadFromStream(stream);
         //TODO: load address operator
         //addressOperator.loadFromStream(stream);
@@ -290,9 +290,9 @@ public class MapInfo {
      * @throws IOException a stream write error occurred
      */
     public void saveToStream(DataOutputStream stream) throws IOException {
-        logger.debug("save element db...");
+        logger.info("save element db...");
         elementDB.saveToStream(stream);
-        logger.debug("save geo operator...");
+        logger.info("save geo operator...");
         geographicalOperator.saveToStream(stream);
         //TODO: save address operator
         //addressOperator.saveToStream(stream);

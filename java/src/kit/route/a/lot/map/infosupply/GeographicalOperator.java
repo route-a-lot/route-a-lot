@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -66,15 +65,15 @@ public interface GeographicalOperator {
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight);
     
-    /**
+    /*/**
      * Returns the overlay corresponding to the last base layer query.
      * 
      * @param upLeft the northwestern corner of the queried boundary
      * @param bottomRight the southeastern corner of the queried boundary
      * @return a list containing all overlay MapElements in the queried section
-     */
+     *
     public void getOverlayAndBaseLayer(int zoomLevel, Coordinates upLeft,
-            Coordinates bottomRight, Set<MapElement> baseLayer, Set<MapElement> overlay);
+            Coordinates bottomRight, Set<MapElement> baseLayer, Set<MapElement> overlay);*/
 
     /**
      * Adds a {@link MapElement} to the base layer.
@@ -125,5 +124,5 @@ public interface GeographicalOperator {
     public void saveToStream(DataOutputStream stream) throws IOException;
     
     public void trimm();
-    
+
 }

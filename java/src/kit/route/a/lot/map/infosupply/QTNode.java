@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -46,18 +45,6 @@ public class QTNode extends QuadTree {
         children[2] = new QTLeaf(middleLeft, bottomMiddle);
         children[3] = new QTLeaf(middleMiddle, bottomRight);
         
-    }
-
-    @Override
-    protected Collection<QTLeaf> getLeafs(Coordinates upLeft,
-            Coordinates bottomRight) {
-        ArrayList<QTLeaf> leafList = new ArrayList<QTLeaf>();
-        if (isInBounds(upLeft, bottomRight)) {      // TODO nicht immer alle adden
-            for(QuadTree qt : children) {
-                leafList.addAll(qt.getLeafs(upLeft, bottomRight));
-            }
-        }
-        return leafList;
     }
 
     @Override
@@ -150,10 +137,10 @@ public class QTNode extends QuadTree {
 
     @Override
     protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts) {
+            Set<MapElement> elements) {
         if (isInBounds(upLeft, bottomRight)) {
             for(QuadTree qt : children) {
-                qt.addBaseLayerElementsToCollection(upLeft, bottomRight, elememts);
+                qt.addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
           
             }    
         }

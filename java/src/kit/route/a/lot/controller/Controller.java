@@ -97,8 +97,6 @@ public class Controller {
 
     /**
      * Operation importMap
-     * 
-     * @return
      */
     public void importMap(File osmFile) {
         if(!osmFile.exists()) {
@@ -144,8 +142,6 @@ public class Controller {
 
     /**
      * Operation deleteNavNode
-     * 
-     * @return
      */
     public void deleteNavNode(int pos) {
         if (pos < state.getNavigationNodes().size()) {
@@ -172,8 +168,6 @@ public class Controller {
 
     /**
      * Operation switchNavNodes
-     * 
-     * @return
      */
     public void switchNavNodes(int one, int two) {
         if (one < state.getNavigationNodes().size() && two < state.getNavigationNodes().size()) {
@@ -184,8 +178,6 @@ public class Controller {
 
     /**
      * Operation orderNavNodes
-     * 
-     * @return
      */
     public void orderNavNodes() {  
         Collection<Selection> col = Router.optimizeRoute();         
@@ -196,8 +188,6 @@ public class Controller {
 
     /**
      * Operation addFavorite
-     * 
-     * @return
      */
     public void addFavorite(Coordinates pos, String name, String description) {  
         state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, 0, description));  //TODO category
@@ -205,8 +195,6 @@ public class Controller {
 
     /**
      * Operation deleteFavorite
-     * 
-     * @return
      */
     public void deleteFavorite(Coordinates pos) {
         state.getLoadedMapInfo().deleteFavorite(pos);
@@ -215,8 +203,6 @@ public class Controller {
 
     /**
      * Operation saveRoute
-     * 
-     * @return
      */
     public void saveRoute(String path) {
         File routeFile = new File(path);
@@ -227,8 +213,6 @@ public class Controller {
 
     /**
      * Operation loadRoute
-     * 
-     * @return
      */
     public void loadRoute(String path) {
         File routeFile = new File(path);
@@ -241,8 +225,6 @@ public class Controller {
 
     /**
      * Operation exportRoute
-     * 
-     * @return
      */
     public void exportRoute(String path) {
         File routeFile = new File(path);
@@ -253,8 +235,6 @@ public class Controller {
 
     /**
      * Operation printRoute
-     * 
-     * @return
      */
     public void printRoute() {
         if (state.getCurrentRoute().size() != 0) {
@@ -264,16 +244,12 @@ public class Controller {
 
     /**
      * Operation typeAddress
-     * 
-     * @return
      */
     public void typeAddress() {  //TODO
     }
 
     /**
      * Operation searchAddress
-     * 
-     * @return
      */
     public void searchAddress() {   //TODO
         
@@ -281,24 +257,18 @@ public class Controller {
 
 //    /**
 //     * Operation searchPOI
-//     * 
-//     * @return
 //     */
 //    public void searchPOI() {   //TODO needed?
 //    }
 //
 //    /**
 //     * Operation searchFavorite
-//     * 
-//     * @return
 //     */
 //    public void searchFavorite() {  //TODO needed?
 //    }
 
     /**
      * Operation setSpeed
-     * 
-     * @return
      */
     public void setSpeed(int speed) {
         if(speed >= 0) {
@@ -330,8 +300,6 @@ public class Controller {
 
     /**
      * Operation getPOIInfo
-     * 
-     * @return
      */
     public void getPOIInfo(Coordinates pos) {   
         POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
@@ -340,8 +308,6 @@ public class Controller {
 
     /**
      * Operation showTextRoute
-     * 
-     * @return
      */
     public void showTextRoute() {   //TODO
         if (state.getCurrentRoute().size() != 0) {
@@ -352,8 +318,6 @@ public class Controller {
 
     /**
      * Operation setHeightMalus
-     * 
-     * @return
      */
     public void setHeightMalus(int newMalus) {
         if (newMalus >= 0) {
@@ -363,8 +327,6 @@ public class Controller {
 
     /**
      * Operation setHighwayMalus
-     * 
-     * @return
      */
     public void setHighwayMalus(int newMalus) {
         if (newMalus >= 0) {
@@ -374,8 +336,6 @@ public class Controller {
 
     /**
      * Operation importHeightMap
-     * 
-     * @return
      */
     public void importHeightMap(String path) {
         File heightFile = new File(path);
@@ -385,8 +345,6 @@ public class Controller {
 
     /**
      * Operation render
-     * 
-     * @return
      */
     public void render(Context context, int zoomLevel) {
         state.setDetailLevel(zoomLevel);
@@ -395,8 +353,6 @@ public class Controller {
 
     /**
      * Operation calculateRoute
-     * 
-     * @return
      */
     public void calculateRoute() {
         State state = State.getInstance();
@@ -415,9 +371,7 @@ public class Controller {
     /**
      * Operation main
      * 
-     * @param args
-     *            -
-     * @return
+     * @param args :-)
      */
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
@@ -425,33 +379,34 @@ public class Controller {
         File stateFile = new File("./state.state");
         File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         if (stateFile.exists()) {   
-            logger.info("Load state file..."); 
+            logger.info("load state file..."); 
             try { 
                 StateIO.loadState(stateFile); 
             } catch (IOException e) {
-                logger.error("State loading: Read error occurred.");
+                logger.error("state loading: Read error occurred.");
                 e.printStackTrace();
             }
             ctrl.loadMap(ctrl.state.getLoadedMapFile());
+            //ctrl.loadMap(new File("./hamburg.sral"));
         } else {
             if (defaultMap.exists()) {
-                logger.info("Import default map...");
+                logger.info("import default map...");
                 ctrl.importMap(defaultMap);
                 try {
                     StateIO.saveState(stateFile); // TODO: move saveState call to program exit
                 } catch (IOException e) {
-                    logger.error("State saving: Write error occurred.");
+                    logger.error("state saving: Write error occurred.");
                     e.printStackTrace();
                 }
             } else {
-                logger.warn("No map loaded."); //TODO not loading map 
+                logger.warn("no map loaded."); //TODO not loading map 
             }
         }
         
         ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinates());
         ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
-        ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));
-                
+        ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));               
     }
+    
 }

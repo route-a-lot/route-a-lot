@@ -26,7 +26,6 @@ public class MapIO {
      * @throws IOException
      */
     public static void loadMap(File file) throws IOException {
-        
         // Verify requirements
         if (file == null) {
             throw new IllegalArgumentException();
@@ -47,12 +46,12 @@ public class MapIO {
             throw new IOException("Wrong format version: " + file.getName());
         } 
 
-        logger.debug("load map info...");
+        logger.info("load map info...");
         state.getLoadedMapInfo().loadFromStream(stream);
-        logger.debug("load routing graph...");
+        logger.info("load routing graph...");
         state.getLoadedGraph().loadFromStream(stream);
         stream.close();
-        logger.debug("map loading finished");
+        logger.info("map loading finished");
     }
 
     /**
@@ -83,11 +82,12 @@ public class MapIO {
         stream.writeChars("SRAL");  // magic number
         stream.writeUTF("0.5");     // version number
         // TODO: maybe add date or name
-        logger.debug("save map info...");
+        logger.info("save map info...");
         state.getLoadedMapInfo().saveToStream(stream);
-        logger.debug("save graph...");
+        logger.info("save graph...");
         state.getLoadedGraph().saveToStream(stream); 
         stream.close();     
-        logger.debug("map saving finished");
+        logger.info("map saving finished");
     }
+    
 }
