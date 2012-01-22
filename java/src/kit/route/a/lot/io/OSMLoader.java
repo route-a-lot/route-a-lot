@@ -39,6 +39,9 @@ public class OSMLoader {
     WeightCalculator weightCalculator;
     
     Projection projection;
+    
+    int nodeCount;
+    private long[] osmIds;
 
     public OSMLoader() {
         state = State.getInstance();
@@ -65,15 +68,20 @@ public class OSMLoader {
             maxLon = maxLat = Float.MIN_VALUE;
             minLon = minLat = Float.MAX_VALUE;
             
+            nodeCount = 0;
 
             DefaultHandler boundsHandler = new DefaultHandler() {
-
-                boolean noChange = false;
 
                 public void startElement(String uri, String localName, String qName, Attributes attributes)
                         throws SAXException {
 
-                    if (!noChange && qName.equals("node")) {
+                    if (qName.equals("node")) {
+                        nodeCount++;
+                        if (nodeCount < 0) {
+                            logger.fatal("Tried to import more than " + Integer.MAX_VALUE + " nodes.");
+                            throw new SAXException("maximum of nodes exceeded");
+                        }
+                        
                         float curLat = Float.parseFloat(attributes.getValue("lat"));
                         float curLon = Float.parseFloat(attributes.getValue("lon"));
 
@@ -99,10 +107,15 @@ public class OSMLoader {
 
             try {
                 parser.parse(file, boundsHandler);
-            } catch (SAXException e) { }    // TODO I know it's bad style...
+            } catch (SAXException e) {
+                if (nodeCount < 0) {
+                    return;
+                }
+            }
 
 
             projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
+            osmIds = new long[nodeCount];
             
             DefaultHandler handler = new DefaultHandler() {
 
@@ -113,6 +126,7 @@ public class OSMLoader {
                 boolean inPolyline;
                 Integer curPolylineNode;
                 List<Integer> curWayIds;
+                List<Long> curWayOSMIds;
                 String curWayName;
                 WayInfo curWayInfo;
 
@@ -441,13 +455,15 @@ public class OSMLoader {
                     if (inWay) {
                         if (inPolyline) {
                             if (qName.equalsIgnoreCase("nd")) {
+                                Long osmId = Long.parseLong(attributes.getValue("ref"));
                                 Integer newPolylineNode =
-                                        idMap.get(Long.parseLong(attributes.getValue("ref")));
+                                        idMap.get(osmId);
                                 if (newPolylineNode == null) {
                                     logger.error("Node id is not known: id = " + attributes.getValue("ref"));
                                 }
                                 curPolylineNode = newPolylineNode;
                                 curWayIds.add(curPolylineNode);
+                                curWayOSMIds.add(osmId);
                             } else if (qName.equalsIgnoreCase("tag")) {
                                 String key = attributes.getValue("k");
                                 String value = attributes.getValue("v");
@@ -729,12 +745,14 @@ public class OSMLoader {
                             }
                         } else {
                             if (qName.equalsIgnoreCase("nd")) {
-                                curPolylineNode = idMap.get(Long.parseLong(attributes.getValue("ref")));
+                                Long osmId = Long.parseLong(attributes.getValue("ref"));
+                                curPolylineNode = idMap.get(osmId);
                                 if (curPolylineNode == null) {
                                     logger.error("Node id is not known: id = " + attributes.getValue("ref"));
                                 }
                                 inPolyline = true;
                                 curWayIds.add(curPolylineNode);
+                                curWayOSMIds.add(osmId);
                             }
                         }
                         return;
@@ -805,7 +823,9 @@ public class OSMLoader {
                             logger.error("Tried to import more than " + curNodeId + " nodes!");
                             // TODO throw exception
                         }
-                        idMap.put(Long.parseLong(attributes.getValue("id")), curNodeId);
+                        long osmId = Long.parseLong(attributes.getValue("id"));
+                        idMap.put(osmId, curNodeId);
+                        osmIds[curNodeId] = osmId;
 
                         curAddress = new Address();
                         curNodePOIDescription = new POIDescription("", 0, "");
@@ -817,6 +837,7 @@ public class OSMLoader {
                     } else if (qName.equalsIgnoreCase("way")) {
                         inWay = true;
                         curWayIds = new ArrayList<Integer>();
+                        curWayOSMIds = new ArrayList<Long>();
                         curWayInfo = new WayInfo();
                         curAddress = new Address();
                         curType = 0;
@@ -824,23 +845,6 @@ public class OSMLoader {
                         // TODO should not be ignored because for Autobahn and Bundestrassen they should be
                         // rendered
                         logger.debug("Ignored relation.");
-                    } else if (qName.equalsIgnoreCase("bounds")) {
-//                        Coordinates upLeft = new Coordinates();
-//                        Coordinates bottomRight = new Coordinates();
-//
-//                        upLeft.setLatitude(Float.parseFloat(attributes.getValue("maxlat")));
-//                        upLeft.setLongitude(Float.parseFloat(attributes.getValue("minlon")));
-//
-//                        bottomRight.setLatitude(Float.parseFloat(attributes.getValue("minlat")));
-//                        bottomRight.setLongitude(Float.parseFloat(attributes.getValue("maxlon")));
-//
-//                        state.getLoadedMapInfo().setBounds(upLeft, bottomRight);
-//
-//                        Coordinates middle = new Coordinates();
-//                        middle.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-//                        middle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-//                        state.setAreaCoord(middle);
-
                     } else if (qName.equalsIgnoreCase("osm")) {
                         String version = attributes.getValue("version");
                         if (!version.equals("0.6")) {
@@ -875,8 +879,15 @@ public class OSMLoader {
                                 if (curId > maxWayNodeId) {
                                     maxWayNodeId++;
                                     state.getLoadedMapInfo().swapNodeIds(curId, maxWayNodeId);
-                                    curId = maxWayNodeId;
-                                    curWayIds.set(i, curId);
+                                    long osmId1 = osmIds[curId];
+                                    long osmId2 = osmIds[maxWayNodeId];
+                                    idMap.remove(osmId1);
+                                    idMap.remove(osmId2);
+                                    idMap.put(osmId1, maxWayNodeId);
+                                    idMap.put(osmId2, curId);
+                                    osmIds[maxWayNodeId] = osmId1;
+                                    osmIds[curId] = osmId2;
+                                    curWayIds.set(i, maxWayNodeId);
                                 }
                             }
                             
@@ -905,6 +916,7 @@ public class OSMLoader {
                         inWay = false;
                         inPolyline = false;
                         curWayIds = null;
+                        curWayOSMIds = null;
                         curWayName = "";
                     } else if (inNode && qName.equalsIgnoreCase("node")) {
 
