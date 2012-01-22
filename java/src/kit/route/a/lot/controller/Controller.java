@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 
 import kit.route.a.lot.common.Context;
@@ -22,6 +23,7 @@ import kit.route.a.lot.io.Printer;
 import kit.route.a.lot.io.RouteIO;
 import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
+import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.routing.Router;
@@ -44,12 +46,6 @@ public class Controller {
         state = State.getInstance();
     }
         
-    /**
-     * Operation setView
-     */
-    public void setView() {
-        guiHandler.updateMap(); // TODO needed?
-    }
     
     public void setViewToMapCenter() {
         Coordinates upLeft = new Coordinates();
@@ -61,17 +57,11 @@ public class Controller {
         state.setCenterCoordinates(center);
     }
 
-    /**
-     * Operation setZoomLevel
-     */
-    public void setZoomLevel() {    //TODO needed?
-    }
-
-    /**
-     * Operation toggle3D
-     */
-    public void toggle3D() {
-    }
+//    /**
+//     * Operation toggle3D
+//     */
+//    public void toggle3D() {
+//    }
 
     
     public void saveMap(String mapPath) {
@@ -122,6 +112,8 @@ public class Controller {
             //guiHandler.setView(state.getCenterCoordinates());
             renderer.resetRenderCache();
             state.setLoadedMapFile(new File(Util.removeExtension(osmFile.getPath()) + ".sral"));
+            state.getImportedMaps().add(Util.removeExtension(osmFile.getPath()) + ".sral");
+            //guiHandler.updateMapList(state.getImportedMaps());
             try {
                 MapIO.saveMap(state.getLoadedMapFile());
             } catch (IOException e) {
@@ -156,6 +148,7 @@ public class Controller {
         if (pos < state.getNavigationNodes().size()) {
             state.getNavigationNodes().remove(pos);
         }
+        guiHandler.updateGUI();
     }
     
     public void deleteNavNode(Coordinates pos) {
@@ -169,6 +162,7 @@ public class Controller {
             topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
                 state.getNavigationNodes().remove(i);
+                guiHandler.deleteNavNodeFromList(i);
             }
         }
     }
@@ -180,12 +174,8 @@ public class Controller {
      */
     public void switchNavNodes(int one, int two) {
         if (one < state.getNavigationNodes().size() && two < state.getNavigationNodes().size()) {
-            Selection tempOne = state.getNavigationNodes().get(one);    //I know could be shorter . . .
-            Selection tempTwo = state.getNavigationNodes().get(two);
-            state.getNavigationNodes().remove(one);
-            state.getNavigationNodes().add(one, tempTwo);
-            state.getNavigationNodes().remove(two);
-            state.getNavigationNodes().add(two, tempOne);
+            Collections.swap(state.getNavigationNodes(), one, two);
+            calculateRoute();
         }
     }
 
@@ -195,7 +185,8 @@ public class Controller {
      * @return
      */
     public void orderNavNodes() {  
-        Collection<Selection> col = Router.optimizeRoute();         //TODO better
+        Collection<Selection> col = Router.optimizeRoute();         
+        guiHandler.setNavNodesOrder(new ArrayList<Integer>());   //TODO make this list
         state.setNavigationNodes(new ArrayList<Selection>());
         state.getNavigationNodes().addAll(col);
     }
@@ -216,6 +207,7 @@ public class Controller {
      */
     public void deleteFavorite(Coordinates pos) {
         state.getLoadedMapInfo().deleteFavorite(pos);
+        guiHandler.updateGUI();
     }
 
     /**
@@ -284,21 +276,21 @@ public class Controller {
         
     }
 
-    /**
-     * Operation searchPOI
-     * 
-     * @return
-     */
-    public void searchPOI() {   //TODO
-    }
-
-    /**
-     * Operation searchFavorite
-     * 
-     * @return
-     */
-    public void searchFavorite() {  //TODO
-    }
+//    /**
+//     * Operation searchPOI
+//     * 
+//     * @return
+//     */
+//    public void searchPOI() {   //TODO needed?
+//    }
+//
+//    /**
+//     * Operation searchFavorite
+//     * 
+//     * @return
+//     */
+//    public void searchFavorite() {  //TODO needed?
+//    }
 
     /**
      * Operation setSpeed
@@ -310,14 +302,37 @@ public class Controller {
             state.setSpeed(speed);
         }
     }
+    
+    public void whatWasClicked(Coordinates pos) {
+        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
+            Node node = new Node(state.getNavigationNodes().get(i).getPosition());
+            Coordinates topLeft = new Coordinates();
+            Coordinates bottomRight = new Coordinates();
+            topLeft.setLatitude(pos.getLatitude() - state.getClickRadius());
+            topLeft.setLongitude(pos.getLatitude() - state.getClickRadius());
+            bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
+            topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
+            if (node.isInBounds(topLeft, bottomRight)) {
+                //TODO tell gui
+                return;
+            }
+        }
+        if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius()) != null) {
+            //TODO tell GUI
+            return;
+        } 
+        //TODO tell gui
+        
+    }
 
     /**
      * Operation getPOIInfo
      * 
      * @return
      */
-    public void getPOIInfo(Coordinates pos) {   //TODO 
-        
+    public void getPOIInfo(Coordinates pos) {   
+        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
+        //TODO tell gui
     }
 
     /**
@@ -326,7 +341,10 @@ public class Controller {
      * @return
      */
     public void showTextRoute() {   //TODO
-        
+        if (state.getCurrentRoute().size() != 0) {
+            ComplexInfoSupplier cIS = new ComplexInfoSupplier();
+            cIS.getRouteDescription(state.getCurrentRoute());
+        }
     }
 
     /**

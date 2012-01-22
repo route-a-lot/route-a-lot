@@ -747,11 +747,11 @@ public class GUI extends JFrame {
         repaint();
     }
     
-    public void updateMapChooser(String[] maps) {
+    public void updateMapChooser(ArrayList<String> maps) {
         chooseImportedMap.removeAllItems();
         
-        for(int i = 0; i < maps.length; i++) {
-            chooseImportedMap.addItem(maps[i]);
+        for(String map : maps) {
+            chooseImportedMap.addItem(map);
         }
     }
 

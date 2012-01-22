@@ -1,7 +1,11 @@
 package kit.route.a.lot.gui;
 
+import java.util.ArrayList;
+
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.controller.listener.RALListener;
 
 
@@ -34,14 +38,6 @@ public class GUIHandler {
         gui.addContents();
     }
 
-    /**
-     * Operation getContext
-     * 
-     * @return Context
-     */
-    public Context getContext() {
-        return null;
-    }
 
     /**
      * Operation updateGUI
@@ -52,76 +48,13 @@ public class GUIHandler {
         gui.updateGUI();
     }
 
-    /**
-     * Operation updateMap
-     * 
-     * @return
-     */
-    public void updateMap() {
-    }
-
-    /**
-     * Operation updateNavNodes
-     * 
-     * @return
-     */
-    public void updateNavNodes() {
-    }
-
-    /**
-     * Operation updateFavorite
-     * 
-     * @return
-     */
-    public void updateFavorite() {
-    }
-
-    /**
-     * Operation updateRoute
-     * 
-     * @return
-     */
-    public void updateRoute() {
-    }
-
-    /**
-     * Operation updateSearch
-     * 
-     * @return
-     */
-    public void updateSearch() {
-    }
-
-    /**
-     * Operation updateDuration
-     * 
-     * @return
-     */
-    public void updateDuration() {
-    }
-
-    /**
-     * Operation updateText
-     * 
-     * @return
-     */
-    public void updateText() {
-    }
-
-    /**
-     * Operation updateMalus
-     * 
-     * @return
-     */
-    public void updateMalus() {
-    }
 
     /**
      * Operation updateMapList
      * 
      * @return
      */
-    public void updateMapList(String[] maps) {
+    public void updateMapList(ArrayList<String> maps) {
         gui.updateMapChooser(maps);
     }
 
@@ -150,6 +83,91 @@ public class GUIHandler {
     public void addOptimizeRouteListener(RALListener optimizeRouteListener) {
         gui.addOptimizeRouteListener(optimizeRouteListener);
     }
+    
+    public void setNavNodesOrder(ArrayList<Integer> orderedList) {
+        //TODO
+    }
+    
+    public void addLoadMapListener(RALListener loadMapListener) {
+        //TODO
+    }
+    
+    public void addDeleteNavNodeListener(RALListener deleteNavNodeListener) {
+        //TODO
+    }
+    
+    public void deleteNavNodeFromList(int i) {
+        //TODO delete NavNode with this Coordinates
+    }
+    
+    public void addSwitchNavNodesListener (RALListener switchNavNodesListener) {
+        //TODO
+    }
+    
+    public void addAddFavoriteListener(RALListener addFavListener) {
+        //TODO
+    }
+    
+    public void addDeleteFavListener (RALListener deleteFavListener) {
+        //TODO
+    }
+    
+    public void addSaveRouteListener(RALListener saveRouteListener) {
+        //TODO
+    }
+    
+    public void addLoadRouteListener(RALListener loadRouteListener) {
+        //TODO
+    }
+    
+    public void addExportRouteListener(RALListener exportRouteListener) {
+        //TODO
+    }
+    
+    public void printRouteListener(RALListener printRouteListener) {
+        //TODO
+    }
+    
+    public void addSetSpeedListener(RALListener loadRouteListener) {
+        //TODO
+    }
+    
+    public void setSpeed(int speed) {
+        //TODO
+    }
+    
+    public void addWhatWasClickedListener(RALListener whatWasClickedListener) {
+        //TODO tells the gui whether a poi, navnode, ... was clicked
+    }
+    
+    public void thisWasClicked(int element, Coordinates pos){
+        //TODO tells the gui what was clicked (element will be a constant)
+    }
+    
+    public void addGetPoiDescriptionListener(RALListener posDescriptionListener) {
+        //TODO
+    }
+    
+    public void showPoiDescription(POIDescription descr, Coordinates pos) {
+        //TODO
+    }
+    
+    public void setRouteText(RouteDescription routeDescr) {
+        //TODO
+    }
+    
+    public void addHighwayMalusListener(RALListener heighwayMalusListener) {
+        //TODO
+    }
+    
+    public void addHeightMalusListener(RALListener heightMalusListener) {
+        //TODO
+    }
+    
+    public void addImportHeightMapListener(RALListener importHeightMapMalusListener) {
+        //TODO
+    }
+    
     
     public void setView(Coordinates topLeft) {
         gui.setView(topLeft);

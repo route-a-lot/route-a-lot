@@ -174,9 +174,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private Collection<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() + radius);
+        UL.setLatitude(pos.getLatitude() - radius);
         UL.setLongitude(pos.getLongitude() - radius);
-        BR.setLatitude(pos.getLatitude() - radius);
+        BR.setLatitude(pos.getLatitude() + radius);
         BR.setLongitude(pos.getLongitude() + radius);
         return getOverlay(0, UL, BR);
     }

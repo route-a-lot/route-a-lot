@@ -5,11 +5,11 @@ import java.util.EventObject;
 import kit.route.a.lot.controller.Controller;
 
 
-public class orderNavNodesEvent implements RALListener {
+public class OrderNavNodesEvent implements RALListener {
 
     Controller ctrl;
     
-    public orderNavNodesEvent(Controller ctrl) {
+    public OrderNavNodesEvent(Controller ctrl) {
         this.ctrl = ctrl;
     }
 
