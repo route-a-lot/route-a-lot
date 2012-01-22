@@ -22,10 +22,11 @@ public class Area extends MapElement {
 
     private WayInfo wayInfo;
     
+    private static final String EMPTY = "";
 
     public Area(String name, WayInfo wayInfo) {
         this.name = name;
-        nodes = new Node[0];
+        this.nodes = new Node[0];
         this.wayInfo = wayInfo;
     }
 
@@ -89,7 +90,8 @@ public class Area extends MapElement {
     
     @Override //TODO: attribs, load() and save() are identical to methods of same name in Street
     protected void load(DataInputStream stream) throws IOException {
-        this.name = stream.readUTF();
+        String name = stream.readUTF();
+        this.name = EMPTY.equals(name) ? null : name;
         int len = stream.readInt();
         this.nodes = new Node[len];
         // TODO there must be some way without using state

@@ -6,11 +6,12 @@ public class POIDescription {
     private String name;
     private int category;
     private String description;
+    private static final String EMPTY = "";
         
     public POIDescription(String name, int category, String description){
-		this.name = name;
-		this.category = category;
-		this.description = description;
+		setName(name);
+		setCategory(category);
+		setDescription(description);
 	}
 	
 	public String getName() {
@@ -18,7 +19,7 @@ public class POIDescription {
 	}
 
 	public void setName(String name) {
-    	this.name = name;
+    	this.name = EMPTY.equals(name) ? null : name;
 	}
 
 	public int getCategory() {
@@ -34,6 +35,6 @@ public class POIDescription {
 	}
 
 	public void setDescription(String description) {
-    	this.description = description;
+    	this.description = EMPTY.equals(description) ? null : description;
 	}
 }

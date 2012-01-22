@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
@@ -24,7 +24,7 @@ import kit.route.a.lot.map.Street;
 public class Tile {
 
     public static final float BASE_TILE_DIM = 0.005f;
-    private static Logger logger = Logger.getLogger(Tile.class);
+    //private static Logger logger = Logger.getLogger(Tile.class);
 
     private Coordinates topLeft;
     private Coordinates bottomRight; // DISCUSS: keep or drop?

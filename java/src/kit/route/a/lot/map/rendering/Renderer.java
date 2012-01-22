@@ -3,9 +3,7 @@ package kit.route.a.lot.map.rendering;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -194,6 +192,7 @@ public class Renderer {
      * @param poi
      *            the POI to be drawn
      */
+    @SuppressWarnings("unused")
     private void drawPOI(POINode poi) {
     }
     

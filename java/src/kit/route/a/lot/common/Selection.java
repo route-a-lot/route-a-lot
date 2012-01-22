@@ -3,33 +3,18 @@ package kit.route.a.lot.common;
 
 public class Selection {
 
-	/** Attributes */
-    	/**
-     	* 
-     	*/
+
     	private int fromID;
-    	/**
-     	* 
-     	*/
     	private int toID;
-    	/**
-     	* 
-     	*/
     	private float ratio;
-    	/**
-     	*
-     	*/
     	private Coordinates position;
-    	/**
-     	* 
-     	*/
-    	//public String name;braucht die Selection das
+    	//public String name; braucht die Selection das? wäre für anzeige in der NavNodes-Liste -> GUI
 
     	public Selection(int fromID, int toID, float ratio, Coordinates position) {
        		this.fromID = fromID;
         	this.toID = toID;
-		this.ratio = ratio;
-		this.position = position;  
+        	this.ratio = ratio;
+        	this.position = position;  
     	}
     
     	public int getFrom() {

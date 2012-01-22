@@ -14,10 +14,9 @@ public class Address {
     private String postcode;
     private String city;
     private String country;
-    private String fullAddress;
-    
+    private String fullAddress;    
     private String interpolation;
-    
+    private static final String EMPTY = "";
 
     public String getStreet() {
         return (street != null) ? street : "";
@@ -25,7 +24,7 @@ public class Address {
 
     
     public void setStreet(String street) {
-        this.street = street;
+        this.street = EMPTY.equals(street) ? null : street ;
     }
 
     
@@ -35,7 +34,7 @@ public class Address {
 
     
     public void setHousenumber(String housenumber) {
-        this.housenumber = housenumber;
+        this.housenumber = EMPTY.equals(housenumber) ? null : housenumber;
     }
 
     
@@ -45,7 +44,7 @@ public class Address {
 
     
     public void setState(String state) {
-        this.state = state;
+        this.state = EMPTY.equals(state) ? null : state;
     }
 
     
@@ -55,7 +54,7 @@ public class Address {
 
     
     public void setPostcode(String postcode) {
-        this.postcode = postcode;
+        this.postcode = EMPTY.equals(postcode) ? null : postcode;
     }
 
     
@@ -65,7 +64,7 @@ public class Address {
 
     
     public void setCity(String city) {
-        this.city = city;
+        this.city = EMPTY.equals(city) ? null : city;
     }
 
     
@@ -75,7 +74,7 @@ public class Address {
 
     
     public void setCountry(String country) {
-        this.country = country;
+        this.country = EMPTY.equals(country) ? null : country;
     }
 
     
@@ -85,7 +84,7 @@ public class Address {
 
     
     public void setFullAddress(String fullAddress) {
-        this.fullAddress = fullAddress;
+        this.fullAddress = EMPTY.equals(fullAddress) ? null : fullAddress;
     }
 
     
@@ -95,20 +94,20 @@ public class Address {
 
     
     public void setInterpolation(String interpolation) {
-        this.interpolation = interpolation;
+        this.interpolation = EMPTY.equals(interpolation) ? null : interpolation;
     }
 
 
     public static Address loadFromStream(DataInputStream stream) throws IOException {
         Address result = new Address();
-        result.street = stream.readUTF();
-        result.housenumber = stream.readUTF();
-        result.state = stream.readUTF();
-        result.postcode = stream.readUTF();
-        result.city = stream.readUTF();
-        result.country = stream.readUTF();
-        result.fullAddress = stream.readUTF();
-        result.interpolation = stream.readUTF();
+        result.setStreet(stream.readUTF());
+        result.setHousenumber(stream.readUTF());
+        result.setState(stream.readUTF());
+        result.setPostcode(stream.readUTF());
+        result.setCity(stream.readUTF());
+        result.setCountry(stream.readUTF());
+        result.setFullAddress(stream.readUTF());
+        result.setInterpolation(stream.readUTF());
         return result;
     }
 

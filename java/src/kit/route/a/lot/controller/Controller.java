@@ -1,6 +1,7 @@
 package kit.route.a.lot.controller;
 
-import java.io.File;import java.io.IOException;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -30,32 +31,21 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
 
-    /** Attributes */
-    /**
-     * 
-     */
     private Renderer renderer;
-    /**
-     * 
-     */
     private GUIHandler guiHandler;
-    
     private State state;
 
     private static Logger logger = Logger.getLogger(Controller.class);
+    
     
     private Controller() {
         renderer = new Renderer();
         guiHandler = new GUIHandler();
         state = State.getInstance();
     }
-    
-    
-    
+        
     /**
      * Operation setView
-     * 
-     * @return
      */
     public void setView() {
         guiHandler.updateMap(); // TODO needed?
@@ -73,16 +63,12 @@ public class Controller {
 
     /**
      * Operation setZoomLevel
-     * 
-     * @return
      */
     public void setZoomLevel() {    //TODO needed?
     }
 
     /**
      * Operation toggle3D
-     * 
-     * @return
      */
     public void toggle3D() {
     }
@@ -413,7 +399,7 @@ public class Controller {
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
         File stateFile = new File("./state.state");
-        File defaultMap = new File("test/resources/karlsruhe_small_current.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         if (stateFile.exists()) {   
             logger.info("Load state file..."); 
             try { 

@@ -3,7 +3,7 @@ package kit.route.a.lot.common;
 import java.lang.Math;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.Heightmap;
-import kit.route.a.lot.map.rendering.MercatorProjection;
+//import kit.route.a.lot.map.rendering.MercatorProjection;
 import kit.route.a.lot.map.rendering.Projection;
 
 public class WeightCalculator {

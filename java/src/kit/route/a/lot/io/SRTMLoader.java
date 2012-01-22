@@ -1,7 +1,6 @@
 package kit.route.a.lot.io;
 
 import kit.route.a.lot.heightinfo.HeightTile;
-import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 

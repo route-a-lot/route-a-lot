@@ -6,13 +6,12 @@ import java.io.IOException;
 import java.util.List;
 
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.StringTrie;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.AddressOperator;
 
 public class TrieAddressOperator implements AddressOperator {
 
-    private StringTrie<MapElement> mapElements;
+    //private StringTrie<MapElement> mapElements;
 
     @Override
     public List<String> suggestCompletions(String expression) {

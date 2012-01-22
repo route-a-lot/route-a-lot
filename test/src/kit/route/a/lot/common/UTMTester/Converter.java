@@ -1,7 +1,6 @@
 package kit.route.a.lot.common.UTMTester;
 
 import java.lang.Math;
-import java.lang.Integer;
 
 public class Converter{
 
@@ -10,7 +9,7 @@ public class Converter{
     /* Ellipsoid model constants (actual values here are for WGS84) */
     private final double sm_a = 6378137.0;
     private final double sm_b = 6356752.314;
-    private  final double sm_EccSquared = 6.69437999013e-03;
+    //private  final double sm_EccSquared = 6.69437999013e-03;
     private final double UTMScaleFactor = 0.9996;
 	/*Singleton*/
 	private static Converter converter;
@@ -145,8 +144,7 @@ public class Converter{
     {
         double N, nu2, ep2, t, t2, l;
         double l3coef, l4coef, l5coef, l6coef, l7coef, l8coef;
-        double tmp;
-	double[] xy = new double[2];
+        double[] xy = new double[2];
 
         /* Precalculate ep2 */
         ep2 = (Math.pow (sm_a, 2.0) - Math.pow (sm_b, 2.0)) / Math.pow (sm_b, 2.0);
@@ -160,7 +158,7 @@ public class Converter{
         /* Precalculate t */
         t = Math.tan (lat);
         t2 = t * t;
-        tmp = (t2 * t2 * t2) - Math.pow (t, 6.0);
+        //tmp = (t2 * t2 * t2) - Math.pow (t, 6.0);
 
         /* Precalculate l */
         l = lon - centmeri;
@@ -223,7 +221,7 @@ public class Converter{
     private double[] LatLonToUTMXY (double lat, double lon, int zone)
     {
         double[] xy = MapLatLonToXY (lat, lon, UTMCentralMeridian (zone));
-	int[] utmDaten = new int[2];
+        //int[] utmDaten = new int[2];
 
         /* Adjust easting and northing for UTM system. */
         xy[0] = xy[0] * UTMScaleFactor + 500000.0;

@@ -21,10 +21,12 @@ public class Street extends MapElement {
     private String name;
 
     private WayInfo wayInfo;
+    
+    private static final String EMPTY = "";
 
     public Street(String name, WayInfo wayInfo) {
         this.nodes = null;
-        this.name = name;
+        setName(name);
         this.wayInfo = wayInfo;
     }
 
@@ -35,6 +37,10 @@ public class Street extends MapElement {
     @Override
     protected String getName() {
         return (this.name != null) ? this.name : "";
+    }
+    
+    private void setName(String name) {
+        this.name = EMPTY.equals(name) ? null : name;
     }
 
     public Node[] getNodes() {
@@ -173,7 +179,7 @@ public class Street extends MapElement {
     
     @Override
     protected void load(DataInputStream stream) throws IOException {
-        this.name = stream.readUTF();
+        setName(stream.readUTF());
         int len = stream.readInt();
         nodes = new Node[len];
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();

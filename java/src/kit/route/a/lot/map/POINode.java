@@ -9,7 +9,7 @@ import kit.route.a.lot.common.POIDescription;
 
 public class POINode extends Node {
 
-    private POIDescription info;
+    private POIDescription info = null;
 
     public POINode(Coordinates position, POIDescription description){
         super(position);
@@ -18,11 +18,13 @@ public class POINode extends Node {
     
     public POINode() {
         super();
-        this.info = null;
     }
 
     public POIDescription getInfo() {
-        return info;
+        if (this.info == null) {
+            this.info = new POIDescription(null, -1, null);
+        }
+        return this.info;
     }
     
     @Override
@@ -35,8 +37,8 @@ public class POINode extends Node {
     protected void save(DataOutputStream stream) throws IOException {
         super.save(stream);
         //TODO DISCUSS: implement POIDescription.saveToStream() etc. ?
-        stream.writeUTF(this.info.getName());
-        stream.writeInt(this.info.getCategory());       
-        stream.writeUTF(this.info.getDescription());
+        stream.writeUTF(getInfo().getName());
+        stream.writeInt(getInfo().getCategory());       
+        stream.writeUTF(getInfo().getDescription());
     }
 }
