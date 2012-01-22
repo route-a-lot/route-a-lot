@@ -121,14 +121,14 @@ public class Street extends MapElement {
      * edge is given by the position of the start - and endNode in the array nodes 
      */
     private float getDistanceFromNodeToEdge(int start, int end, Coordinates pos) {
-       double b = getDistance(nodes[start].getPos(), pos);
-       double a = getDistance(nodes[end].getPos(), pos);
-       double c = getDistance(nodes[start].getPos(), nodes[end].getPos());
+       double b = getDistanceProj(nodes[start].getPos(), pos);
+       double a = getDistanceProj(nodes[end].getPos(), pos);
+       double c = getDistanceProj(nodes[start].getPos(), nodes[end].getPos());
        float distance = (float) getTriangleCHeight(a, b, c);
        if (!(distance < 0)) {
            return distance;
        }
-       return (float) Math.min(getDistance(nodes[start].getPos(), pos), getDistance(nodes[end].getPos(), pos));
+       return (float) Math.min(getDistanceProj(nodes[start].getPos(), pos), getDistanceProj(nodes[end].getPos(), pos));
     }
     
     // a= side between end and pos, b = s. between pos and start, c = s. between start and end
@@ -144,10 +144,14 @@ public class Street extends MapElement {
         return Math.sin(angleBC) * b;   //height of triangle  (a = "hypothenuse" and h = "gegenkathete")
     }
     
+    private static double getDistanceProj(Coordinates pos1, Coordinates pos2) {
+        return Math.sqrt(Math.pow(pos1.getLatitude() - pos2.getLatitude(), 2) + Math.pow(pos1.getLongitude() - pos2.getLongitude(), 2));
+    }
+    
     /*
      * returns the distance between the given node and coordinate in meter
      */
-    private static double getDistance(Coordinates pos1, Coordinates pos2) {
+    private static double getDistanceKug(Coordinates pos1, Coordinates pos2) {
         double pos1LongRad = Math.abs(pos1.getLongitude()) / 180 * Math.PI;    //coordinates in deg
         double pos1LalRad = Math.abs(pos1.getLatitude()) / 180 * Math.PI;
         double pos2LongRad = Math.abs(pos2.getLongitude()) / 180 * Math.PI;
@@ -160,14 +164,14 @@ public class Street extends MapElement {
     }
     
     private float getRatio(int startNode, int endNode, Coordinates pos) {
-        double b = getDistance(nodes[startNode].getPos(), pos);
-        double a = getDistance(nodes[endNode].getPos(), pos);
-        double c = getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
+        double b = getDistanceProj(nodes[startNode].getPos(), pos);
+        double a = getDistanceProj(nodes[endNode].getPos(), pos);
+        double c = getDistanceProj(nodes[startNode].getPos(), nodes[endNode].getPos());
         //float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b*b + c*c - a*a) / (2 * b * c)); 
         double angleAB = Math.acos((a*a + c*c - b*b) / (2 * a * c));
        if (angleBC > Math.PI / 4 || angleAB > Math.PI / 2 ) {
-            if (getDistance(nodes[startNode].getPos(), pos) < getDistance(nodes[endNode].getPos(), pos)) {
+            if (getDistanceProj(nodes[startNode].getPos(), pos) < getDistanceProj(nodes[endNode].getPos(), pos)) {
                 return 0.0f;
             } else {
                 return 1.0f;

@@ -133,8 +133,11 @@ public class Controller {
         //if (position < state.getNavigationNodes().size()) {   TODO ass soon as gui functionate 
         //    state.getNavigationNodes().remove(position);
         //}
-        state.getNavigationNodes().add(position,
-                state.getLoadedMapInfo().select(pos));
+        Selection newSel = state.getLoadedMapInfo().select(pos);
+        if (newSel != null) {
+            state.getNavigationNodes().add(position,
+                    state.getLoadedMapInfo().select(pos));
+        }
         calculateRoute();
         render(context, state.getDetailLevel());
     }
@@ -400,6 +403,9 @@ public class Controller {
         if (state.getNavigationNodes().size() >= 2) {
             try {
                 state.setCurrentRoute(Router.calculateRoute());
+                for(Integer inte : state.getCurrentRoute()) {
+                    System.out.println(inte);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -11,6 +11,7 @@ import java.util.Set;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -74,9 +75,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public Selection select(Coordinates pos) {
         logger.debug("ClickPositionCoordinates(long/lal): " + pos.getLongitude() + " / " + pos.getLatitude());
-        float radius = 0.01f;
+        float radius = 1f;
         Selection sel = null;
-        while(sel == null && radius < 1000) {  //limit for avoiding errors on maps without edges
+        while(sel == null && radius < 1000000000) {  //limit for avoiding errors on maps without edges
             sel = select(pos, radius);
             radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
         }
@@ -100,7 +101,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         MapElement closestElement = null;
         float closestDistance = Float.MAX_VALUE;  
         for (MapElement element: elements) {
-            if(element instanceof Street) { //TODO only routeable streets
+            if(element instanceof Street /*&& ((Street) element).getWayInfo().getBicycle() == WayInfo.BICYCLE_YES*/) {  //TODO only routable
                 float distance = ((Street) element).getDistanceTo(pos);
                 if (distance < closestDistance) {
                     closestDistance = distance;
@@ -114,9 +115,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private Collection<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() + radius);
+        UL.setLatitude(pos.getLatitude() - radius);
         UL.setLongitude(pos.getLongitude() - radius);
-        BR.setLatitude(pos.getLatitude() - radius);
+        BR.setLatitude(pos.getLatitude() + radius);
         BR.setLongitude(pos.getLongitude() + radius);
         return getBaseLayer(0, UL, BR);
     }
