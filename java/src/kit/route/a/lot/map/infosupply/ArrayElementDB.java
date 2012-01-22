@@ -157,7 +157,7 @@ public class ArrayElementDB implements ElementDB {
         nodes.get(id2).assignID(id1);
         Collections.swap(nodes, id1, id2);
         if (nodes.get(id1).getID() != id1 || nodes.get(id2).getID() != id2) {
-            System.err.println("WAAAAAARUUUUUM???????");
+            logger.error("swap Nodes " + id1 + " and " + id2 + " failed");
         }
     }
 }

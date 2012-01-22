@@ -367,6 +367,15 @@ public class Controller {
             }
         }
     }
+    
+    public void prepareForShutDown() {
+        File stateFile = new File("./state.state");
+        try {
+            StateIO.saveState(stateFile);
+        } catch (IOException e) {
+            logger.fatal("IO exception in StateIO");
+        }
+    }
 
     /**
      * Operation main

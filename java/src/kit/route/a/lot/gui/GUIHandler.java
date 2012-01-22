@@ -168,6 +168,9 @@ public class GUIHandler {
         //TODO
     }
     
+    public void addCloseListener(RALListener closeListener) {
+        //TODO
+    }
     
     public void setView(Coordinates topLeft) {
         gui.setView(topLeft);
