@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 //import org.apache.log4j.Logger;
@@ -92,13 +93,7 @@ public class Tile {
         graphics.drawChars((new Integer(num)).toString().concat("   ").toCharArray(), 0, 4, 5, 50);
         num++;
 
-        /*
-         * important!: baseLayer is a collection, now and can't be casted to a list so i fixed it this way
-         * (but we can use a other collection, too)
-         */
-        // TODO this copying is unnecessary and bad for performance
-        List<MapElement> map = new ArrayList<MapElement>();
-        map.addAll(state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight));
+        Collection<MapElement> map = state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight);
         for (MapElement element : map) {
             if (element instanceof Node) {
                 draw((Node) element);
