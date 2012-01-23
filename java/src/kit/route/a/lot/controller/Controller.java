@@ -388,7 +388,7 @@ public class Controller {
         Controller ctrl = new Controller();
         ctrl.guiHandler.createGUI();
         File stateFile = new File("./state.state");
-        File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_small.osm");
         if (stateFile.exists()) {   
             logger.info("load state file..."); 
             try { 
@@ -398,11 +398,11 @@ public class Controller {
                 e.printStackTrace();
             }
             ctrl.loadMap(ctrl.state.getLoadedMapFile());
-            //ctrl.loadMap(new File("./hamburg.sral"));
         } else {
             if (defaultMap.exists()) {
                 logger.info("import default map...");
                 ctrl.importMap(defaultMap);
+                ctrl.setViewToMapCenter();
                 try {
                     StateIO.saveState(stateFile); // TODO: move saveState call to program exit
                 } catch (IOException e) {

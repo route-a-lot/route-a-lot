@@ -49,7 +49,6 @@ public class OSMLoader {
     public OSMLoader() {
         state = State.getInstance();
         weightCalculator = WeightCalculator.getInstance();
-        // weightCalculator = new WeightCalculatorMock();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
     }
@@ -106,9 +105,12 @@ public class OSMLoader {
                     return;
                 }
             }
-
-
-            projection = new MercatorProjection(new Coordinates(maxLat, minLon), 2.9E-5f);
+            
+            Coordinates upLeft = new Coordinates(maxLat, minLon);
+            Coordinates bottomRight = new Coordinates(minLat, maxLon);
+            projection = Projection.getNewProjection(upLeft);
+            state.getLoadedMapInfo().setBounds(upLeft, projection.geoCoordinatesToLocalCoordinates(bottomRight));
+            
             osmIds = new long[nodeCount];
             
             DefaultHandler handler = new DefaultHandler() {
@@ -843,10 +845,6 @@ public class OSMLoader {
                         if (!version.equals("0.6")) {
                             logger.debug("OSM-Version is " + version);
                         }
-                        Coordinates upLeft = new Coordinates(maxLat, minLon);
-                        Coordinates bottomRight = new Coordinates(minLat, maxLon);
-                        state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
-                        state.setCenterCoordinates(projection.geoCoordinatesToLocalCoordinates(upLeft));
                     } else {
                         logger.trace("Element start ignored: " + qName);
                     }
