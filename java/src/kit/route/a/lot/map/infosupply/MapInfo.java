@@ -316,5 +316,9 @@ public class MapInfo {
         elementDB.swapNodeIds(id1, id2);
         logger.debug("Swapping node " + id1 + " and " + id2);
     }
+    
+    public Collection<MapElement> getBaseLAyerForPositionAndRadius(Coordinates pos, float radius) {
+        return geographicalOperator.getBaseLayerForAPositionAndRadius(pos, radius);
+    }
 
 }

@@ -188,7 +188,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
     }
        
-    private Collection<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
+    public Collection<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
         UL.setLatitude(pos.getLatitude() - radius);
@@ -257,6 +257,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
         BR.setLongitude(pos.getLongitude() + radius);
         return getOverlay(0, UL, BR);
     }
+    
+    
     
     @Override
     public int deleteFavorite(Coordinates pos) {

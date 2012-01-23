@@ -151,7 +151,7 @@ public class Street extends MapElement {
     /*
      * returns the distance between the given node and coordinate in meter
      */
-    private static double getDistanceKug(Coordinates pos1, Coordinates pos2) {
+    public static double getDistanceKug(Coordinates pos1, Coordinates pos2) {
         double pos1LongRad = Math.abs(pos1.getLongitude()) / 180 * Math.PI;    //coordinates in deg
         double pos1LalRad = Math.abs(pos1.getLatitude()) / 180 * Math.PI;
         double pos2LongRad = Math.abs(pos2.getLongitude()) / 180 * Math.PI;

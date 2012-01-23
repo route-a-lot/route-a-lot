@@ -161,7 +161,7 @@ public class Controller {
             topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
                 state.getNavigationNodes().remove(i);
-                guiHandler.deleteNavNodeFromList(i);
+                //guiHandler.deleteNavNodeFromList(i);
             }
         }
     }
@@ -181,7 +181,7 @@ public class Controller {
      */
     public void orderNavNodes() {  
         Collection<Selection> col = Router.optimizeRoute();         
-        guiHandler.setNavNodesOrder(new ArrayList<Integer>());   //TODO make this list
+        //guiHandler.setNavNodesOrder(new ArrayList<Integer>());   //TODO make this list
         state.setNavigationNodes(new ArrayList<Selection>());
         state.getNavigationNodes().addAll(col);
     }
