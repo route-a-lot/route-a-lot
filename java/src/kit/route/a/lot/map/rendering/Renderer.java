@@ -51,13 +51,13 @@ public class Renderer {
             logger.error("tileDim < 0 => seems like an overflow");
         }
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
-        int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim) - 1;
-        int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
+        int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim);
+        int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim) - 1;
         int minLat = (int) Math.floor(context.getTopLeft().getLatitude() / tileDim) - 1;
         for (int i = minLon; i <= maxLon; i++) {
             for (int k = minLat; k <= maxLat; k++) {
-                Coordinates topLeft = new Coordinates((k + 1) * tileDim, i * tileDim);
-                Coordinates bottomRight = new Coordinates(k * tileDim, (i + 1) * tileDim);
+                Coordinates topLeft = new Coordinates(k * tileDim, i * tileDim);
+                Coordinates bottomRight = new Coordinates((k + 1) * tileDim, (i + 1) * tileDim);
                 Tile currentTile = prerenderTile(topLeft, bottomRight, detail);
                 context.drawImage(topLeft, currentTile.getData(), detail);
             }

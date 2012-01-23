@@ -156,7 +156,9 @@ public class QTLeaf extends QuadTree {
         Set<MapElement> elememts) {
         if(isInBounds(upLeft, bottomRight)) {
             for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {
-                elememts.add(baseLayer[i]);
+               // if (baseLayer[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
+                    elememts.add(baseLayer[i]);
+               // }
             }
         }
     }

@@ -388,7 +388,7 @@ public class Controller {
         Controller ctrl = new Controller();
         ctrl.guiHandler.createGUI();
         File stateFile = new File("./state.state");
-        File defaultMap = new File("./test/resources/karlsruhe_big.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         if (stateFile.exists()) {   
             logger.info("load state file..."); 
             try { 

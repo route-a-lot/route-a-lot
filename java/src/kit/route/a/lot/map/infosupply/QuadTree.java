@@ -36,10 +36,14 @@ public abstract class QuadTree {
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
         double width = Math.abs(this.bottomRight.getLongitude() - this.upLeft.getLongitude());
         double height = Math.abs(this.upLeft.getLatitude() - this.bottomRight.getLatitude());
-        Rectangle2D.Double thiss = new Rectangle2D.Double(this.upLeft.getLongitude(), this.upLeft.getLatitude(), width, height);
+        Rectangle2D.Double thiss = new Rectangle2D.Double(Math.min(this.upLeft.getLongitude(), this.bottomRight.getLongitude()), 
+                                                          Math.min(this.upLeft.getLatitude(), this.bottomRight.getLatitude()), 
+                                                          width, height);
         width = Math.abs(bottomRight.getLongitude() - upLeft.getLongitude());
         height = Math.abs(upLeft.getLatitude() - bottomRight.getLatitude());
-        Rectangle2D.Double bounce = new Rectangle2D.Double(upLeft.getLongitude(), upLeft.getLatitude(), width, height);
+        Rectangle2D.Double bounce = new Rectangle2D.Double(Math.min(upLeft.getLongitude(), bottomRight.getLongitude()), 
+                                                           Math.min(upLeft.getLatitude(), bottomRight.getLatitude()),  
+                                                           width, height);
         return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
     }
 
