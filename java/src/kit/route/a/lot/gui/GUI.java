@@ -59,6 +59,7 @@ public class GUI extends JFrame {
     private ArrayList<RALListener> importOsmFileList;
     private ArrayList<Coordinates> navPointsList;
     private ArrayList<RALListener> optimizeRouteList;
+    private ArrayList<RALListener> whatWasClickedList;
     
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
@@ -108,6 +109,11 @@ public class GUI extends JFrame {
     private JPanel tab3;
 
     private JSpinner s_speed;
+    
+    JMenuItem startItem;
+    JMenuItem endItem;
+    JMenuItem stopoverItem;
+    JMenuItem favoriteItem;
 
     private ArrayList<JTextField> alladdedNavPoints;
     private ArrayList<JButton> alladdedButtons;
@@ -132,6 +138,10 @@ public class GUI extends JFrame {
     private File importedHeightMap;
     private DefaultListModel textRouteList;
 
+    public static final int FREEMAPSPACE = 0;
+    public static final int POI = 1;
+    public static final int FAVORITE = 2;
+    
     public GUI(Coordinates center) {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -139,6 +149,7 @@ public class GUI extends JFrame {
         viewChangedList = new ArrayList<RALListener>();
         importOsmFileList = new ArrayList<RALListener>();
         navPointsList = new ArrayList<Coordinates>();
+        whatWasClickedList = new ArrayList<RALListener>();
         this.center = center;
         this.pack();
         this.setVisible(true);
@@ -182,12 +193,87 @@ public class GUI extends JFrame {
 
         mapConstructor();
         
-
+        startItem = new JMenuItem("als Start");
+        startItem.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Coordinates navPointCoordinates = calculateClickPos(popUpXPos-drawMap.getX(), popUpYPos-drawMap.getY());
+                if(navPointsList.size() == 0 ) {
+                    navPointsList.add(navPointCoordinates);
+                } else {
+                    navPointsList.set(0, navPointCoordinates);
+                }
+                
+                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, navPointCoordinates, navPointsList.indexOf(navPointCoordinates), context);
+                for(RALListener lis: targetSelectedList){
+                    lis.handleRALEvent(navEvent);
+                }
+                repaint();
+            }
+        });
+        
+        endItem = new JMenuItem("als Ziel");
+        endItem.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Coordinates navPointCoordinates = calculateClickPos(popUpXPos-drawMap.getX(), popUpYPos-drawMap.getY());
+                if(navPointsList.size() == 0 ) {
+                    navPointsList.add(new Coordinates());
+                    navPointsList.add(navPointCoordinates);
+                } else if(navPointsList.size() == 1) {
+                    navPointsList.add(navPointCoordinates);
+                } else {
+                    navPointsList.set(navPointsList.size() - 1, navPointCoordinates);
+                }
+                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, navPointCoordinates, navPointsList.indexOf(navPointCoordinates), context);
+                for(RALListener lis: targetSelectedList){
+                    lis.handleRALEvent(navEvent);
+                }
+                repaint();
+            }
+        });
+        
+        stopoverItem = new JMenuItem("als Zwischenhalt");
+        stopoverItem.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Coordinates navPointCoordinates = calculateClickPos(popUpXPos-drawMap.getX(), popUpYPos-drawMap.getY());
+                if(navPointsList.size() == 0) {
+                    navPointsList.add(new Coordinates());
+                    navPointsList.add(navPointCoordinates);
+                    navPointsList.add(new Coordinates());
+                } else if(navPointsList.size() == 1) {
+                    navPointsList.add(navPointCoordinates);
+                    navPointsList.add(new Coordinates());
+                } else {
+                    navPointsList.add(navPointsList.size() - 1, navPointCoordinates);
+                }
+                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, navPointCoordinates, navPointsList.indexOf(navPointCoordinates), context);
+                for(RALListener lis: targetSelectedList){
+                    lis.handleRALEvent(navEvent);
+                }
+                repaint();
+            }
+        });
+        
+        favoriteItem = new JMenuItem("als Favorit");
+        favoriteItem.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Coordinates navPointCoordinates = calculateClickPos(popUpXPos-drawMap.getX(), popUpYPos-drawMap.getY());
+                repaint();
+            }
+        });
+        
         this.navNodeMenu = new JPopupMenu("NavNodes");
-        navNodeMenu.add(makeMenuItem("als Start"));
-        navNodeMenu.add(makeMenuItem("als Ziel"));
-        navNodeMenu.add(makeMenuItem("als Zwischenhalt"));
-        navNodeMenu.add(makeMenuItem("als Favorit"));
+        navNodeMenu.add(startItem);
+        navNodeMenu.add(endItem);
+        navNodeMenu.add(stopoverItem);
+        navNodeMenu.add(favoriteItem);
 
         this.l_activeRoute = new JLabel();
         l_activeRoute.setText("Route:");
@@ -324,28 +410,6 @@ public class GUI extends JFrame {
             }
         }); 
     }
-
-    private JMenuItem makeMenuItem(String label) {
-        JMenuItem item = new JMenuItem(label);
-        item.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                float navPointLongitude = topLeft.getLongitude() + Projection.getZoomFactor(currentZoomLevel) * (popUpXPos - map.getX());
-                float navPointLatitude = topLeft.getLatitude() + Projection.getZoomFactor(currentZoomLevel) * (map.getY() - popUpYPos);
-                Coordinates navPointCoordinates = new Coordinates(navPointLatitude, navPointLongitude);
-                navPointsList.add(navPointCoordinates);
-                NavNodeSelectedEvent navEvent = new NavNodeSelectedEvent(this, navPointCoordinates, navPointsList.indexOf(navPointCoordinates), context);
-                for(RALListener lis: targetSelectedList){
-                    lis.handleRALEvent(navEvent);
-                }
-                repaint();
-                System.out.println(navPointLongitude);
-                System.out.println(navPointLatitude);
-            }
-        });
-        return item;
-    }
     
     public void addViewChangedListener(RALListener viewChangedListener) {
         viewChangedList.add(viewChangedListener);
@@ -420,6 +484,13 @@ public class GUI extends JFrame {
                     popUpYPos = e.getY();
                     
                     System.out.println("geklickt");
+                } else {
+                    popUpXPos = e.getX();
+                    popUpYPos = e.getY();
+                    PositionEvent posEv = new PositionEvent(this, calculateClickPos(popUpXPos, popUpYPos));
+                    for(RALListener lis: whatWasClickedList) {
+                        lis.handleRALEvent(posEv);
+                    }
                 }
             }
         });
@@ -760,5 +831,9 @@ public class GUI extends JFrame {
         clickPos.setLatitude(center.getLatitude() + (y - drawMap.getVisibleRect().height / 2)*Projection.getZoomFactor(currentZoomLevel));
         clickPos.setLongitude(center.getLongitude() + (x - drawMap.getVisibleRect().width / 2)*Projection.getZoomFactor(currentZoomLevel));
         return clickPos;
+    }
+    
+    public void addWhatWasClickedListener(RALListener whatWasClickedListener) {
+        whatWasClickedList.add(whatWasClickedListener);
     }
 }
