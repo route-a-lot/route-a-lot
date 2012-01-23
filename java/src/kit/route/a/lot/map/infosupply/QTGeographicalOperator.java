@@ -41,13 +41,17 @@ public class QTGeographicalOperator implements GeographicalOperator {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);
         }
     }
-    
+
     @Override
     public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
-        upLeft.setLatitude(zoomlevels[0].getUpLeft().getLatitude());
-        upLeft.setLongitude(zoomlevels[0].getUpLeft().getLongitude());
-        bottomRight.setLatitude(zoomlevels[0].getBottomRight().getLatitude());
-        bottomRight.setLongitude(zoomlevels[0].getBottomRight().getLongitude());
+        if (upLeft != null) {
+            upLeft.setLatitude(zoomlevels[0].getUpLeft().getLatitude());
+            upLeft.setLongitude(zoomlevels[0].getUpLeft().getLongitude());
+        }
+        if (bottomRight != null) {
+            bottomRight.setLatitude(zoomlevels[0].getBottomRight().getLatitude());
+            bottomRight.setLongitude(zoomlevels[0].getBottomRight().getLongitude());
+        }
     }
 
     @Override
