@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -83,12 +85,15 @@ public class GUI extends JFrame {
     private JButton heightMapManagement;
     
     private JComboBox chooseImportedMap;
+    
+    private JPanel statusBar;
 
     private JLabel l_activeRoute;
     private JLabel l_routeText;
     private JLabel l_highwayMalus;
     private JLabel l_heightMalus;
     private JLabel l_speed;
+    private JLabel l_position;
     
     private JList textRoute;
     private JScrollPane textRouteScrollPane;
@@ -270,15 +275,26 @@ public class GUI extends JFrame {
             }
         });
         
-        this.navNodeMenu = new JPopupMenu("NavNodes");
+        navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(startItem);
         navNodeMenu.add(endItem);
         navNodeMenu.add(stopoverItem);
         navNodeMenu.add(favoriteItem);
 
-        this.l_activeRoute = new JLabel();
-        l_activeRoute.setText("Route:");
+        
+        statusBar = new JPanel();
+        statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
 
+        l_activeRoute = new JLabel();
+        l_activeRoute.setText("Route:");
+        l_position = new JLabel();
+        
+        statusBar.add(l_activeRoute);
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(l_position);
+        statusBar.add(Box.createHorizontalGlue());
+
+        
         mapContents = new JPanel();
         mapContents.setLayout(new BorderLayout());
 
@@ -290,7 +306,7 @@ public class GUI extends JFrame {
         contents.setLayout(new BorderLayout());
 
         contents.add(tabbpane, BorderLayout.WEST);
-        contents.add(l_activeRoute, BorderLayout.SOUTH);
+        contents.add(statusBar, BorderLayout.SOUTH);
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
@@ -500,8 +516,8 @@ public class GUI extends JFrame {
             
             @Override
             public void mouseMoved(MouseEvent e) {
-                // TODO Auto-generated method stub
-                
+                Coordinates mousePosCoordinates = calculateClickPos(e.getX() - drawMap.getX(), e.getY() - drawMap.getY());
+                l_position.setText(mousePosCoordinates.toString());
             }
             
             @Override
