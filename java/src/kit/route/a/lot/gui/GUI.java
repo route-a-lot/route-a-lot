@@ -590,8 +590,8 @@ public class GUI extends JFrame {
             
             @Override
             public void mouseMoved(MouseEvent e) {
-                // TODO Auto-generated method stub
-                
+                Coordinates mousePosCoordinates = calculateClickPos(e.getX() - drawMap.getX(), e.getY() - drawMap.getY());
+                l_position.setText(mousePosCoordinates.toString());
             }
             
             @Override
