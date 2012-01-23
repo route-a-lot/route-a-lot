@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -33,6 +35,76 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     private QuadTree zoomlevels[] = new QuadTree[countZoomlevel];
+    
+    public QTGeographicalOperator() {
+        for(int i = 0; i < countZoomlevel; i++) {
+            zoomlevels[i] = new QuadTree(new Coordinates(0f, 0f), new Coordinates(0f, 0f)) {
+                
+                @Override
+                protected void trimm() {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public String toString(int offset, List<Integer> last) {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+                
+                @Override
+                protected void save(DataOutputStream stream) throws IOException {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                protected void load(DataInputStream stream) throws IOException {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public int countElements() {
+                    // TODO Auto-generated method stub
+                    return 0;
+                }
+                
+                @Override
+                protected boolean addToOverlay(MapElement element) {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+                
+                @Override
+                protected boolean addToBaseLayer(MapElement element) {
+                    // TODO Auto-generated method stub
+                    return false;
+                }
+                
+                @Override
+                protected void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+                        Set<MapElement> elememts) {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+                        Set<MapElement> elememts) {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                protected void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+                        Set<MapElement> baseLayer, Set<MapElement> overlay) {
+                    // TODO Auto-generated method stub
+                    
+                }
+            }; 
+        }
+    }
     
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution

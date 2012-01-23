@@ -163,6 +163,7 @@ public class GUI extends JFrame {
         viewChangedList = new ArrayList<RALListener>();
         importOsmFileList = new ArrayList<RALListener>();
         navPointsList = new ArrayList<Coordinates>();
+        whatWasClickedList = new ArrayList<RALListener>();
         this.center = new Coordinates(0.0f, 0.0f);
         this.pack();
         this.setVisible(true);

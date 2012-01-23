@@ -106,8 +106,6 @@ public class Controller {
             new OSMLoader().importMap(osmFile);
             state.getLoadedMapInfo().buildZoomlevels();
             state.getLoadedMapInfo().trimm();
-            setViewToMapCenter();
-            //guiHandler.setView(state.getCenterCoordinates());
             renderer.resetRenderCache();
             state.setLoadedMapFile(new File(Util.removeExtension(osmFile.getPath()) + ".sral"));
             state.getImportedMaps().add(Util.removeExtension(osmFile.getPath()) + ".sral");
@@ -118,6 +116,8 @@ public class Controller {
                 logger.error("Could not save imported map to file.");
                 e.printStackTrace();
             }
+            setViewToMapCenter();
+            guiHandler.setView(state.getCenterCoordinates());
         }
        
     }
@@ -383,8 +383,10 @@ public class Controller {
      * @param args :-)
      */
     public static void main(String[] args) {
+        
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
+        ctrl.guiHandler.createGUI();
         File stateFile = new File("./state.state");
         File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         if (stateFile.exists()) {   
@@ -410,12 +412,11 @@ public class Controller {
             } else {
                 logger.warn("no map loaded."); //TODO not loading map 
             }
-        }
-        
-        ctrl.guiHandler.createGUI(ctrl.state.getCenterCoordinates());
+        }    
         ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
-        ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));               
+        ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));  
+        ctrl.setViewToMapCenter();
+        ctrl.guiHandler.setView(ctrl.state.getCenterCoordinates());
     }
-    
 }
