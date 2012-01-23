@@ -18,6 +18,7 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.rendering.Projection;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -130,17 +131,17 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public void buildZoomlevels() {
         //TODO: proper implementation
         MapElement reduced;
-        float multiplier = 300;
-        for (int i = 1; i < countZoomlevel; i++) {
+        float multiplier = 5;
+        for (int detail = 1; detail < countZoomlevel; detail++) {
             for (MapElement element: State.getInstance().getLoadedMapInfo().getAllElements()) {
                 if (element instanceof Node) {
                     continue;
                 }
-                reduced = element.getReduced(i, i * multiplier);
+                reduced = element.getReduced(detail, Projection.getZoomFactor(detail) * multiplier);
                 if (reduced == null) {
-                    logger.debug("Ignoring " + element + " for zoomlevel " + i);
+                    logger.debug("Ignoring " + element + " for zoomlevel " + detail);
                 } else {
-                    zoomlevels[i].addToBaseLayer(reduced);
+                    zoomlevels[detail].addToBaseLayer(reduced);
                 }
             }
         }

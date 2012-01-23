@@ -114,18 +114,18 @@ public class Area extends MapElement {
 
     @Override
     public MapElement getReduced(int detail, float range) {
-        Coordinates topRight = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
-        Coordinates bottomLeft = topRight;
+        Coordinates topLeft = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
+        Coordinates bottomRight = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
         Coordinates position;
         for (Node node: nodes) {
             position = node.getPos();
-            topRight.setLatitude(Math.max(topRight.getLatitude(), position.getLatitude()));
-            topRight.setLongitude(Math.max(topRight.getLongitude(), position.getLongitude()));
-            bottomLeft.setLatitude(Math.min(topRight.getLatitude(), position.getLatitude()));
-            bottomLeft.setLongitude(Math.min(topRight.getLongitude(), position.getLongitude()));
+            topLeft.setLatitude(Math.min(topLeft.getLatitude(), position.getLatitude()));
+            topLeft.setLongitude(Math.min(topLeft.getLongitude(), position.getLongitude()));
+            bottomRight.setLatitude(Math.max(bottomRight.getLatitude(), position.getLatitude()));
+            bottomRight.setLongitude(Math.max(bottomRight.getLongitude(), position.getLongitude()));
         }
-        if (topRight.getLatitude() - bottomLeft.getLatitude() > range ||
-                topRight.getLongitude() - bottomLeft.getLongitude() > range) {
+        if (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude()) > range * 4 ||
+                Math.abs(topLeft.getLongitude() - bottomRight.getLongitude()) > range * 4) {
             Area result = new Area(name, wayInfo);
             result.setNodes(simplify(nodes, range));
             return result;
