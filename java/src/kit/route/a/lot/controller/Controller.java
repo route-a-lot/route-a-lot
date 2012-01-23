@@ -388,7 +388,7 @@ public class Controller {
         Controller ctrl = new Controller();
         ctrl.guiHandler.createGUI();
         File stateFile = new File("./state.state");
-        File defaultMap = new File("./test/resources/karlsruhe_small.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_big.osm");
         if (stateFile.exists()) {   
             logger.info("load state file..."); 
             try { 
@@ -397,7 +397,9 @@ public class Controller {
                 logger.error("state loading: Read error occurred.");
                 e.printStackTrace();
             }
-            ctrl.loadMap(ctrl.state.getLoadedMapFile());
+        }
+        if (ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
+              ctrl.loadMap(ctrl.state.getLoadedMapFile());
         } else {
             if (defaultMap.exists()) {
                 logger.info("import default map...");

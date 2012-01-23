@@ -151,10 +151,10 @@ public class ArrayElementDB implements ElementDB {
 
     @Override
     public void swapNodeIds(int id1, int id2) {  
-        nodes.get(id1).assignID(-1);
-        nodes.get(id2).assignID(-1);
-        nodes.get(id1).assignID(id2);
-        nodes.get(id2).assignID(id1);
+//        nodes.get(id1).assignID(-1);
+//        nodes.get(id2).assignID(-1);
+        nodes.get(id1).setID(id2);
+        nodes.get(id2).setID(id1);
         Collections.swap(nodes, id1, id2);
         if (nodes.get(id1).getID() != id1 || nodes.get(id2).getID() != id2) {
             logger.error("swap Nodes " + id1 + " and " + id2 + " failed");
