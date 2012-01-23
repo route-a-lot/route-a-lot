@@ -164,7 +164,4 @@ public abstract class MapElement {
      */
     protected abstract void save(DataOutputStream stream) throws IOException;
  
-    public void setID(int id) {
-        this.id = id;
-    }
 }
