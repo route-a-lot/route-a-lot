@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.rendering;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.controller.State;
 
 
 public abstract class Projection {
@@ -9,10 +10,19 @@ public abstract class Projection {
     
     public abstract Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates);
     
-    public abstract float getScale();
-    
     public static int getZoomFactor(int detail) {
         return (int) Math.pow(1.7, detail);
+    }
+    
+    public static Projection getNewProjection(Coordinates topLeft) {
+        float scale = 2.9E-5f;
+        return new MercatorProjection(topLeft, scale);
+    }
+    
+    public static Projection getProjectionForCurrentMap() {
+        Coordinates topLeft = new Coordinates();
+        State.getInstance().getLoadedMapInfo().getBounds(topLeft, null);
+        return getNewProjection(topLeft);
     }
 
 }

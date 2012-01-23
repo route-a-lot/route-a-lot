@@ -9,12 +9,12 @@ public class MercatorProjection extends Projection {
     private Coordinates topLeft;
     float scale;
 
-    public MercatorProjection(Coordinates topLeft, Coordinates bottomRight, int width) {
+    protected MercatorProjection(Coordinates topLeft, Coordinates bottomRight, int width) {
         this(topLeft, calculateScaleFromWidth(topLeft, bottomRight, width));
     }
 
 
-    public MercatorProjection(Coordinates topLeft, float scale) {
+    protected MercatorProjection(Coordinates topLeft, float scale) {
         this.mTopLeft = mercatorCoordinates(topLeft);
         this.topLeft = topLeft;
         this.scale = scale;
@@ -58,11 +58,6 @@ public class MercatorProjection extends Projection {
 
     private static double arsinh(double x) {
         return Math.log(x + Math.sqrt(x * x + 1));
-    }
-
-    @Override
-    public float getScale() {
-        return scale;
     }
 
     public static float calculateScaleFromWidth(Coordinates topLeft, Coordinates bottomRight, int width) {

@@ -28,11 +28,6 @@ public class SimpleProjection extends Projection {
     }
 
     @Override
-    public float getScale() {
-        return 1;
-    }
-
-    @Override
     public Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates) {
         Coordinates geoCoordinates = new Coordinates();
         geoCoordinates.setLatitude((localCoordinates.getLatitude()

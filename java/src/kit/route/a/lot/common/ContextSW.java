@@ -24,7 +24,7 @@ public class ContextSW extends Context {
     public ContextSW(Coordinates topLeft, int width, int height, float scale, Graphics surface) {
         super(width, height, topLeft, null);
         output = surface;
-        projection = new MercatorProjection(topLeft, scale);
+        projection = Projection.getNewProjection(topLeft);
         Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
         Coordinates localBottomRight =
                 new Coordinates(localTopLeft.getLatitude() - height, localTopLeft.getLongitude() + width);
