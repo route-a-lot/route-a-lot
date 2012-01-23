@@ -19,13 +19,13 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -59,9 +59,19 @@ public class GUI extends JFrame {
     private ArrayList<RALListener> targetSelectedList;
     private ArrayList<RALListener> viewChangedList;
     private ArrayList<RALListener> importOsmFileList;
-    private ArrayList<Coordinates> navPointsList;
     private ArrayList<RALListener> optimizeRouteList;
     private ArrayList<RALListener> whatWasClickedList;
+    private ArrayList<RALListener> addFavList;
+    private ArrayList<RALListener> loadRouteList;
+    private ArrayList<RALListener> saveRouteList;
+    private ArrayList<RALListener> exportRoutList;
+    private ArrayList<RALListener> speedList;
+    private ArrayList<RALListener> closeList;
+    private ArrayList<RALListener> heightMalusList;
+    private ArrayList<RALListener> highwayMalusList;
+    private ArrayList<RALListener> importHeightMapList;
+    private ArrayList<RALListener> printRouteList;
+    private ArrayList<Coordinates> navPointsList;
     
     private JPopupMenu navNodeMenu;
     private JTabbedPane tabbpane;
@@ -85,15 +95,12 @@ public class GUI extends JFrame {
     private JButton heightMapManagement;
     
     private JComboBox chooseImportedMap;
-    
-    private JPanel statusBar;
 
     private JLabel l_activeRoute;
     private JLabel l_routeText;
     private JLabel l_highwayMalus;
     private JLabel l_heightMalus;
     private JLabel l_speed;
-    private JLabel l_position;
     
     private JList textRoute;
     private JScrollPane textRouteScrollPane;
@@ -115,10 +122,10 @@ public class GUI extends JFrame {
 
     private JSpinner s_speed;
     
-    JMenuItem startItem;
-    JMenuItem endItem;
-    JMenuItem stopoverItem;
-    JMenuItem favoriteItem;
+    private JMenuItem startItem;
+    private JMenuItem endItem;
+    private JMenuItem stopoverItem;
+    private JMenuItem favoriteItem;
 
     private ArrayList<JTextField> alladdedNavPoints;
     private ArrayList<JButton> alladdedButtons;
@@ -150,11 +157,7 @@ public class GUI extends JFrame {
     public GUI(Coordinates center) {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        targetSelectedList = new ArrayList<RALListener>();
-        viewChangedList = new ArrayList<RALListener>();
-        importOsmFileList = new ArrayList<RALListener>();
-        navPointsList = new ArrayList<Coordinates>();
-        whatWasClickedList = new ArrayList<RALListener>();
+        initializeAllArrayLists();
         this.center = center;
         this.pack();
         this.setVisible(true);
@@ -164,14 +167,28 @@ public class GUI extends JFrame {
     public GUI() {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        targetSelectedList = new ArrayList<RALListener>();
-        viewChangedList = new ArrayList<RALListener>();
-        importOsmFileList = new ArrayList<RALListener>();
-        navPointsList = new ArrayList<Coordinates>();
-        whatWasClickedList = new ArrayList<RALListener>();
+        initializeAllArrayLists();
         this.center = new Coordinates(0.0f, 0.0f);
         this.pack();
         this.setVisible(true);
+    }
+    
+    private void initializeAllArrayLists() {
+        targetSelectedList = new ArrayList<RALListener>();
+        viewChangedList = new ArrayList<RALListener>();
+        importOsmFileList = new ArrayList<RALListener>();
+        whatWasClickedList = new ArrayList<RALListener>();
+        addFavList = new ArrayList<RALListener>();
+        loadRouteList = new ArrayList<RALListener>();
+        saveRouteList = new ArrayList<RALListener>();
+        exportRoutList = new ArrayList<RALListener>();
+        speedList = new ArrayList<RALListener>();
+        closeList = new ArrayList<RALListener>();
+        heightMalusList = new ArrayList<RALListener>();
+        highwayMalusList = new ArrayList<RALListener>();
+        importHeightMapList = new ArrayList<RALListener>();
+        printRouteList = new ArrayList<RALListener>();
+        navPointsList = new ArrayList<Coordinates>();
     }
     
     //TODO right place??
@@ -270,31 +287,24 @@ public class GUI extends JFrame {
             
             @Override
             public void actionPerformed(ActionEvent e) {
-                Coordinates navPointCoordinates = calculateClickPos(popUpXPos-drawMap.getX(), popUpYPos-drawMap.getY());
+                Coordinates favoriteCoordinates = calculateClickPos(popUpXPos-drawMap.getX(), popUpYPos-drawMap.getY());
+                AddFavEvent addFavEvent = new AddFavEvent(this, favoriteCoordinates, "", "");
+                for(RALListener lis: addFavList) {
+                    lis.handleRALEvent(addFavEvent);
+                }
                 repaint();
             }
         });
         
-        navNodeMenu = new JPopupMenu("NavNodes");
+        this.navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(startItem);
         navNodeMenu.add(endItem);
         navNodeMenu.add(stopoverItem);
         navNodeMenu.add(favoriteItem);
 
-        
-        statusBar = new JPanel();
-        statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
-
-        l_activeRoute = new JLabel();
+        this.l_activeRoute = new JLabel();
         l_activeRoute.setText("Route:");
-        l_position = new JLabel();
-        
-        statusBar.add(l_activeRoute);
-        statusBar.add(Box.createHorizontalGlue());
-        statusBar.add(l_position);
-        statusBar.add(Box.createHorizontalGlue());
 
-        
         mapContents = new JPanel();
         mapContents.setLayout(new BorderLayout());
 
@@ -306,7 +316,7 @@ public class GUI extends JFrame {
         contents.setLayout(new BorderLayout());
 
         contents.add(tabbpane, BorderLayout.WEST);
-        contents.add(statusBar, BorderLayout.SOUTH);
+        contents.add(l_activeRoute, BorderLayout.SOUTH);
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
@@ -346,12 +356,20 @@ public class GUI extends JFrame {
 
         print = new JButton();
         print.setText("Ausdrucken");
+        print.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                //TODO
+            }
+        });
 
         graphics = new JButton();
         graphics.setText("2D/3D");
 
         Hashtable<Integer, JLabel> allScrollingTicks = new Hashtable<Integer, JLabel>();
 
+        allScrollingTicks.put(0, new JLabel("0"));
         allScrollingTicks.put(1, new JLabel("1"));
         allScrollingTicks.put(2, new JLabel("2"));
         allScrollingTicks.put(3, new JLabel("3"));
@@ -361,18 +379,32 @@ public class GUI extends JFrame {
         allScrollingTicks.put(7, new JLabel("7"));
         allScrollingTicks.put(8, new JLabel("8"));
         allScrollingTicks.put(9, new JLabel("9"));
-        allScrollingTicks.put(10, new JLabel("10"));
 
         scrolling = new JSlider();
-        scrolling.setMaximum(10);
-        scrolling.setMinimum(1);
-        scrolling.setValue(1);
+        scrolling.setMaximum(9);
+        scrolling.setMinimum(0);
+        scrolling.setValue(0);
         scrolling.setMajorTickSpacing(1);
         scrolling.setMinorTickSpacing(1);
         scrolling.setLabelTable(allScrollingTicks);
         scrolling.setPaintTicks(true);
         scrolling.setPaintLabels(true);
         scrolling.setSnapToTicks(true);
+        scrolling.addChangeListener(new ChangeListener() {
+            
+            @Override
+            public void stateChanged(ChangeEvent ce) {
+                currentZoomLevel = scrolling.getValue();
+                
+                recalculateView();
+                
+                ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, currentZoomLevel);
+                for(RALListener lis: viewChangedList){
+                    lis.handleRALEvent(viewEvent);
+                }
+                repaint();
+            }
+        });
 
         mapButtonPanel.add(l_routeText);
         mapButtonPanel.add(load);
@@ -425,21 +457,50 @@ public class GUI extends JFrame {
                 // TODO Auto-generated method stub
                 
             }
-        }); 
-    }
-    
-    public void addViewChangedListener(RALListener viewChangedListener) {
-        viewChangedList.add(viewChangedListener);
-    }
-    public void addTargetSelectedListener(RALListener targetSelectedListener) {
-        targetSelectedList.add(targetSelectedListener);
-    }
-    public void addImportOsmFileListener(RALListener importOsmFileListener) {
-        importOsmFileList.add(importOsmFileListener);
-    }
-    
-    public void addOptimizeRouteListener(RALListener optimizeRouteListener) {
-        optimizeRouteList.add(optimizeRouteListener);
+        });
+        this.addWindowListener(new WindowListener() {
+            
+            @Override
+            public void windowOpened(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowIconified(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowDeiconified(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowDeactivated(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowClosing(WindowEvent arg0) {
+                // TODO
+            }
+            
+            @Override
+            public void windowClosed(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+            
+            @Override
+            public void windowActivated(WindowEvent arg0) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
     }
     
     @Override
@@ -516,8 +577,8 @@ public class GUI extends JFrame {
             
             @Override
             public void mouseMoved(MouseEvent e) {
-                Coordinates mousePosCoordinates = calculateClickPos(e.getX() - drawMap.getX(), e.getY() - drawMap.getY());
-                l_position.setText(mousePosCoordinates.toString());
+                // TODO Auto-generated method stub
+                
             }
             
             @Override
@@ -626,11 +687,13 @@ public class GUI extends JFrame {
             
             @Override
             public void stateChanged(ChangeEvent ce) {
-                int newSpeed = 15;
-                System.out.println(newSpeed);
+                IntEvent intEvent = new IntEvent(GUI.this, Integer.parseInt(s_speed.getValue().toString()));
+                for(RALListener lis: speedList) {
+                    lis.handleRALEvent(intEvent);
+                }
             }
         });
-
+        
         l_speed = new JLabel("hm/h");
 
         tab1.add(startPoint);
@@ -714,6 +777,16 @@ public class GUI extends JFrame {
         highwayMalus.setMinorTickSpacing(1);
         highwayMalus.setPaintTicks(true);
         highwayMalus.setSnapToTicks(true);
+        highwayMalus.addChangeListener(new ChangeListener() {
+            
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                IntEvent intEvent = new IntEvent(GUI.this, highwayMalus.getValue());
+                for(RALListener lis: highwayMalusList) {
+                    lis.handleRALEvent(intEvent);
+                }
+            }
+        });
         
         
         l_heightMalus = new JLabel("Reliefmalus");
@@ -725,6 +798,16 @@ public class GUI extends JFrame {
         reliefmalus.setMinorTickSpacing(1);
         reliefmalus.setPaintTicks(true);
         reliefmalus.setSnapToTicks(true);
+        reliefmalus.addChangeListener(new ChangeListener() {
+            
+            @Override
+            public void stateChanged(ChangeEvent arg0) {
+                IntEvent intEvent = new IntEvent(GUI.this, reliefmalus.getValue());
+                for(RALListener lis: heightMalusList) {
+                    lis.handleRALEvent(intEvent);
+                }
+            }
+        });
         
         importOSM = new JButton("Importiere OSM-Karte");
         importOSM.addActionListener(new ActionListener() {
@@ -769,7 +852,7 @@ public class GUI extends JFrame {
             
             @Override
             public void actionPerformed(ActionEvent e) {
-                importMapFileChooser();
+                GUI.this.importHeightMapFileChooser();
             }
         });
         
@@ -804,6 +887,10 @@ public class GUI extends JFrame {
         int returnValue = importHeightMap.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedHeightMap = importHeightMap.getSelectedFile();
+            PathEvent pathEvent = new PathEvent(GUI.this, importHeightMap.getSelectedFile().getPath());
+            for(RALListener lis: importHeightMapList) {
+                lis.handleRALEvent(pathEvent);
+            }
         }
     }
     
@@ -812,6 +899,10 @@ public class GUI extends JFrame {
         int returnValue = loadRoute.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             loadedRouteFile = loadRoute.getSelectedFile();
+            PathEvent pathEvent =  new PathEvent(GUI.this, loadRoute.getSelectedFile().getPath());
+            for(RALListener lis: loadRouteList) {
+                lis.handleRALEvent(pathEvent);
+            }
         }
     }
     
@@ -820,6 +911,10 @@ public class GUI extends JFrame {
         int returnValue = saveRoute.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             savedRouteFile = saveRoute.getSelectedFile();
+            PathEvent pathEvent = new PathEvent(GUI.this, saveRoute.getSelectedFile().getPath());
+            for(RALListener lis: saveRouteList) {
+                lis.handleRALEvent(pathEvent);
+            }
         }
     }
     
@@ -828,6 +923,10 @@ public class GUI extends JFrame {
         int returnValue = exportRoute.showDialog(this, "Exportieren");
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             exportedRouteFile = exportRoute.getSelectedFile();
+            PathEvent pathEvent = new PathEvent(GUI.this, exportRoute.getSelectedFile().getPath());
+            for(RALListener lis: exportRoutList) {
+                lis.handleRALEvent(pathEvent);
+            }
         }
     }
     
@@ -850,7 +949,78 @@ public class GUI extends JFrame {
         return clickPos;
     }
     
+    public void leftClickPOIFav() {
+        
+    }
+    
+    public void setSpeed(int speed) {
+        s_speed.setValue(speed);
+    }
+    
+    public void setNavPointsOrdered(ArrayList<Coordinates> orderedNavPointsList) {
+        navPointsList = orderedNavPointsList;
+    }
+    
+    public void deleteNavNodesFromList(Coordinates coordinates) {
+        navPointsList.remove(coordinates);
+    }
+    
+    public void addViewChangedListener(RALListener viewChangedListener) {
+        viewChangedList.add(viewChangedListener);
+    }
+    public void addTargetSelectedListener(RALListener targetSelectedListener) {
+        targetSelectedList.add(targetSelectedListener);
+    }
+    public void addImportOsmFileListener(RALListener importOsmFileListener) {
+        importOsmFileList.add(importOsmFileListener);
+    }
+    
+    public void addLoadRouteListener(RALListener loadRouteListener) {
+        loadRouteList.add(loadRouteListener);
+    }
+    
+    public void addSaveRouteListener(RALListener saveRouteListener) {
+        saveRouteList.add(saveRouteListener);
+    }
+    
+    public void addExportRouteListener(RALListener exportRouteListener) {
+        exportRoutList.add(exportRouteListener);
+    }
+    
+    public void addOptimizeRouteListener(RALListener optimizeRouteListener) {
+        optimizeRouteList.add(optimizeRouteListener);
+    }
+    
     public void addWhatWasClickedListener(RALListener whatWasClickedListener) {
         whatWasClickedList.add(whatWasClickedListener);
+    }
+    
+    public void addFavoriteListener(RALListener addFavListener) {
+        addFavList.add(addFavListener);
+    }
+    
+    public void addSetSpeedListener(RALListener setSpeedListener) {
+        speedList.add(setSpeedListener);
+    }
+    
+    public void addCloseListener(RALListener closeListener) {
+        closeList.add(closeListener);
+    }
+    
+    public void addHighwayMalusListener(RALListener highwayMalusListener) {
+        highwayMalusList.add(highwayMalusListener);
+    }
+    
+    public void addHeightMalusListener(RALListener heightMalusListener) {
+        heightMalusList.add(heightMalusListener);
+    }
+    
+    public void addImportHeightMapListener(RALListener importHeightMapListener) {
+        importHeightMapList.add(importHeightMapListener);
+    }
+    
+    public void addPrintRouteListener(RALListener printRouteListener) {
+        printRouteList.add(printRouteListener);
+        //TODO
     }
 }
