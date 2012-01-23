@@ -4,8 +4,8 @@ import java.util.EventObject;
 
 
 public class IntEvent extends EventObject {
+    
     private int number;
-
     
     public int getNumber() {
         return number;

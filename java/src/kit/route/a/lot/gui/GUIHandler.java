@@ -84,8 +84,8 @@ public class GUIHandler {
         gui.addOptimizeRouteListener(optimizeRouteListener);
     }
     
-    public void setNavNodesOrder(ArrayList<Integer> orderedList) {
-        //TODO
+    public void setNavNodesOrder(ArrayList<Coordinates> orderedList) {
+        gui.setNavPointsOrdered(orderedList);
     }
     
     public void addLoadMapListener(RALListener loadMapListener) {
@@ -96,8 +96,8 @@ public class GUIHandler {
         //TODO
     }
     
-    public void deleteNavNodeFromList(int i) {
-        //TODO delete NavNode with this Coordinates
+    public void deleteNavNodeFromList(Coordinates coordinates) {
+        gui.deleteNavNodesFromList(coordinates);
     }
     
     public void addSwitchNavNodesListener (RALListener switchNavNodesListener) {
@@ -105,7 +105,7 @@ public class GUIHandler {
     }
     
     public void addAddFavoriteListener(RALListener addFavListener) {
-        //TODO
+        gui.addFavoriteListener(addFavListener);
     }
     
     public void addDeleteFavListener (RALListener deleteFavListener) {
@@ -113,31 +113,32 @@ public class GUIHandler {
     }
     
     public void addSaveRouteListener(RALListener saveRouteListener) {
-        //TODO
+        gui.addSaveRouteListener(saveRouteListener);
     }
     
     public void addLoadRouteListener(RALListener loadRouteListener) {
-        //TODO
+        gui.addLoadRouteListener(loadRouteListener);
     }
     
     public void addExportRouteListener(RALListener exportRouteListener) {
-        //TODO
+        gui.addExportRouteListener(exportRouteListener);
     }
     
     public void printRouteListener(RALListener printRouteListener) {
+        gui.addPrintRouteListener(printRouteListener);
         //TODO
     }
     
-    public void addSetSpeedListener(RALListener loadRouteListener) {
-        //TODO
+    public void addSetSpeedListener(RALListener setSpeedListener) {
+        gui.addSetSpeedListener(setSpeedListener);
     }
     
     public void setSpeed(int speed) {
-        //TODO
+        gui.setSpeed(speed);
     }
     
     public void addWhatWasClickedListener(RALListener whatWasClickedListener) {
-        //TODO tells the gui whether a poi, navnode, ... was clicked
+        gui.addWhatWasClickedListener(whatWasClickedListener);
     }
     
     public void thisWasClicked(int element, Coordinates pos){
@@ -156,20 +157,20 @@ public class GUIHandler {
         //TODO
     }
     
-    public void addHighwayMalusListener(RALListener heighwayMalusListener) {
-        //TODO
+    public void addHighwayMalusListener(RALListener highwayMalusListener) {
+        gui.addHighwayMalusListener(highwayMalusListener);
     }
     
     public void addHeightMalusListener(RALListener heightMalusListener) {
-        //TODO
+        gui.addHeightMalusListener(heightMalusListener);
     }
     
-    public void addImportHeightMapListener(RALListener importHeightMapMalusListener) {
-        //TODO
+    public void addImportHeightMapListener(RALListener importHeightMapListener) {
+        gui.addImportHeightMapListener(importHeightMapListener);
     }
     
     public void addCloseListener(RALListener closeListener) {
-        //TODO
+        gui.addCloseListener(closeListener);
     }
     
     public void setView(Coordinates topLeft) {
