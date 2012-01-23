@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -97,6 +99,7 @@ public class GUI extends JFrame {
     private JComboBox chooseImportedMap;
 
     private JLabel l_activeRoute;
+    private JLabel l_position;
     private JLabel l_routeText;
     private JLabel l_highwayMalus;
     private JLabel l_heightMalus;
@@ -112,6 +115,7 @@ public class GUI extends JFrame {
     private JSlider reliefmalus;
     private JSlider scrolling;
 
+    private JPanel statusBar;
     private JPanel mapContents;
     private JPanel map;
     private JPanel drawMap;
@@ -302,8 +306,17 @@ public class GUI extends JFrame {
         navNodeMenu.add(stopoverItem);
         navNodeMenu.add(favoriteItem);
 
-        this.l_activeRoute = new JLabel();
+        statusBar = new JPanel();
+        statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
+
+        l_activeRoute = new JLabel();
         l_activeRoute.setText("Route:");
+        l_position = new JLabel();
+        
+        statusBar.add(l_activeRoute);
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(l_position);
+        statusBar.add(Box.createHorizontalGlue());
 
         mapContents = new JPanel();
         mapContents.setLayout(new BorderLayout());
@@ -316,7 +329,7 @@ public class GUI extends JFrame {
         contents.setLayout(new BorderLayout());
 
         contents.add(tabbpane, BorderLayout.WEST);
-        contents.add(l_activeRoute, BorderLayout.SOUTH);
+        contents.add(statusBar, BorderLayout.SOUTH);
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
