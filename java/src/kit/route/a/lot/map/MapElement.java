@@ -39,6 +39,14 @@ public abstract class MapElement {
     
     /**
      * Sets the MapElement ID if no ID was assigned so far.
+     * @param id the new MapElement ID
+     */
+    public void setID(int id) {
+        this.id = id;
+    }
+    
+    /**
+     * Sets the MapElement ID if no ID was assigned so far.
      * Assigning a negative ID will delete any ID.
      * @param id the new MapElement ID
      * @return whether the ID was set
@@ -46,7 +54,6 @@ public abstract class MapElement {
     public boolean assignID(int id) {
         if (this.id >= 0 && id >= 0) {
             throw new IllegalStateException("Element ID already assigned."); 
-            //return false;   
         }
         this.id = id;
         return true;    
