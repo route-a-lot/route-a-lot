@@ -45,6 +45,7 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
     private int zoomlevel = 0;
     private Coordinates topLeft = new Coordinates();
     private Coordinates bottomRight = new Coordinates();
+    private GUI gui;
 
     private JPopupMenu navNodeMenu;
     private JMenuItem startItem;
@@ -58,7 +59,8 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
      * @param listeners the collection of listener lists from the gui
      * @param navPointsList the list of navigation nodes from the gui
      */
-    public Map2D(ListenerLists listeners, ArrayList<Coordinates> navPointsList) {
+    public Map2D(ListenerLists listeners, ArrayList<Coordinates> navPointsList, GUI gui) {
+	this.gui = gui;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
         listener = listeners;
@@ -210,6 +212,7 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
         center.setLatitude(clickPos.getLatitude() - yDiff * Projection.getZoomFactor(zoomlevel));
         center.setLongitude(clickPos.getLongitude() - xDiff * Projection.getZoomFactor(zoomlevel));
         setZoomlevel(zoomlevel + e.getWheelRotation());
+        gui.setZoomlevel(this.zoomlevel);
     }
     
     /**
@@ -217,8 +220,8 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
      */
     @Override
     public void mouseMoved(MouseEvent e) {
-        //Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
-        //l_position.setText(mousePosCoordinates.toString()); //TODO: reactivate cursor position display in status bar
+        Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
+        gui.l_position.setText(mousePosCoordinates.toString()); //TODO
     }
 
     /**

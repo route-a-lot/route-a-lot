@@ -70,16 +70,16 @@ public class GUI extends JFrame {
     private JButton activateMapButton;
     private JButton heightMapManagement;
     
-    private JComboBox<String> chooseImportedMap;
+    private JComboBox chooseImportedMap;
 
     private JLabel l_activeRoute;
-    private JLabel l_position;
+    protected JLabel l_position;
     private JLabel l_routeText;
     private JLabel l_highwayMalus;
     private JLabel l_heightMalus;
     private JLabel l_speed;
     
-    private JList<String> textRoute;
+    private JList textRoute;
     private JScrollPane textRouteScrollPane;
 
     private JTextField startPoint;
@@ -110,7 +110,7 @@ public class GUI extends JFrame {
     private File savedRouteFile;
     private File exportedRouteFile;
     private File importedHeightMap;
-    private DefaultListModel<String> textRouteList;
+    private DefaultListModel textRouteList;
     
     private ArrayList<Coordinates> navPointsList;
     private ListenerLists listener;
@@ -146,7 +146,7 @@ public class GUI extends JFrame {
         mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        map = new Map2D(listener, navPointsList);
+        map = new Map2D(listener, navPointsList, this);
         
         statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
@@ -375,9 +375,9 @@ public class GUI extends JFrame {
         tab2 = new JPanel();
         tabbpane.addTab("Beschreibung", null, tab2, "2");
         // tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
-        textRouteList = new DefaultListModel<String>();
+        textRouteList = new DefaultListModel();
         String[] data = {"one", "two", "three", "four", "five", "six", "seve", "eight"};
-        textRoute = new JList<String>(textRouteList);
+        textRoute = new JList(textRouteList);
         for(int i = 0; i < data.length; i++) {
             textRouteList.add(i, data[i]);
         }
@@ -451,7 +451,7 @@ public class GUI extends JFrame {
             }
         });
              
-        chooseImportedMap = new JComboBox<String>();
+        chooseImportedMap = new JComboBox();
         chooseImportedMap.setEditable(true);
         chooseImportedMap.addItemListener(new ItemListener() {      
             @Override
@@ -476,7 +476,7 @@ public class GUI extends JFrame {
             }
         });
         
-        heightMapManagement = new JButton();
+        heightMapManagement = new JButton("Höhendaten - Verwaltung");
         heightMapManagement.addActionListener(new ActionListener() {     
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -492,6 +492,7 @@ public class GUI extends JFrame {
         tab3.add(deleteMapButton);
         tab3.add(activateMapButton);
         tab3.add(chooseImportedMap);
+        tab3.add(heightMapManagement);
     }
     
     /**
@@ -591,6 +592,10 @@ public class GUI extends JFrame {
     
     public void setNavPointsOrdered(ArrayList<Coordinates> orderedNavPointsList) {
         navPointsList = orderedNavPointsList;
+    }
+    
+    public void setZoomlevel(int zoomlevel) {
+        scrolling.setValue(zoomlevel);
     }
     
     public void deleteNavNodesFromList(Coordinates coordinates) {
