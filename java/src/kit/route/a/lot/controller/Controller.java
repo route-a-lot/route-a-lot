@@ -14,16 +14,21 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 
 import kit.route.a.lot.controller.listener.AddFavoriteListener;
+import kit.route.a.lot.controller.listener.ClickPosListener;
+import kit.route.a.lot.controller.listener.CloseListener;
 import kit.route.a.lot.controller.listener.DeleteNaveNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
+import kit.route.a.lot.controller.listener.HeightMalusListener;
+import kit.route.a.lot.controller.listener.HighwayMalusListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.LoadMapListener;
 import kit.route.a.lot.controller.listener.OrderNavNodesListener;
 import kit.route.a.lot.controller.listener.SelectNavNodeListener;
 import kit.route.a.lot.controller.listener.LoadRouteListener;
+import kit.route.a.lot.controller.listener.SpeedListener;
 import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.ViewChangedListener;
-
+import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
@@ -95,6 +100,7 @@ public class Controller {
             state.resetMap();
             try {
                 MapIO.loadMap(mapFile);
+                state.setLoadedMapFile(mapFile);
             } catch (IOException e) {
                 logger.fatal("loadMap: IO Exception in MapIO");
             }
@@ -146,6 +152,7 @@ public class Controller {
                     state.getLoadedMapInfo().select(pos));
         }
         calculateRoute();
+        //TODO duration
         //render(context, state.getDetailLevel());
         guiHandler.updateGUI();
     }
@@ -308,16 +315,18 @@ public class Controller {
             bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
             topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
-                //TODO tell gui
+                guiHandler.thisWasClicked(GUI.NAVNODE, pos);
                 return;
             }
         }    
         if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius()) != null) {
-            //TODO tell GUI
+            guiHandler.thisWasClicked(GUI.POI, pos);
             return;
         } 
-        
-        
+        if(state.getLoadedMapInfo().isFavorite(pos)) {
+            guiHandler.thisWasClicked(GUI.FAVORITE, pos);
+        }
+        guiHandler.thisWasClicked(GUI.FREEMAPSPACE, pos);
     }
 
     /**
@@ -463,5 +472,10 @@ public class Controller {
         ctrl.guiHandler.addSaveRouteListener(new SaveRouteListner(ctrl));
         ctrl.guiHandler.addLoadRouteListener(new LoadRouteListener(ctrl));
         ctrl.guiHandler.addExportRouteListener(new ExportRouteListener(ctrl));
+        ctrl.guiHandler.addSetSpeedListener(new SpeedListener(ctrl));
+        ctrl.guiHandler.addWhatWasClickedListener(new ClickPosListener(ctrl));
+        ctrl.guiHandler.addHeightMalusListener(new HeightMalusListener(ctrl));
+        ctrl.guiHandler.addHighwayMalusListener(new HighwayMalusListener(ctrl));
+        ctrl.guiHandler.addCloseListener(new CloseListener(ctrl));
     }
 }

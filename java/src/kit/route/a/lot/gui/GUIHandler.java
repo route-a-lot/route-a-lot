@@ -118,7 +118,7 @@ public class GUIHandler {
         listener.addSetSpeedListener(setSpeedListener);
     }
     
-    public void setSpeed(int speed) {
+    public void setSpeed(int speed) {   //TODO change ist with duration
         gui.setSpeed(speed);
     }
     
@@ -154,7 +154,8 @@ public class GUIHandler {
         listener.addImportHeightMapListener(importHeightMapListener);
     }
     
-    public void addCloseListener(GeneralListener closeListener) {
+
+    public void addCloseListener(GeneralListener closeListener) { //doesn't work
         listener.addCloseListener(closeListener);
     }
     
