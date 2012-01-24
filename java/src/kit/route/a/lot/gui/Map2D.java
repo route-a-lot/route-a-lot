@@ -115,11 +115,8 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
             public void mousePressed(MouseEvent me) {
                 oldMousePosX = me.getX(); 
                 oldMousePosY = me.getY();
-            }     
-            @Override
-            public void mouseReleased(MouseEvent me) {
                 checkPopup(me);
-            }
+            }  
         });
     }
     

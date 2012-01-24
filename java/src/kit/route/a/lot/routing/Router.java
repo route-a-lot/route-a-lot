@@ -179,7 +179,7 @@ public class Router {
             } else if (currentNode == -1) {
                 // This is the shortest path.
                 logger.info("Found route from " + a.toString() + " to " + b.toString());
-                return currentPath;
+                return currentPath.getRoute();
             }
             for (Integer to : graph.getRelevantNeighbors(currentNode,
                     new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {

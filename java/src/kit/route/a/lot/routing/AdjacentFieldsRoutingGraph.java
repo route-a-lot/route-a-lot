@@ -19,9 +19,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private int[] edges;
     private int[] weights;
     private long[] arcFlags;
+    private int maxNodeID;
     
     @Override
-    public void buildGraph(int[] startID, int[] endID, int[] weight, int maxId) {
+    public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
+        this.maxNodeID = maxNodeID;
         logger.info("Creating routing graph...");
         // assert same non-null array size
         if (startID.length == 0) {
@@ -34,11 +36,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         // sort arrays simultaneously by startID
         sortByKey(startID, endID, weight);
-        // find maximum node index
-        int maxNodeID = startID[startID.length - 1];
-        for (int i = 0; i < endID.length; i++) {
-            maxNodeID = Math.max(maxNodeID, endID[i]);
-        }
         
         // copy data to internal structures
         edgesPos = new int[maxNodeID + 1];
@@ -166,7 +163,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     
     public Collection<Integer> getRelevantNeighbors(int node, byte[] destAreas) {
-        if (node > edgesPos.length) {
+        if (node >= edgesPos.length - 1 || node < 0) {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
             return null;
         }
@@ -265,7 +262,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             startID[i] = edges[i];
             endID[i] = j;
         }
-        result.buildGraph(startID, endID, weight);
+        result.buildGraph(startID, endID, weight, maxNodeID);
         return result;
     }
 

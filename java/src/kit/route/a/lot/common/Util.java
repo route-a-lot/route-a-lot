@@ -1,6 +1,11 @@
 package kit.route.a.lot.common;
 
+import org.apache.log4j.Logger;
+
 public class Util {
+    
+    private static Logger logger = Logger.getLogger(Util.class);
+    
     /*private static int[][] permutations(int p) {
         // Try not to use this
         // Steinhaus–Johnson–Trotter algorithm'
@@ -19,6 +24,10 @@ public class Util {
     
     public static int[] permutation(int p, int n) {
         // returns the nth permutation of all integers below p (and above 0).
+        if (p < 0) {
+            logger.warn("Can't calculate parmutations for " + p + ", returning null.");
+            return null;
+        }
         if (p == 0) {
             return new int[] {1};
         } else {
