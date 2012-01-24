@@ -259,12 +259,10 @@ public class GUI extends JFrame {
         pack();
         validate();
 
-        addWindowListener(new WindowAdapter() {           
+        addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent arg0) { // TODO
-            }       
-            @Override
-            public void windowClosed(WindowEvent arg0) { // TODO  
+            public void windowClosed(WindowEvent arg0) {
+                listener.fireEvent(listener.close, new PathEvent("closed"));
             }  
         });
         this.pack();
@@ -530,7 +528,7 @@ public class GUI extends JFrame {
         activateMapButton.addActionListener(new ActionListener() {     
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String activateMap = chooseImportedMap.getSelectedItem().toString();
+                listener.fireEvent(listener.loadMapList, new PathEvent(chooseImportedMap.getSelectedItem().toString()));
             }
         });
         

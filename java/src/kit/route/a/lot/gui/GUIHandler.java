@@ -74,7 +74,7 @@ public class GUIHandler {
     }
     
     public void addLoadMapListener(RALListener loadMapListener) {
-        //TODO
+        listener.addLoadMapListener(loadMapListener);
     }
     
     public void addDeleteNavNodeListener(RALListener deleteNavNodeListener) {
