@@ -181,7 +181,7 @@ public class Tile {
     protected void draw(Node node, Graphics2D graphics) {
         int size = 3;
 
-        Coordinates localCoordinates = getTileCoordinatesFromGlobalCoordinates(node.getPos());
+        Coordinates localCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(node.getPos(), topLeft, detail);
         graphics.setColor(Color.LIGHT_GRAY);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
@@ -203,7 +203,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = getTileCoordinatesFromGlobalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(nodes[i].getPos(), topLeft, detail);
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -251,7 +251,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = getTileCoordinatesFromGlobalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(nodes[i].getPos(), topLeft, detail);
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -280,15 +280,6 @@ public class Tile {
             graphics.drawPolyline(xPoints, yPoints, nPoints);
         }
 
-    }
-
-    private Coordinates getTileCoordinatesFromGlobalCoordinates(Coordinates position) {
-        Coordinates tileCoordinates = new Coordinates();
-        tileCoordinates.setLatitude((float) ((position.getLatitude() - topLeft.getLatitude()) / Projection
-                .getZoomFactor(detail)));
-        tileCoordinates.setLongitude((float) ((position.getLongitude() - topLeft.getLongitude()) / Projection
-                .getZoomFactor(detail)));
-        return tileCoordinates;
     }
 
     /**
