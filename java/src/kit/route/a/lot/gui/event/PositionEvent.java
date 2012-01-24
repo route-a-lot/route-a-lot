@@ -6,14 +6,14 @@ public class PositionEvent extends java.util.EventObject {
     
     private static final long serialVersionUID = 1L;
     
-    private Coordinates coordinates;
+    private Coordinates position;
 
-    public PositionEvent(Coordinates coordinates) {
-        super(null);
-        this.coordinates = coordinates;
+    public PositionEvent(Coordinates position) {
+        super(position);
+        this.position = position;
     }
     
     public Coordinates getCoordinates() {
-        return coordinates;
+        return position;
     }
 }

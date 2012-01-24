@@ -2,7 +2,6 @@ package kit.route.a.lot.gui.event;
 
 import kit.route.a.lot.common.Context;
 
-
 public class ViewChangedEvent extends java.util.EventObject {
     
     private static final long serialVersionUID = 1L;
@@ -18,18 +17,17 @@ public class ViewChangedEvent extends java.util.EventObject {
      * 0: no change
      * 1: zoom in
      */
-    private int zoomLevel;
+    private int zoomlevel;
    
-    public ViewChangedEvent(Context context, int zoomLevel) {
-        super(null);
+    public ViewChangedEvent(Context context, int zoomlevel) {
+        super(context);
         this.context = context;
-        this.zoomLevel = zoomLevel;
+        this.zoomlevel = zoomlevel;
     }
 
-    
-    
-    public int getZoomLevel() {
-        return zoomLevel;
+       
+    public int getZoomlevel() {
+        return zoomlevel;
     }
 
     public Context getContext() {

@@ -14,7 +14,7 @@ public class FavoriteDeletedEvent extends EventObject {
     private Coordinates position;
         
     public FavoriteDeletedEvent(Coordinates position) {
-        super(null);
+        super(position);
         this.position = position;
     }
     

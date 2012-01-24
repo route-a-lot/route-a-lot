@@ -10,7 +10,7 @@ public class NumberEvent extends EventObject {
     private int number;
     
     public NumberEvent(int number) {
-        super(null);
+        super(new Integer(number));
         this.number = number;
     }
     

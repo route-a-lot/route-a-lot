@@ -17,11 +17,10 @@ public class NavNodeSelectedEvent extends java.util.EventObject {
     private int index;
     
     public NavNodeSelectedEvent(Coordinates position, int index) {
-        super(null);
+        super(position);
         this.position = position;
         this.index = index;
     }
-
 
     public Coordinates getPosition() {
         return position;

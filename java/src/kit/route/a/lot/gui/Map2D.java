@@ -68,7 +68,10 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
         this.setBackground(Color.WHITE);
         this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
         this.setVisible(true);
-        
+        this.listener = listeners;
+        this.navPoints = navPointsList;
+        this.center = new Coordinates(0, 0);
+             
         // Resize map context:
         this.addComponentListener(new ComponentAdapter() {
             @Override
@@ -77,23 +80,26 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
             }
         });
 
-        this.canvas = new JPanel();
+        // Canvas:
+        this.canvas = new JPanel() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);           
+                ListenerLists.fireEvent(listener.viewChanged,
+                        new ViewChangedEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
+            }      
+        };
         this.canvas.setVisible(true);
         this.canvas.addMouseMotionListener(this);
         this.canvas.addMouseWheelListener(this);
         this.add(canvas, BorderLayout.CENTER);
-
-        this.listener = listeners;
-        this.navPoints = navPointsList;
-        this.center = new Coordinates(0, 0);
         
-        
-        // all popup menu handling below ;)
+        //Context menu:
         startItem = new JMenuItem("als Start");
         endItem = new JMenuItem("als Ziel");
         stopoverItem = new JMenuItem("als Zwischenhalt");
-        favoriteItem = new JMenuItem("als Favorit");
-        
+        favoriteItem = new JMenuItem("als Favorit");       
         startItem.addActionListener(this);        
         endItem.addActionListener(this);       
         stopoverItem.addActionListener(this); 
@@ -105,7 +111,6 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
                 ListenerLists.fireEvent(listener.addFav, new FavoriteAddedEvent(favoriteCoordinates, "", ""));
             }
         });
-
         navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(startItem);
         navNodeMenu.add(endItem);
@@ -165,7 +170,7 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
                     }
         }    
         ListenerLists.fireEvent(listener.targetSelected, new NavNodeSelectedEvent(pos, navPoints.indexOf(pos)));
-        repaint();
+        canvas.repaint();
     }
     
     private void checkPopup(MouseEvent e) {
@@ -203,21 +208,6 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
         //l_position.setText(mousePosCoordinates.toString()); TODO
     }
 
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);      
-        /*if (context == null) {
-            context = new Context2D(topLeft, bottomRight, canvas.getGraphics());
-        } else {
-            context.setTopLeft(topLeft);
-            context.setBottomRight(bottomRight);
-            context.calculateSize();
-        }*/       
-        ListenerLists.fireEvent(listener.viewChanged,
-                new ViewChangedEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
-    }
-
     /**
      * Derives the new geo coordinates view constraints from the pixel dimensions of the map and subsequently
      * updates the context.
@@ -232,7 +222,7 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
                 + getCenter().getLatitude());
         bottomRight.setLongitude(canvas.getBounds().width * Projection.getZoomFactor(zoomlevel) / 2.f
                 + getCenter().getLongitude());
-        repaint();
+        canvas.repaint(); 
     }
 
     /**

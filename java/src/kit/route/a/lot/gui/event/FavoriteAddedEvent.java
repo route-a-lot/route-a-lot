@@ -29,7 +29,7 @@ public class FavoriteAddedEvent extends EventObject {
 
 
     public FavoriteAddedEvent(Coordinates position, String name, String description) {
-        super(null);
+        super(position);
         this.position = position;
         this.name = name;
         this.description = description;

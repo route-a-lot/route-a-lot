@@ -8,7 +8,7 @@ public class PathEvent extends java.util.EventObject {
     private String path;
 
     public PathEvent(String path) {
-        super(null);
+        super(path);
         this.path = path;
     }
 
