@@ -109,7 +109,7 @@ public class OSMLoader {
             Coordinates upLeft = new Coordinates(maxLat, minLon);
             Coordinates bottomRight = new Coordinates(minLat, maxLon);
             projection = Projection.getNewProjection(upLeft);
-            state.getLoadedMapInfo().setBounds(upLeft, projection.geoCoordinatesToLocalCoordinates(bottomRight));
+            state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
             
             osmIds = new long[nodeCount];
             
