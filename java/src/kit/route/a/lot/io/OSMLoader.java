@@ -863,7 +863,7 @@ public class OSMLoader {
                             state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayInfo);
                         }
 
-                        if (curWayInfo.isStreet()) {
+                        if (curWayInfo.isRoutable()) {
                             
                             for (int i = 0; i < curWayIds.size(); i++) {
                                 int curId = curWayIds.get(i);

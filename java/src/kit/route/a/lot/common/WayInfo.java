@@ -249,6 +249,13 @@ public class WayInfo {
         stream.writeInt(this.type);
         this.address.saveToStream(stream);
         stream.write(this.data); 
+    }
+
+
+    public boolean isRoutable() {
+        return (isStreet() && getBicycle() != BICYCLE_NO && getBicycle() != BICYCLE_DISMOUNT);
     }    
+    
+    
 
 }
