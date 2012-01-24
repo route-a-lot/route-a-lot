@@ -50,6 +50,7 @@ public abstract class MapElement {
      * Assigning a negative ID will delete any ID.
      * @param id the new MapElement ID
      * @return whether the ID was set
+     * @throws IllegalStateException ID is already set
      */
     public boolean assignID(int id) {
         if (this.id >= 0 && id >= 0) {

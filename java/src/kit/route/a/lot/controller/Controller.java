@@ -114,7 +114,6 @@ public class Controller {
                 MapIO.saveMap(state.getLoadedMapFile());
             } catch (IOException e) {
                 logger.error("Could not save imported map to file.");
-                e.printStackTrace();
             }
             setViewToMapCenter();
             guiHandler.setView(state.getCenterCoordinates());
@@ -207,7 +206,11 @@ public class Controller {
     public void saveRoute(String path) {
         File routeFile = new File(path);
         if (state.getCurrentRoute().size() != 0) {
-            RouteIO.saveCurrentRoute(routeFile);
+            try {
+                RouteIO.saveCurrentRoute(routeFile);
+            } catch (IOException e) {
+                logger.error("Could not save route to file '" + path + "'.");
+            }
         }
     }
 
@@ -219,7 +222,11 @@ public class Controller {
         if (!routeFile.exists()) {
             logger.error("RouteFile existiert nicht");
         } else {
-            RouteIO.loadCurrentRoute(routeFile);
+            try {
+                RouteIO.loadCurrentRoute(routeFile);
+            } catch (IOException e) {
+                logger.error("Could not load route from file '" + path + "'.");
+            }
         }
     }
 

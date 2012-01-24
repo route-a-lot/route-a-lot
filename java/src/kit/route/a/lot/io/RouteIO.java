@@ -1,11 +1,18 @@
 package kit.route.a.lot.io;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
+
+import java.io.FileWriter;
+import java.io.StringWriter;
 
 import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,38 +36,63 @@ import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Projection;
 
-
 public class RouteIO {
 
     /**
-     * Operation loadCurrentRoute
-     * 
-     * @param file
-     *            -
-     * @return
-     * @return
+     * Loads the current route (i.e. the navigation node selection) from a file.
+     * @param file the route file
+     * @throws IOException 
      */
-    public static void loadCurrentRoute(File file) {
+    public static void loadCurrentRoute(File file) throws IOException {
+        // Verify requirements
+        if (file == null) {
+            throw new IllegalArgumentException();
+        }
+        // Open file stream, abort on failure
+        DataInputStream stream = new DataInputStream(new FileInputStream(file));
+        State state = State.getInstance();
+        
+        // TODO: add multimap support
+        int len = stream.readInt();
+        ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
+        for (int i = 0; i < len; i++) {
+            navNodes.add(new Selection(stream.readInt(), stream.readInt(),
+                    stream.readFloat(), Coordinates.loadFromStream(stream)));
+        }
+        state.setNavigationNodes(navNodes);
+        
+        stream.close();
     }
 
     /**
-     * Operation saveCurrentRoute
-     * 
-     * @param file
-     *            -
-     * @return
-     * @return
+     * Saves the current route (i.e. the navigation node selection) to a file.
+     * @param file the route file
+     * @throws IOException
      */
-    public static void saveCurrentRoute(File file) {
+    public static void saveCurrentRoute(File file) throws IOException {
+        // Verify requirements
+        if (file == null) {
+            throw new IllegalArgumentException();
+        }
+        // Open file stream, abort on failure
+        DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
+        State state = State.getInstance();
+        
+        List<Selection> navNodes = state.getNavigationNodes();
+        stream.writeInt(navNodes.size());
+        for (Selection navNode: navNodes) {
+            stream.writeInt(navNode.getFrom());
+            stream.writeInt(navNode.getTo());
+            stream.writeFloat(navNode.getRatio());
+            navNode.getPosition().saveToStream(stream);
+        }
+        
+        stream.close();
     }
 
     /**
      * Operation exportCurrentRouteToKML
-     * 
-     * @param file
-     *            -
-     * @return
-     * @return
+     * @param file the kml file
      */
     public static void exportCurrentRouteToKML(File file) {
         try {

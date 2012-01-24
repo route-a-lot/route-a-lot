@@ -154,10 +154,18 @@ public class GUI extends JFrame {
     private File importedHeightMap;
     private DefaultListModel textRouteList;
 
+    private OpenGL ogl; // jedit
+    
+    // private BufferedImage mapImage = testImage();
+    
     public static final int FREEMAPSPACE = 0;
     public static final int POI = 1;
     public static final int FAVORITE = 2;
     
+    /**
+     * Creates the GUI window, using the given view center coordinates.
+     * @param view center geo coordinates (possibly mercator projected)
+     */
     public GUI(Coordinates center) {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -168,6 +176,9 @@ public class GUI extends JFrame {
 
     }
     
+    /**
+     * Creates the GUI window, using default view center coordinates.
+     */
     public GUI() {
         super("Route-A-Lot");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -177,6 +188,9 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
     
+    /**
+     * Initializes all listener collections that are used to communicate with the controller.
+     */
     private void initializeAllArrayLists() {
         targetSelectedList = new ArrayList<RALListener>();
         viewChangedList = new ArrayList<RALListener>();
@@ -195,13 +209,21 @@ public class GUI extends JFrame {
         navPointsList = new ArrayList<Coordinates>();
     }
     
-    //TODO right place??
+    /**
+     * Changes the geo coordinates view position and subsequently
+     * updates the context and redraws the map.
+     * @param center the new view center
+     */ //TODO right place??  
     public void setView(Coordinates center) {
         this.center = center;
         recalculateView();
         repaint();
     }
     
+    /**
+     * Derives the new geo coordinates view constraints from the
+     * pixel dimensions of the map and subsequently updates the context.
+     */
     private void recalculateView() {
         topLeft.setLatitude(center.getLatitude() - drawMap.getVisibleRect().height * Projection.getZoomFactor(currentZoomLevel) / 2.f);
         topLeft.setLongitude(center.getLongitude() - drawMap.getVisibleRect().width * Projection.getZoomFactor(currentZoomLevel) / 2.f);
@@ -210,11 +232,10 @@ public class GUI extends JFrame {
         context.recalculateSize();
     }
     
-
-    // private BufferedImage mapImage = testImage();
-
+    /**
+     * Builds all components and adds them to the GUI.
+     */
     public void addContents() {
-
         this.mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
@@ -332,6 +353,10 @@ public class GUI extends JFrame {
         contents.add(statusBar, BorderLayout.SOUTH);
         contents.add(mapContents, BorderLayout.CENTER);
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
+        
+        // jedit  
+        //ogl = new OpenGL();
+        //mapContents.add(ogl.getCanvas(), BorderLayout.CENTER);
         mapContents.add(map, BorderLayout.CENTER);
 
         l_routeText = new JLabel();
@@ -438,84 +463,56 @@ public class GUI extends JFrame {
         context = new ContextSW(topLeft, bottomRight, drawMap.getGraphics());
         recalculateView();
         
-        this.addComponentListener(new ComponentListener() {
-            
-            @Override
-            public void componentShown(ComponentEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
-            
+        this.addComponentListener(new ComponentListener() {          
             @Override
             public void componentResized(ComponentEvent e) {
                 recalculateView();
-                context.setSurface(drawMap.getGraphics());
-
+                context.setSurface(drawMap.getGraphics());  
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, currentZoomLevel);
                 for(RALListener lis: viewChangedList){
                     lis.handleRALEvent(viewEvent);
                 }
-                
-//                System.out.println("resized");
+                // System.out.println("resized");
             }
-            
             @Override
-            public void componentMoved(ComponentEvent e) {
-                // TODO Auto-generated method stub
-                
-            }
-            
+            public void componentShown(ComponentEvent e) { // TODO Auto-generated method stub
+            } 
             @Override
-            public void componentHidden(ComponentEvent e) {
-                // TODO Auto-generated method stub
-                
+            public void componentMoved(ComponentEvent e) { // TODO Auto-generated method stub
+            } 
+            @Override
+            public void componentHidden(ComponentEvent e) { // TODO Auto-generated method stub   
             }
         });
-        this.addWindowListener(new WindowListener() {
-            
+        
+        this.addWindowListener(new WindowListener() {           
             @Override
-            public void windowOpened(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-                
+            public void windowOpened(WindowEvent arg0) { // TODO Auto-generated method stub    
+            }   
+            @Override
+            public void windowIconified(WindowEvent arg0) { // TODO Auto-generated method stub  
             }
-            
             @Override
-            public void windowIconified(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-                
-            }
-            
+            public void windowDeiconified(WindowEvent arg0) { // TODO Auto-generated method stub  
+            }          
             @Override
-            public void windowDeiconified(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-                
-            }
-            
+            public void windowDeactivated(WindowEvent arg0) { // TODO Auto-generated method stub 
+            }      
             @Override
-            public void windowDeactivated(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-                
-            }
-            
+            public void windowClosing(WindowEvent arg0) { // TODO
+            }       
             @Override
-            public void windowClosing(WindowEvent arg0) {
-                // TODO
-            }
-            
+            public void windowClosed(WindowEvent arg0) { // TODO Auto-generated method stub   
+            }  
             @Override
-            public void windowClosed(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-                
-            }
-            
-            @Override
-            public void windowActivated(WindowEvent arg0) {
-                // TODO Auto-generated method stub
-                
+            public void windowActivated(WindowEvent arg0) { // TODO Auto-generated method stub     
             }
         });
     }
     
+    /**
+     * Additionally to painting the GUI, throws a {@link ViewChangedEvent}.
+     */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -525,6 +522,10 @@ public class GUI extends JFrame {
         }
     }
     
+    /**
+     * Builds the 2D map component and all its sub components,
+     * in the process adding all event listeners.
+     */
     private void mapConstructor() {
         this.map = new JPanel();
         map.setLayout(new BorderLayout());
@@ -537,35 +538,22 @@ public class GUI extends JFrame {
         drawMap.setBackground(Color.green);
         drawMap.setVisible(true);
         map.add(drawMap, BorderLayout.CENTER);
+        
         drawMap.addMouseListener(new MouseListener() {
-
             @Override
             public void mouseReleased(MouseEvent me) {
                 checkPopup(me);
             }
-
             @Override
             public void mousePressed(MouseEvent me) {
                 checkPopup(me);
                 oldMousePosX = me.getX();
                 oldMousePosY = me.getY();
             }
-
-            @Override
-            public void mouseExited(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-                // TODO Auto-generated method stub
-            }
-
             @Override
             public void mouseClicked(MouseEvent me) {
                 checkPopup(me);
             }
-
             private void checkPopup(MouseEvent e) {
                 if (e.isPopupTrigger()) {
                     selectedComponent = e.getComponent();
@@ -584,46 +572,39 @@ public class GUI extends JFrame {
                     }
                 }
             }
+            @Override
+            public void mouseExited(MouseEvent arg0) { // TODO Auto-generated method stub
+            }
+            @Override
+            public void mouseEntered(MouseEvent arg0) { // TODO Auto-generated method stub
+            }    
         });
         
+        
         drawMap.addMouseMotionListener(new MouseMotionListener() {
-            
             @Override
             public void mouseMoved(MouseEvent e) {
                 Coordinates mousePosCoordinates = calculateClickPos(e.getX() - drawMap.getX(), e.getY() - drawMap.getY());
                 l_position.setText(mousePosCoordinates.toString());
-            }
-            
+            }     
             @Override
             public void mouseDragged(MouseEvent e) {
-                int newMousePosX = e.getX();
-                int newMousePosY = e.getY();
-                int mousePosXDist = newMousePosX - oldMousePosX;
-                int mousePosYDist = newMousePosY - oldMousePosY;
-                
-                float newCenterLongitude = center.getLongitude() - mousePosXDist * Projection.getZoomFactor(currentZoomLevel);
-                float newCenterLatitude = center.getLatitude() - mousePosYDist * Projection.getZoomFactor(currentZoomLevel);
-                
-                oldMousePosX = newMousePosX;
-                oldMousePosY = newMousePosY;
-                
-                center.setLongitude(newCenterLongitude);
-                center.setLatitude(newCenterLatitude);
-                
-                recalculateView();
-                
+                center.setLongitude(center.getLongitude() - (e.getX() - oldMousePosX) * Projection.getZoomFactor(currentZoomLevel));
+                center.setLatitude(center.getLatitude() - (e.getY() - oldMousePosY) * Projection.getZoomFactor(currentZoomLevel));  
+                oldMousePosX = e.getX();
+                oldMousePosY = e.getY();
+                recalculateView();                
                 ViewChangedEvent viewEvent = new ViewChangedEvent(this, context, currentZoomLevel);
                 for(RALListener lis: viewChangedList){
                     lis.handleRALEvent(viewEvent);
                 }
             }
         });
+        
 
         drawMap.addMouseWheelListener(new MouseWheelListener() {
-
             int up = 1;
-            int down = -1;
-            
+            int down = -1;            
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
                 int direction;
@@ -657,6 +638,10 @@ public class GUI extends JFrame {
         });
     }
     
+    /**
+     * Builds the component tab1 and all its sub components,
+     * in the process adding all event listeners.
+     */
     private void createTab1() {
         tab1 = new JPanel();
         tabbpane.addTab("Planen", null, tab1, "1");
@@ -665,7 +650,6 @@ public class GUI extends JFrame {
         startPoint = new JTextField();
         startPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
         startPoint.addActionListener(new ActionListener() {
-            
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedStart = startPoint.getText();
@@ -674,8 +658,7 @@ public class GUI extends JFrame {
         
         endPoint = new JTextField();
         endPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
-        endPoint.addActionListener(new ActionListener() {
-            
+        endPoint.addActionListener(new ActionListener() {       
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String selectedEnd = endPoint.getText();
@@ -684,20 +667,16 @@ public class GUI extends JFrame {
         addTextPoints = new JButton("+");
         
         optimizeRoute = new JButton("Reihenfolge optimieren");
-        optimizeRoute.addActionListener(new ActionListener() {
-            
+        optimizeRoute.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                /*
-                 * Event hier einbauen
-                 */
+                // Event hier einbauen
             }
         });
 
         s_speed = new JSpinner(new SpinnerNumberModel(15, 0, null, 1));
         s_speed.setSize(new Dimension(30, 20));
-        s_speed.addChangeListener(new ChangeListener() {
-            
+        s_speed.addChangeListener(new ChangeListener() {    
             @Override
             public void stateChanged(ChangeEvent ce) {
                 IntEvent intEvent = new IntEvent(GUI.this, Integer.parseInt(s_speed.getValue().toString()));
@@ -719,8 +698,7 @@ public class GUI extends JFrame {
         alladdedNavPoints = new ArrayList<JTextField>();
         alladdedButtons = new ArrayList<JButton>();
         
-        addTextPoints.addActionListener(new ActionListener() {
-          
+        addTextPoints.addActionListener(new ActionListener() {      
           @Override 
           public void actionPerformed(ActionEvent arg0) {
               JTextField navPointField = new JTextField();
@@ -752,6 +730,10 @@ public class GUI extends JFrame {
         });
     }
     
+    /**
+     * Builds the component tab2 and all its sub components,
+     * in the process adding all event listeners.
+     */
     private void createTab2() {
         tab2 = new JPanel();
         tabbpane.addTab("Beschreibung", null, tab2, "2");
@@ -773,8 +755,11 @@ public class GUI extends JFrame {
         */
     }
     
+    /**
+     * Builds the component tab3 and all its sub components,
+     * in the process adding all event listeners.
+     */
     private void createTab3() {
-
         tab3 = new JPanel();
         tabbpane.addTab("Karten", null, tab3, "3");
         // tabbpane.setMnemonicAt(3, KeyEvent.VK_2);
@@ -811,8 +796,7 @@ public class GUI extends JFrame {
         reliefmalus.setMinorTickSpacing(1);
         reliefmalus.setPaintTicks(true);
         reliefmalus.setSnapToTicks(true);
-        reliefmalus.addChangeListener(new ChangeListener() {
-            
+        reliefmalus.addChangeListener(new ChangeListener() {        
             @Override
             public void stateChanged(ChangeEvent arg0) {
                 IntEvent intEvent = new IntEvent(GUI.this, reliefmalus.getValue());
@@ -823,19 +807,16 @@ public class GUI extends JFrame {
         });
         
         importOSM = new JButton("Importiere OSM-Karte");
-        importOSM.addActionListener(new ActionListener() {
-            
+        importOSM.addActionListener(new ActionListener() {    
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 GUI.this.importMapFileChooser();
             }
         });
-        
-        
+             
         chooseImportedMap = new JComboBox();
         chooseImportedMap.setEditable(true);
-        chooseImportedMap.addItemListener(new ItemListener() {
-            
+        chooseImportedMap.addItemListener(new ItemListener() {      
             @Override
             public void itemStateChanged(ItemEvent e) {
                 choosenMap = chooseImportedMap.getSelectedItem().toString();
@@ -843,8 +824,7 @@ public class GUI extends JFrame {
         });
         
         deleteMapButton = new JButton("Entfernen");
-        deleteMapButton.addActionListener(new ActionListener() {
-            
+        deleteMapButton.addActionListener(new ActionListener() {    
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String deletedMap = chooseImportedMap.getSelectedItem().toString();
@@ -852,8 +832,7 @@ public class GUI extends JFrame {
         });
         
         activateMapButton = new JButton("Aktivieren");
-        activateMapButton.addActionListener(new ActionListener() {
-            
+        activateMapButton.addActionListener(new ActionListener() {     
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 String activateMap = chooseImportedMap.getSelectedItem().toString();
@@ -861,8 +840,7 @@ public class GUI extends JFrame {
         });
         
         heightMapManagement = new JButton();
-        heightMapManagement.addActionListener(new ActionListener() {
-            
+        heightMapManagement.addActionListener(new ActionListener() {     
             @Override
             public void actionPerformed(ActionEvent e) {
                 GUI.this.importHeightMapFileChooser();
@@ -879,6 +857,9 @@ public class GUI extends JFrame {
         tab3.add(chooseImportedMap);
     }
     
+    /**
+     * Opens a dialog for map file selection. Fires a RAL event.
+     */
     private void importMapFileChooser() {
         importFC = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm", "osm");
@@ -893,6 +874,9 @@ public class GUI extends JFrame {
         }
     }
     
+    /**
+     * Opens a dialog for heightmap file selection. Fires a RAL event.
+     */
     private void importHeightMapFileChooser() {
         importHeightMap = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".hgt", "hgt");
@@ -907,6 +891,9 @@ public class GUI extends JFrame {
         }
     }
     
+    /**
+     * Opens a dialog for route file selection. Fires a RAL event.
+     */
     private void loadRouteFileChooser() {
         loadRoute = new JFileChooser();
         int returnValue = loadRoute.showOpenDialog(this);
@@ -919,6 +906,9 @@ public class GUI extends JFrame {
         }
     }
     
+    /**
+     * Opens a dialog for route output file selection. Fires a RAL event.
+     */
     private void saveRouteFileChooser() {
         saveRoute = new JFileChooser();
         int returnValue = saveRoute.showSaveDialog(this);
@@ -931,6 +921,9 @@ public class GUI extends JFrame {
         }
     }
     
+    /**
+     * Opens a dialog for kml output file selection. Fires a RAL event.
+     */
     private void exportRouteKMLFileChooser() {
         exportRoute = new JFileChooser();
         int returnValue = exportRoute.showDialog(this, "Exportieren");
@@ -943,18 +936,31 @@ public class GUI extends JFrame {
         }
     }
     
+    /**
+     * Redraws the complete GUI.
+     */
     public void updateGUI() {
         repaint();
     }
     
+    /**
+     * Sets the entries shown in the imported map selcetion field.
+     * @param maps the new entries
+     */
     public void updateMapChooser(ArrayList<String> maps) {
-        chooseImportedMap.removeAllItems();
-        
+        chooseImportedMap.removeAllItems();   
         for(String map : maps) {
             chooseImportedMap.addItem(map);
         }
     }
 
+    /**
+     * Converts pixel coordinates into the eqivalent projected geo reference system coordinates.
+     * The pixel origin is top left corner of the map.
+     * @param x the horizontal pixel coordinate
+     * @param y the vertical pixel coordinate
+     * @return eqivalent geo coordinates
+     */
     private Coordinates calculateClickPos(int x, int y) {
         Coordinates clickPos = new Coordinates();
         clickPos.setLatitude(center.getLatitude() + (y - drawMap.getVisibleRect().height / 2)*Projection.getZoomFactor(currentZoomLevel));
