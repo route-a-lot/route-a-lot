@@ -51,7 +51,8 @@ public class GUI extends JFrame {
     public static final int FREEMAPSPACE = 0;
     public static final int POI = 1;
     public static final int FAVORITE = 2;
-        
+    public static final int NAVNODE = 3;
+    
     private JTabbedPane tabbpane;
     
     private JFileChooser importFC;
@@ -71,6 +72,7 @@ public class GUI extends JFrame {
     private JButton deleteMapButton;
     private JButton activateMapButton;
     private JButton heightMapManagement;
+    private JButton deleteRoute;
     
     private JComboBox chooseImportedMap;
 
@@ -317,6 +319,25 @@ public class GUI extends JFrame {
         });
         
         l_speed = new JLabel("hm/h");
+        
+        deleteRoute = new JButton("Lösche Route");
+        deleteRoute.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                for(int i = 0; i < alladdedButtons.size(); i++) {
+                    tab1.remove(alladdedButtons.get(i));
+                    tab1.remove(alladdedNavPoints.get(i));
+                    alladdedButtons.remove(i);
+                    alladdedNavPoints.remove(i);
+                }
+                for(int i = 0; i < navPointsList.size(); i++) {
+                    navPointsList.remove(i);
+                    listener.fireEvent(listener.deleteNavPointList, new NumberEvent(i));
+                }
+                repaint();
+            }
+        });
 
         tab1.add(startPoint);
         tab1.add(endPoint);
@@ -324,6 +345,7 @@ public class GUI extends JFrame {
         tab1.add(optimizeRoute);
         tab1.add(s_speed);
         tab1.add(l_speed);
+        tab1.add(deleteRoute);
 
         alladdedNavPoints = new ArrayList<JTextField>();
         alladdedButtons = new ArrayList<JButton>();
