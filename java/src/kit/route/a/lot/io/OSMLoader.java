@@ -943,8 +943,14 @@ public class OSMLoader {
                 startIDs[i] = startIds.get(i);
                 endIDs[i] = endIds.get(i);
                 weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
+            }
+            
+            for (int i = 0; i < startIDs.length; i++) {
+                if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
+                    logger.error("Id found that is greater than maxWayNodeId");
+                }
                 if (weights[i] == 0) {
-                    logger.debug("Added edge with 0 weight.");
+                    logger.error("Added edge with 0 weight.");
                 }
             }
 
