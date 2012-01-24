@@ -36,22 +36,28 @@ public class Context3D extends Context {
 
     @Override
     public void drawImage(Coordinates position, Image image, int detail) {
-        int x = (int) ((position.getLongitude() - topLeft.getLongitude()) / Projection.getZoomFactor(detail));
-        int y = (int) ((position.getLatitude() - topLeft.getLatitude()) / Projection.getZoomFactor(detail));
+        
+        float x = (position.getLongitude() - topLeft.getLongitude()) / Projection.getZoomFactor(detail);
+        float y = (position.getLatitude() - topLeft.getLatitude()) / Projection.getZoomFactor(detail);
         
         GL gl = output.getGL();
         gl.glPushMatrix();
         
-        gl.glTranslatef(x, y, 0);
+        gl.glRotatef(45f, 1f, 0f, 0f);
+        
+        gl.glScalef(1f/Projection.getZoomFactor(detail), 1f/Projection.getZoomFactor(detail), 1f);
+        
+        gl.glTranslatef(x-215, y-800, -150);
+        
         gl.glBegin(GL.GL_LINE_STRIP);
-        gl.glVertex3f(-6.5f, -6.5f, -1.5f);
-        gl.glVertex3f(-6.5f, 6.5f, -1.5f);
-        gl.glVertex3f(6.5f, 6.5f, -1.5f);
-        gl.glVertex3f(6.5f, -6.5f, -1.5f);
-        gl.glVertex3f(-6.5f, -6.5f, -1.5f);
+        gl.glVertex3f(0f, 0f, -1.5f);
+        gl.glVertex3f(0f, 200f, -1.5f);
+        gl.glVertex3f(200f, 200f, -1.5f);
+        gl.glVertex3f(200f, 0f, -1.5f);
+        gl.glVertex3f(0f, 0f, -1.5f);
         gl.glEnd();
+        
         gl.glPopMatrix();
-        logger.info("draw");
     }
 
 }

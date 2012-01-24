@@ -32,16 +32,10 @@ public class Map3D extends Map implements GLEventListener {
     @Override
     public void display(GLDrawable g) {
         GL gl = g.getGL();
-        GLU glu = g.getGLU();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
-        glu.gluLookAt(0, 12, 19,
-                      0, 0, 0,
-                      0, 1, 0);
-        gl.glTranslated(0, 1, 0);
+        gl.glScalef(1f, -1f, 1f);
         
-        //gl.glScalef(0.1f, 0.1f, 0.1f);
-        //gl.glTranslatef(- topLeft.getLongitude(), - topLeft.getLatitude(), 0);
         ListenerLists.fireEvent(gui.getListener().viewChanged,
                 new ViewChangedEvent(new Context3D(topLeft, bottomRight, g), zoomlevel));  
     }

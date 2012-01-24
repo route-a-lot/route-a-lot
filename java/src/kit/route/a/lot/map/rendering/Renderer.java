@@ -62,7 +62,6 @@ public class Renderer {
                 context.drawImage(topLeft, currentTile.getData(), detail);
             }
         }
-        
         drawRoute(context, detail);
         drawNavPoints(context, detail);
     }
