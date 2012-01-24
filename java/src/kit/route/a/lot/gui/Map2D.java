@@ -22,12 +22,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-import org.apache.log4j.Logger;
-
-import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.controller.listener.RALListener;
 import kit.route.a.lot.gui.event.FavoriteAddedEvent;
 import kit.route.a.lot.gui.event.NavNodeSelectedEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
@@ -39,16 +35,13 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
 
     private static final long serialVersionUID = 1L;
     
-    @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(Map2D.class);
-
     private ListenerLists listener;
     ArrayList<Coordinates> navPoints;
 
     private int oldMousePosX;
     private int oldMousePosY;
-    private int popUpXPos;
-    private int popUpYPos;
+    private int popupXPos;
+    private int popupYPos;
     private Coordinates center;
     private int zoomlevel = 0;
     private Coordinates topLeft = new Coordinates();
@@ -59,9 +52,13 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
     private JMenuItem endItem;
     private AbstractButton stopoverItem;
     private AbstractButton favoriteItem;
-
     private JPanel canvas;
 
+    /**
+     * Creates a 2D map canvas, including its context menu.
+     * @param listeners the collection of listener lists from the gui
+     * @param navPointsList the list of navigation nodes from the gui
+     */
     public Map2D(ListenerLists listeners, ArrayList<Coordinates> navPointsList) {
         this.setLayout(new BorderLayout());
         this.setPreferredSize(new Dimension(this.getSize()));
@@ -107,7 +104,7 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
             @Override
             public void actionPerformed(ActionEvent e) {
                 Coordinates favoriteCoordinates =
-                    getCoordinates(popUpXPos - canvas.getX(), popUpYPos - canvas.getY());
+                    getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
                 ListenerLists.fireEvent(listener.addFav, new FavoriteAddedEvent(favoriteCoordinates, "", ""));
             }
         });
@@ -130,28 +127,35 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
         });
     }
 
+    /**
+     * Sets the view center using geo coordinates.
+     * Note that this method won't schedule a map redraw.
+     * @param center the desired map center
+     */
     public void setCenter(Coordinates center) {
         this.center = center;
     }
 
-    public Coordinates getCenter() {
-        return center;
-    }
-
+    /**
+     * Sets the zoom level. Negative values will be treated as 0.
+     * Subsequently schedules a map redraw.
+     * @param zoomlevel the desired zoom level
+     */
     public void setZoomlevel(int zoomlevel) {
         this.zoomlevel = Math.max(zoomlevel, 0);
         calculateView();
     }
     
     /**
-     * Called when a popup entry has been clicked.
+     * Called when a popup entry concerning navigation nodes has been clicked.
+     * Correspondingly adds a navigation node to the list.
      */
     @Override
     public void actionPerformed(ActionEvent e) {
         String label = ((JMenuItem) e.getSource()).getText();
-        // TODO better implementation
+        // TODO better implementation:
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;         
-        Coordinates pos = getCoordinates(popUpXPos - canvas.getX(), popUpYPos - canvas.getY());        
+        Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());        
         switch (navPoints.size()) {
             case 0: if (type == 2) {
                         navPoints.add(new Coordinates());
@@ -169,20 +173,28 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
                         case 2 : navPoints.set(navPoints.size() - 1, pos);
                     }
         }    
-        ListenerLists.fireEvent(listener.targetSelected, new NavNodeSelectedEvent(pos, navPoints.indexOf(pos)));
+        ListenerLists.fireEvent(listener.targetSelected,
+                new NavNodeSelectedEvent(pos, navPoints.indexOf(pos)));
         canvas.repaint();
     }
     
-    private void checkPopup(MouseEvent e) {
+    /**
+     * Opens the map context menu if appropriate. Fires a WhatWasClicked event.
+     */
+    private void checkPopup(MouseEvent e) {     
         if (e.isPopupTrigger()) {
-            navNodeMenu.show(e.getComponent(), e.getX(), e.getY());
+            popupXPos = e.getX();
+            popupYPos = e.getY();
+            navNodeMenu.show(e.getComponent(), popupXPos, popupYPos);
             System.out.println("geklickt");
         }
-        popUpXPos = e.getX();
-        popUpYPos = e.getY();
-        ListenerLists.fireEvent(listener.whatWasClicked, new PositionEvent(getCoordinates(popUpXPos, popUpYPos)));
+        
+        ListenerLists.fireEvent(listener.whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }
       
+    /**
+     * Adapts the map position and schedules a map redraw.
+     */
     @Override
     public void mouseDragged(MouseEvent e) {
         center.setLongitude(center.getLongitude() - (e.getX() - oldMousePosX) * Projection.getZoomFactor(zoomlevel));
@@ -191,7 +203,10 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
         oldMousePosY = e.getY();
         calculateView();
     }
-
+   
+    /**
+     * Adapts the zoom level and schedules a map redraw.
+     */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         Coordinates clickPos = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
@@ -202,10 +217,13 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
         setZoomlevel(zoomlevel + e.getWheelRotation());
     }
     
+    /**
+     * Displays the cursor geo coordinates in the status bar.
+     */
     @Override
     public void mouseMoved(MouseEvent e) {
-        //Coordinates mousePosCoordinates = getCoordinates(e.getX() - drawMap.getX(), e.getY() - drawMap.getY());
-        //l_position.setText(mousePosCoordinates.toString()); TODO
+        //Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
+        //l_position.setText(mousePosCoordinates.toString()); //TODO: reactivate cursor position display in status bar
     }
 
     /**
@@ -214,14 +232,14 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
      */
     void calculateView() {
         // jedit getVisibleRect -> getBounds
-        topLeft.setLatitude(getCenter().getLatitude() - canvas.getBounds().height
+        topLeft.setLatitude(center.getLatitude() - canvas.getBounds().height
                 * Projection.getZoomFactor(zoomlevel) / 2.f);
-        topLeft.setLongitude(getCenter().getLongitude() - canvas.getBounds().width
+        topLeft.setLongitude(center.getLongitude() - canvas.getBounds().width
                 * Projection.getZoomFactor(zoomlevel) / 2.f);
         bottomRight.setLatitude(canvas.getBounds().height * Projection.getZoomFactor(zoomlevel) / 2.f
-                + getCenter().getLatitude());
+                + center.getLatitude());
         bottomRight.setLongitude(canvas.getBounds().width * Projection.getZoomFactor(zoomlevel) / 2.f
-                + getCenter().getLongitude());
+                + center.getLongitude());
         canvas.repaint(); 
     }
 
@@ -235,9 +253,9 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
     private Coordinates getCoordinates(int x, int y) {
         Coordinates result = new Coordinates();
         // jedit getVisibleRect -> getBounds
-        result.setLatitude(getCenter().getLatitude() + (y - canvas.getBounds().height / 2)
+        result.setLatitude(center.getLatitude() + (y - canvas.getBounds().height / 2)
                 * Projection.getZoomFactor(zoomlevel));
-        result.setLongitude(getCenter().getLongitude() + (x - canvas.getBounds().width / 2)
+        result.setLongitude(center.getLongitude() + (x - canvas.getBounds().width / 2)
                 * Projection.getZoomFactor(zoomlevel));
         return result;
     }
