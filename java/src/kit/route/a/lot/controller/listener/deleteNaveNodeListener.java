@@ -3,8 +3,8 @@ package kit.route.a.lot.controller.listener;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.IntEvent;
-import kit.route.a.lot.gui.PositionEvent;
+import kit.route.a.lot.gui.event.IntEvent;
+import kit.route.a.lot.gui.event.PositionEvent;
 
 
 public class deleteNaveNodeListener implements RALListener {

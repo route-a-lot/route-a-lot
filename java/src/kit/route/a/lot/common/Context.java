@@ -33,7 +33,7 @@ public abstract class Context {
      */
     public abstract void drawImage(Coordinates position, Image image, int detail);
     
-    public abstract void recalculateSize();
+    public abstract void calculateSize();
     
     public abstract float getScale();
 

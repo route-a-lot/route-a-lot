@@ -3,7 +3,7 @@ package kit.route.a.lot.controller.listener;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.switchNaveNodesEvent;
+import kit.route.a.lot.gui.event.switchNaveNodesEvent;
 
 
 public class SwitchNavNodesListener implements RALListener {

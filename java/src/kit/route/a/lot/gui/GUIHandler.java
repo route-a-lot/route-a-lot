@@ -2,7 +2,6 @@ package kit.route.a.lot.gui;
 
 import java.util.ArrayList;
 
-import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;
@@ -12,29 +11,15 @@ import kit.route.a.lot.controller.listener.RALListener;
 public class GUIHandler {
 
     private GUI gui;
+    private ListenerLists listener = new ListenerLists();
     
     public GUIHandler() {
-    }
-    public GUIHandler(Coordinates middle) {
-        createGUI(middle);
+        createGUI();
     }
 
     public void createGUI() {
-        gui = new GUI();
+        gui = new GUI(listener);
         gui.setBounds(0, 25, 500, 500);
-        gui.setVisible(true);
-        gui.addContents();
-    }
-    
-    /**
-     * Operation createGUI
-     * 
-     * @return
-     */
-    public void createGUI(Coordinates middle) {
-        gui = new GUI(middle);
-        gui.setBounds(0, 25, 500, 500);
-        gui.setVisible(true);
         gui.addContents();
     }
 
@@ -64,7 +49,7 @@ public class GUIHandler {
      * @return
      */
     public void addListenerImportMap(RALListener importOsmFileListener) {
-        gui.addImportOsmFileListener(importOsmFileListener);
+        listener.addImportOsmFileListener(importOsmFileListener);
     }
 
     /**
@@ -73,15 +58,15 @@ public class GUIHandler {
      * @return
      */
     public void addListenerAddNavNode(RALListener targetSelectedListener) {
-        gui.addTargetSelectedListener(targetSelectedListener);
+        listener.addTargetSelectedListener(targetSelectedListener);
     }
 
     public void addChangedViewListener(RALListener viewChangedListener) {
-        gui.addViewChangedListener(viewChangedListener);
+        listener.addViewChangedListener(viewChangedListener);
     }
     
     public void addOptimizeRouteListener(RALListener optimizeRouteListener) {
-        gui.addOptimizeRouteListener(optimizeRouteListener);
+        listener.addOptimizeRouteListener(optimizeRouteListener);
     }
     
     public void setNavNodesOrder(ArrayList<Coordinates> orderedList) {
@@ -105,7 +90,7 @@ public class GUIHandler {
     }
     
     public void addAddFavoriteListener(RALListener addFavListener) {
-        gui.addFavoriteListener(addFavListener);
+        listener.addFavoriteListener(addFavListener);
     }
     
     public void addDeleteFavListener (RALListener deleteFavListener) {
@@ -113,24 +98,24 @@ public class GUIHandler {
     }
     
     public void addSaveRouteListener(RALListener saveRouteListener) {
-        gui.addSaveRouteListener(saveRouteListener);
+        listener.addSaveRouteListener(saveRouteListener);
     }
     
     public void addLoadRouteListener(RALListener loadRouteListener) {
-        gui.addLoadRouteListener(loadRouteListener);
+        listener.addLoadRouteListener(loadRouteListener);
     }
     
     public void addExportRouteListener(RALListener exportRouteListener) {
-        gui.addExportRouteListener(exportRouteListener);
+        listener.addExportRouteListener(exportRouteListener);
     }
     
     public void printRouteListener(RALListener printRouteListener) {
-        gui.addPrintRouteListener(printRouteListener);
+        listener.addPrintRouteListener(printRouteListener);
         //TODO
     }
     
     public void addSetSpeedListener(RALListener setSpeedListener) {
-        gui.addSetSpeedListener(setSpeedListener);
+        listener.addSetSpeedListener(setSpeedListener);
     }
     
     public void setSpeed(int speed) {
@@ -138,7 +123,7 @@ public class GUIHandler {
     }
     
     public void addWhatWasClickedListener(RALListener whatWasClickedListener) {
-        gui.addWhatWasClickedListener(whatWasClickedListener);
+        listener.addWhatWasClickedListener(whatWasClickedListener);
     }
     
     public void thisWasClicked(int element, Coordinates pos){
@@ -158,19 +143,19 @@ public class GUIHandler {
     }
     
     public void addHighwayMalusListener(RALListener highwayMalusListener) {
-        gui.addHighwayMalusListener(highwayMalusListener);
+        listener.addHighwayMalusListener(highwayMalusListener);
     }
     
     public void addHeightMalusListener(RALListener heightMalusListener) {
-        gui.addHeightMalusListener(heightMalusListener);
+        listener.addHeightMalusListener(heightMalusListener);
     }
     
     public void addImportHeightMapListener(RALListener importHeightMapListener) {
-        gui.addImportHeightMapListener(importHeightMapListener);
+        listener.addImportHeightMapListener(importHeightMapListener);
     }
     
     public void addCloseListener(RALListener closeListener) {
-        gui.addCloseListener(closeListener);
+        listener.addCloseListener(closeListener);
     }
     
     public void setView(Coordinates topLeft) {

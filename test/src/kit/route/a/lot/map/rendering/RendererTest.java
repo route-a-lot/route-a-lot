@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context;
-import kit.route.a.lot.common.ContextSW;
+import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
@@ -68,7 +68,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -118,7 +118,7 @@ public class RendererTest {
         bottomRight.setLatitude(gui.getVisibleRectangleOfContent().height);
         bottomRight.setLongitude(gui.getVisibleRectangleOfContent().width);
         mapInfo.addMapElement(new Node(bottomRight));
-        context = new ContextSW(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -149,7 +149,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new ContextSW(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 

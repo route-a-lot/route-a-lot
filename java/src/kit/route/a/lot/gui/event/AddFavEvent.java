@@ -1,4 +1,4 @@
-package kit.route.a.lot.gui;
+package kit.route.a.lot.gui.event;
 
 import java.util.EventObject;
 
@@ -6,6 +6,9 @@ import kit.route.a.lot.common.Coordinates;
 
 
 public class AddFavEvent extends EventObject {
+
+    private static final long serialVersionUID = 1L;
+    
     private Coordinates position;
     private String name;
     private String description;

@@ -393,7 +393,7 @@ public class Controller {
         
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
-        ctrl.guiHandler.createGUI();
+        
         File stateFile = new File("./state.state");
         File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         if (stateFile.exists()) {   

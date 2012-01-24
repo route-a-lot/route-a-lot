@@ -3,7 +3,7 @@ package kit.route.a.lot.controller.listener;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.NavNodeSelectedEvent;
+import kit.route.a.lot.gui.event.NavNodeSelectedEvent;
 
 
 public class TargetSelectedListener implements RALListener{

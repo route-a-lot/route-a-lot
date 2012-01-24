@@ -1,10 +1,49 @@
 package kit.route.a.lot.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+
 import net.java.games.jogl.*;
 
 
-public class OpenGLListener implements GLEventListener {
+public class Map3D extends JComponent implements GLEventListener {
+    
+    private static final long serialVersionUID = 1L;
+    
+    private GLCanvas canvas;
+    
+    public GLCanvas getCanvas() {
+        return canvas;
+    }
+    
+    public Map3D()
+    {
+        GLCapabilities glcaps = new GLCapabilities();
+        canvas = GLDrawableFactory.getFactory().createGLCanvas(glcaps);
+        canvas.addGLEventListener(this);
+        this.setLayout(new BorderLayout());
+        this.setPreferredSize(new Dimension(this.getSize()));
+        this.setBackground(Color.WHITE);
+        this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        this.add(canvas);
+        this.setVisible(true);
+    }
+    
+    @Override
+    public void init(GLDrawable arg0) {
+        GL gl = arg0.getGL();
+        GLU glu = arg0.getGLU();
 
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        setCamera(gl, glu);
+
+        gl.glMatrixMode(GL.GL_MODELVIEW);
+    }
+    
     @Override
     public void display(GLDrawable arg0) {
         GL gl = arg0.getGL();
@@ -20,7 +59,7 @@ public class OpenGLListener implements GLEventListener {
 
         gl.glTranslated(0, 1, 0);
 
-        drawField(gl, glu); 
+        //drawField(gl, glu);
     }
     
     private void setCamera(GL gl, GLU glu)
@@ -39,18 +78,7 @@ public class OpenGLListener implements GLEventListener {
     public void displayChanged(GLDrawable arg0, boolean arg1, boolean arg2) {
         // TODO Auto-generated method stub
         
-    }
-
-    @Override
-    public void init(GLDrawable arg0) {
-        GL gl = arg0.getGL();
-        GLU glu = arg0.getGLU();
-
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        setCamera(gl, glu);
-
-        gl.glMatrixMode(GL.GL_MODELVIEW); 
-    }
+    }  
 
     @Override
     public void reshape(GLDrawable arg0, int arg1, int arg2, int arg3, int arg4) {
@@ -67,5 +95,4 @@ public class OpenGLListener implements GLEventListener {
             gl.glVertex3f(6.5f, -1.5f, -6.5f);
         gl.glEnd();
     }
-
 }

@@ -3,7 +3,7 @@ package kit.route.a.lot.controller.listener;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.AddFavEvent;
+import kit.route.a.lot.gui.event.AddFavEvent;
 
 
 public class AddFavListener implements RALListener {

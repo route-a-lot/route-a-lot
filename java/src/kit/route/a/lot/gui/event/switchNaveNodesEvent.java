@@ -1,9 +1,12 @@
-package kit.route.a.lot.gui;
+package kit.route.a.lot.gui.event;
 
 import java.util.EventObject;
 
 
 public class switchNaveNodesEvent extends EventObject {
+
+    private static final long serialVersionUID = 1L;
+    
     private int first;
     private int second;
     
