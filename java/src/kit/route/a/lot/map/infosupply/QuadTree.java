@@ -16,8 +16,8 @@ public abstract class QuadTree {
     private static final byte DESCRIPTOR_QUADTREE_NODE = 1;
     private static final byte DESCRIPTOR_QUADTREE_LEAF = 2;
 
-    private Coordinates upLeft;
-    private Coordinates bottomRight;
+    protected Coordinates upLeft;
+    protected Coordinates bottomRight;
 
     public QuadTree(Coordinates upLeft, Coordinates bottomRight) {
         this.upLeft = upLeft;

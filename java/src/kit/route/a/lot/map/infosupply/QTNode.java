@@ -62,7 +62,7 @@ public class QTNode extends QuadTree {
 
     @Override
     protected boolean addToBaseLayer(MapElement element) {
-        if(element.isInBounds(getUpLeft(), getBottomRight())) {
+        if(element.isInBounds(upLeft, bottomRight)) {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addToBaseLayer(element)) {
                     children[i] = ((QTLeaf) children[i]).splitLeaf();

@@ -39,71 +39,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     public QTGeographicalOperator() {
         for(int i = 0; i < countZoomlevel; i++) {
-            zoomlevels[i] = new QuadTree(new Coordinates(0f, 0f), new Coordinates(0f, 0f)) {
-                
-                @Override
-                protected void trimm() {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-                @Override
-                public String toString(int offset, List<Integer> last) {
-                    // TODO Auto-generated method stub
-                    return null;
-                }
-                
-                @Override
-                protected void save(DataOutputStream stream) throws IOException {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-                @Override
-                protected void load(DataInputStream stream) throws IOException {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-                @Override
-                public int countElements() {
-                    // TODO Auto-generated method stub
-                    return 0;
-                }
-                
-                @Override
-                protected boolean addToOverlay(MapElement element) {
-                    // TODO Auto-generated method stub
-                    return false;
-                }
-                
-                @Override
-                protected boolean addToBaseLayer(MapElement element) {
-                    // TODO Auto-generated method stub
-                    return false;
-                }
-                
-                @Override
-                protected void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-                        Set<MapElement> elememts) {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-                @Override
-                protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-                        Set<MapElement> elememts) {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-                @Override
-                protected void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-                        Set<MapElement> baseLayer, Set<MapElement> overlay) {
-                    // TODO Auto-generated method stub
-                    
-                }
-            }; 
+            zoomlevels[i] = null;
         }
     }
     
@@ -131,9 +67,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public void buildZoomlevels() {
         //TODO: proper implementation
         MapElement reduced;
-        float multiplier = 5;
+        float multiplier = 4;
+        MapElement[] elements = State.getInstance().getLoadedMapInfo().getAllElements();
         for (int detail = 1; detail < countZoomlevel; detail++) {
-            for (MapElement element: State.getInstance().getLoadedMapInfo().getAllElements()) {
+            for (MapElement element: elements) {
                 if (element instanceof Node) {
                     continue;
                 }
@@ -141,7 +78,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
                 if (reduced == null) {
                     logger.debug("Ignoring " + element + " for zoomlevel " + detail);
                 } else {
-                    zoomlevels[detail].addToBaseLayer(reduced);
+                    if (!zoomlevels[detail].addToBaseLayer(reduced)) {
+                        logger.error("Reduced element could not be added to the quadtree.");
+                    }
                 }
             }
         }
