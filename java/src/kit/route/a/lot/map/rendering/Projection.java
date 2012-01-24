@@ -11,11 +11,11 @@ public abstract class Projection {
     public abstract Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates);
     
     public static int getZoomFactor(int detail) {
-        return (int) Math.pow(1.7, detail);
+        return (int) Math.pow(2, detail);
     }
     
     public static Projection getNewProjection(Coordinates topLeft) {
-        float scale = 2.9E-5f;
+        float scale = 4E-6f;
         return new MercatorProjection(topLeft, scale);
     }
     
