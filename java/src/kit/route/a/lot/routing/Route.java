@@ -25,6 +25,12 @@ public class Route {
         from = route;
     }
 
+    public Route() {
+        to = 0;
+        weight = 0;
+        from = null;
+    }
+
     public int getNode() {
         return to;
     }

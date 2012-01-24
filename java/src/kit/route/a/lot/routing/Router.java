@@ -126,16 +126,6 @@ public class Router {
         return result;
     }
 
-    /**
-     * Operation calculateOptimizedRoute
-     * 
-     * @param -
-     * @return List<int>
-     */
-    public static List<Integer> calculateOptimizedRoute() {
-        return calculateRoute();
-    }
-
     private static Route fromAToB(Selection a, Selection b) {
         // ToDo: rename?
         RoutingGraph graph = State.getInstance().getLoadedGraph();
@@ -190,6 +180,6 @@ public class Router {
         // No path was found, maybe raise an error?
         logger.error("Couldn't find any route at all from " + a.toString() + " to " + b.toString()
                 + ". Are you sure it is even possible?");
-        return null;
+        return new Route();
     }
 }

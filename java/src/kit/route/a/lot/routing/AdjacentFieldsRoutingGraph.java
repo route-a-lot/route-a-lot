@@ -195,7 +195,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         if (node > edgesPos.length) {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
             return null;
-        }
+        } 
         Collection<Integer> relevantEdges = new ArrayList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
             // don't filter at all
