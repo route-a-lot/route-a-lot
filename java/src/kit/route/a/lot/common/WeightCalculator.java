@@ -34,16 +34,26 @@ public class WeightCalculator {
      *            -
      * @return int
      */
-    public int calcWeightWithHeight(int fromID, int toID) {
+    public int calcHeightWeight(int fromID, int toID) {
         Coordinates from = State.getInstance().getLoadedMapInfo().getNodePosition(fromID);
         Coordinates to = State.getInstance().getLoadedMapInfo().getNodePosition(toID);
         Heightmap heightmap = State.getInstance().getHeightMap();
-        // Pythagoras.
-        return (int) Math.sqrt(Math.pow((from.getLatitude() - to.getLatitude()), 2)
-                + Math.pow((from.getLongitude() - to.getLongitude()), 2)
-                + Math.pow((State.getInstance().getHeightMalus() * (heightmap.getHeight(from) - heightmap
-                        .getHeight(to))), 2));
-    }
+        /* verbesserter Pythagoras, für kleine Entfernungen ausreichend, Abstand
+	Breitenkreise 111.3km, Abstand Längenkreise 111.3*cos(lat)km,wobei lat genau zwischen lat1 und lat2 liegt */
+	float lat1 = from.getLatitude();
+	float long1 = from.getLongitude();
+	float lat2 = to.getLatitude();
+	float long2 = to.getLongitude();
+        float lat = (lat1+lat2)*0.5*0.017453292;
+	double dx = 111.3*Math.cos(lat)*(lon1-lon2);
+	double dy = 111.3 *(lat1 - lat2);
+        double distance = (int) Math.sqrt(Math.pow(dx, 2)
+                + Math.pow(dy, 2)
+                + Math.pow((State.getInstance().getHeightMalus() * (heightmap.getHeight(from)*0.001 - heightmap
+                        .getHeight(to)*0.001)), 2)/*pow*/ );
+    	return (int)(distance*1000);//Distanz in metern
+	}//end calcHeightWeight
+
 
 
     public int calcWeight(int fromID, int toID) {
@@ -65,9 +75,13 @@ public class WeightCalculator {
         return (int) (100 * 6371000.785 * distanceRad);   //6371000 is earthRadius in meter, so result will be given in cm
     }
 
+
     public int calcWeight(Selection edge) {
         return calcWeight(edge.getFrom(), edge.getTo());
     }
+	
+	
+
 
     public int calcWeightWithUTM(int fromID, int toID) {
         Coordinates from = State.getInstance().getLoadedMapInfo().getNodePosition(fromID);
