@@ -242,10 +242,10 @@ public final class UTMConverter{
     
 
         if ((lon < -180.0) || (180.0 <= lon)) {
-            System.out.println("lon ist ungültig");
+            // System.out.println("lon ist ungültig");
             return utmDaten;
         } else if ((lat < -90.0) || (90.0 < lat)) {
-            System.out.println("lat ist ungültig");
+            // System.out.println("lat ist ungültig");
             return utmDaten;
         }
 

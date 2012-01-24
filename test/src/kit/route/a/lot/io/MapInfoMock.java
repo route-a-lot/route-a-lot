@@ -26,7 +26,7 @@ class MapInfoMock extends MapInfo {
     public void addNode(Coordinates position, int id, Address address) {
         nodeCount++;
         if (nodeCount % 130000 == 0) {
-            System.out.println("Current node count: " + nodeCount + " ~= " +
+            // System.out.println("Current node count: " + nodeCount + " ~= " +
                     (nodeCount * 100 / 13395533) + "%");
         }
     }

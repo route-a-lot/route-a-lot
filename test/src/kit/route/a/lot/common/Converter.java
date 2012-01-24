@@ -243,10 +243,10 @@ public class Converter{
 	
 
         if ((lon < -180.0) || (180.0 <= lon)) {
-            System.out.println("lon ist ungültig");
+            // System.out.println("lon ist ungültig");
             return utmDaten;
         } else if ((lat < -90.0) || (90.0 < lat)) {
-            System.out.println("lat ist ungültig");
+            // System.out.println("lat ist ungültig");
             return utmDaten;
         }
 
@@ -259,8 +259,8 @@ public class Converter{
 	utmDaten[0] = Math.round((float)xy[0]);
 	utmDaten[1] = Math.round((float)xy[1]);
         
-        System.out.println(Math.round((float)xy[0]));
-        System.out.println(Math.round((float)xy[1]));
+        // System.out.println(Math.round((float)xy[0]));
+        // System.out.println(Math.round((float)xy[1]));
         return utmDaten;
 	
     }//end main

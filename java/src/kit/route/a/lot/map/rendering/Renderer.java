@@ -180,7 +180,7 @@ public class Renderer {
                 routeImage = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
             }
         } else {
-            System.out.println("Getting route from cache");
+            // System.out.println("Getting route from cache");
         }
         
         context.drawImage(routeTopLeft, routeImage, detail);

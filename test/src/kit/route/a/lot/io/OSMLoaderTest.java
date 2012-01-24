@@ -65,7 +65,7 @@ public class OSMLoaderTest {
 
         long duration = System.currentTimeMillis() - start;
 
-        System.out.println("Duration: " + duration + " ms");
+        // System.out.println("Duration: " + duration + " ms");
 
         assertTrue(duration < 3000);
     }

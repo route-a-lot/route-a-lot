@@ -85,7 +85,7 @@ public class Tile {
         // graphics.drawChars((new Integer(num)).toString().concat("    ").toCharArray(), 0, 5, 5, 50);
         // num++;
         if (++num % 100 == 0) {
-            System.out.println("Rendering tile " + num);
+            // System.out.println("Rendering tile " + num);
         }
 
         Graphics2D graphics = data.createGraphics();
@@ -122,7 +122,7 @@ public class Tile {
         long end = System.nanoTime();
         double mapElements = (middle - start) / 1000000;
         double drawing = (end - middle) / 1000000;
-        System.out.println("time for mapElements " + mapElements + "ms; for drawing " + drawing + "ms");
+        // System.out.println("time for mapElements " + mapElements + "ms; for drawing " + drawing + "ms");
 
         graphics.dispose();
 
@@ -220,7 +220,7 @@ public class Tile {
                     graphics.setColor(Color.GREEN);
                     break;
                 default:
-//                    System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
+//                    // System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
                     return;
 //                    graphics.setColor(Color.WHITE);
             }

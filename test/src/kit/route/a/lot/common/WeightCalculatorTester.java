@@ -68,7 +68,7 @@ public class WeightCalculatorTester{
         entf =  Math.round((float) Math.sqrt(
                             Math.pow(utmDatenStart[0] - utmDatenEnd[0], 2) + 
                             Math.pow(utmDatenStart[1] - utmDatenEnd[1], 2) ));
-        System.out.println(entf);
+        // System.out.println(entf);
             return entf/1000;
         }// end calcWeightWithUTM
     

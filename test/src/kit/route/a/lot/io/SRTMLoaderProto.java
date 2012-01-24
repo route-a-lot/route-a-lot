@@ -63,8 +63,8 @@ public class SRTMLoaderProto {
                 }
             
             }//end for origin
-            System.out.println("lon: " + lon);
-            System.out.println("lat: " + lat);
+            // System.out.println("lon: " + lon);
+            // System.out.println("lat: " + lat);
             origin = new Coordinates((float)lat, (float)lon);
             tile = new HeightTile(width, height, origin);
             
@@ -82,7 +82,7 @@ public class SRTMLoaderProto {
             } catch (EOFException eof){
                 eof.printStackTrace();
             } catch (IOException e){
-                System.out.println(e);
+                // System.out.println(e);
             }
             /*in HeightMap einfügen*/
             heightmap.addHeightTile(tile);
@@ -107,7 +107,7 @@ public class SRTMLoaderProto {
             }
             out.close();            
         } catch(IOException e) {
-            System.out.println("Fehler beim auslesen");
+            // System.out.println("Fehler beim auslesen");
         }
     }//end test
     

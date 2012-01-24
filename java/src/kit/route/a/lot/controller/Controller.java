@@ -368,7 +368,7 @@ public class Controller {
             try {
                 state.setCurrentRoute(Router.calculateRoute());
                 for(Integer inte : state.getCurrentRoute()) {
-                    System.out.println(inte);
+                    // System.out.println(inte);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

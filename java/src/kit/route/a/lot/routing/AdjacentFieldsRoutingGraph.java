@@ -19,12 +19,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private int[] edges;
     private int[] weights;
     private long[] arcFlags;
-    private int maxNodeID;
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
-        this.maxNodeID = maxNodeID;
-        logger.info("Creating routing graph...");
+        logger.info("Creating routing graph with " + maxNodeID + " ID's");
         // assert same non-null array size
         if (startID.length == 0) {
             logger.error("Array length is zero, aborting.");
@@ -36,16 +34,18 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         // sort arrays simultaneously by startID
         sortByKey(startID, endID, weight);
-        
+
         // copy data to internal structures
-        edgesPos = new int[maxNodeID + 1];
+        edgesPos = new int[maxNodeID + 2];
         edgesPos[0] = 0;
         for (int i = 1; i < startID.length; i++) {
             if (startID[i] > startID[i - 1]) {
-                edgesPos[startID[i]] = i; 
+                for (int j = startID[i - 1] + 1; j <= startID[i]; j++) {
+                    edgesPos[j] = i;
+                }
             }
         }
-        areaID = new byte[maxNodeID + 1];
+        areaID = new byte[maxNodeID + 2];
         edges = endID; //TODO DISCUSS: .clone()?
         weights = weight;
         arcFlags = new long[startID.length];
@@ -165,9 +165,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public Collection<Integer> getRelevantNeighbors(int node, byte[] destAreas) {
         if (node >= edgesPos.length - 1 || node < 0) {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
-            return null;
+            return new ArrayList<Integer>();
         }
         Collection<Integer> relevantEdges = new ArrayList<Integer>();
+        logger.info("Getting neighbours for node " + node);
         long flags = 0;
         for (byte area: destAreas) {
             // create bitmask
@@ -262,7 +263,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             startID[i] = edges[i];
             endID[i] = j;
         }
-        result.buildGraph(startID, endID, weight, maxNodeID);
+        result.buildGraph(startID, endID, weight, edgesPos.length);
         return result;
     }
 

@@ -182,7 +182,7 @@ public class RendererTest {
                 @Override
                 public void keyPressed(KeyEvent arg0) {
                     
-//                    System.out.println("Key pressed");
+//                    // System.out.println("Key pressed");
                     
                     float diffLat = 0;
                     float diffLon = 0;
@@ -210,12 +210,12 @@ public class RendererTest {
 
                 @Override
                 public void keyReleased(KeyEvent arg0) {
-//                    System.out.println("Key released");
+//                    // System.out.println("Key released");
                 }
 
                 @Override
                 public void keyTyped(KeyEvent arg0) {
-//                    System.out.println("Key typed");
+//                    // System.out.println("Key typed");
                 }
                 
             });

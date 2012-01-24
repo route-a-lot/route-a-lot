@@ -122,7 +122,7 @@ public class Router {
             prev = navPoint;
             result.addAll(route.toList());
         }
-        // System.out.println(route.size());
+        // // System.out.println(route.size());
         return result;
     }
 
@@ -178,7 +178,7 @@ public class Router {
                 heap.add(new Route(-1, (int) b.getRatio() * weightCalculator.calcWeight(b), currentPath));
             } else if (currentNode == -1) {
                 // This is the shortest path.
-                logger.info("Found route from " + a.toString() + " to " + b.toString());
+                logger.info("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
                 return currentPath.getRoute();
             }
             for (Integer to : graph.getRelevantNeighbors(currentNode,

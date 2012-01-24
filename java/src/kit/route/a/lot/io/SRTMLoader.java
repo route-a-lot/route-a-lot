@@ -78,9 +78,9 @@ public class SRTMLoader implements HeightLoader {
                   bin.close();
                   in.close();
               } catch (EOFException eof) {
-                  System.out.println(eof);
+                  // System.out.println(eof);
               } catch (IOException e) {
-                  System.out.println(e);
+                  // System.out.println(e);
               }
               /*in HeightMap einfügen*/
               state.getLoadedHeightmap().addHeightTile(tile);

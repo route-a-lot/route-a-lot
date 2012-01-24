@@ -180,7 +180,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * prints a string representing the quadtree
      */
     public void printQuadTree() {
-        System.out.println(quadTreeAsString(0));
+        // System.out.println(quadTreeAsString(0));
     }
     
     private String quadTreeAsString(int level) {

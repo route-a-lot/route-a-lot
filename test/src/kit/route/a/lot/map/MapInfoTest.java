@@ -84,13 +84,13 @@ public class MapInfoTest {
         ArrayList<MapElement> a =
                 (ArrayList<MapElement>) info.getBaseLayer(0, new Coordinates(
                         5.0f, 1.0f), new Coordinates(1.0f, 5.0f));
-        System.out.println(a.size());
+        // System.out.println(a.size());
         for (MapElement ele : a) {
-            System.out.println(ele.toString());
+            // System.out.println(ele.toString());
         }
         Selection sel = info.select(bottomRight);
         if (sel != null) {
-            System.out.println(sel.toString());
+            // System.out.println(sel.toString());
         } else {
             System.err.println("select funktioniert noch nicht :(");
         }

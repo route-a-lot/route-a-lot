@@ -9,8 +9,8 @@ public class ShellGUI {
     public static void main(String[] args) {
         gui = new GUI(new ListenerLists());
         gui.setBounds(0, 25, 500, 500);
-        System.out.println(gui.getWidth());
-        System.out.println(gui.getHeight());
+        // System.out.println(gui.getWidth());
+        // System.out.println(gui.getHeight());
         gui.setVisible(true);
         gui.addContents();
     }

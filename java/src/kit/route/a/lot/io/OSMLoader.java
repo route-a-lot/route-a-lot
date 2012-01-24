@@ -812,7 +812,7 @@ public class OSMLoader {
                         geoCoordinates.setLongitude(Float.parseFloat(attributes.getValue("lon")));
 
                         curNodeCoordinates = projection.geoCoordinatesToLocalCoordinates(geoCoordinates);
-//                        System.out.println("coordinates " + curNodeCoordinates);
+//                        // System.out.println("coordinates " + curNodeCoordinates);
                         curNodeId = idMap.size();
                         if (curNodeId >= Integer.MAX_VALUE) {
                             logger.error("Tried to import more than " + curNodeId + " nodes!");
@@ -919,7 +919,7 @@ public class OSMLoader {
                             state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                         }
 
-//                        System.out.println(curNodeCoordinates);
+//                        // System.out.println(curNodeCoordinates);
                         inNode = false;
                     }
                 }

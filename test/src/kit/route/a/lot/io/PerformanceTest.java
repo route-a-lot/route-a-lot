@@ -36,13 +36,13 @@ public class PerformanceTest {
             mapInfo.addNode(new Coordinates(10 + rnd.nextFloat()*90, 10 + rnd.nextFloat()*90), i, new Address());
             if (i > 297800 && i % 10 == 0) { 
                 System.gc();
-                System.out.println("current node = " + i);
+                // System.out.println("current node = " + i);
             }
             if (i % 1000 == 0) {
-                System.out.println("current node = " + i);
+                // System.out.println("current node = " + i);
             }
         }
-        System.out.println("Fertig");
+        // System.out.println("Fertig");
     }
     
     @Test
@@ -83,13 +83,13 @@ public class PerformanceTest {
 
             if (i > 33000 && i % 10 == 0) { 
                 System.gc();
-                System.out.println("current way = " + i);
+                // System.out.println("current way = " + i);
             }
             if (i % 1000 == 0) {
-                System.out.println("current way = " + i);
+                // System.out.println("current way = " + i);
             }
         }
-        System.out.println("Fertig");
+        // System.out.println("Fertig");
     }
     
     //@Test
