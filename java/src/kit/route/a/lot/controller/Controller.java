@@ -12,10 +12,14 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
+import kit.route.a.lot.controller.listener.AddFavListener;
 import kit.route.a.lot.controller.listener.DeleteNaveNodeListener;
+import kit.route.a.lot.controller.listener.ExportRouteListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.LoadMapListener;
+import kit.route.a.lot.controller.listener.LoadRouteListener;
 import kit.route.a.lot.controller.listener.OrderNavNodesEvent;
+import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.TargetSelectedListener;
 import kit.route.a.lot.controller.listener.ViewChangedListener;
 import kit.route.a.lot.gui.GUIHandler;
@@ -28,7 +32,9 @@ import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
 import kit.route.a.lot.map.rendering.Renderer;
+import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.routing.Router;
 
 import org.apache.log4j.Logger;
@@ -150,7 +156,8 @@ public class Controller {
     public void deleteNavNode(int pos) {
         if (pos < state.getNavigationNodes().size()) {
             state.getNavigationNodes().remove(pos);
-            state.setCurrentRoute(Router.calculateRoute());
+            state.setCurrentRoute(new ArrayList<Integer>());
+            calculateRoute();
         }
         guiHandler.updateGUI();
     }
@@ -235,6 +242,7 @@ public class Controller {
                 logger.error("Could not load route from file '" + path + "'.");
             }
         }
+        calculateRoute();
     }
 
     /**
@@ -303,12 +311,12 @@ public class Controller {
                 //TODO tell gui
                 return;
             }
-        }
+        }    
         if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius()) != null) {
             //TODO tell GUI
             return;
         } 
-        //TODO tell gui
+        
         
     }
 
@@ -452,5 +460,9 @@ public class Controller {
         ctrl.guiHandler.addOptimizeRouteListener(new OrderNavNodesEvent(ctrl));
         ctrl.guiHandler.addDeleteNavNodeListener(new DeleteNaveNodeListener(ctrl));
         ctrl.guiHandler.addLoadMapListener(new LoadMapListener(ctrl));
+        ctrl.guiHandler.addAddFavoriteListener(new AddFavListener(ctrl));
+        ctrl.guiHandler.addSaveRouteListener(new SaveRouteListner(ctrl));
+        ctrl.guiHandler.addLoadRouteListener(new LoadRouteListener(ctrl));
+        ctrl.guiHandler.addExportRouteListener(new ExportRouteListener(ctrl));
     }
 }

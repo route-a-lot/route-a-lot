@@ -155,4 +155,21 @@ public class ArrayElementDB implements ElementDB {
         nodes.get(id2).setID(id1);
         Collections.swap(nodes, id1, id2);
     }
+
+    @Override
+    public boolean isFavorite(Coordinates pos) {
+        Coordinates topLeft = new Coordinates();
+        Coordinates bottomRight = new Coordinates();
+        topLeft.setLongitude(pos.getLatitude() - State.getInstance().getClickRadius());
+        topLeft.setLatitude(pos.getLongitude() - State.getInstance().getClickRadius());
+        bottomRight.setLongitude(pos.getLatitude() + State.getInstance().getClickRadius());
+        bottomRight.setLatitude(pos.getLongitude() + State.getInstance().getClickRadius());
+        
+        for (POINode fav : favorites) {
+            if(fav.isInBounds(topLeft, bottomRight)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

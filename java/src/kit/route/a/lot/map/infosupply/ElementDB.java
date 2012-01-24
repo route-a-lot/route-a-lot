@@ -68,6 +68,8 @@ public interface ElementDB {
 
     public MapElement[] getAllElements();
     
+    public boolean isFavorite(Coordinates pos);
+    
     public void swapNodeIds(int id1, int id2);
 
 }

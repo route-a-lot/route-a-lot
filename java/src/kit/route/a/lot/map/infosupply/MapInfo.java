@@ -161,6 +161,10 @@ public class MapInfo {
     public void deleteFavorite(Coordinates position) {
         elementDB.deleteFavorite(position);
     }
+    
+    public boolean isFavorite(Coordinates position) {
+        return elementDB.isFavorite(position);
+    }
 
     /**
      * Returns a description of the POI at the given area (little area around the given position)

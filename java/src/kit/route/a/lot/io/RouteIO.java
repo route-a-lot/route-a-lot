@@ -86,7 +86,6 @@ public class RouteIO {
             stream.writeFloat(navNode.getRatio());
             navNode.getPosition().saveToStream(stream);
         }
-        
         stream.close();
     }
 

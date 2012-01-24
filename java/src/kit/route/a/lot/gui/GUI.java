@@ -626,7 +626,7 @@ public class GUI extends JFrame {
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             savedRouteFile = saveRoute.getSelectedFile();
             ListenerLists.fireEvent(listener.saveRoute,
-                    new PathEvent(loadRoute.getSelectedFile().getPath()));
+                    new PathEvent(saveRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -639,7 +639,7 @@ public class GUI extends JFrame {
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             exportedRouteFile = exportRoute.getSelectedFile();
             ListenerLists.fireEvent(listener.exportRoute,
-                    new PathEvent(loadRoute.getSelectedFile().getPath()));
+                    new PathEvent(exportRoute.getSelectedFile().getPath()));
         }
     }
     

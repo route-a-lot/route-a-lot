@@ -10,6 +10,10 @@ public class ExportRouteListener implements RALListener {
 
     private Controller ctrl;
     
+    public ExportRouteListener(Controller ctrl) {
+        this.ctrl = ctrl;
+    }
+
     @Override
     public void handleRALEvent(EventObject event) {
         if (event instanceof PathEvent) {
