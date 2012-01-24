@@ -129,7 +129,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         String label = ((JMenuItem) e.getSource()).getText();
         // TODO better implementation:
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;         
-        Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());        
+        Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
         switch (gui.getNavPointsList().size()) {
             case 0: if (type == 2) {
                         gui.getNavPointsList().add(new Coordinates());
@@ -160,7 +160,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             popupXPos = e.getX();
             popupYPos = e.getY();
             navNodeMenu.show(e.getComponent(), popupXPos, popupYPos);
-            System.out.println("geklickt");
         }        
         ListenerLists.fireEvent(gui.getListener().whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }

@@ -22,6 +22,8 @@ public class ListenerLists {
     public ArrayList<RALListener> highwayMalus;
     public ArrayList<RALListener> importHeightMap;
     public ArrayList<RALListener> printRoute;
+    public ArrayList<RALListener> addTextuelNavPointList;
+    public ArrayList<RALListener> deleteNavPointList;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
@@ -41,6 +43,8 @@ public class ListenerLists {
         highwayMalus = new ArrayList<RALListener>();
         importHeightMap = new ArrayList<RALListener>();
         printRoute = new ArrayList<RALListener>();
+        addTextuelNavPointList = new ArrayList<RALListener>();
+        deleteNavPointList = new ArrayList<RALListener>();
     }
     
     public void addViewChangedListener(RALListener viewChangedListener) {
@@ -88,6 +92,13 @@ public class ListenerLists {
     public void addPrintRouteListener(RALListener printRouteListener) {
         printRoute.add(printRouteListener);
         //TODO
+    }
+    public void addDeleteNavNodeListener(RALListener deleteNavNodeListener) {
+        deleteNavPointList.add(deleteNavNodeListener);
+    }
+    
+    public void addTextuelNavPointListener(RALListener textuelNavPointListener) {
+        addTextuelNavPointList.add(textuelNavPointListener);
     }
     
     public static void fireEvent(ArrayList<RALListener> listener, EventObject event) {

@@ -266,6 +266,7 @@ public class GUI extends JFrame {
             public void windowClosed(WindowEvent arg0) { // TODO  
             }  
         });
+        this.pack();
     }
        
     /**
@@ -342,13 +343,13 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent arg0) {
                     for(int i = 0; i < alladdedNavPoints.size(); i++) {
                         if(alladdedNavPoints.get(i) == navPointField) {
+                            ListenerLists.fireEvent(listener.addTextuelNavPointList, new PathEvent(alladdedNavPoints.get(i).toString()));
                             repaint();
                         }
                     }
                 }
               });
               navPointButton.addActionListener(new ActionListener() {
-                
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
                     for(int i = 0; i < alladdedButtons.size(); i++) {
@@ -357,13 +358,11 @@ public class GUI extends JFrame {
                             tab1.remove(alladdedButtons.get(i));
                             alladdedButtons.remove(i);
                             alladdedNavPoints.remove(i);
+                            navPointsList.remove(i + 1);
+                            ListenerLists.fireEvent(listener.deleteNavPointList, new NumberEvent(i + 1));
                             repaint();
                         }
                     }
-                    /*
-                    tab1.remove(navPointField);
-                    alladdedNavPoints.remove();
-                    */
                 }
               });
               tab1.validate();
@@ -374,8 +373,53 @@ public class GUI extends JFrame {
         listener.targetSelected.add(new RALListener() {
             @Override
             public void handleRALEvent(EventObject event) {
-                int idx = ((NavNodeSelectedEvent) event).getIndex();
+                int index = ((NavNodeSelectedEvent) event).getIndex();
                 Coordinates pos = ((NavNodeSelectedEvent) event).getPosition();
+                if( index == 0) {
+                    startPoint.setText(pos.toString());
+                } else if(index == navPointsList.size() - 1) {
+                    endPoint.setText(pos.toString());
+                } else {
+                    while(alladdedNavPoints.size() < navPointsList.size() - 2) {
+                        
+                        final JTextField navPointField = new JTextField();
+                        final JButton navPointButton = new JButton("x");
+                        alladdedNavPoints.add(navPointField); 
+                        alladdedButtons.add(navPointButton);
+                        tab1.add(navPointField); 
+                        tab1.add(navPointButton);
+                        navPointField.addActionListener(new ActionListener() {
+                          @Override
+                          public void actionPerformed(ActionEvent arg0) {
+                              for(int i = 0; i < alladdedNavPoints.size(); i++) {
+                                  if(alladdedNavPoints.get(i) == navPointField) {
+                                      repaint();
+                                  }
+                              }
+                          }
+                        });
+                        navPointButton.addActionListener(new ActionListener() {
+                          
+                          @Override
+                          public void actionPerformed(ActionEvent arg0) {
+                              for(int i = 0; i < alladdedButtons.size(); i++) {
+                                  if(alladdedButtons.get(i) == navPointButton) {
+                                      tab1.remove(alladdedNavPoints.get(i));
+                                      tab1.remove(alladdedButtons.get(i));
+                                      alladdedButtons.remove(i);
+                                      alladdedNavPoints.remove(i);
+                                      repaint();
+                                  }
+                              }
+                          }
+                        });
+                        tab1.validate();
+                        key++;
+                    }
+                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
+                        alladdedNavPoints.get(i).setText(navPointsList.get(i + 1).toString());
+                    }
+                }
             }         
         });
     }

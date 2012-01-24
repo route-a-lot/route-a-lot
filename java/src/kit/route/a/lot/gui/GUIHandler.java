@@ -19,7 +19,7 @@ public class GUIHandler {
 
     public void createGUI() {
         gui = new GUI(listener);
-        gui.setBounds(0, 25, 500, 500);
+        gui.setBounds(0, 25, 600, 600);
         gui.addContents();
     }
 
@@ -78,7 +78,7 @@ public class GUIHandler {
     }
     
     public void addDeleteNavNodeListener(RALListener deleteNavNodeListener) {
-        //TODO
+        listener.addDeleteNavNodeListener(deleteNavNodeListener);
     }
     
     public void deleteNavNodeFromList(Coordinates coordinates) {

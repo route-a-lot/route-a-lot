@@ -7,13 +7,13 @@ import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
 
-public class deleteNaveNodeListener implements RALListener {
+public class DeleteNaveNodeListener implements RALListener {
 
     private Controller ctrl;
      
     
     
-    public deleteNaveNodeListener(Controller ctrl) {
+    public DeleteNaveNodeListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
 
