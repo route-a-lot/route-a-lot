@@ -68,7 +68,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new Context2D(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 
@@ -149,7 +149,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new Context2D(200, 200, topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
 
     }
 

@@ -53,6 +53,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     public Map(GUI parentGUI) {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        setBackground(Color.BLACK);
         gui = parentGUI;
         center = new Coordinates(0, 0);
         

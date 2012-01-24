@@ -103,7 +103,7 @@ public class GUI extends JFrame {
     private ArrayList<JTextField> alladdedNavPoints;
     private ArrayList<JButton> alladdedButtons;
    
-    private Map2D map;
+    private Map map;
     
     private int key = 0;
     private String choosenMap;
@@ -256,6 +256,7 @@ public class GUI extends JFrame {
         createTab2();
         createTab3();
         
+        pack();
         validate();
 
         addWindowListener(new WindowAdapter() {           
