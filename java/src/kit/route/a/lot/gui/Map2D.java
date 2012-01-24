@@ -5,11 +5,9 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.ArrayList;
 import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context2D;
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.gui.event.ViewChangedEvent;
 
 public class Map2D extends Map  {
@@ -17,8 +15,8 @@ public class Map2D extends Map  {
     private static final long serialVersionUID = 1L;
 
 
-    public Map2D(ListenerLists listeners, ArrayList<Coordinates> navPointsList, GUI gui) {
-        super(listeners, navPointsList, gui);
+    public Map2D(GUI gui) {
+        super(gui);
     }
 
     protected Component createCanvas() {
@@ -27,7 +25,7 @@ public class Map2D extends Map  {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);           
-                ListenerLists.fireEvent(listener.viewChanged,
+                ListenerLists.fireEvent(gui.getListener().viewChanged,
                         new ViewChangedEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
             }      
         };

@@ -1,10 +1,5 @@
 package kit.route.a.lot.gui;
 
-import java.util.ArrayList;
-
-
-import kit.route.a.lot.common.Coordinates;
-
 import net.java.games.jogl.*;
 
 
@@ -13,9 +8,9 @@ public class Map3D extends Map implements GLEventListener {
     private static final long serialVersionUID = 1L;
     
      
-    public Map3D(ListenerLists listeners, ArrayList<Coordinates> navPointsList, GUI gui)
+    public Map3D(GUI gui)
     {
-        super(listeners, navPointsList, gui);
+        super(gui);
     }
     
     public GLCanvas createCanvas() {

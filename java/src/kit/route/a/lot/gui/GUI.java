@@ -14,6 +14,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.EventObject;
 import java.util.Hashtable;
 
 import javax.swing.Box;
@@ -38,6 +39,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.listener.RALListener;
+import kit.route.a.lot.gui.event.NavNodeSelectedEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PathEvent;
 
@@ -146,13 +148,12 @@ public class GUI extends JFrame {
         mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        map = new Map2D(listener, navPointsList, this);
+        map = new Map2D(this);
         
         statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
 
-        l_activeRoute = new JLabel();
-        l_activeRoute.setText("Route:");
+        l_activeRoute = new JLabel("Route:");
         l_position = new JLabel();
         
         statusBar.add(l_activeRoute);
@@ -176,11 +177,9 @@ public class GUI extends JFrame {
         mapContents.add(mapButtonPanel, BorderLayout.NORTH);
         mapContents.add(map, BorderLayout.CENTER);
         
-        l_routeText = new JLabel();
-        l_routeText.setText("Route:");
+        l_routeText = new JLabel("Route:");
 
-        load = new JButton();
-        load.setText("Laden");
+        load = new JButton("Laden");
         load.addActionListener(new ActionListener() {        
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -188,8 +187,7 @@ public class GUI extends JFrame {
             }
         });
 
-        save = new JButton();
-        save.setText("Speichern");
+        save = new JButton("Speichern");
         save.addActionListener(new ActionListener() {          
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -197,8 +195,7 @@ public class GUI extends JFrame {
             }
         });
 
-        kmlExport = new JButton();
-        kmlExport.setText("KML-Export");
+        kmlExport = new JButton("KML-Export");
         kmlExport.addActionListener(new ActionListener() {          
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -206,8 +203,7 @@ public class GUI extends JFrame {
             }
         });
 
-        print = new JButton();
-        print.setText("Ausdrucken");
+        print = new JButton("Ausdrucken");
         print.addActionListener(new ActionListener() {            
             @Override
             public void actionPerformed(ActionEvent arg0) {
@@ -215,8 +211,7 @@ public class GUI extends JFrame {
             }
         });
 
-        graphics = new JButton();
-        graphics.setText("2D/3D");
+        graphics = new JButton("2D/3D");
 
         Hashtable<Integer, JLabel> allScrollingTicks = new Hashtable<Integer, JLabel>();
 
@@ -245,6 +240,7 @@ public class GUI extends JFrame {
             @Override
             public void stateChanged(ChangeEvent ce) {
                 map.setZoomlevel(scrolling.getValue());
+                map.calculateView();
             }
         });
 
@@ -260,10 +256,7 @@ public class GUI extends JFrame {
         createTab2();
         createTab3();
         
-        pack();
         validate();
-        
-        map.calculateView();
 
         addWindowListener(new WindowAdapter() {           
             @Override
@@ -376,6 +369,14 @@ public class GUI extends JFrame {
               tab1.validate();
               key++;
            }
+        });
+        
+        listener.targetSelected.add(new RALListener() {
+            @Override
+            public void handleRALEvent(EventObject event) {
+                int idx = ((NavNodeSelectedEvent) event).getIndex();
+                Coordinates pos = ((NavNodeSelectedEvent) event).getPosition();
+            }         
         });
     }
     

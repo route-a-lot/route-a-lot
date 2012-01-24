@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -29,9 +28,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
 
     private static final long serialVersionUID = 1L;   
     
-    protected ListenerLists listener;
-    private ArrayList<Coordinates> navPoints;
-    
     private int oldMousePosX;
     private int oldMousePosY;
     private int popupXPos;
@@ -41,7 +37,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
     
-    private GUI gui; // TODO
+    protected GUI gui; // TODO
     private JPopupMenu navNodeMenu;
     private JMenuItem startItem;
     private JMenuItem endItem;
@@ -51,15 +47,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     
     /**
      * Creates a map canvas, including its context menu.
-     * @param listeners the collection of listener lists from the gui
+     * @param gui.getListener()s the collection of gui.getListener() lists from the gui
      * @param navPointsList the list of navigation nodes from the gui
      */
-    public Map(ListenerLists listeners, ArrayList<Coordinates> navPointsList, GUI gui) {
+    public Map(GUI parentGUI) {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
-        this.gui = gui;
-        listener = listeners;
-        navPoints = navPointsList;
+        gui = parentGUI;
         center = new Coordinates(0, 0);
         
         canvas = createCanvas();
@@ -80,7 +74,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void actionPerformed(ActionEvent e) {
                 Coordinates favoriteCoordinates =
                     getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
-                ListenerLists.fireEvent(listener.addFav, new FavoriteAddedEvent(favoriteCoordinates, "", ""));
+                ListenerLists.fireEvent(gui.getListener().addFav, new FavoriteAddedEvent(favoriteCoordinates, "", ""));
             }
         });
         navNodeMenu = new JPopupMenu("NavNodes");
@@ -120,12 +114,10 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
 
     /**
      * Sets the zoom level. Negative values will be treated as 0.
-     * Subsequently schedules a map redraw.
      * @param zoomlevel the desired zoom level
      */
     public void setZoomlevel(int zoomlevel) {
         this.zoomlevel = Math.max(zoomlevel, 0);
-        calculateView();
     }
     
     /**
@@ -138,25 +130,25 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         // TODO better implementation:
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;         
         Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());        
-        switch (navPoints.size()) {
+        switch (gui.getNavPointsList().size()) {
             case 0: if (type == 2) {
-                        navPoints.add(new Coordinates());
+                        gui.getNavPointsList().add(new Coordinates());
                     }
-                    navPoints.add(pos);
+                    gui.getNavPointsList().add(pos);
                     break;
             case 1: switch (type) {
-                        case 0 : navPoints.set(0, pos); break;
-                        default : navPoints.add(pos);
+                        case 0 : gui.getNavPointsList().set(0, pos); break;
+                        default : gui.getNavPointsList().add(pos);
                     }
                     break;
             default: switch (type) {
-                        case 0 : navPoints.set(0, pos); break;
-                        case 1 : navPoints.add(navPoints.size() - 1, pos); break;
-                        case 2 : navPoints.set(navPoints.size() - 1, pos);
+                        case 0 : gui.getNavPointsList().set(0, pos); break;
+                        case 1 : gui.getNavPointsList().add(gui.getNavPointsList().size() - 1, pos); break;
+                        case 2 : gui.getNavPointsList().set(gui.getNavPointsList().size() - 1, pos);
                     }
         }    
-        ListenerLists.fireEvent(listener.targetSelected,
-                new NavNodeSelectedEvent(pos, navPoints.indexOf(pos)));
+        ListenerLists.fireEvent(gui.getListener().targetSelected,
+                new NavNodeSelectedEvent(pos, gui.getNavPointsList().indexOf(pos)));
         canvas.repaint();
     }
     
@@ -169,9 +161,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             popupYPos = e.getY();
             navNodeMenu.show(e.getComponent(), popupXPos, popupYPos);
             System.out.println("geklickt");
-        }
-        
-        ListenerLists.fireEvent(listener.whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
+        }        
+        ListenerLists.fireEvent(gui.getListener().whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }
       
     /**
@@ -194,9 +185,10 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         Coordinates clickPos = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
         int yDiff = e.getY() - canvas.getY() - canvas.getBounds().height / 2;
         int xDiff = e.getX() - canvas.getX() - canvas.getBounds().width / 2;
+        setZoomlevel(zoomlevel + e.getWheelRotation());
         center.setLatitude(clickPos.getLatitude() - yDiff * Projection.getZoomFactor(zoomlevel));
         center.setLongitude(clickPos.getLongitude() - xDiff * Projection.getZoomFactor(zoomlevel));
-        setZoomlevel(zoomlevel + e.getWheelRotation());
+        calculateView();
     }
     
     /**
