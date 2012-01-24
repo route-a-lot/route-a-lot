@@ -177,8 +177,8 @@ public class Street extends MapElement {
         double c = getDistanceProj(nodes[startNode].getPos(), nodes[endNode].getPos());
         // float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b * b + c * c - a * a) / (2 * b * c));
-        double angleAB = Math.acos((a * a + c * c - b * b) / (2 * a * c));
-        if (angleBC > Math.PI / 4 || angleAB > Math.PI / 2) {
+        double angleAC = Math.acos((a * a + c * c - b * b) / (2 * a * c));
+        if (angleBC > Math.PI / 2 || angleAC > Math.PI / 2) {
             if (getDistanceProj(nodes[startNode].getPos(), pos) < getDistanceProj(nodes[endNode].getPos(),
                     pos)) {
                 return 0.0f;

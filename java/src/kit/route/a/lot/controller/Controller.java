@@ -12,7 +12,10 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
+import kit.route.a.lot.controller.listener.DeleteNaveNodeListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
+import kit.route.a.lot.controller.listener.LoadMapListener;
+import kit.route.a.lot.controller.listener.OrderNavNodesEvent;
 import kit.route.a.lot.controller.listener.TargetSelectedListener;
 import kit.route.a.lot.controller.listener.ViewChangedListener;
 import kit.route.a.lot.gui.GUIHandler;
@@ -89,8 +92,8 @@ public class Controller {
             } catch (IOException e) {
                 logger.fatal("loadMap: IO Exception in MapIO");
             }
-            setViewToMapCenter(); // TODO: likely incorrect place
-            //guiHandler.setView(state.getCenterCoordinates());
+            setViewToMapCenter(); 
+            guiHandler.setView(state.getCenterCoordinates());
             renderer.resetRenderCache();
         }
     }
@@ -107,9 +110,9 @@ public class Controller {
             state.getLoadedMapInfo().buildZoomlevels();
             state.getLoadedMapInfo().trimm();
             renderer.resetRenderCache();
-            state.setLoadedMapFile(new File(Util.removeExtension(osmFile.getPath()) + ".sral"));
-            state.getImportedMaps().add(Util.removeExtension(osmFile.getPath()) + ".sral");
-            //guiHandler.updateMapList(state.getImportedMaps());
+            state.setLoadedMapFile(new File("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral"));
+            state.getImportedMaps().add("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral");
+            guiHandler.updateMapList(state.getImportedMaps());
             try {
                 MapIO.saveMap(state.getLoadedMapFile());
             } catch (IOException e) {
@@ -117,6 +120,7 @@ public class Controller {
             }
             setViewToMapCenter();
             guiHandler.setView(state.getCenterCoordinates());
+            guiHandler.updateMapList(state.getImportedMaps());
         }
        
     }
@@ -146,6 +150,7 @@ public class Controller {
     public void deleteNavNode(int pos) {
         if (pos < state.getNavigationNodes().size()) {
             state.getNavigationNodes().remove(pos);
+            state.setCurrentRoute(Router.calculateRoute());
         }
         guiHandler.updateGUI();
     }
@@ -180,7 +185,8 @@ public class Controller {
      * Operation orderNavNodes
      */
     public void orderNavNodes() {  
-        Collection<Selection> col = Router.optimizeRoute();         
+        Collection<Selection> col = Router.optimizeRoute();  
+        Router.calculateRoute();
         //guiHandler.setNavNodesOrder(new ArrayList<Integer>());   //TODO make this list
         state.setNavigationNodes(new ArrayList<Selection>());
         state.getNavigationNodes().addAll(col);
@@ -384,7 +390,30 @@ public class Controller {
             logger.fatal("IO exception in StateIO");
         }
     }
+    
+    private static void loadState() {
+        File stateFile = new File("./state.state");
+        if (stateFile.exists()) {   
+            logger.info("load state file..."); 
+            try { 
+                StateIO.loadState(stateFile); 
+            } catch (IOException e) {
+                logger.error("state loading: Read error occurred.");
+                e.printStackTrace();
+            }
+            File directoryOfSrl = new File("./sral"); // Directory is just a list of files
 
+            if(directoryOfSrl.isDirectory()) { // check to make sure it is a directory
+                String filenames[] = directoryOfSrl.list();
+                for(String filename : filenames) {
+                    if (filename.endsWith(".sral")) {
+                        State.getInstance().getImportedMaps().add("./sral/" + filename);
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Operation main
      * 
@@ -394,18 +423,8 @@ public class Controller {
         
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
-        
-        File stateFile = new File("./state.state");
         File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
-        if (stateFile.exists()) {   
-            logger.info("load state file..."); 
-            try { 
-                StateIO.loadState(stateFile); 
-            } catch (IOException e) {
-                logger.error("state loading: Read error occurred.");
-                e.printStackTrace();
-            }
-        }
+        loadState();
         if (ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
               ctrl.loadMap(ctrl.state.getLoadedMapFile());
         } else {
@@ -414,7 +433,7 @@ public class Controller {
                 ctrl.importMap(defaultMap);
                 ctrl.setViewToMapCenter();
                 try {
-                    StateIO.saveState(stateFile); // TODO: move saveState call to program exit
+                    StateIO.saveState(new File("./state.state")); // TODO: move saveState call to program exit
                 } catch (IOException e) {
                     logger.error("state saving: Write error occurred.");
                     e.printStackTrace();
@@ -427,6 +446,11 @@ public class Controller {
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
         ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));  
         ctrl.setViewToMapCenter();
+        System.out.println(ctrl.state.getImportedMaps().size());
         ctrl.guiHandler.setView(ctrl.state.getCenterCoordinates());
+        ctrl.guiHandler.updateMapList(ctrl.state.getImportedMaps());
+        ctrl.guiHandler.addOptimizeRouteListener(new OrderNavNodesEvent(ctrl));
+        ctrl.guiHandler.addDeleteNavNodeListener(new DeleteNaveNodeListener(ctrl));
+        ctrl.guiHandler.addLoadMapListener(new LoadMapListener(ctrl));
     }
 }

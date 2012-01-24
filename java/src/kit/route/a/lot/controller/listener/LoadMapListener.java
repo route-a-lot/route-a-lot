@@ -18,6 +18,7 @@ public class LoadMapListener implements RALListener {
     @Override
     public void handleRALEvent(EventObject event) {
         if (event instanceof PathEvent) {
+            System.err.println(((PathEvent) event).getPath());
             ctrl.loadMap(new File(((PathEvent) event).getPath()));
         }
 

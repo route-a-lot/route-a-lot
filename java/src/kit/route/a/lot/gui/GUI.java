@@ -651,11 +651,10 @@ public class GUI extends JFrame {
     }
     
     /**
-     * Sets the entries shown in the imported map selcetion field.
+     * Sets the entries shown in the imported map selection field.
      * @param maps the new entries
      */
     public void updateMapChooser(ArrayList<String> maps) {
-        chooseImportedMap.removeAllItems();   
         for(String map : maps) {
             chooseImportedMap.addItem(map);
         }

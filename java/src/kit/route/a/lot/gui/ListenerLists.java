@@ -47,6 +47,7 @@ public class ListenerLists {
         addTextuelNavPointList = new ArrayList<RALListener>();
         deleteNavPointList = new ArrayList<RALListener>();
         loadMapList = new ArrayList<RALListener>();
+        optimizeRoute = new ArrayList<RALListener>();
     }
     
     public void addViewChangedListener(RALListener viewChangedListener) {

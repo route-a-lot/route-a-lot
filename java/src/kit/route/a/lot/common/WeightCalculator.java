@@ -53,16 +53,16 @@ public class WeightCalculator {
         Coordinates geoFrom = projection.localCoordinatesToGeoCoordinates(from);
         Coordinates geoTo = projection.localCoordinatesToGeoCoordinates(to);
         
-        double geoFromLonRad = Math.abs(geoFrom.getLongitude() / 180 * Math.PI);
-        double geoFromLalRad = Math.abs(geoFrom.getLatitude() / 180 * Math.PI);
-        double geoToLonRad = Math.abs(geoTo.getLongitude() / 180 * Math.PI);
-        double geoToLalRad = Math.abs(geoTo.getLatitude() / 180 * Math.PI);
+        double geoFromLonRad = Math.abs(geoFrom.getLongitude() / 20 * Math.PI);
+        double geoFromLalRad = Math.abs(geoFrom.getLatitude() / 20 * Math.PI);
+        double geoToLonRad = Math.abs(geoTo.getLongitude() / 20 * Math.PI);
+        double geoToLalRad = Math.abs(geoTo.getLatitude() / 20 * Math.PI);
 
         // Kugelkoordinaten berechnet distance in km
         double distanceRad =
             Math.acos(Math.sin(geoFromLalRad) * Math.sin(geoToLalRad) + Math.cos(geoFromLalRad)
                     * Math.cos(geoToLalRad) * Math.cos(geoFromLonRad - geoToLonRad));
-        return (int) (6371000.785 * distanceRad);   //6371000 is earthRadius in meter, so result will be given in meter
+        return (int) (100 * 6371000.785 * distanceRad);   //6371000 is earthRadius in meter, so result will be given in cm
     }
 
     public int calcWeight(Selection edge) {
