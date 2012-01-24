@@ -338,23 +338,35 @@ public class GUI extends JFrame {
         addTextPoints.addActionListener(new ActionListener() {      
           @Override 
           public void actionPerformed(ActionEvent arg0) {
-              JTextField navPointField = new JTextField();
-              JButton navPointButton = new JButton();
+              final JTextField navPointField = new JTextField();
+              final JButton navPointButton = new JButton("x");
               alladdedNavPoints.add(navPointField); 
               alladdedButtons.add(navPointButton);
-              navPointField.setPreferredSize(new Dimension(startPoint.getWidth()-20,20));
               tab1.add(navPointField); 
               tab1.add(navPointButton);
               navPointField.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    String selectedPoint = alladdedNavPoints.get(key).getText();
+                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
+                        if(alladdedNavPoints.get(i) == navPointField) {
+                            repaint();
+                        }
+                    }
                 }
               });
               navPointButton.addActionListener(new ActionListener() {
                 
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
+                    for(int i = 0; i < alladdedButtons.size(); i++) {
+                        if(alladdedButtons.get(i) == navPointButton) {
+                            tab1.remove(alladdedNavPoints.get(i));
+                            tab1.remove(alladdedButtons.get(i));
+                            alladdedButtons.remove(i);
+                            alladdedNavPoints.remove(i);
+                            repaint();
+                        }
+                    }
                     /*
                     tab1.remove(navPointField);
                     alladdedNavPoints.remove();
@@ -476,13 +488,14 @@ public class GUI extends JFrame {
             }
         });
         
-        heightMapManagement = new JButton("Höhendaten - Verwaltung");
-        heightMapManagement.addActionListener(new ActionListener() {     
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                GUI.this.importHeightMapFileChooser();
-            }
-        });
+        
+//        heightMapManagement = new JButton("Höhendaten - Verwaltung");
+//        heightMapManagement.addActionListener(new ActionListener() {     
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                GUI.this.importHeightMapFileChooser();
+//            }
+//        });
         
         tab3.add(l_highwayMalus);
         tab3.add(highwayMalus);
@@ -492,7 +505,7 @@ public class GUI extends JFrame {
         tab3.add(deleteMapButton);
         tab3.add(activateMapButton);
         tab3.add(chooseImportedMap);
-        tab3.add(heightMapManagement);
+//        tab3.add(heightMapManagement);
     }
     
     /**
@@ -591,7 +604,7 @@ public class GUI extends JFrame {
     }
     
     public void setNavPointsOrdered(ArrayList<Coordinates> orderedNavPointsList) {
-        navPointsList = orderedNavPointsList;
+        navPointsList = orderedNavPointsList; 
     }
     
     public void setZoomlevel(int zoomlevel) {
@@ -600,6 +613,13 @@ public class GUI extends JFrame {
     
     public void deleteNavNodesFromList(Coordinates coordinates) {
         navPointsList.remove(coordinates);
-    }   
-
+    }
+    
+    public ListenerLists getListener() {
+        return listener;
+    }
+    
+    public ArrayList<Coordinates> getNavPointsList() {
+        return navPointsList;
+    }
 }
