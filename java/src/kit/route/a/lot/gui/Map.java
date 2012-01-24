@@ -37,7 +37,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int popupXPos;
     private int popupYPos;
     private Coordinates center;
-    protected int zoomlevel = 0;
+    protected int zoomlevel = 2;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
     

@@ -15,7 +15,7 @@ public abstract class Projection {
     }
     
     public static Projection getNewProjection(Coordinates topLeft) {
-        float scale = 4E-6f;
+        float scale = 5E-6f;
         return new MercatorProjection(topLeft, scale);
     }
     

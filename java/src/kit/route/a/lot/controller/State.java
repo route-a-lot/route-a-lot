@@ -102,7 +102,7 @@ public class State {
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         centerCoordinates = null;
-        detailLevel = 0;
+        detailLevel = 2;
         clickRadius = 1; // TODO use it
         routeDescription = new RouteDescription();
         speed = 15;
@@ -275,7 +275,7 @@ public class State {
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         centerCoordinates = new Coordinates();
-        detailLevel = 0;
+        detailLevel = 2;
         routeDescription = new RouteDescription();
     }
 }
