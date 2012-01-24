@@ -331,7 +331,7 @@ public class GUI extends JFrame {
                     alladdedButtons.remove(i);
                     alladdedNavPoints.remove(i);
                 }
-                for(int i = 0; i < navPointsList.size(); i++) {
+                for(int i = navPointsList.size() - 1; i >= 0; i--) {
                     navPointsList.remove(i);
                     listener.fireEvent(listener.deleteNavPointList, new NumberEvent(i));
                 }
