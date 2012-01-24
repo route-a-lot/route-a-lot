@@ -300,7 +300,7 @@ public class GUI extends JFrame {
         optimizeRoute.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                // Event hier einbauen
+                listener.fireEvent(listener.optimizeRoute, new PathEvent("optimize"));
             }
         });
 
