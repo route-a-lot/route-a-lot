@@ -3,9 +3,16 @@ package kit.route.a.lot.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.util.ArrayList;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+
+import kit.route.a.lot.common.Coordinates;
 
 import net.java.games.jogl.*;
 
@@ -14,24 +21,52 @@ public class Map3D extends JComponent implements GLEventListener {
     
     private static final long serialVersionUID = 1L;
     
+    private ListenerLists listener;
+    ArrayList<Coordinates> navPoints;
+
+    private int oldMousePosX;
+    private int oldMousePosY;
+    private int popupXPos;
+    private int popupYPos;
+    private Coordinates center;
+    private int zoomlevel = 0;
+    private Coordinates topLeft = new Coordinates();
+    private Coordinates bottomRight = new Coordinates();
+
+    private JPopupMenu navNodeMenu;
+    private JMenuItem startItem;
+    private JMenuItem endItem;
+    private AbstractButton stopoverItem;
+    private AbstractButton favoriteItem;
     private GLCanvas canvas;
+    
+    
+    public Map3D(ListenerLists listeners, ArrayList<Coordinates> navPointsList)
+    {
+        this.setLayout(new BorderLayout());
+        this.setPreferredSize(new Dimension(this.getSize()));
+        this.setBackground(Color.WHITE);
+        this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        this.setVisible(true);
+        this.listener = listeners;
+        this.navPoints = navPointsList;
+        this.center = new Coordinates(0, 0);
+        
+        GLCapabilities glcaps = new GLCapabilities();
+        canvas = GLDrawableFactory.getFactory().createGLCanvas(glcaps);
+        canvas.addGLEventListener(this);
+        this.add(canvas);
+        this.setVisible(true);
+    }
     
     public GLCanvas getCanvas() {
         return canvas;
     }
     
-    public Map3D()
-    {
-        GLCapabilities glcaps = new GLCapabilities();
-        canvas = GLDrawableFactory.getFactory().createGLCanvas(glcaps);
-        canvas.addGLEventListener(this);
-        this.setLayout(new BorderLayout());
-        this.setPreferredSize(new Dimension(this.getSize()));
-        this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
-        this.add(canvas);
-        this.setVisible(true);
-    }
+    
+    
+    
+    
     
     @Override
     public void init(GLDrawable arg0) {

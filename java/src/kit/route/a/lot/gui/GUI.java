@@ -136,17 +136,17 @@ public class GUI extends JFrame {
     public void setView(Coordinates center) {
         map.setCenter(center);
         map.calculateView();
-        repaint();
+        map.repaint();
     }
     
     /**
      * Builds all components and adds them to the GUI.
      */
     public void addContents() {
-        this.mapButtonPanel = new JPanel();
+        mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        this.map = new Map2D(listener, navPointsList);
+        map = new Map2D(listener, navPointsList);
         
         statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
@@ -167,7 +167,7 @@ public class GUI extends JFrame {
         tabbpane.setPreferredSize(new Dimension(this.getWidth() * 2 / 5, this.getHeight()));
         tabbpane.setBackground(Color.LIGHT_GRAY);
 
-        Container contents = this.getContentPane();
+        Container contents = getContentPane();
         contents.setLayout(new BorderLayout());
 
         contents.add(tabbpane, BorderLayout.WEST);

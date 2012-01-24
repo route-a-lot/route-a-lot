@@ -2,7 +2,6 @@ package kit.route.a.lot.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,25 +59,14 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
      * @param navPointsList the list of navigation nodes from the gui
      */
     public Map2D(ListenerLists listeners, ArrayList<Coordinates> navPointsList) {
-        this.setLayout(new BorderLayout());
-        this.setPreferredSize(new Dimension(this.getSize()));
-        this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
-        this.setVisible(true);
-        this.listener = listeners;
-        this.navPoints = navPointsList;
-        this.center = new Coordinates(0, 0);
-             
-        // Resize map context:
-        this.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                calculateView();
-            }
-        });
-
-        // Canvas:
-        this.canvas = new JPanel() {
+        setLayout(new BorderLayout());
+        setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        listener = listeners;
+        navPoints = navPointsList;
+        center = new Coordinates(0, 0);
+                    
+        // map canvas:
+        canvas = new JPanel() {
             private static final long serialVersionUID = 1L;
             @Override
             public void paint(Graphics g) {
@@ -87,10 +75,16 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
                         new ViewChangedEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
             }      
         };
-        this.canvas.setVisible(true);
-        this.canvas.addMouseMotionListener(this);
-        this.canvas.addMouseWheelListener(this);
-        this.add(canvas, BorderLayout.CENTER);
+        // map canvas resize:
+        canvas.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                calculateView();
+            }
+        });
+        canvas.addMouseMotionListener(this);
+        canvas.addMouseWheelListener(this);
+        add(canvas, BorderLayout.CENTER);
         
         //Context menu:
         startItem = new JMenuItem("als Start");
@@ -126,6 +120,7 @@ public class Map2D extends JComponent implements MouseMotionListener, MouseWheel
             }
         });
     }
+    
 
     /**
      * Sets the view center using geo coordinates.
