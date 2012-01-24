@@ -74,15 +74,14 @@ public class Street extends MapElement {
     private boolean isEdgeInBounds(Coordinates node1, Coordinates node2, Coordinates topLeft,
             Coordinates bottomRight) {
         Line2D.Float edge =
-                new Line2D.Float(node1.getLongitude(), node1.getLatitude(), node2.getLongitude(), node2
-                        .getLatitude());
+                new Line2D.Float(node1.getLongitude(), node1.getLatitude(), node2.getLongitude(),
+                        node2.getLatitude());
         // coord.sys. begins in upper left corner
         Rectangle2D.Float box =
                 new Rectangle2D.Float(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()), Math.min(
                         topLeft.getLatitude(), bottomRight.getLatitude()), Math.abs(bottomRight
-                        .getLongitude()
-                        - topLeft.getLongitude()), Math
-                        .abs(topLeft.getLatitude() - bottomRight.getLatitude()));
+                        .getLongitude() - topLeft.getLongitude()), Math.abs(topLeft.getLatitude()
+                        - bottomRight.getLatitude()));
         return box.contains(node1.getLongitude(), node1.getLatitude())
                 || box.contains(node2.getLongitude(), node2.getLatitude()) || box.intersectsLine(edge);
         // TODO pos -> neg (e.g. -180° -> 180°)
@@ -133,8 +132,8 @@ public class Street extends MapElement {
         if (!(distance < 0)) {
             return distance;
         }
-        return (float) Math.min(getDistanceProj(nodes[start].getPos(), pos), getDistanceProj(nodes[end]
-                .getPos(), pos));
+        return (float) Math.min(getDistanceProj(nodes[start].getPos(), pos),
+                getDistanceProj(nodes[end].getPos(), pos));
     }
 
     // a= side between end and pos, b = s. between pos and start, c = s. between start and end
@@ -159,7 +158,7 @@ public class Street extends MapElement {
     /*
      * returns the distance between the given node and coordinate in meter
      */
-    private static double getDistanceKug(Coordinates pos1, Coordinates pos2) {
+    public static double getDistanceKug(Coordinates pos1, Coordinates pos2) {
         double pos1LongRad = Math.abs(pos1.getLongitude()) / 180 * Math.PI; // coordinates in deg
         double pos1LalRad = Math.abs(pos1.getLatitude()) / 180 * Math.PI;
         double pos2LongRad = Math.abs(pos2.getLongitude()) / 180 * Math.PI;
