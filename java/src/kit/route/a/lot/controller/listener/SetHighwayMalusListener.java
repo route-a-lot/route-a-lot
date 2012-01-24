@@ -3,7 +3,7 @@ package kit.route.a.lot.controller.listener;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.IntEvent;
+import kit.route.a.lot.gui.event.NumberEvent;
 
 
 public class SetHighwayMalusListener implements RALListener {
@@ -16,8 +16,8 @@ public class SetHighwayMalusListener implements RALListener {
 
     @Override
     public void handleRALEvent(EventObject event) {
-        if (event instanceof IntEvent) {
-            ctrl.setHighwayMalus(((IntEvent) event).getNumber());
+        if (event instanceof NumberEvent) {
+            ctrl.setHighwayMalus(((NumberEvent) event).getNumber());
         }
     }
 }

@@ -3,7 +3,7 @@ package kit.route.a.lot.controller.listener;
 import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.PathEvent;
+import kit.route.a.lot.gui.event.PathEvent;
 
 
 public class SaveRouteListner implements RALListener {

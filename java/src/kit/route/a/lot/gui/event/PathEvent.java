@@ -1,4 +1,4 @@
-package kit.route.a.lot.gui;
+package kit.route.a.lot.gui.event;
 
 
 public class PathEvent extends java.util.EventObject {
@@ -7,8 +7,8 @@ public class PathEvent extends java.util.EventObject {
     
     private String path;
 
-    public PathEvent(Object source, String path) {
-        super(source);
+    public PathEvent(String path) {
+        super(null);
         this.path = path;
     }
 

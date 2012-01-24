@@ -1,6 +1,7 @@
 package kit.route.a.lot.gui;
 
 import java.util.ArrayList;
+import java.util.EventObject;
 
 import kit.route.a.lot.controller.listener.RALListener;
 
@@ -87,6 +88,12 @@ public class ListenerLists {
     public void addPrintRouteListener(RALListener printRouteListener) {
         printRoute.add(printRouteListener);
         //TODO
+    }
+    
+    public static void fireEvent(ArrayList<RALListener> listener, EventObject event) {
+        for (RALListener lst: listener) {
+            lst.handleRALEvent(event);
+        }  
     }
     
 }

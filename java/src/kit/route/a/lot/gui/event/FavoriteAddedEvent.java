@@ -5,7 +5,7 @@ import java.util.EventObject;
 import kit.route.a.lot.common.Coordinates;
 
 
-public class AddFavEvent extends EventObject {
+public class FavoriteAddedEvent extends EventObject {
 
     private static final long serialVersionUID = 1L;
     
@@ -28,8 +28,8 @@ public class AddFavEvent extends EventObject {
     }
 
 
-    public AddFavEvent(Object source, Coordinates position, String name, String description) {
-        super(source);
+    public FavoriteAddedEvent(Coordinates position, String name, String description) {
+        super(null);
         this.position = position;
         this.name = name;
         this.description = description;

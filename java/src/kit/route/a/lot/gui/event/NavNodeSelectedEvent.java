@@ -1,9 +1,6 @@
 package kit.route.a.lot.gui.event;
 
-
-import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
-
 
 public class NavNodeSelectedEvent extends java.util.EventObject {
   
@@ -12,35 +9,26 @@ public class NavNodeSelectedEvent extends java.util.EventObject {
     /*
      *describes the Coordinates of the selected point
      */ 
-    private Coordinates coordiantes;
+    private Coordinates position;
     
     /*
      * describes the position of the navNode (1 for start, last pos. for end)
      */
-    private int position;
+    private int index;
     
-    /*
-     * Context which view has to be changed
-     */
-    private Context context;
-
-    public NavNodeSelectedEvent(Object source, Coordinates coor, int position, Context context) {
-        super(source);
-        this.coordiantes = coor;
+    public NavNodeSelectedEvent(Coordinates position, int index) {
+        super(null);
         this.position = position;
-        this.context = context;
+        this.index = index;
     }
 
 
-    public Coordinates getCoordinates() {
-        return coordiantes;
-    }
-    
-    public int getposition() {
+    public Coordinates getPosition() {
         return position;
     }
     
-    public Context getContext(){
-        return context;
+    public int getIndex() {
+        return index;
     }
+    
 }

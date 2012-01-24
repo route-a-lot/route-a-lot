@@ -126,7 +126,7 @@ public class Controller {
      * 
      * @return
      */
-    public void addNavNode(Coordinates pos, int position, Context context) {
+    public void addNavNode(Coordinates pos, int position) {
         //if (position < state.getNavigationNodes().size()) {   TODO ass soon as gui functionate 
         //    state.getNavigationNodes().remove(position);
         //}
@@ -136,7 +136,8 @@ public class Controller {
                     state.getLoadedMapInfo().select(pos));
         }
         calculateRoute();
-        render(context, state.getDetailLevel());
+        //render(context, state.getDetailLevel());
+        guiHandler.updateGUI();
     }
 
     /**

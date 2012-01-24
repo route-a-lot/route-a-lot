@@ -38,15 +38,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.listener.RALListener;
-import kit.route.a.lot.gui.event.IntEvent;
+import kit.route.a.lot.gui.event.NumberEvent;
+import kit.route.a.lot.gui.event.PathEvent;
 
 
 public class GUI extends JFrame {
-
-    public ArrayList<Coordinates> navPointsList;
     
     private static final long serialVersionUID = 1L;
     
+    public static final int FREEMAPSPACE = 0;
+    public static final int POI = 1;
+    public static final int FAVORITE = 2;
+        
     private JTabbedPane tabbpane;
     
     private JFileChooser importFC;
@@ -97,7 +100,9 @@ public class GUI extends JFrame {
 
     private ArrayList<JTextField> alladdedNavPoints;
     private ArrayList<JButton> alladdedButtons;
-
+   
+    private Map2D map;
+    
     private int key = 0;
     private String choosenMap;
     private File importedMapFile;
@@ -106,17 +111,9 @@ public class GUI extends JFrame {
     private File exportedRouteFile;
     private File importedHeightMap;
     private DefaultListModel<String> textRouteList;
-
-    private Map2D map;
-
+    
+    private ArrayList<Coordinates> navPointsList;
     private ListenerLists listener;
-    //private Map3D ogl; // jedit
-    
-    // private BufferedImage mapImage = testImage();
-    
-    public static final int FREEMAPSPACE = 0;
-    public static final int POI = 1;
-    public static final int FAVORITE = 2;
     
     /**
      * Creates the GUI window, using the given view center coordinates.
@@ -319,7 +316,7 @@ public class GUI extends JFrame {
         s_speed.addChangeListener(new ChangeListener() {    
             @Override
             public void stateChanged(ChangeEvent ce) {
-                IntEvent intEvent = new IntEvent(GUI.this, Integer.parseInt(s_speed.getValue().toString()));
+                NumberEvent intEvent = new NumberEvent(Integer.parseInt(s_speed.getValue().toString()));
                 for(RALListener lis: listener.speed) {
                     lis.handleRALEvent(intEvent);
                 }
@@ -419,7 +416,7 @@ public class GUI extends JFrame {
             
             @Override
             public void stateChanged(ChangeEvent e) {
-                IntEvent intEvent = new IntEvent(GUI.this, highwayMalus.getValue());
+                NumberEvent intEvent = new NumberEvent(highwayMalus.getValue());
                 for(RALListener lis: listener.highwayMalus) {
                     lis.handleRALEvent(intEvent);
                 }
@@ -439,7 +436,7 @@ public class GUI extends JFrame {
         reliefmalus.addChangeListener(new ChangeListener() {        
             @Override
             public void stateChanged(ChangeEvent arg0) {
-                IntEvent intEvent = new IntEvent(GUI.this, reliefmalus.getValue());
+                NumberEvent intEvent = new NumberEvent(reliefmalus.getValue());
                 for(RALListener lis: listener.heightMalus) {
                     lis.handleRALEvent(intEvent);
                 }
@@ -507,10 +504,8 @@ public class GUI extends JFrame {
         int returnValue = importFC.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedMapFile = importFC.getSelectedFile();
-            PathEvent pathEvent = new PathEvent(GUI.this, importFC.getSelectedFile().getPath());
-            for(RALListener lis: listener.importOsmFile){
-                lis.handleRALEvent(pathEvent);
-            }
+            ListenerLists.fireEvent(listener.importOsmFile,
+                    new PathEvent(importFC.getSelectedFile().getPath()));
         }
     }
     
@@ -524,10 +519,8 @@ public class GUI extends JFrame {
         int returnValue = importHeightMap.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedHeightMap = importHeightMap.getSelectedFile();
-            PathEvent pathEvent = new PathEvent(GUI.this, importHeightMap.getSelectedFile().getPath());
-            for(RALListener lis: listener.importHeightMap) {
-                lis.handleRALEvent(pathEvent);
-            }
+            ListenerLists.fireEvent(listener.importHeightMap,
+                    new PathEvent(importHeightMap.getSelectedFile().getPath()));
         }
     }
     
@@ -539,10 +532,8 @@ public class GUI extends JFrame {
         int returnValue = loadRoute.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             loadedRouteFile = loadRoute.getSelectedFile();
-            PathEvent pathEvent =  new PathEvent(GUI.this, loadRoute.getSelectedFile().getPath());
-            for(RALListener lis: listener.loadRoute) {
-                lis.handleRALEvent(pathEvent);
-            }
+            ListenerLists.fireEvent(listener.loadRoute,
+                    new PathEvent(loadRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -554,10 +545,8 @@ public class GUI extends JFrame {
         int returnValue = saveRoute.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             savedRouteFile = saveRoute.getSelectedFile();
-            PathEvent pathEvent = new PathEvent(GUI.this, saveRoute.getSelectedFile().getPath());
-            for(RALListener lis: listener.saveRoute) {
-                lis.handleRALEvent(pathEvent);
-            }
+            ListenerLists.fireEvent(listener.saveRoute,
+                    new PathEvent(loadRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -569,10 +558,8 @@ public class GUI extends JFrame {
         int returnValue = exportRoute.showDialog(this, "Exportieren");
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             exportedRouteFile = exportRoute.getSelectedFile();
-            PathEvent pathEvent = new PathEvent(GUI.this, exportRoute.getSelectedFile().getPath());
-            for(RALListener lis: listener.exportRoute) {
-                lis.handleRALEvent(pathEvent);
-            }
+            ListenerLists.fireEvent(listener.exportRoute,
+                    new PathEvent(loadRoute.getSelectedFile().getPath()));
         }
     }
     

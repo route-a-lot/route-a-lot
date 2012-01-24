@@ -16,8 +16,7 @@ public class TargetSelectedListener implements RALListener{
     @Override
     public void handleRALEvent(EventObject event) {
         if (event instanceof NavNodeSelectedEvent) {
-            ctrl.addNavNode(((NavNodeSelectedEvent) event).getCoordinates(), ((NavNodeSelectedEvent) event).getposition(),
-                    ((NavNodeSelectedEvent) event).getContext());
+            ctrl.addNavNode(((NavNodeSelectedEvent) event).getPosition(), ((NavNodeSelectedEvent) event).getIndex());
         }
     }
 }

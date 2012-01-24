@@ -1,10 +1,8 @@
 package kit.route.a.lot.controller.listener;
 
 import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.IntEvent;
-
+import kit.route.a.lot.gui.event.NumberEvent;
 
 public class SetSpeedListener implements RALListener {
 
@@ -16,8 +14,8 @@ public class SetSpeedListener implements RALListener {
     
     @Override
     public void handleRALEvent(EventObject event) {
-        if (event instanceof IntEvent) {
-            ctrl.setSpeed(((IntEvent) event).getNumber());
+        if (event instanceof NumberEvent) {
+            ctrl.setSpeed(((NumberEvent) event).getNumber());
         }
     }
 }
