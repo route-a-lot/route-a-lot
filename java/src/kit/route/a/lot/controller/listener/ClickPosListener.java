@@ -1,23 +1,21 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
+import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
 
-public class WhatWasClickedListener implements RALListener {
+public class ClickPosListener implements GeneralListener {
 
     private Controller ctrl;
     
     
-    public WhatWasClickedListener(Controller ctrl) {
+    public ClickPosListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
 
-
     @Override
-    public void handleRALEvent(EventObject event) {
+    public void handleEvent(GeneralEvent event) {
         if (event instanceof PositionEvent) {
             ctrl.whatWasClicked(((PositionEvent) event).getCoordinates());
         }

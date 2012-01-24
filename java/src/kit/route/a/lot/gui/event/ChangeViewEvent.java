@@ -2,10 +2,8 @@ package kit.route.a.lot.gui.event;
 
 import kit.route.a.lot.common.Context;
 
-public class ViewChangedEvent extends java.util.EventObject {
+public class ChangeViewEvent extends GeneralEvent { 
     
-    private static final long serialVersionUID = 1L;
-
     /*
      * the context which view has changed
      */ 
@@ -19,13 +17,11 @@ public class ViewChangedEvent extends java.util.EventObject {
      */
     private int zoomlevel;
    
-    public ViewChangedEvent(Context context, int zoomlevel) {
-        super(context);
+    public ChangeViewEvent(Context context, int zoomlevel) {
         this.context = context;
         this.zoomlevel = zoomlevel;
     }
-
-       
+    
     public int getZoomlevel() {
         return zoomlevel;
     }

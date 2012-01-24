@@ -1,17 +1,11 @@
 package kit.route.a.lot.gui.event;
 
-import java.util.EventObject;
-
-
-public class NavNodesSwitchedEvent extends EventObject {
-
-    private static final long serialVersionUID = 1L;
+public class SwitchNavNodesEvent extends GeneralEvent {
     
     private int first;
     private int second;
     
-    public NavNodesSwitchedEvent(int first, int second) {
-        super(new Integer(first));
+    public SwitchNavNodesEvent(int first, int second) {
         this.first = first;
         this.second = second;
     }

@@ -27,7 +27,7 @@ class MapInfoMock extends MapInfo {
         nodeCount++;
         if (nodeCount % 130000 == 0) {
             // System.out.println("Current node count: " + nodeCount + " ~= " +
-                    (nodeCount * 100 / 13395533) + "%");
+            //        (nodeCount * 100 / 13395533) + "%");
         }
     }
     

@@ -7,7 +7,7 @@ public class ShellGUI {
     static GUI gui;
     
     public static void main(String[] args) {
-        gui = new GUI(new ListenerLists());
+        gui = new GUI(new Listeners());
         gui.setBounds(0, 25, 500, 500);
         // System.out.println(gui.getWidth());
         // System.out.println(gui.getHeight());

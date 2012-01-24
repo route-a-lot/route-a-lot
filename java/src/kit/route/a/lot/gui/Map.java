@@ -18,8 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.gui.event.FavoriteAddedEvent;
-import kit.route.a.lot.gui.event.NavNodeSelectedEvent;
+import kit.route.a.lot.gui.event.AddFavoriteEvent;
+import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 import kit.route.a.lot.map.rendering.Projection;
 
@@ -75,7 +75,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void actionPerformed(ActionEvent e) {
                 Coordinates favoriteCoordinates =
                     getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
-                ListenerLists.fireEvent(gui.getListener().addFav, new FavoriteAddedEvent(favoriteCoordinates, "", ""));
+                Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(favoriteCoordinates, "", ""));
             }
         });
         navNodeMenu = new JPopupMenu("NavNodes");
@@ -148,8 +148,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                         case 2 : gui.getNavPointsList().set(gui.getNavPointsList().size() - 1, pos);
                     }
         }    
-        ListenerLists.fireEvent(gui.getListener().targetSelected,
-                new NavNodeSelectedEvent(pos, gui.getNavPointsList().indexOf(pos)));
+        Listeners.fireEvent(gui.getListener().targetSelected,
+                new SelectNavNodeEvent(pos, gui.getNavPointsList().indexOf(pos)));
         canvas.repaint();
     }
     
@@ -162,7 +162,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             popupYPos = e.getY();
             navNodeMenu.show(e.getComponent(), popupXPos, popupYPos);
         }        
-        ListenerLists.fireEvent(gui.getListener().whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
+        Listeners.fireEvent(gui.getListener().whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }
       
     /**

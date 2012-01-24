@@ -41,10 +41,10 @@ public class WeightCalculator {
         /* verbesserter Pythagoras, für kleine Entfernungen ausreichend, Abstand
 	Breitenkreise 111.3km, Abstand Längenkreise 111.3*cos(lat)km,wobei lat genau zwischen lat1 und lat2 liegt */
 	float lat1 = from.getLatitude();
-	float long1 = from.getLongitude();
+	float lon1 = from.getLongitude();
 	float lat2 = to.getLatitude();
-	float long2 = to.getLongitude();
-        float lat = (lat1+lat2)*0.5*0.017453292;
+	float lon2 = to.getLongitude();
+    double lat = (lat1+lat2)*0.5*0.017453292;
 	double dx = 111.3*Math.cos(lat)*(lon1-lon2);
 	double dy = 111.3 *(lat1 - lat2);
         double distance = (int) Math.sqrt(Math.pow(dx, 2)

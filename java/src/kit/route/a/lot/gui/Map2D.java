@@ -8,7 +8,7 @@ import java.awt.event.ComponentEvent;
 import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context2D;
-import kit.route.a.lot.gui.event.ViewChangedEvent;
+import kit.route.a.lot.gui.event.ChangeViewEvent;
 
 public class Map2D extends Map  {
     
@@ -25,8 +25,8 @@ public class Map2D extends Map  {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);           
-                ListenerLists.fireEvent(gui.getListener().viewChanged,
-                        new ViewChangedEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
+                Listeners.fireEvent(gui.getListener().viewChanged,
+                        new ChangeViewEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
             }      
         };
         result.addComponentListener(new ComponentAdapter() {

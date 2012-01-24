@@ -1,6 +1,5 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,7 +21,7 @@ public class ComplexInfoSupplier {
      *            -
      * @return int
      */
-    public int getDuration(ArrayList<Integer> route, int speed) {
+    public static int getDuration(ArrayList<Integer> route, int speed) {
         double speedInMeterPerSecond = speed * 3.6; 
         int time = 0;
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();

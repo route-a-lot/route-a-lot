@@ -1,12 +1,11 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.PathEvent;
+import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.TextEvent;
 
 
-public class SaveRouteListner implements RALListener {
+public class SaveRouteListner implements GeneralListener {
 
     private Controller ctrl;
     
@@ -15,9 +14,9 @@ public class SaveRouteListner implements RALListener {
     }
 
     @Override
-    public void handleRALEvent(EventObject event) {
-        if(event instanceof PathEvent) {
-            ctrl.saveRoute(((PathEvent) event).getPath());
+    public void handleEvent(GeneralEvent event) {
+        if(event instanceof TextEvent) {
+            ctrl.saveRoute(((TextEvent) event).getText());
         }
     }
 }

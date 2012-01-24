@@ -1,12 +1,11 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.NavNodesSwitchedEvent;
+import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
 
 
-public class SwitchNavNodesListener implements RALListener {
+public class SwitchNavNodesListener implements GeneralListener {
 
     private Controller ctrl;
     
@@ -17,9 +16,9 @@ public class SwitchNavNodesListener implements RALListener {
 
 
     @Override
-    public void handleRALEvent(EventObject event) {
-       if (event instanceof NavNodesSwitchedEvent) {
-           ctrl.switchNavNodes(((NavNodesSwitchedEvent) event).getFirst(), ((NavNodesSwitchedEvent) event).getSecond());
+    public void handleEvent(GeneralEvent event) {
+       if (event instanceof SwitchNavNodesEvent) {
+           ctrl.switchNavNodes(((SwitchNavNodesEvent) event).getFirst(), ((SwitchNavNodesEvent) event).getSecond());
        }
 
     }

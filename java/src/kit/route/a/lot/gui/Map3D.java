@@ -1,7 +1,7 @@
 package kit.route.a.lot.gui;
 
 import kit.route.a.lot.common.Context3D;
-import kit.route.a.lot.gui.event.ViewChangedEvent;
+import kit.route.a.lot.gui.event.ChangeViewEvent;
 import net.java.games.jogl.*;
 
 
@@ -36,8 +36,8 @@ public class Map3D extends Map implements GLEventListener {
         gl.glLoadIdentity();
         gl.glScalef(1f, -1f, 1f);
         
-        ListenerLists.fireEvent(gui.getListener().viewChanged,
-                new ViewChangedEvent(new Context3D(topLeft, bottomRight, g), zoomlevel));  
+        Listeners.fireEvent(gui.getListener().viewChanged,
+                new ChangeViewEvent(new Context3D(topLeft, bottomRight, g), zoomlevel));  
     }
 
     @Override

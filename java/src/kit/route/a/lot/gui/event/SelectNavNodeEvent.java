@@ -2,9 +2,7 @@ package kit.route.a.lot.gui.event;
 
 import kit.route.a.lot.common.Coordinates;
 
-public class NavNodeSelectedEvent extends java.util.EventObject {
-  
-    private static final long serialVersionUID = 1L;
+public class SelectNavNodeEvent extends GeneralEvent {
 
     /*
      *describes the Coordinates of the selected point
@@ -16,8 +14,7 @@ public class NavNodeSelectedEvent extends java.util.EventObject {
      */
     private int index;
     
-    public NavNodeSelectedEvent(Coordinates position, int index) {
-        super(position);
+    public SelectNavNodeEvent(Coordinates position, int index) {
         this.position = position;
         this.index = index;
     }

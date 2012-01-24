@@ -12,16 +12,18 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
-import kit.route.a.lot.controller.listener.AddFavListener;
+
+import kit.route.a.lot.controller.listener.AddFavoriteListener;
 import kit.route.a.lot.controller.listener.DeleteNaveNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.LoadMapListener;
+import kit.route.a.lot.controller.listener.OrderNavNodesListener;
+import kit.route.a.lot.controller.listener.SelectNavNodeListener;
 import kit.route.a.lot.controller.listener.LoadRouteListener;
-import kit.route.a.lot.controller.listener.OrderNavNodesEvent;
 import kit.route.a.lot.controller.listener.SaveRouteListner;
-import kit.route.a.lot.controller.listener.TargetSelectedListener;
 import kit.route.a.lot.controller.listener.ViewChangedListener;
+
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
@@ -32,9 +34,7 @@ import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
 import kit.route.a.lot.map.rendering.Renderer;
-import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.routing.Router;
 
 import org.apache.log4j.Logger;
@@ -333,8 +333,7 @@ public class Controller {
      */
     public void showTextRoute() {   //TODO
         if (state.getCurrentRoute().size() != 0) {
-            ComplexInfoSupplier cIS = new ComplexInfoSupplier();
-            cIS.getRouteDescription(state.getCurrentRoute());
+            ComplexInfoSupplier.getRouteDescription(state.getCurrentRoute());
         }
     }
 
@@ -381,9 +380,9 @@ public class Controller {
         if (state.getNavigationNodes().size() >= 2) {
             try {
                 state.setCurrentRoute(Router.calculateRoute());
-                for(Integer inte : state.getCurrentRoute()) {
+                //for(Integer inte : state.getCurrentRoute()) {
                     // System.out.println(inte);
-                }
+                //}
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -450,17 +449,17 @@ public class Controller {
                 logger.warn("no map loaded."); //TODO not loading map 
             }
         }    
-        ctrl.guiHandler.addListenerAddNavNode(new TargetSelectedListener(ctrl));
+        ctrl.guiHandler.addListenerAddNavNode(new SelectNavNodeListener(ctrl));
         ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
         ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));  
         ctrl.setViewToMapCenter();
         System.out.println(ctrl.state.getImportedMaps().size());
         ctrl.guiHandler.setView(ctrl.state.getCenterCoordinates());
         ctrl.guiHandler.updateMapList(ctrl.state.getImportedMaps());
-        ctrl.guiHandler.addOptimizeRouteListener(new OrderNavNodesEvent(ctrl));
+        ctrl.guiHandler.addOptimizeRouteListener(new OrderNavNodesListener(ctrl));
         ctrl.guiHandler.addDeleteNavNodeListener(new DeleteNaveNodeListener(ctrl));
         ctrl.guiHandler.addLoadMapListener(new LoadMapListener(ctrl));
-        ctrl.guiHandler.addAddFavoriteListener(new AddFavListener(ctrl));
+        ctrl.guiHandler.addAddFavoriteListener(new AddFavoriteListener(ctrl));
         ctrl.guiHandler.addSaveRouteListener(new SaveRouteListner(ctrl));
         ctrl.guiHandler.addLoadRouteListener(new LoadRouteListener(ctrl));
         ctrl.guiHandler.addExportRouteListener(new ExportRouteListener(ctrl));

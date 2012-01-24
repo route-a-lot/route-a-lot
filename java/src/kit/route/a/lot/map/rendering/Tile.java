@@ -90,14 +90,14 @@ public class Tile {
 
         Graphics2D graphics = data.createGraphics();
 
-        long start = System.nanoTime();
+        //long start = System.nanoTime();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         Collection<MapElement> map = state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight);
 
-        long middle = System.nanoTime();
+        //long middle = System.nanoTime();
 
         for (MapElement element : map) {
             if (element instanceof Area) {
@@ -119,9 +119,9 @@ public class Tile {
             }
         }
 
-        long end = System.nanoTime();
-        double mapElements = (middle - start) / 1000000;
-        double drawing = (end - middle) / 1000000;
+        //long end = System.nanoTime();
+        //double mapElements = (middle - start) / 1000000;
+        //double drawing = (end - middle) / 1000000;
         // System.out.println("time for mapElements " + mapElements + "ms; for drawing " + drawing + "ms");
 
         graphics.dispose();

@@ -1,21 +1,19 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
+import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
-
-public class DeleteFavListener implements RALListener {
+public class DeleteFavoriteListener implements GeneralListener {
 
     private Controller ctrl;
     
-    public DeleteFavListener(Controller ctrl) {
+    public DeleteFavoriteListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
 
     @Override
-    public void handleRALEvent(EventObject event) {
+    public void handleEvent(GeneralEvent event) {
         if (event instanceof PositionEvent) {
             ctrl.deleteFavorite(((PositionEvent) event).getCoordinates());
         }

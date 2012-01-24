@@ -1,12 +1,11 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.PathEvent;
+import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.TextEvent;
 
 
-public class ImportHeightMapListener implements RALListener {
+public class ImportHeightMapListener implements GeneralListener {
 
     private Controller ctrl;
     
@@ -16,9 +15,9 @@ public class ImportHeightMapListener implements RALListener {
     }
 
     @Override
-    public void handleRALEvent(EventObject event) {
-        if (event instanceof PathEvent) {
-            ctrl.importHeightMap(((PathEvent) event).getPath());
+    public void handleEvent(GeneralEvent event) {
+        if (event instanceof TextEvent) {
+            ctrl.importHeightMap(((TextEvent) event).getText());
         }
 
     }

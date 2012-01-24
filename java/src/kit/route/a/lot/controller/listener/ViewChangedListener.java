@@ -1,12 +1,11 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.ViewChangedEvent;
+import kit.route.a.lot.gui.event.ChangeViewEvent;
+import kit.route.a.lot.gui.event.GeneralEvent;
 
 
-public class ViewChangedListener implements RALListener {
+public class ViewChangedListener implements GeneralListener {
 
     private Controller ctrl;
     
@@ -15,9 +14,9 @@ public class ViewChangedListener implements RALListener {
     }
     
     @Override
-    public void handleRALEvent(EventObject event) {
-        if(event instanceof ViewChangedEvent) {
-            ctrl.render(((ViewChangedEvent) event).getContext(), ((ViewChangedEvent) event).getZoomlevel());
+    public void handleEvent(GeneralEvent event) {
+        if(event instanceof ChangeViewEvent) {
+            ctrl.render(((ChangeViewEvent) event).getContext(), ((ChangeViewEvent) event).getZoomlevel());
         }
     }
 

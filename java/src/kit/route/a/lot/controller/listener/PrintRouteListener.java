@@ -1,11 +1,10 @@
 package kit.route.a.lot.controller.listener;
 
-import java.util.EventObject;
-
 import kit.route.a.lot.controller.Controller;
+import kit.route.a.lot.gui.event.GeneralEvent;
 
 
-public class PrintRouteListener implements RALListener {
+public class PrintRouteListener implements GeneralListener {
 
     private Controller ctrl;
     
@@ -14,7 +13,7 @@ public class PrintRouteListener implements RALListener {
     }
 
     @Override
-    public void handleRALEvent(EventObject event) {
+    public void handleEvent(GeneralEvent event) {
        ctrl.printRoute();
     }
 }

@@ -14,7 +14,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.EventObject;
 import java.util.Hashtable;
 
 import javax.swing.Box;
@@ -38,10 +37,11 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.controller.listener.RALListener;
-import kit.route.a.lot.gui.event.NavNodeSelectedEvent;
+import kit.route.a.lot.controller.listener.GeneralListener;
+import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
-import kit.route.a.lot.gui.event.PathEvent;
+import kit.route.a.lot.gui.event.TextEvent;
 
 
 public class GUI extends JFrame {
@@ -117,14 +117,14 @@ public class GUI extends JFrame {
     private DefaultListModel textRouteList;
     
     private ArrayList<Coordinates> navPointsList;
-    private ListenerLists listener;
+    private Listeners listener;
     
     /**
      * Creates the GUI window, using the given view center coordinates.
      * @param listener 
      * @param view center geo coordinates (possibly mercator projected)
      */
-    public GUI(ListenerLists listener) {
+    public GUI(Listeners listener) {
         super("Route-A-Lot");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
@@ -264,7 +264,7 @@ public class GUI extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent arg0) {
-                listener.fireEvent(listener.close, new PathEvent("closed"));
+                listener.fireEvent(listener.close, new TextEvent("closed"));
             }  
         });
         this.pack();
@@ -302,7 +302,7 @@ public class GUI extends JFrame {
         optimizeRoute.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                listener.fireEvent(listener.optimizeRoute, new PathEvent("optimize"));
+                listener.fireEvent(listener.optimizeRoute, new TextEvent("optimize"));
             }
         });
 
@@ -312,8 +312,8 @@ public class GUI extends JFrame {
             @Override
             public void stateChanged(ChangeEvent ce) {
                 NumberEvent intEvent = new NumberEvent(Integer.parseInt(s_speed.getValue().toString()));
-                for(RALListener lis: listener.speed) {
-                    lis.handleRALEvent(intEvent);
+                for(GeneralListener lis: listener.speed) {
+                    lis.handleEvent(intEvent);
                 }
             }
         });
@@ -364,7 +364,7 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent arg0) {
                     for(int i = 0; i < alladdedNavPoints.size(); i++) {
                         if(alladdedNavPoints.get(i) == navPointField) {
-                            ListenerLists.fireEvent(listener.addTextuelNavPointList, new PathEvent(alladdedNavPoints.get(i).toString()));
+                            Listeners.fireEvent(listener.addTextuelNavPointList, new TextEvent(alladdedNavPoints.get(i).toString()));
                             repaint();
                         }
                     }
@@ -380,7 +380,7 @@ public class GUI extends JFrame {
                             alladdedButtons.remove(i);
                             alladdedNavPoints.remove(i);
                             navPointsList.remove(i + 1);
-                            ListenerLists.fireEvent(listener.deleteNavPointList, new NumberEvent(i + 1));
+                            Listeners.fireEvent(listener.deleteNavPointList, new NumberEvent(i + 1));
                             repaint();
                         }
                     }
@@ -391,11 +391,11 @@ public class GUI extends JFrame {
            }
         });
         
-        listener.targetSelected.add(new RALListener() {
+        listener.targetSelected.add(new GeneralListener() { // TODO
             @Override
-            public void handleRALEvent(EventObject event) {
-                int index = ((NavNodeSelectedEvent) event).getIndex();
-                Coordinates pos = ((NavNodeSelectedEvent) event).getPosition();
+            public void handleEvent(GeneralEvent event) {
+                int index = ((SelectNavNodeEvent) event).getIndex();
+                Coordinates pos = ((SelectNavNodeEvent) event).getPosition();
                 if( index == 0) {
                     startPoint.setText(pos.toString());
                 } else if(index == navPointsList.size() - 1) {
@@ -495,8 +495,8 @@ public class GUI extends JFrame {
             @Override
             public void stateChanged(ChangeEvent e) {
                 NumberEvent intEvent = new NumberEvent(highwayMalus.getValue());
-                for(RALListener lis: listener.highwayMalus) {
-                    lis.handleRALEvent(intEvent);
+                for(GeneralListener lis: listener.highwayMalus) {
+                    lis.handleEvent(intEvent);
                 }
             }
         });
@@ -515,8 +515,8 @@ public class GUI extends JFrame {
             @Override
             public void stateChanged(ChangeEvent arg0) {
                 NumberEvent intEvent = new NumberEvent(reliefmalus.getValue());
-                for(RALListener lis: listener.heightMalus) {
-                    lis.handleRALEvent(intEvent);
+                for(GeneralListener lis: listener.heightMalus) {
+                    lis.handleEvent(intEvent);
                 }
             }
         });
@@ -550,7 +550,7 @@ public class GUI extends JFrame {
         activateMapButton.addActionListener(new ActionListener() {     
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                listener.fireEvent(listener.loadMapList, new PathEvent(chooseImportedMap.getSelectedItem().toString()));
+                listener.fireEvent(listener.loadMapList, new TextEvent(chooseImportedMap.getSelectedItem().toString()));
             }
         });
         
@@ -584,8 +584,8 @@ public class GUI extends JFrame {
         int returnValue = importFC.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedMapFile = importFC.getSelectedFile();
-            ListenerLists.fireEvent(listener.importOsmFile,
-                    new PathEvent(importFC.getSelectedFile().getPath()));
+            Listeners.fireEvent(listener.importOsmFile,
+                    new TextEvent(importFC.getSelectedFile().getPath()));
         }
     }
     
@@ -599,8 +599,8 @@ public class GUI extends JFrame {
         int returnValue = importHeightMap.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             importedHeightMap = importHeightMap.getSelectedFile();
-            ListenerLists.fireEvent(listener.importHeightMap,
-                    new PathEvent(importHeightMap.getSelectedFile().getPath()));
+            Listeners.fireEvent(listener.importHeightMap,
+                    new TextEvent(importHeightMap.getSelectedFile().getPath()));
         }
     }
     
@@ -612,8 +612,8 @@ public class GUI extends JFrame {
         int returnValue = loadRoute.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             loadedRouteFile = loadRoute.getSelectedFile();
-            ListenerLists.fireEvent(listener.loadRoute,
-                    new PathEvent(loadRoute.getSelectedFile().getPath()));
+            Listeners.fireEvent(listener.loadRoute,
+                    new TextEvent(loadRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -625,8 +625,8 @@ public class GUI extends JFrame {
         int returnValue = saveRoute.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             savedRouteFile = saveRoute.getSelectedFile();
-            ListenerLists.fireEvent(listener.saveRoute,
-                    new PathEvent(saveRoute.getSelectedFile().getPath()));
+            Listeners.fireEvent(listener.saveRoute,
+                    new TextEvent(loadRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -638,8 +638,8 @@ public class GUI extends JFrame {
         int returnValue = exportRoute.showDialog(this, "Exportieren");
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             exportedRouteFile = exportRoute.getSelectedFile();
-            ListenerLists.fireEvent(listener.exportRoute,
-                    new PathEvent(exportRoute.getSelectedFile().getPath()));
+            Listeners.fireEvent(listener.exportRoute,
+                    new TextEvent(loadRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -680,7 +680,7 @@ public class GUI extends JFrame {
         navPointsList.remove(coordinates);
     }
     
-    public ListenerLists getListener() {
+    public Listeners getListener() {
         return listener;
     }
     

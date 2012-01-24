@@ -1,13 +1,13 @@
 package kit.route.a.lot.controller.listener;
 
 import java.io.File;
-import java.util.EventObject;
 
 import kit.route.a.lot.controller.Controller;
-import kit.route.a.lot.gui.event.PathEvent;
+import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.TextEvent;
 
 
-public class LoadMapListener implements RALListener {
+public class LoadMapListener implements GeneralListener {
     
     private Controller ctrl;
     
@@ -16,10 +16,10 @@ public class LoadMapListener implements RALListener {
     }
 
     @Override
-    public void handleRALEvent(EventObject event) {
-        if (event instanceof PathEvent) {
-            System.err.println(((PathEvent) event).getPath());
-            ctrl.loadMap(new File(((PathEvent) event).getPath()));
+    public void handleEvent(GeneralEvent event) {
+        if (event instanceof TextEvent) {
+            System.err.println(((TextEvent) event).getText());
+            ctrl.loadMap(new File(((TextEvent) event).getText()));
         }
 
     }

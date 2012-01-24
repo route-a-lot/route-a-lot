@@ -3,16 +3,12 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -183,9 +179,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
         // System.out.println(quadTreeAsString(0));
     }
     
-    private String quadTreeAsString(int level) {
+    /*private String quadTreeAsString(int level) {
         return zoomlevels[level].toString(0, new ArrayList<Integer>());
-    }
+    }*/
     
     private Collection<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
