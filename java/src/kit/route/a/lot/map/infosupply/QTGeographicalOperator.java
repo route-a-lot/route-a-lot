@@ -3,20 +3,22 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 import kit.route.a.lot.map.rendering.Projection;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 public class QTGeographicalOperator implements GeographicalOperator {
@@ -24,9 +26,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     /** The warning and error console output for this class */
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     
-    static {
-        logger.setLevel(Level.INFO);
-    }
+    private static float baseLayerMultiplier = 3;
     
     private static int countZoomlevel = 9;
     
@@ -61,25 +61,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void buildZoomlevels() {
-        //TODO: proper implementation
-        MapElement reduced;
-        float multiplier = 4;
-        MapElement[] elements = State.getInstance().getLoadedMapInfo().getAllElements();
-        for (int detail = 1; detail < countZoomlevel; detail++) {
-            for (MapElement element: elements) {
-                if (element instanceof Node) {
-                    continue;
-                }
-                reduced = element.getReduced(detail, Projection.getZoomFactor(detail) * multiplier);
-                if (reduced == null) {
-                    logger.debug("Ignoring " + element + " for zoomlevel " + detail);
-                } else {
-                    if (!zoomlevels[detail].addToBaseLayer(reduced)) {
-                        logger.error("Reduced element could not be added to the quadtree.");
-                    }
-                }
-            }
-        }
+        logger.info("You called buildZoomlevels but it is doing nothing!");
     }
 
     
@@ -136,13 +118,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
-        logger.debug("called: getBaseLayer()");
-        logger.debug(" upLeft: " + upLeft);
-        logger.debug(" bottomRight: " + bottomRight);
-        logger.debug(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
-        logger.debug(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
-        logger.debug(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
-        logger.debug(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+        if (logger.isTraceEnabled()) {
+            logger.trace("called: getBaseLayer()");
+            logger.trace(" upLeft: " + upLeft);
+            logger.trace(" bottomRight: " + bottomRight);
+            logger.trace(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
+            logger.trace(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
+            logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
+            logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+        }
 
         if (zoomlevel >= countZoomlevel) {
             zoomlevel = countZoomlevel - 1;
@@ -150,7 +134,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
         
         HashSet<MapElement> elements = new HashSet<MapElement>();
         zoomlevels[zoomlevel].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
-       // printQuadTree();
         return elements;
     }
     
@@ -165,6 +148,49 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void addToBaseLayer(MapElement element) {
         zoomlevels[0].addToBaseLayer(element);
+        
+        MapElement reduced;
+        float multiplier = baseLayerMultiplier;
+        int maxZoomlevel = countZoomlevel;
+        if (element instanceof Area) {
+            if (((Area) element).getWayInfo().isBuilding()) {
+                maxZoomlevel = 4;
+            }
+        }
+        if (element instanceof Street) {
+            WayInfo wayInfo = ((Street) element).getWayInfo();
+            switch (wayInfo.getType()) {
+                case OSMType.HIGHWAY_MOTORWAY:
+                case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
+                case OSMType.HIGHWAY_MOTORWAY_LINK:
+                case OSMType.HIGHWAY_PRIMARY:
+                case OSMType.HIGHWAY_PRIMARY_LINK:
+                case OSMType.HIGHWAY_SECONDARY:
+                case OSMType.HIGHWAY_SECONDARY_LINK:
+                    break;
+                case OSMType.HIGHWAY_TERTIARY:
+                case OSMType.HIGHWAY_TERTIARY_LINK:
+                case OSMType.HIGHWAY_RESIDENTIAL:
+                case OSMType.HIGHWAY_LIVING_STREET:
+                case OSMType.HIGHWAY_CYCLEWAY:
+                    maxZoomlevel = 8;
+                    break;
+                default:
+                    maxZoomlevel = 6;
+            }
+        }
+        for (int detail = 1; detail < maxZoomlevel; detail++) {
+            reduced = element.getReduced(detail, Projection.getZoomFactor(detail) * multiplier);
+            if (reduced == null) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("Ignoring " + element + " for zoomlevel " + detail);
+                }
+            } else {
+                if (!zoomlevels[detail].addToBaseLayer(reduced)) {
+                    logger.error("Reduced element could not be added to the quadtree.");
+                }
+            }
+        }
     }
 
     @Override
@@ -176,12 +202,12 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * prints a string representing the quadtree
      */
     public void printQuadTree() {
-        // System.out.println(quadTreeAsString(0));
+        System.out.println(quadTreeAsString(0));
     }
     
-    /*private String quadTreeAsString(int level) {
+    private String quadTreeAsString(int level) {
         return zoomlevels[level].toString(0, new ArrayList<Integer>());
-    }*/
+    }
     
     private Collection<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
         Coordinates UL = new Coordinates();
