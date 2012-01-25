@@ -26,7 +26,7 @@ public class ComplexInfoSupplier {
         int time = 0;
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         for(int i = 0; i < route.size() - 1; i++){
-            time += Street.getDistanceKug(mapInfo.getNodePosition(route.get(i)), mapInfo.getNodePosition(route.get(i + 1))) / speedInMeterPerSecond;
+            time += Street.getDistanceProj(mapInfo.getNodePosition(route.get(i)), mapInfo.getNodePosition(route.get(i + 1))) / speedInMeterPerSecond;
         }
         return time;
     }

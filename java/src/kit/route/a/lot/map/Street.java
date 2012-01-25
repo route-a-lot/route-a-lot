@@ -14,6 +14,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.map.rendering.Projection;
 
 
 public class Street extends MapElement {
@@ -154,19 +155,25 @@ public class Street extends MapElement {
                 + Math.pow(pos1.getLongitude() - pos2.getLongitude(), 2));
     }
 
-    /*
+    /**
      * returns the distance between the given node and coordinate in meter
+     * 
+     * params are projected coordinates on the current map
      */
-    public static double getDistanceKug(Coordinates pos1, Coordinates pos2) {
-        double pos1LongRad = Math.abs(pos1.getLongitude()) / 180 * Math.PI; // coordinates in deg
-        double pos1LalRad = Math.abs(pos1.getLatitude()) / 180 * Math.PI;
-        double pos2LongRad = Math.abs(pos2.getLongitude()) / 180 * Math.PI;
-        double pos2LalRad = Math.abs(pos2.getLatitude()) / 180 * Math.PI;
-
+    public static double getDistanceInMeter(Coordinates pos1, Coordinates pos2) {
+        Projection projection = Projection.getProjectionForCurrentMap();
+        Coordinates geoPos1 = projection.localCoordinatesToGeoCoordinates(pos1);
+        Coordinates geoPos2 = projection.localCoordinatesToGeoCoordinates(pos2);
+        double pos1LongRad = Math.abs(geoPos1.getLongitude()) / 180 * Math.PI; // coordinates in deg
+        double pos1LalRad = Math.abs(geoPos1.getLatitude()) / 180 * Math.PI;
+        double pos2LongRad = Math.abs(geoPos2.getLongitude()) / 180 * Math.PI;
+        double pos2LalRad = Math.abs(geoPos2.getLatitude()) / 180 * Math.PI;
+        
         double distanceRad =
                 Math.acos(Math.sin(pos1LalRad) * Math.sin(pos2LalRad) + Math.cos(pos1LalRad)
                         * Math.cos(pos2LalRad) * Math.cos(pos1LongRad - pos2LongRad)); // distance in deg
-        return distanceRad * 6378137; // 6378137 is the "äquatorradius" in meter
+        
+        return distanceRad * 6371001; // 6371001 is the mean earth radius in meter
 
     }
 
