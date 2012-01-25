@@ -144,17 +144,24 @@ public class Controller {
      * @return
      */
     public void addNavNode(Coordinates pos, int position) {
-        //if (position < state.getNavigationNodes().size()) {   TODO ass soon as gui functionate 
-        //    state.getNavigationNodes().remove(position);
-        //}
         Selection newSel = state.getLoadedMapInfo().select(pos);
         if (newSel != null) {
-            state.getNavigationNodes().add(position,
-                    state.getLoadedMapInfo().select(pos));
+            if (position == 0 && state.getNavigationNodes().size() > 1) {
+                state.getNavigationNodes().remove(0);
+                state.getNavigationNodes().add(0, newSel);
+            } else if (position == state.getNavigationNodes().size() - 1 && state.getNavigationNodes().size() > 1) {
+                state.getNavigationNodes().remove(state.getNavigationNodes().remove(state.getNavigationNodes().size() - 1));
+                state.getNavigationNodes().add(newSel);
+            } else {
+                state.getNavigationNodes().add(position, newSel);
+            }
         }
+        ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
+        for (Selection sel : state.getNavigationNodes()) {
+            newList.add(sel.getPosition());
+        }
+        guiHandler.setNavNodesOrder(newList);
         calculateRoute();
-        //TODO duration
-        //render(context, state.getDetailLevel());
         guiHandler.updateGUI();
     }
 
@@ -325,6 +332,7 @@ public class Controller {
         } 
         if(state.getLoadedMapInfo().isFavorite(pos)) {
             guiHandler.thisWasClicked(GUI.FAVORITE, pos);
+            return;
         }
         guiHandler.thisWasClicked(GUI.FREEMAPSPACE, pos);
     }
