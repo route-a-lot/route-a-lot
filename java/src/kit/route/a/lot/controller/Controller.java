@@ -441,7 +441,7 @@ public class Controller {
         Controller ctrl = new Controller();
         File defaultMap = new File("./test/resources/karlsruhe_big.osm");
         loadState();
-        if (false && ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
+        if (ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
               ctrl.loadMap(ctrl.state.getLoadedMapFile());
         } else {
             if (defaultMap.exists()) {
@@ -477,5 +477,10 @@ public class Controller {
         ctrl.guiHandler.addHeightMalusListener(new HeightMalusListener(ctrl));
         ctrl.guiHandler.addHighwayMalusListener(new HighwayMalusListener(ctrl));
         ctrl.guiHandler.addCloseListener(new CloseListener(ctrl));
+    }
+
+
+    public Renderer getRender() {
+        return renderer;
     }
 }

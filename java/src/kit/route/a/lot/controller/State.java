@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.common.Coordinates;

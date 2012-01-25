@@ -5,10 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import static kit.route.a.lot.common.Util.*;
+import kit.route.a.lot.controller.Controller;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.WeightCalculatorMock;
+import kit.route.a.lot.map.rendering.Renderer;
 
 import org.apache.log4j.Logger;
 
@@ -128,6 +131,7 @@ public class Router {
 
     private static Route fromAToB(Selection a, Selection b) {
         // ToDo: rename?
+        // Renderer renderer = State.getInstance().getController.getRender();
         RoutingGraph graph = State.getInstance().getLoadedGraph();
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
         Route currentPath = null;
@@ -178,10 +182,15 @@ public class Router {
                 logger.info("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
                 return currentPath.getRoute();
             }
-            for (Integer to : graph.getRelevantNeighbors(currentNode,
-                    new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
+            for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
                 // Here we add the new paths.
-                heap.add(new Route(to, graph.getWeight(currentNode, to), currentPath));
+                // renderer.drawEdge(new Selection(to, currentPath.getNode(), 0, new Coordinates(0, 0)));
+                selectionWeight = graph.getWeight(currentNode, to);
+                if (selectionWeight > 0) {
+                    heap.add(new Route(to, selectionWeight, currentPath));
+                } else {
+                    logger.fatal("Got negative weight for a route; please fix");
+                }
             }
         }
         // No path was found, maybe raise an error?

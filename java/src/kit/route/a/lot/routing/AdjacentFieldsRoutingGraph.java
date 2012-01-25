@@ -210,9 +210,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
             if (edges[i] == to) {
                 if (weights[i] > 0) {
+                    logger.info("Weight from " + from + " to " + to + " is " + weights[i]);
                     return weights[i];
                 } else {
                     logger.error("Got zero weight from " + from + " to " + to);
+                    return 1;
                 }
             }
         }

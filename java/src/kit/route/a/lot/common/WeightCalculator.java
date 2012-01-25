@@ -59,7 +59,7 @@ public class WeightCalculator {
     public int calcWeight(int fromID, int toID) {
         Coordinates from = State.getInstance().getLoadedMapInfo().getNodePosition(fromID);
         Coordinates to = State.getInstance().getLoadedMapInfo().getNodePosition(toID);
-        
+
         Coordinates geoFrom = projection.localCoordinatesToGeoCoordinates(from);
         Coordinates geoTo = projection.localCoordinatesToGeoCoordinates(to);
         

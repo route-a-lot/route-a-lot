@@ -207,7 +207,7 @@ public class Renderer {
         context.drawImage(routeTopLeft, routeImage, detail);
     }
     
-    public void DrawEdge(Selection sel){    //TODO delete
+    public void drawEdge(Selection sel){    //TODO delete
         drawEdges.add(sel);
     }
     
