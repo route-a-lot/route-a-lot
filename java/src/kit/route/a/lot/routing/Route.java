@@ -60,7 +60,7 @@ public class Route {
         if (from == null) {
             return weight;
         } else {
-            return weight + from.length();
+            return weight;
         }
     }
     
