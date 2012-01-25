@@ -25,6 +25,7 @@ public class Listeners {
     public List<GeneralListener> printRoute;
     public List<GeneralListener> addTextualNavPoint;
     public List<GeneralListener> deleteNavPoint;
+    public List<GeneralListener> deleteFavPoint;
     public List<GeneralListener> loadMap;
     
     /**
@@ -47,6 +48,7 @@ public class Listeners {
         printRoute = new ArrayList<GeneralListener>();
         addTextualNavPoint = new ArrayList<GeneralListener>();
         deleteNavPoint = new ArrayList<GeneralListener>();
+        deleteFavPoint = new ArrayList<GeneralListener>();
         loadMap = new ArrayList<GeneralListener>();
         optimizeRoute = new ArrayList<GeneralListener>();
     }
@@ -98,6 +100,9 @@ public class Listeners {
     }
     public void addDeleteNavNodeListener(GeneralListener deleteNavNodeListener) {
         deleteNavPoint.add(deleteNavNodeListener);
+    }
+    public void addDeleteFavListener(GeneralListener deleteFavListener) {
+        deleteFavPoint.add(deleteFavListener);
     }
     public void addTextualNavPointListener(GeneralListener textualNavPointListener) {
         addTextualNavPoint.add(textualNavPointListener);

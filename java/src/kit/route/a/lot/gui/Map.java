@@ -19,6 +19,7 @@ import javax.swing.JPopupMenu;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
+import kit.route.a.lot.gui.event.DeleteFavoriteEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 import kit.route.a.lot.map.rendering.Projection;
@@ -33,16 +34,28 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int popupXPos;
     private int popupYPos;
     private Coordinates center;
+    private Coordinates favoritePosition = new Coordinates(0.0f, 0.0f);
+    private Coordinates poiPoistion = new Coordinates(0.0f, 0.0f);
     protected int zoomlevel = 2;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
     
     protected GUI gui;
     private JPopupMenu navNodeMenu;
+    private JPopupMenu favoriteMenu;
+    private JPopupMenu poiNavPointMenu;
     private JMenuItem startItem;
     private JMenuItem endItem;
-    private AbstractButton stopoverItem;
-    private AbstractButton favoriteItem;
+    private JMenuItem stopoverItem;
+    private JMenuItem addFavoriteItem;
+    private JMenuItem favStartItem;
+    private JMenuItem favEndItem;
+    private JMenuItem favStopoverItem;
+    private JMenuItem deleteFavoriteItem;
+    private JMenuItem poiStartItem;
+    private JMenuItem poiEndItem;
+    private JMenuItem poiStopoverItem;
+    private MouseEvent clickEvent;
     Component canvas;
     
     /**
@@ -66,11 +79,11 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         startItem = new JMenuItem("als Start");
         endItem = new JMenuItem("als Ziel");
         stopoverItem = new JMenuItem("als Zwischenhalt");
-        favoriteItem = new JMenuItem("als Favorit");       
+        addFavoriteItem = new JMenuItem("als Favorit");       
         startItem.addActionListener(this);        
         endItem.addActionListener(this);       
         stopoverItem.addActionListener(this); 
-        favoriteItem.addActionListener(new ActionListener() {
+        addFavoriteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Coordinates favoriteCoordinates =
@@ -78,11 +91,44 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                 Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(favoriteCoordinates, "", ""));
             }
         });
+        
         navNodeMenu = new JPopupMenu("NavNodes");
         navNodeMenu.add(startItem);
         navNodeMenu.add(endItem);
         navNodeMenu.add(stopoverItem);
-        navNodeMenu.add(favoriteItem); 
+        navNodeMenu.add(addFavoriteItem);
+        
+        favStartItem = new JMenuItem("als Start");
+        favEndItem = new JMenuItem("als Ziel");
+        favStopoverItem = new JMenuItem("als Zwischenhalt");
+        deleteFavoriteItem = new JMenuItem("lösche Favorit");
+        favStartItem.addActionListener(this);
+        favEndItem.addActionListener(this);
+        favStopoverItem.addActionListener(this);
+        deleteFavoriteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Listeners.fireEvent(gui.getListener().deleteFavPoint, new DeleteFavoriteEvent(favoritePosition));
+            }
+        });
+        
+        favoriteMenu = new JPopupMenu("Favorite");
+        favoriteMenu.add(favStartItem);
+        favoriteMenu.add(favEndItem);
+        favoriteMenu.add(favStopoverItem);
+        favoriteMenu.add(deleteFavoriteItem);
+        
+        poiStartItem = new JMenuItem("als Start");
+        poiEndItem = new JMenuItem("als Ziel");
+        poiStopoverItem = new JMenuItem("als Zwischenhalt");
+        poiStartItem.addActionListener(this);
+        poiEndItem.addActionListener(this);
+        poiStopoverItem.addActionListener(this);
+        
+        poiNavPointMenu = new JPopupMenu("POI");
+        poiNavPointMenu.add(poiStartItem);
+        poiNavPointMenu.add(poiEndItem);
+        poiNavPointMenu.add(poiStopoverItem);
         
         canvas.addMouseListener(new MouseAdapter() {          
             @Override // used for dragging, relocate?
@@ -129,8 +175,18 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     public void actionPerformed(ActionEvent e) {
         String label = ((JMenuItem) e.getSource()).getText();
         // TODO better implementation?
-        int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;         
-        Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
+        int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;
+        Coordinates pos;
+        if(favoritePosition.getLongitude() != 0.0f) {
+            pos = favoritePosition;
+            favoritePosition = new Coordinates(0.0f, 0.0f);
+        } else if(poiPoistion.getLongitude() != 0.0f) {
+            pos = poiPoistion;
+            poiPoistion = new Coordinates(0.0f, 0.0f);
+        } else {
+            pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
+        }
+        
         switch (gui.getNavPointsList().size()) {
             case 0: if (type == 2) {
                         gui.getNavPointsList().add(new Coordinates());
@@ -156,12 +212,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     /**
      * Opens the map context menu if appropriate. Fires a WhatWasClicked event.
      */
-    private void checkPopup(MouseEvent e) {     
-        if (e.isPopupTrigger()) {
-            popupXPos = e.getX();
-            popupYPos = e.getY();
-            navNodeMenu.show(e.getComponent(), popupXPos, popupYPos);
-        }        
+    private void checkPopup(MouseEvent e) {
+        clickEvent = e;
         Listeners.fireEvent(gui.getListener().clickPosition, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }
       
@@ -234,4 +286,23 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         return result;
     }
     
+    public void popUpTriggered(int item, Coordinates position) {
+        if (clickEvent.isPopupTrigger()) {
+            if(item == 0) {
+                popupXPos = clickEvent.getX();
+                popupYPos = clickEvent.getY();
+                navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+            } else if(item == 1) {
+                popupXPos = clickEvent.getX();
+                popupYPos = clickEvent.getY();
+                poiPoistion = position;
+                poiNavPointMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+            } else if(item == 2){
+                popupXPos = clickEvent.getX();
+                popupYPos = clickEvent.getY();
+                favoritePosition = position;
+                favoriteMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+            }
+        }
+    }
 }

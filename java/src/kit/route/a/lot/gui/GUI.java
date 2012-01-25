@@ -650,7 +650,6 @@ public class GUI extends JFrame {
     }
     
     public void updateNavNodes(ArrayList<Coordinates> navPointsList) {
-
         for(int i = 0 ; i < alladdedButtons.size(); i++) {
             tab1.remove(alladdedNavPoints.get(i));
             tab1.remove(alladdedButtons.get(i));
@@ -672,5 +671,9 @@ public class GUI extends JFrame {
         } else if(this.navPointsList.size() == 1){
             startPoint.setText(this.navPointsList.get(0).toString());
         }
+    }
+    
+    public void popUpTrigger(int item, Coordinates position) {
+        map.popUpTriggered(item, position);
     }
 }

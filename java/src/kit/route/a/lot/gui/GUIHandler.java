@@ -98,7 +98,7 @@ public class GUIHandler {
     }
     
     public void addDeleteFavListener (GeneralListener deleteFavListener) {
-        //TODO
+        listener.addDeleteFavListener(deleteFavListener);
     }
     
     public void addSaveRouteListener(GeneralListener saveRouteListener) {
@@ -131,7 +131,7 @@ public class GUIHandler {
     }
     
     public void thisWasClicked(int element, Coordinates pos){
-        //TODO tells the gui what was clicked (element will be a constant)
+        gui.popUpTrigger(element, pos);
     }
     
     public void addGetPoiDescriptionListener(GeneralListener posDescriptionListener) {
