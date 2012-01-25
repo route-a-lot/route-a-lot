@@ -122,8 +122,8 @@ public class GUIHandler {
         gui.setSpeed(speed);
     }
     
-    public void addWhatWasClickedListener(GeneralListener whatWasClickedListener) {
-        listener.addWhatWasClickedListener(whatWasClickedListener);
+    public void addClickPositionListener(GeneralListener clickPositionListener) {
+        listener.addClickPositionListener(clickPositionListener);
     }
     
     public void thisWasClicked(int element, Coordinates pos){

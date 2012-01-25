@@ -5,11 +5,11 @@ import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
-public class DeleteNaveNodeListener implements GeneralListener {
+public class DeleteNavNodeListener implements GeneralListener {
 
     private Controller ctrl;
         
-    public DeleteNaveNodeListener(Controller ctrl) {
+    public DeleteNavNodeListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
 

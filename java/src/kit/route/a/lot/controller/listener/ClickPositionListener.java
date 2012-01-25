@@ -5,12 +5,12 @@ import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
 
-public class ClickPosListener implements GeneralListener {
+public class ClickPositionListener implements GeneralListener {
 
     private Controller ctrl;
     
     
-    public ClickPosListener(Controller ctrl) {
+    public ClickPositionListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
 

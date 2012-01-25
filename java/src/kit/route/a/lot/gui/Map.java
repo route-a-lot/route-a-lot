@@ -162,7 +162,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             popupYPos = e.getY();
             navNodeMenu.show(e.getComponent(), popupXPos, popupYPos);
         }        
-        Listeners.fireEvent(gui.getListener().whatWasClicked, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
+        Listeners.fireEvent(gui.getListener().clickPosition, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }
       
     /**

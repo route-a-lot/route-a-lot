@@ -14,9 +14,9 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 
 import kit.route.a.lot.controller.listener.AddFavoriteListener;
-import kit.route.a.lot.controller.listener.ClickPosListener;
+import kit.route.a.lot.controller.listener.ClickPositionListener;
 import kit.route.a.lot.controller.listener.CloseListener;
-import kit.route.a.lot.controller.listener.DeleteNaveNodeListener;
+import kit.route.a.lot.controller.listener.DeleteNavNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
 import kit.route.a.lot.controller.listener.HeightMalusListener;
 import kit.route.a.lot.controller.listener.HighwayMalusListener;
@@ -27,7 +27,7 @@ import kit.route.a.lot.controller.listener.SelectNavNodeListener;
 import kit.route.a.lot.controller.listener.LoadRouteListener;
 import kit.route.a.lot.controller.listener.SpeedListener;
 import kit.route.a.lot.controller.listener.SaveRouteListner;
-import kit.route.a.lot.controller.listener.ViewChangedListener;
+import kit.route.a.lot.controller.listener.ChangeViewListener;
 import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.io.HeightLoader;
@@ -459,21 +459,21 @@ public class Controller {
             }
         }    
         ctrl.guiHandler.addListenerAddNavNode(new SelectNavNodeListener(ctrl));
-        ctrl.guiHandler.addChangedViewListener(new ViewChangedListener(ctrl));
+        ctrl.guiHandler.addChangedViewListener(new ChangeViewListener(ctrl));
         ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));  
         ctrl.setViewToMapCenter();
         System.out.println(ctrl.state.getImportedMaps().size());
         ctrl.guiHandler.setView(ctrl.state.getCenterCoordinates());
         ctrl.guiHandler.updateMapList(ctrl.state.getImportedMaps());
         ctrl.guiHandler.addOptimizeRouteListener(new OrderNavNodesListener(ctrl));
-        ctrl.guiHandler.addDeleteNavNodeListener(new DeleteNaveNodeListener(ctrl));
+        ctrl.guiHandler.addDeleteNavNodeListener(new DeleteNavNodeListener(ctrl));
         ctrl.guiHandler.addLoadMapListener(new LoadMapListener(ctrl));
         ctrl.guiHandler.addAddFavoriteListener(new AddFavoriteListener(ctrl));
         ctrl.guiHandler.addSaveRouteListener(new SaveRouteListner(ctrl));
         ctrl.guiHandler.addLoadRouteListener(new LoadRouteListener(ctrl));
         ctrl.guiHandler.addExportRouteListener(new ExportRouteListener(ctrl));
         ctrl.guiHandler.addSetSpeedListener(new SpeedListener(ctrl));
-        ctrl.guiHandler.addWhatWasClickedListener(new ClickPosListener(ctrl));
+        ctrl.guiHandler.addClickPositionListener(new ClickPositionListener(ctrl));
         ctrl.guiHandler.addHeightMalusListener(new HeightMalusListener(ctrl));
         ctrl.guiHandler.addHighwayMalusListener(new HighwayMalusListener(ctrl));
         ctrl.guiHandler.addCloseListener(new CloseListener(ctrl));

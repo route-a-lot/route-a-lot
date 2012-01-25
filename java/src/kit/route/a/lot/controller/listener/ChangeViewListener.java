@@ -5,11 +5,11 @@ import kit.route.a.lot.gui.event.ChangeViewEvent;
 import kit.route.a.lot.gui.event.GeneralEvent;
 
 
-public class ViewChangedListener implements GeneralListener {
+public class ChangeViewListener implements GeneralListener {
 
     private Controller ctrl;
     
-    public ViewChangedListener(Controller ctrl) {
+    public ChangeViewListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
     

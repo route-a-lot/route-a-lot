@@ -13,7 +13,7 @@ public class Listeners {
     public List<GeneralListener> importOsmFile;
     public List<GeneralListener> optimizeRoute;
     public List<GeneralListener> exportRoute;
-    public List<GeneralListener> whatWasClicked;
+    public List<GeneralListener> clickPosition;
     public List<GeneralListener> addFav;
     public List<GeneralListener> loadRoute;
     public List<GeneralListener> saveRoute;
@@ -23,9 +23,9 @@ public class Listeners {
     public List<GeneralListener> highwayMalus;
     public List<GeneralListener> importHeightMap;
     public List<GeneralListener> printRoute;
-    public List<GeneralListener> addTextuelNavPointList;
-    public List<GeneralListener> deleteNavPointList;
-    public List<GeneralListener> loadMapList;
+    public List<GeneralListener> addTextualNavPoint;
+    public List<GeneralListener> deleteNavPoint;
+    public List<GeneralListener> loadMap;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
@@ -34,7 +34,7 @@ public class Listeners {
         targetSelected = new ArrayList<GeneralListener>();
         viewChanged = new ArrayList<GeneralListener>();
         importOsmFile = new ArrayList<GeneralListener>();
-        whatWasClicked = new ArrayList<GeneralListener>();
+        clickPosition = new ArrayList<GeneralListener>();
         addFav = new ArrayList<GeneralListener>();
         loadRoute = new ArrayList<GeneralListener>();
         saveRoute = new ArrayList<GeneralListener>();
@@ -45,9 +45,9 @@ public class Listeners {
         highwayMalus = new ArrayList<GeneralListener>();
         importHeightMap = new ArrayList<GeneralListener>();
         printRoute = new ArrayList<GeneralListener>();
-        addTextuelNavPointList = new ArrayList<GeneralListener>();
-        deleteNavPointList = new ArrayList<GeneralListener>();
-        loadMapList = new ArrayList<GeneralListener>();
+        addTextualNavPoint = new ArrayList<GeneralListener>();
+        deleteNavPoint = new ArrayList<GeneralListener>();
+        loadMap = new ArrayList<GeneralListener>();
         optimizeRoute = new ArrayList<GeneralListener>();
     }
     
@@ -72,8 +72,8 @@ public class Listeners {
     public void addOptimizeRouteListener(GeneralListener optimizeRouteListener) {
         optimizeRoute.add(optimizeRouteListener);
     }    
-    public void addWhatWasClickedListener(GeneralListener whatWasClickedListener) {
-        whatWasClicked.add(whatWasClickedListener);
+    public void addClickPositionListener(GeneralListener clickPositionListener) {
+        clickPosition.add(clickPositionListener);
     }   
     public void addFavoriteListener(GeneralListener addFavListener) {
         addFav.add(addFavListener);
@@ -98,13 +98,13 @@ public class Listeners {
         //TODO
     }
     public void addDeleteNavNodeListener(GeneralListener deleteNavNodeListener) {
-        deleteNavPointList.add(deleteNavNodeListener);
+        deleteNavPoint.add(deleteNavNodeListener);
     }
-    public void addTextuelNavPointListener(GeneralListener textuelNavPointListener) {
-        addTextuelNavPointList.add(textuelNavPointListener);
+    public void addTextualNavPointListener(GeneralListener textualNavPointListener) {
+        addTextualNavPoint.add(textualNavPointListener);
     }
     public void addLoadMapListener(GeneralListener loadMapListener) {
-        loadMapList.add(loadMapListener);
+        loadMap.add(loadMapListener);
     }
     
     public static void fireEvent(List<GeneralListener> listener, GeneralEvent event) {

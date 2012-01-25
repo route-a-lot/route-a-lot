@@ -333,7 +333,7 @@ public class GUI extends JFrame {
                 }
                 for(int i = navPointsList.size() - 1; i >= 0; i--) {
                     navPointsList.remove(i);
-                    listener.fireEvent(listener.deleteNavPointList, new NumberEvent(i));
+                    listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
                 }
                 repaint();
             }
@@ -364,7 +364,7 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent arg0) {
                     for(int i = 0; i < alladdedNavPoints.size(); i++) {
                         if(alladdedNavPoints.get(i) == navPointField) {
-                            Listeners.fireEvent(listener.addTextuelNavPointList, new TextEvent(alladdedNavPoints.get(i).toString()));
+                            Listeners.fireEvent(listener.addTextualNavPoint, new TextEvent(alladdedNavPoints.get(i).toString()));
                             repaint();
                         }
                     }
@@ -380,7 +380,7 @@ public class GUI extends JFrame {
                             alladdedButtons.remove(i);
                             alladdedNavPoints.remove(i);
                             navPointsList.remove(i + 1);
-                            Listeners.fireEvent(listener.deleteNavPointList, new NumberEvent(i + 1));
+                            Listeners.fireEvent(listener.deleteNavPoint, new NumberEvent(i + 1));
                             repaint();
                         }
                     }
@@ -550,7 +550,7 @@ public class GUI extends JFrame {
         activateMapButton.addActionListener(new ActionListener() {     
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                listener.fireEvent(listener.loadMapList, new TextEvent(chooseImportedMap.getSelectedItem().toString()));
+                listener.fireEvent(listener.loadMap, new TextEvent(chooseImportedMap.getSelectedItem().toString()));
             }
         });
         
