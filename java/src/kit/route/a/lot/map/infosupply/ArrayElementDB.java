@@ -22,10 +22,6 @@ public class ArrayElementDB implements ElementDB {
 
     private static Logger logger = Logger.getLogger(ArrayElementDB.class);
     
-    static {
-        logger.setLevel(Level.INFO);
-    }
-    
     private ArrayList<Node> nodes = new ArrayList<Node>();
    
     private ArrayList<MapElement> mapElements = new ArrayList<MapElement>();

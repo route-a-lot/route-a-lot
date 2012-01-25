@@ -24,9 +24,7 @@ import org.apache.log4j.Logger;
 public class MapInfo {
 
     private static Logger logger = Logger.getLogger(MapInfo.class);
-    static {
-        logger.setLevel(Level.INFO);
-    }
+
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
@@ -97,24 +95,21 @@ public class MapInfo {
 
         if (wayInfo.isStreet()) {
             Street street = new Street(name, wayInfo);
-            
             Node[] nodes = new Node[ids.size()];
             for (int i = 0; i < ids.size(); i++) {
                 nodes[i] = getNode(ids.get(i));
             }
             street.setNodes(nodes);
-            
             elementDB.addMapElement(street);
             geographicalOperator.addToBaseLayer(street);
         } else {
             Area area = new Area(name, wayInfo);
-            elementDB.addMapElement(area);
-            geographicalOperator.addToBaseLayer(area);
             Node[] nodes = new Node[ids.size()];
             for (int i = 0; i < ids.size(); i++) {
                 nodes[i] = elementDB.getNode(ids.get(i));
             }
             area.setNodes(nodes);
+            elementDB.addMapElement(area);
             geographicalOperator.addToBaseLayer(area);
         }
     }

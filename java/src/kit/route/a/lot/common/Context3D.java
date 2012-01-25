@@ -15,9 +15,6 @@ import org.apache.log4j.Logger;
 public class Context3D extends Context {
     
     private static Logger logger = Logger.getLogger(Context3D.class);
-    static {
-        logger.setLevel(Level.INFO);
-    }
     
     private GLDrawable output;
  
