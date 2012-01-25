@@ -104,7 +104,7 @@ public class State {
         currentRoute = new ArrayList<Integer>();
         centerCoordinates = null;
         detailLevel = 2;
-        clickRadius = 1; // TODO use it
+        clickRadius = 80; // TODO use it
         routeDescription = new RouteDescription();
         speed = 15;
         duration = 0;

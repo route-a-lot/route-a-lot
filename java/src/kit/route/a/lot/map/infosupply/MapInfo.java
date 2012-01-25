@@ -267,7 +267,13 @@ public class MapInfo {
      * @return the correspondending mapElements
      */
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
-        return geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight);
+        Collection<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight);
+        for(MapElement ele : elementDB.getFavorites()) {
+            if(ele.isInBounds(upLeft, bottomRight)) {
+                overlay.add(ele);
+            }
+        }
+        return overlay;
     }
 
     /**

@@ -3,7 +3,6 @@ package kit.route.a.lot.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -149,7 +148,7 @@ public class Controller {
             if (position == 0 && state.getNavigationNodes().size() > 1) {
                 state.getNavigationNodes().remove(0);
                 state.getNavigationNodes().add(0, newSel);
-            } else if (position == state.getNavigationNodes().size() - 1 && state.getNavigationNodes().size() > 1) {
+            } else if (position == state.getNavigationNodes().size() && state.getNavigationNodes().size() > 1) {
                 state.getNavigationNodes().remove(state.getNavigationNodes().remove(state.getNavigationNodes().size() - 1));
                 state.getNavigationNodes().add(newSel);
             } else {
@@ -173,8 +172,16 @@ public class Controller {
             state.getNavigationNodes().remove(pos);
             state.setCurrentRoute(new ArrayList<Integer>());
             calculateRoute();
+            state.setCurrentRoute(new ArrayList<Integer>());
+            calculateRoute();
+            ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
+            for (Selection sel : state.getNavigationNodes()) {
+                newList.add(sel.getPosition());
+            }
+            guiHandler.setNavNodesOrder(newList);
+            calculateRoute();
+            guiHandler.updateGUI();
         }
-        guiHandler.updateGUI();
     }
     
     public void deleteNavNode(Coordinates pos) {
@@ -188,7 +195,15 @@ public class Controller {
             topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
                 state.getNavigationNodes().remove(i);
-                //guiHandler.deleteNavNodeFromList(i);
+                state.setCurrentRoute(new ArrayList<Integer>());
+                calculateRoute();
+                ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
+                for (Selection sel : state.getNavigationNodes()) {
+                    newList.add(sel.getPosition());
+                }
+                guiHandler.setNavNodesOrder(newList);
+                calculateRoute();
+                guiHandler.updateGUI();
             }
         }
     }
@@ -318,10 +333,14 @@ public class Controller {
             Coordinates topLeft = new Coordinates();
             Coordinates bottomRight = new Coordinates();
             topLeft.setLatitude(pos.getLatitude() - state.getClickRadius());
-            topLeft.setLongitude(pos.getLatitude() - state.getClickRadius());
+            topLeft.setLongitude(pos.getLongitude() - state.getClickRadius());
             bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
-            topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
+            bottomRight.setLongitude(pos.getLongitude() + state.getClickRadius());
+            System.err.println("pos: "+state.getNavigationNodes().get(i).getPosition());
+            System.err.println("ul: "+topLeft);
+            System.err.println("br: "+bottomRight);
             if (node.isInBounds(topLeft, bottomRight)) {
+                System.err.println("asdasd");
                 guiHandler.thisWasClicked(GUI.NAVNODE, pos);
                 return;
             }

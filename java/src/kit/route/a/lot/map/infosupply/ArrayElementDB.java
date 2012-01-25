@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -160,10 +161,10 @@ public class ArrayElementDB implements ElementDB {
     public boolean isFavorite(Coordinates pos) {
         Coordinates topLeft = new Coordinates();
         Coordinates bottomRight = new Coordinates();
-        topLeft.setLongitude(pos.getLatitude() - State.getInstance().getClickRadius());
-        topLeft.setLatitude(pos.getLongitude() - State.getInstance().getClickRadius());
-        bottomRight.setLongitude(pos.getLatitude() + State.getInstance().getClickRadius());
-        bottomRight.setLatitude(pos.getLongitude() + State.getInstance().getClickRadius());
+        topLeft.setLongitude(pos.getLongitude() - State.getInstance().getClickRadius());
+        topLeft.setLatitude(pos.getLatitude() - State.getInstance().getClickRadius());
+        bottomRight.setLongitude(pos.getLongitude() + State.getInstance().getClickRadius());
+        bottomRight.setLatitude(pos.getLatitude() + State.getInstance().getClickRadius());
         
         for (POINode fav : favorites) {
             if(fav.isInBounds(topLeft, bottomRight)) {
@@ -171,5 +172,10 @@ public class ArrayElementDB implements ElementDB {
             }
         }
         return false;
+    }
+
+    @Override
+    public ArrayList<POINode> getFavorites() {
+        return favorites;
     }
 }

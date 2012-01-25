@@ -203,9 +203,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public POIDescription getPOIDescription(Coordinates pos, float radius) {
-        Collection<MapElement> elements = getOverlayForAPositionAndRadius(pos, radius);
+        Coordinates UL = new Coordinates();
+        Coordinates BR = new Coordinates();
+        UL.setLatitude(pos.getLatitude() - radius);
+        UL.setLongitude(pos.getLongitude() - radius);
+        BR.setLatitude(pos.getLatitude() + radius);
+        BR.setLongitude(pos.getLongitude() + radius);
+        Collection<MapElement> elements = getOverlay(0, UL, BR);
         for (MapElement element : elements) {
-            if (element instanceof POINode) {
+            if (element instanceof POINode && element.isInBounds(UL, BR)) {
                 return ((POINode) element).getInfo();
             }
         }

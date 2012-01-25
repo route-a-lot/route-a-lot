@@ -170,27 +170,24 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         String label = ((JMenuItem) e.getSource()).getText();
         // TODO better implementation?
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;
-        Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
+        int pos = 0;
         
         switch (gui.getNavPointsList().size()) {
-            case 0: if (type == 2) {
-                        gui.getNavPointsList().add(new Coordinates());
-                    }
-                    gui.getNavPointsList().add(pos);
+            case 0: pos = 0; gui.getNavPointsList().add(null);
                     break;
             case 1: switch (type) {
-                        case 0 : gui.getNavPointsList().set(0, pos); break;
-                        default : gui.getNavPointsList().add(pos);
+                        case 0 : pos = 0; gui.getNavPointsList().add(null); break; 
+                        default : pos = 1; gui.getNavPointsList().add(null);
                     }
                     break;
             default: switch (type) {
-                        case 0 : gui.getNavPointsList().set(0, pos); break;
-                        case 1 : gui.getNavPointsList().add(gui.getNavPointsList().size() - 1, pos); break;
-                        case 2 : gui.getNavPointsList().set(gui.getNavPointsList().size() - 1, pos);
+                        case 0 : pos = 0; break;
+                        case 1 : pos = gui.getNavPointsList().size() - 1; gui.getNavPointsList().add(null); break;
+                        case 2 : pos = gui.getNavPointsList().size();
                     }
         }    
         Listeners.fireEvent(gui.getListener().targetSelected,
-                new SelectNavNodeEvent(pos, gui.getNavPointsList().indexOf(pos)));
+                new SelectNavNodeEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()), pos));
         canvas.repaint();
     }
     

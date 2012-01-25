@@ -3,6 +3,8 @@ package kit.route.a.lot.map.infosupply;
 import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.Node;
@@ -71,5 +73,7 @@ public interface ElementDB {
     public boolean isFavorite(Coordinates pos);
     
     public void swapNodeIds(int id1, int id2);
+    
+    public ArrayList<POINode> getFavorites();
 
 }
