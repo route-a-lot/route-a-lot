@@ -13,6 +13,7 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -34,29 +35,21 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int popupXPos;
     private int popupYPos;
     private Coordinates center;
-    private Coordinates favoritePosition = new Coordinates(0.0f, 0.0f);
-    private Coordinates poiPoistion = new Coordinates(0.0f, 0.0f);
     protected int zoomlevel = 2;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
     
     protected GUI gui;
     private JPopupMenu navNodeMenu;
-    private JPopupMenu deleteNavNodeMenu;
-    private JPopupMenu favoriteMenu;
-    private JPopupMenu poiNavPointMenu;
+    private JPopupMenu descriptionMenu;
     private JMenuItem startItem;
     private JMenuItem endItem;
     private JMenuItem stopoverItem;
     private JMenuItem addFavoriteItem;
     private JMenuItem deleteNavPoint;
-    private JMenuItem favStartItem;
-    private JMenuItem favEndItem;
-    private JMenuItem favStopoverItem;
     private JMenuItem deleteFavoriteItem;
-    private JMenuItem poiStartItem;
-    private JMenuItem poiEndItem;
-    private JMenuItem poiStopoverItem;
+    private JLabel popUpName;
+    private JLabel showDescription;
     private MouseEvent clickEvent;
     Component canvas;
     
@@ -78,10 +71,19 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         add(canvas, BorderLayout.CENTER);
         
         //Context menu:
+        popUpName = new JLabel();
         startItem = new JMenuItem("als Start");
         endItem = new JMenuItem("als Ziel");
         stopoverItem = new JMenuItem("als Zwischenhalt");
-        addFavoriteItem = new JMenuItem("als Favorit");       
+        addFavoriteItem = new JMenuItem("als Favorit");  
+        deleteFavoriteItem = new JMenuItem("lösche Favorit");
+        deleteNavPoint = new JMenuItem("lösche Navigationspunkt");
+        startItem.setBackground(Color.WHITE);
+        endItem.setBackground(Color.WHITE);
+        stopoverItem.setBackground(Color.WHITE);
+        addFavoriteItem.setBackground(Color.WHITE);
+        deleteFavoriteItem.setBackground(Color.WHITE);
+        deleteNavPoint.setBackground(Color.WHITE);
         startItem.addActionListener(this);        
         endItem.addActionListener(this);       
         stopoverItem.addActionListener(this); 
@@ -93,44 +95,34 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                 Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(favoriteCoordinates, "", ""));
             }
         });
+        deleteFavoriteItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Listeners.fireEvent(gui.getListener().deleteFavPoint, new DeleteFavoriteEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())));
+            }
+        });
+        deleteNavPoint.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Listeners.fireEvent(gui.getListener().deleteNavPoint, new PositionEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())));
+            }
+        });
         
         navNodeMenu = new JPopupMenu("NavNodes");
+        navNodeMenu.setBackground(Color.WHITE);
+        navNodeMenu.add(popUpName);
         navNodeMenu.add(startItem);
         navNodeMenu.add(endItem);
         navNodeMenu.add(stopoverItem);
         navNodeMenu.add(addFavoriteItem);
+        navNodeMenu.add(deleteFavoriteItem);
+        navNodeMenu.add(deleteNavPoint);
         
-        favStartItem = new JMenuItem("als Start");
-        favEndItem = new JMenuItem("als Ziel");
-        favStopoverItem = new JMenuItem("als Zwischenhalt");
-        deleteFavoriteItem = new JMenuItem("lösche Favorit");
-        favStartItem.addActionListener(this);
-        favEndItem.addActionListener(this);
-        favStopoverItem.addActionListener(this);
-        deleteFavoriteItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                Listeners.fireEvent(gui.getListener().deleteFavPoint, new DeleteFavoriteEvent(favoritePosition));
-            }
-        });
+        showDescription = new JLabel();
         
-        favoriteMenu = new JPopupMenu("Favorite");
-        favoriteMenu.add(favStartItem);
-        favoriteMenu.add(favEndItem);
-        favoriteMenu.add(favStopoverItem);
-        favoriteMenu.add(deleteFavoriteItem);
-        
-        poiStartItem = new JMenuItem("als Start");
-        poiEndItem = new JMenuItem("als Ziel");
-        poiStopoverItem = new JMenuItem("als Zwischenhalt");
-        poiStartItem.addActionListener(this);
-        poiEndItem.addActionListener(this);
-        poiStopoverItem.addActionListener(this);
-        
-        poiNavPointMenu = new JPopupMenu("POI");
-        poiNavPointMenu.add(poiStartItem);
-        poiNavPointMenu.add(poiEndItem);
-        poiNavPointMenu.add(poiStopoverItem);
+        descriptionMenu = new JPopupMenu();
+        descriptionMenu.add(showDescription);
         
         canvas.addMouseListener(new MouseAdapter() {          
             @Override // used for dragging, relocate?
@@ -279,20 +271,41 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         return result;
     }
     
-    public void popUpTriggered(int item, Coordinates position) {
+    public void popUpTriggered(int itemType, Coordinates position) {
         if (clickEvent.isPopupTrigger()) {
-            if(item == 0) {
-                popupXPos = clickEvent.getX();
-                popupYPos = clickEvent.getY();
-                navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-            } else if(item == 1) {
-                popupXPos = clickEvent.getX();
-                popupYPos = clickEvent.getY();
-                poiNavPointMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-            } else if(item == 2){
-                popupXPos = clickEvent.getX();
-                popupYPos = clickEvent.getY();
-                favoriteMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+            popupXPos = clickEvent.getX();
+            popupYPos = clickEvent.getY();
+            switch(itemType) {
+                case 0: popUpName.setText("");
+                    break;
+                case 1: popUpName.setText(" POI:");
+                    break;
+                case 2: popUpName.setText(" Favorit");
+                    break;
+                case 3: popUpName.setText(" Navigationspunkt:");
+                    break;
+            }
+            startItem.setVisible(itemType == 0 || itemType == 1 || itemType == 2);
+            endItem.setVisible(itemType == 0 || itemType == 1 || itemType == 2);
+            stopoverItem.setVisible(itemType == 0 || itemType == 1 || itemType == 2);
+            addFavoriteItem.setVisible(itemType == 0);
+            deleteFavoriteItem.setVisible(itemType == 2);
+            deleteNavPoint.setVisible(itemType == 3);
+            
+            navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+        } else {
+            popupXPos = clickEvent.getX();
+            popupYPos = clickEvent.getY();
+            switch(itemType) {
+                case 1: showDescription.setText("POI");
+                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+                    break;
+                case 2: showDescription.setText("Favorit");
+                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+                    break;
+                default: showDescription.setText("");
+                    descriptionMenu.setVisible(false);
+                    break;
             }
         }
     }

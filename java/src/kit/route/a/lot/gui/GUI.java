@@ -596,6 +596,7 @@ public class GUI extends JFrame {
                       tab1.remove(alladdedButtons.get(i));
                       alladdedButtons.remove(i);
                       alladdedNavPoints.remove(i);
+                      listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i+1));
                       repaint();
                   }
               }
@@ -674,7 +675,7 @@ public class GUI extends JFrame {
         }
     }
     
-    public void popUpTrigger(int item, Coordinates position) {
-        map.popUpTriggered(item, position);
+    public void popUpTrigger(int itemType, Coordinates position) {
+        map.popUpTriggered(itemType, position);
     }
 }
