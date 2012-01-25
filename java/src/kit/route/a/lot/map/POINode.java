@@ -36,7 +36,6 @@ public class POINode extends Node {
     @Override
     protected void save(DataOutputStream stream) throws IOException {
         super.save(stream);
-        //TODO DISCUSS: implement POIDescription.saveToStream() etc. ?
         stream.writeUTF(getInfo().getName());
         stream.writeInt(getInfo().getCategory());       
         stream.writeUTF(getInfo().getDescription());

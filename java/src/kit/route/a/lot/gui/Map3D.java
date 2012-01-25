@@ -42,7 +42,7 @@ public class Map3D extends Map implements GLEventListener {
 
     @Override
     public void displayChanged(GLDrawable g, boolean arg1, boolean arg2) {
-        // TODO Auto-generated method stub        
+        // TODO ???       
     }
 
     @Override

@@ -22,74 +22,58 @@ public class GraphMock implements RoutingGraph {
 
     @Override
     public byte getAreaID(int node) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
-    public void setAreaID(int node, byte id) {
-        // TODO Auto-generated method stub
-        
+    public void setAreaID(int node, byte id) {       
     }
 
     @Override
     public int getWeight(int first, int last) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public int getIDCount() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     public RoutingGraph getInverted() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte[] bs) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Collection<Integer> getAllNeighbors(int node) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
-        // TODO Auto-generated method stub
-        
+      
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        // TODO Auto-generated method stub
-        
+    public void saveToStream(DataOutputStream stream) throws IOException {        
     }
 
     @Override
-    public void setArcFlag(int node, int node2, byte area) {
-        // TODO Auto-generated method stub
-        
+    public void setArcFlag(int node, int node2, byte area) {       
     }
 
     @Override
     public String getMetisRepresentation() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void readAreas(String areas) {
-        // TODO Auto-generated method stub
-        
     }
     
 }

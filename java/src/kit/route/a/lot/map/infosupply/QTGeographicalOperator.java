@@ -40,7 +40,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {    //TODO search better solution
+    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         zoomlevels = new QuadTree[countZoomlevel];
         for (int i = 0; i < countZoomlevel; i++) {
             zoomlevels[i] = new QTNode(upLeft, bottomRight);
@@ -112,7 +112,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         MapElement closestElement = null;
         float closestDistance = Float.MAX_VALUE;  
         for (MapElement element: elements) {
-            if(element instanceof Street && ((Street) element).getWayInfo().isRoutable()) {  //TODO only routable
+            if(element instanceof Street && ((Street) element).getWayInfo().isRoutable()) {  //TODO only routeable
                 float distance = ((Street) element).getDistanceTo(pos);
                 if (distance < closestDistance) {
                     closestDistance = distance;

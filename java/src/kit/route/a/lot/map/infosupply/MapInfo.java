@@ -149,7 +149,6 @@ public class MapInfo {
     public void addFavorite(Coordinates pos, POIDescription description) {
         POINode newFav = new POINode(pos, description);
         elementDB.addFavorite(newFav);
-        //geographicalOperator.addToOverlay(newFav);  //TODO i would prefer to keep this out of quadTree(deleting . . .)
     }
 
     /**
@@ -196,7 +195,6 @@ public class MapInfo {
      * @param nodeID the id of the node
      * @return the corresponding node object.
      */
-    // TODO: not design true, but needed by MapElement load methods
     public Node getNode(int nodeID) {
         return elementDB.getNode(nodeID);
     }

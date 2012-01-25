@@ -37,7 +37,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
     
-    protected GUI gui; // TODO
+    protected GUI gui;
     private JPopupMenu navNodeMenu;
     private JMenuItem startItem;
     private JMenuItem endItem;
@@ -128,7 +128,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     @Override
     public void actionPerformed(ActionEvent e) {
         String label = ((JMenuItem) e.getSource()).getText();
-        // TODO better implementation:
+        // TODO better implementation?
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;         
         Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
         switch (gui.getNavPointsList().size()) {
@@ -197,7 +197,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     @Override
     public void mouseMoved(MouseEvent e) {
         Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
-        gui.l_position.setText(mousePosCoordinates.toString()); //TODO
+        gui.l_position.setText(mousePosCoordinates.toString());
     }
 
     /**

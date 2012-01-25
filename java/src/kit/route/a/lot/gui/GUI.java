@@ -136,7 +136,7 @@ public class GUI extends JFrame {
      * Changes the geo coordinates view position and subsequently
      * updates the context and redraws the map.
      * @param center the new view center
-     */ //TODO right place??  
+     */ 
     public void setView(Coordinates center) {
         map.setCenter(center);
         map.calculateView();
@@ -209,7 +209,7 @@ public class GUI extends JFrame {
         print.addActionListener(new ActionListener() {            
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                //TODO
+                //TODO print button handler
             }
         });
 
@@ -391,7 +391,7 @@ public class GUI extends JFrame {
            }
         });
         
-        listener.targetSelected.add(new GeneralListener() { // TODO
+        listener.targetSelected.add(new GeneralListener() {
             @Override
             public void handleEvent(GeneralEvent event) {
                 int index = ((SelectNavNodeEvent) event).getIndex();

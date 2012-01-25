@@ -95,7 +95,6 @@ public class Listeners {
     }    
     public void addPrintRouteListener(GeneralListener printRouteListener) {
         printRoute.add(printRouteListener);
-        //TODO
     }
     public void addDeleteNavNodeListener(GeneralListener deleteNavNodeListener) {
         deleteNavPoint.add(deleteNavNodeListener);

@@ -94,7 +94,6 @@ public class Area extends MapElement {
         this.name = EMPTY.equals(name) ? null : name;
         int len = stream.readInt();
         this.nodes = new Node[len];
-        // TODO there must be some way without using state
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         for (int i = 0; i < len; i++) {        
             this.nodes[i] = mapInfo.getNode(stream.readInt());
