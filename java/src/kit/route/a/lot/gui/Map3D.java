@@ -42,7 +42,7 @@ public class Map3D extends Map implements GLEventListener {
 
     @Override
     public void displayChanged(GLDrawable g, boolean arg1, boolean arg2) {
-        // TODO ???       
+        // TODO ???   
     }
 
     @Override
@@ -52,7 +52,7 @@ public class Map3D extends Map implements GLEventListener {
         
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        g.getGLU().gluPerspective(50.0, 1, 1.0, 300.0);
+        g.getGLU().gluPerspective(85.0, width/(float)height, 5.0, 1000.0);
         gl.glMatrixMode(GL.GL_MODELVIEW);
     }
     
