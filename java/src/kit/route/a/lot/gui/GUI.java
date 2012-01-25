@@ -325,14 +325,7 @@ public class GUI extends JFrame {
             
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                for(int i = 0; i < alladdedButtons.size(); i++) {
-                    tab1.remove(alladdedButtons.get(i));
-                    tab1.remove(alladdedNavPoints.get(i));
-                    alladdedButtons.remove(i);
-                    alladdedNavPoints.remove(i);
-                }
                 for(int i = navPointsList.size() - 1; i >= 0; i--) {
-                    navPointsList.remove(i);
                     listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
                 }
                 repaint();
@@ -375,11 +368,6 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent arg0) {
                     for(int i = 0; i < alladdedButtons.size(); i++) {
                         if(alladdedButtons.get(i) == navPointButton) {
-                            tab1.remove(alladdedNavPoints.get(i));
-                            tab1.remove(alladdedButtons.get(i));
-                            alladdedButtons.remove(i);
-                            alladdedNavPoints.remove(i);
-                            navPointsList.remove(i + 1);
                             Listeners.fireEvent(listener.deleteNavPoint, new NumberEvent(i + 1));
                             repaint();
                         }
@@ -387,7 +375,6 @@ public class GUI extends JFrame {
                 }
               });
               tab1.validate();
-              key++;
            }
         });
         
@@ -625,8 +612,8 @@ public class GUI extends JFrame {
         int returnValue = saveRoute.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             savedRouteFile = saveRoute.getSelectedFile();
-            Listeners.fireEvent(listener.saveRoute,
-                    new TextEvent(loadRoute.getSelectedFile().getPath()));
+            listener.fireEvent(listener.saveRoute,
+                    new TextEvent(saveRoute.getSelectedFile().getPath()));
         }
     }
     
@@ -638,9 +625,13 @@ public class GUI extends JFrame {
         int returnValue = exportRoute.showDialog(this, "Exportieren");
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             exportedRouteFile = exportRoute.getSelectedFile();
-            Listeners.fireEvent(listener.exportRoute,
-                    new TextEvent(loadRoute.getSelectedFile().getPath()));
+            listener.fireEvent(listener.exportRoute,
+                    new TextEvent(exportRoute.getSelectedFile().getPath()));
         }
+    }
+    
+    private void addTextfieldButton() {
+        
     }
     
     /**
@@ -686,5 +677,23 @@ public class GUI extends JFrame {
     
     public ArrayList<Coordinates> getNavPointsList() {
         return navPointsList;
+    }
+    
+    public void updateNavNodes(ArrayList<Coordinates> navPointsList) {
+
+        for(int i = 0 ; i < alladdedButtons.size(); i++) {
+            tab1.remove(alladdedNavPoints.get(i));
+            tab1.remove(alladdedButtons.get(i));
+            alladdedButtons.remove(i);
+            alladdedNavPoints.remove(i);
+        }
+        startPoint.setText("");
+        endPoint.setText("");
+        this.navPointsList = new ArrayList<Coordinates>(navPointsList);
+        if(this.navPointsList.size() - 2 > 0) {
+            for(int i = 0; i < this.navPointsList.size(); i++) {
+                
+            }
+        }
     }
 }
