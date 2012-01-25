@@ -42,12 +42,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     
     protected GUI gui;
     private JPopupMenu navNodeMenu;
+    private JPopupMenu deleteNavNodeMenu;
     private JPopupMenu favoriteMenu;
     private JPopupMenu poiNavPointMenu;
     private JMenuItem startItem;
     private JMenuItem endItem;
     private JMenuItem stopoverItem;
     private JMenuItem addFavoriteItem;
+    private JMenuItem deleteNavPoint;
     private JMenuItem favStartItem;
     private JMenuItem favEndItem;
     private JMenuItem favStopoverItem;
@@ -176,16 +178,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         String label = ((JMenuItem) e.getSource()).getText();
         // TODO better implementation?
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;
-        Coordinates pos;
-        if(favoritePosition.getLongitude() != 0.0f) {
-            pos = favoritePosition;
-            favoritePosition = new Coordinates(0.0f, 0.0f);
-        } else if(poiPoistion.getLongitude() != 0.0f) {
-            pos = poiPoistion;
-            poiPoistion = new Coordinates(0.0f, 0.0f);
-        } else {
-            pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
-        }
+        Coordinates pos = getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
         
         switch (gui.getNavPointsList().size()) {
             case 0: if (type == 2) {
@@ -295,12 +288,10 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             } else if(item == 1) {
                 popupXPos = clickEvent.getX();
                 popupYPos = clickEvent.getY();
-                poiPoistion = position;
                 poiNavPointMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
             } else if(item == 2){
                 popupXPos = clickEvent.getX();
                 popupYPos = clickEvent.getY();
-                favoritePosition = position;
                 favoriteMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
             }
         }

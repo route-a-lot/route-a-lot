@@ -655,6 +655,7 @@ public class GUI extends JFrame {
             tab1.remove(alladdedButtons.get(i));
             alladdedButtons.remove(i);
             alladdedNavPoints.remove(i);
+            listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
         }
         startPoint.setText("");
         endPoint.setText("");
