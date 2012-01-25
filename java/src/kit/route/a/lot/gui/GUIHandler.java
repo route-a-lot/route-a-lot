@@ -73,20 +73,12 @@ public class GUIHandler {
         listener.addOptimizeRouteListener(optimizeRouteListener);
     }
     
-    public void setNavNodesOrder(ArrayList<Coordinates> orderedList) {
-        gui.setNavPointsOrdered(orderedList);
-    }
-    
     public void addLoadMapListener(GeneralListener loadMapListener) {
         listener.addLoadMapListener(loadMapListener);
     }
     
     public void addDeleteNavNodeListener(GeneralListener deleteNavNodeListener) {
         listener.addDeleteNavNodeListener(deleteNavNodeListener);
-    }
-    
-    public void deleteNavNodeFromList(Coordinates coordinates) {
-        gui.deleteNavNodesFromList(coordinates);
     }
     
     public void addSwitchNavNodesListener (GeneralListener switchNavNodesListener) {
@@ -122,27 +114,11 @@ public class GUIHandler {
         listener.addSetSpeedListener(setSpeedListener);
     }
     
-    public void setSpeed(int speed) {   //TODO change ist with duration
-        gui.setSpeed(speed);
-    }
-    
     public void addClickPositionListener(GeneralListener clickPositionListener) {
         listener.addClickPositionListener(clickPositionListener);
     }
     
-    public void thisWasClicked(int element, Coordinates pos){
-        gui.popUpTrigger(element, pos);
-    }
-    
     public void addGetPoiDescriptionListener(GeneralListener posDescriptionListener) {
-        //TODO
-    }
-    
-    public void showPoiDescription(POIDescription descr, Coordinates pos) {
-        //TODO
-    }
-    
-    public void setRouteText(RouteDescription routeDescr) {
         //TODO
     }
     
@@ -163,7 +139,31 @@ public class GUIHandler {
         listener.addCloseListener(closeListener);
     }
     
-    public void setView(Coordinates topLeft) {
-        gui.setView(topLeft);
+    public void setView(Coordinates center) {
+        gui.setView(center);
+    }
+    
+    public void setSpeed(int speed) {   //TODO change ist with duration
+        gui.setSpeed(speed);
+    }
+    
+    public void setRouteText(RouteDescription routeDescr) {
+        //TODO
+    }
+    
+    public void showPoiDescription(POIDescription descr, Coordinates pos) {
+        //TODO
+    }
+    
+    public void thisWasClicked(int element, Coordinates pos){
+        gui.popUpTrigger(element, pos);
+    }
+    
+    public void deleteNavNodeFromList(Coordinates coordinates) {
+        gui.deleteNavNodesFromList(coordinates);
+    }
+    
+    public void setNavNodesOrder(ArrayList<Coordinates> orderedList) {
+        gui.setNavPointsOrdered(orderedList);
     }
 }

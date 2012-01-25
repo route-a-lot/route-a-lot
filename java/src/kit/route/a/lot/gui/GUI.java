@@ -631,7 +631,29 @@ public class GUI extends JFrame {
     }
     
     public void setNavPointsOrdered(ArrayList<Coordinates> orderedNavPointsList) {
-        navPointsList = orderedNavPointsList; 
+        for(int i = 0 ; i < alladdedButtons.size(); i++) {
+            tab1.remove(alladdedNavPoints.get(i));
+            tab1.remove(alladdedButtons.get(i));
+            alladdedButtons.remove(i);
+            alladdedNavPoints.remove(i);
+            listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
+        }
+        startPoint.setText("");
+        endPoint.setText("");
+        this.navPointsList = orderedNavPointsList;
+        if(this.navPointsList.size() - 2 > 0) {
+            for(int i = 0; i < this.navPointsList.size(); i++) {
+                addTextfieldButton();
+            }
+            startPoint.setText(this.navPointsList.get(0).toString());
+            endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).toString());
+        } else if(this.navPointsList.size() == 2) {
+            startPoint.setText(this.navPointsList.get(0).toString());
+            endPoint.setText(this.navPointsList.get(1).toString());
+        } else if(this.navPointsList.size() == 1){
+            startPoint.setText(this.navPointsList.get(0).toString());
+        }
+        repaint(); 
     }
     
     public void setZoomlevel(int zoomlevel) {
@@ -650,7 +672,7 @@ public class GUI extends JFrame {
         return navPointsList;
     }
     
-    public void updateNavNodes(ArrayList<Coordinates> navPointsList) {
+    public void updateNavNodes(ArrayList<Coordinates> newNavPointsList) {
         for(int i = 0 ; i < alladdedButtons.size(); i++) {
             tab1.remove(alladdedNavPoints.get(i));
             tab1.remove(alladdedButtons.get(i));
@@ -660,7 +682,7 @@ public class GUI extends JFrame {
         }
         startPoint.setText("");
         endPoint.setText("");
-        this.navPointsList = new ArrayList<Coordinates>(navPointsList);
+        this.navPointsList = new ArrayList<Coordinates>(newNavPointsList);
         if(this.navPointsList.size() - 2 > 0) {
             for(int i = 0; i < this.navPointsList.size(); i++) {
                 addTextfieldButton();
