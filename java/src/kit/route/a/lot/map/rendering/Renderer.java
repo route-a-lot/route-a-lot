@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -30,6 +31,8 @@ public class Renderer {
 
     protected State state = State.getInstance();
 
+    protected ArrayList<Selection> drawEdges = new ArrayList<Selection>(); //TODO delete
+    
     /**
      * Creates a new renderer.
      */
@@ -174,6 +177,12 @@ public class Renderer {
                 for (int i = 1; i < routeNodes.length; i++) {
                     drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
                 }
+                
+                for (Selection sel : drawEdges) {   //delete
+                    drawLineBetweenCoordinates(State.getInstance().getLoadedMapInfo().getNodePosition(sel.getFrom()),
+                            State.getInstance().getLoadedMapInfo().getNodePosition(sel.getFrom()), detail, graphics);
+                }
+                
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());
@@ -196,6 +205,10 @@ public class Renderer {
         }
         
         context.drawImage(routeTopLeft, routeImage, detail);
+    }
+    
+    public void DrawEdge(Selection sel){    //TODO delete
+        drawEdges.add(sel);
     }
     
     private boolean idIsInRoute(int id, Integer[] route) {
