@@ -57,11 +57,7 @@ public class Route {
     }
 
     public int length() {
-        if (from == null) {
-            return weight;
-        } else {
-            return weight;
-        }
+        return weight;
     }
     
     public String toString() {
