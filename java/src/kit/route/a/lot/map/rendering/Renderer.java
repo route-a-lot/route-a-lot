@@ -17,6 +17,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
+import kit.route.a.lot.map.Street;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.RenderCache;
@@ -99,6 +100,7 @@ public class Renderer {
     private Coordinates routeTopLeft = new Coordinates();
     private Integer[] drawnRoute = new Integer[0];
     private int drawnRouteDetail = -1;
+    private static final int routeSize = 16;
 
     /**
      * Draws the given route on the given rendering context.
@@ -143,18 +145,13 @@ public class Renderer {
                 graphics.setColor(new Color(0, true));
                 graphics.fillRect(0, 0, width, height);
                 
-//                // draw route nodes
-//                graphics.setColor(Color.BLUE);
-//                int size = 12;
-//                for (int i = 0; i < routeNodes.length; i++) {
-//                    int curX = (int) (routeNodes[i].getPos().getLongitude() - routeTopLeft.getLongitude()) / Projection.getZoomFactor(detail);
-//                    int curY = (int) (routeNodes[i].getPos().getLatitude() - routeTopLeft.getLatitude()) / Projection.getZoomFactor(detail);
-//                    graphics.fillOval(curX - size/2, curY - size/2, size, size);
-//                }
+                // TODO refactor: its not very good using the method from Street better would be for example Util again
+                routeNodes = Street.simplifyNodes(routeNodes, Projection.getZoomFactor(detail) * 3);
+                int currentRouteSize = routeSize / Projection.getZoomFactor(detail);
                 
                 // draw route shadow
-                graphics.setStroke(new BasicStroke(6));
-                graphics.setColor(Color.GREEN);
+                graphics.setStroke(new BasicStroke(currentRouteSize + 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                graphics.setColor(new Color(0xaa076a07, true));
                 for (int i = 1; i < routeNodes.length; i++) {
                     drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
                 }
@@ -172,8 +169,8 @@ public class Renderer {
                 }
                 
                 // draw route
-                graphics.setStroke(new BasicStroke(4));
-                graphics.setColor(Color.BLUE);
+                graphics.setStroke(new BasicStroke(currentRouteSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                graphics.setColor(new Color(0xaa2d0b7b, true));
                 for (int i = 1; i < routeNodes.length; i++) {
                     drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
                 }
@@ -195,6 +192,15 @@ public class Renderer {
                     }
                     drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
                 }
+                
+//                // draw route nodes
+//                graphics.setColor(Color.CYAN);
+//                int currentNodeSize = currentRouteSize + 4;
+//                for (int i = 0; i < routeNodes.length; i++) {
+//                    int curX = (int) (routeNodes[i].getPos().getLongitude() - routeTopLeft.getLongitude()) / Projection.getZoomFactor(detail);
+//                    int curY = (int) (routeNodes[i].getPos().getLatitude() - routeTopLeft.getLatitude()) / Projection.getZoomFactor(detail);
+//                    graphics.fillOval(curX - currentNodeSize/2, curY - currentNodeSize/2, currentNodeSize, currentNodeSize);
+//                }
                 
                 graphics.dispose();
             } else {
@@ -223,17 +229,17 @@ public class Renderer {
     private void adjustBorderCoordinates(Coordinates topLeft, Coordinates bottomRight, Coordinates point) {
         float curLat = point.getLatitude();
         float curLon = point.getLongitude();
-        int buffer = 10;
-        if (curLat < topLeft.getLatitude()) {
+        int buffer = routeSize;
+        if (curLat - buffer < topLeft.getLatitude()) {
             topLeft.setLatitude(curLat - buffer);
         }
-        if (curLat > bottomRight.getLatitude()) {
+        if (curLat + buffer > bottomRight.getLatitude()) {
             bottomRight.setLatitude(curLat + buffer);
         }
-        if (curLon < topLeft.getLongitude()) {
+        if (curLon - buffer < topLeft.getLongitude()) {
             topLeft.setLongitude(curLon - buffer);
         }
-        if (curLon > bottomRight.getLongitude()) {
+        if (curLon + buffer > bottomRight.getLongitude()) {
             bottomRight.setLongitude(curLon + buffer);
         }
     }
@@ -292,17 +298,17 @@ public class Renderer {
             Graphics2D graphics = image.createGraphics();
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
-            graphics.setColor(Color.ORANGE);
-            graphics.fillOval(0, 0, 5, 5);
-            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
-            Node to = state.getLoadedMapInfo().getNode(point.getTo());
-            context.drawImage(from.getPos(), image, detail);
-            context.drawImage(to.getPos(), image, detail);
+//            graphics.setColor(Color.ORANGE);
+//            graphics.fillOval(0, 0, 5, 5);
+//            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
+//            Node to = state.getLoadedMapInfo().getNode(point.getTo());
+//            context.drawImage(from.getPos(), image, detail);
+//            context.drawImage(to.getPos(), image, detail);
             
-            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
-            graphics.setColor(Color.CYAN);
-            graphics.fillOval(0, 0, 5, 5);
-            context.drawImage(selectedNodeOnEdge, image, detail);
+//            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
+//            graphics.setColor(Color.CYAN);
+//            graphics.fillOval(0, 0, 5, 5);
+//            context.drawImage(selectedNodeOnEdge, image, detail);
 
             graphics.setColor(Color.RED);
             graphics.fillOval(0, 0, 5, 5);
