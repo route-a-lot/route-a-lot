@@ -439,7 +439,7 @@ public class Controller {
         
         PropertyConfigurator.configure("config/log4j.conf");
         Controller ctrl = new Controller();
-        File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_big.osm");
         loadState();
         if (ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
               ctrl.loadMap(ctrl.state.getLoadedMapFile());

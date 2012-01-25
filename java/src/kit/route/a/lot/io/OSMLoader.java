@@ -865,6 +865,8 @@ public class OSMLoader {
 
                         if (curWayInfo.isRoutable()) {
                             
+                            int tempSwap = -1;
+                            
                             for (int i = 0; i < curWayIds.size(); i++) {
                                 int curId = curWayIds.get(i);
                                 if (curId > maxWayNodeId) {
@@ -878,7 +880,15 @@ public class OSMLoader {
                                     idMap.put(osmId2, curId);
                                     osmIds[maxWayNodeId] = osmId1;
                                     osmIds[curId] = osmId2;
-                                    curWayIds.set(i, maxWayNodeId);
+                                    for (int index = curWayIds.lastIndexOf(maxWayNodeId); index != -1; index = curWayIds.lastIndexOf(maxWayNodeId)) {
+                                        curWayIds.set(index, tempSwap);
+                                    }
+                                    for (int index = curWayIds.lastIndexOf(curId); index != -1; index = curWayIds.lastIndexOf(curId)) {
+                                        curWayIds.set(index, maxWayNodeId);
+                                    }
+                                    for (int index = curWayIds.lastIndexOf(tempSwap); index != -1; index = curWayIds.lastIndexOf(tempSwap)) {
+                                        curWayIds.set(index, curId);
+                                    }
                                 }
                             }
                             

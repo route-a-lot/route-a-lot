@@ -63,10 +63,10 @@ public class WeightCalculator {
         Coordinates geoFrom = projection.localCoordinatesToGeoCoordinates(from);
         Coordinates geoTo = projection.localCoordinatesToGeoCoordinates(to);
         
-        double geoFromLonRad = Math.abs(geoFrom.getLongitude() / 20 * Math.PI);
-        double geoFromLalRad = Math.abs(geoFrom.getLatitude() / 20 * Math.PI);
-        double geoToLonRad = Math.abs(geoTo.getLongitude() / 20 * Math.PI);
-        double geoToLalRad = Math.abs(geoTo.getLatitude() / 20 * Math.PI);
+        double geoFromLonRad = Math.abs(geoFrom.getLongitude() / 180 * Math.PI);
+        double geoFromLalRad = Math.abs(geoFrom.getLatitude() / 180 * Math.PI);
+        double geoToLonRad = Math.abs(geoTo.getLongitude() / 180 * Math.PI);
+        double geoToLalRad = Math.abs(geoTo.getLatitude() / 180 * Math.PI);
 
         // Kugelkoordinaten berechnet distance in km
         double distanceRad =

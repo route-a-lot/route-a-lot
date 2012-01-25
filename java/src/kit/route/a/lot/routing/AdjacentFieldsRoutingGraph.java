@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -32,6 +33,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             logger.error("The lengths of the arrays don't match, aborting.");
             return;
         }
+        
         // sort arrays simultaneously by startID
         sortByKey(startID, endID, weight);
 
@@ -39,10 +41,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         edgesPos = new int[maxNodeID + 2];
         edgesPos[0] = 0;
         for (int i = 1; i < startID.length; i++) {
-            if (startID[i] > startID[i - 1]) {
-                for (int j = startID[i - 1] + 1; j <= startID[i]; j++) {
-                    edgesPos[j] = i;
-                }
+            // for each edge
+            for (int id = startID[i - 1] + 1; id <= startID[i]; id++) {
+                // for each node between the old startID and the new one
+                edgesPos[id] = i;
             }
         }
         areaID = new byte[maxNodeID + 2];
@@ -203,6 +205,16 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         return relevantEdges;
     }
+
+    public int getWeight(int from, int to) {
+        for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
+            if (edges[i] == to) {
+                return weights[i];
+            }
+        }
+        logger.warn("No weight found from ID " + Integer.valueOf(from) + " to " + Integer.valueOf(to));
+        return -1;
+    }
     
     @Override
     public byte getAreaID(int node) {
@@ -233,16 +245,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 arcFlags[i] |= 1 << area;
             }
         }    
-    }
-
-    public int getWeight(int from, int to) {
-        for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
-            if (edges[i] == to) {
-                return weights[i];
-            }
-        }
-        logger.warn("No weight found from ID " + Integer.valueOf(from) + " to " + Integer.valueOf(to));
-        return -1;
     }
     
     public int getIDCount() {
