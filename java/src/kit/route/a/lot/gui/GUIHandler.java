@@ -42,6 +42,10 @@ public class GUIHandler {
     public void updateMapList(ArrayList<String> maps) {
         gui.updateMapChooser(maps);
     }
+    
+    public void updateNavPointsList(ArrayList<Coordinates> navPointsList) {
+        gui.updateNavNodes(navPointsList);
+    }
 
     /**
      * Operation addListenerImportMap

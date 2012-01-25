@@ -346,35 +346,7 @@ public class GUI extends JFrame {
         addTextPoints.addActionListener(new ActionListener() {      
           @Override 
           public void actionPerformed(ActionEvent arg0) {
-              final JTextField navPointField = new JTextField();
-              final JButton navPointButton = new JButton("x");
-              alladdedNavPoints.add(navPointField); 
-              alladdedButtons.add(navPointButton);
-              tab1.add(navPointField); 
-              tab1.add(navPointButton);
-              navPointField.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent arg0) {
-                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
-                        if(alladdedNavPoints.get(i) == navPointField) {
-                            Listeners.fireEvent(listener.addTextualNavPoint, new TextEvent(alladdedNavPoints.get(i).toString()));
-                            repaint();
-                        }
-                    }
-                }
-              });
-              navPointButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent arg0) {
-                    for(int i = 0; i < alladdedButtons.size(); i++) {
-                        if(alladdedButtons.get(i) == navPointButton) {
-                            Listeners.fireEvent(listener.deleteNavPoint, new NumberEvent(i + 1));
-                            repaint();
-                        }
-                    }
-                }
-              });
-              tab1.validate();
+              addTextfieldButton();
            }
         });
         
@@ -389,40 +361,7 @@ public class GUI extends JFrame {
                     endPoint.setText(pos.toString());
                 } else {
                     while(alladdedNavPoints.size() < navPointsList.size() - 2) {
-                        
-                        final JTextField navPointField = new JTextField();
-                        final JButton navPointButton = new JButton("x");
-                        alladdedNavPoints.add(navPointField); 
-                        alladdedButtons.add(navPointButton);
-                        tab1.add(navPointField); 
-                        tab1.add(navPointButton);
-                        navPointField.addActionListener(new ActionListener() {
-                          @Override
-                          public void actionPerformed(ActionEvent arg0) {
-                              for(int i = 0; i < alladdedNavPoints.size(); i++) {
-                                  if(alladdedNavPoints.get(i) == navPointField) {
-                                      repaint();
-                                  }
-                              }
-                          }
-                        });
-                        navPointButton.addActionListener(new ActionListener() {
-                          
-                          @Override
-                          public void actionPerformed(ActionEvent arg0) {
-                              for(int i = 0; i < alladdedButtons.size(); i++) {
-                                  if(alladdedButtons.get(i) == navPointButton) {
-                                      tab1.remove(alladdedNavPoints.get(i));
-                                      tab1.remove(alladdedButtons.get(i));
-                                      alladdedButtons.remove(i);
-                                      alladdedNavPoints.remove(i);
-                                      repaint();
-                                  }
-                              }
-                          }
-                        });
-                        tab1.validate();
-                        key++;
+                        addTextfieldButton();
                     }
                     for(int i = 0; i < alladdedNavPoints.size(); i++) {
                         alladdedNavPoints.get(i).setText(navPointsList.get(i + 1).toString());
@@ -631,7 +570,38 @@ public class GUI extends JFrame {
     }
     
     private void addTextfieldButton() {
-        
+        final JTextField navPointField = new JTextField();
+        final JButton navPointButton = new JButton("x");
+        alladdedNavPoints.add(navPointField); 
+        alladdedButtons.add(navPointButton);
+        tab1.add(navPointField); 
+        tab1.add(navPointButton);
+        navPointField.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent arg0) {
+              for(int i = 0; i < alladdedNavPoints.size(); i++) {
+                  if(alladdedNavPoints.get(i) == navPointField) {
+                      repaint();
+                  }
+              }
+          }
+        });
+        navPointButton.addActionListener(new ActionListener() {
+          
+          @Override
+          public void actionPerformed(ActionEvent arg0) {
+              for(int i = 0; i < alladdedButtons.size(); i++) {
+                  if(alladdedButtons.get(i) == navPointButton) {
+                      tab1.remove(alladdedNavPoints.get(i));
+                      tab1.remove(alladdedButtons.get(i));
+                      alladdedButtons.remove(i);
+                      alladdedNavPoints.remove(i);
+                      repaint();
+                  }
+              }
+          }
+        });
+        tab1.validate();
     }
     
     /**
@@ -692,8 +662,15 @@ public class GUI extends JFrame {
         this.navPointsList = new ArrayList<Coordinates>(navPointsList);
         if(this.navPointsList.size() - 2 > 0) {
             for(int i = 0; i < this.navPointsList.size(); i++) {
-                
+                addTextfieldButton();
             }
+            startPoint.setText(this.navPointsList.get(0).toString());
+            endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).toString());
+        } else if(this.navPointsList.size() == 2) {
+            startPoint.setText(this.navPointsList.get(0).toString());
+            endPoint.setText(this.navPointsList.get(1).toString());
+        } else if(this.navPointsList.size() == 1){
+            startPoint.setText(this.navPointsList.get(0).toString());
         }
     }
 }
