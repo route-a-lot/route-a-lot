@@ -95,7 +95,7 @@ public class Renderer {
         return false; // TODO: implement
     }
     
-    private BufferedImage routeImage;
+    private BufferedImage routeImage = null;
     private Coordinates routeTopLeft = new Coordinates();
     private Integer[] drawnRoute = new Integer[0];
     private int drawnRouteDetail = -1;
@@ -198,13 +198,13 @@ public class Renderer {
                 
                 graphics.dispose();
             } else {
-                routeImage = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
+                routeImage = null;
             }
-        } else {
-            // System.out.println("Getting route from cache");
         }
         
-        context.drawImage(routeTopLeft, routeImage, detail);
+        if (routeImage != null) {
+            context.drawImage(routeTopLeft, routeImage, detail);
+        }
     }
     
     public void drawEdge(Selection sel){    //TODO delete
