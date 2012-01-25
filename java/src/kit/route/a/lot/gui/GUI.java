@@ -673,6 +673,7 @@ public class GUI extends JFrame {
         } else if(this.navPointsList.size() == 1){
             startPoint.setText(this.navPointsList.get(0).toString());
         }
+        repaint();
     }
     
     public void popUpTrigger(int itemType, Coordinates position) {

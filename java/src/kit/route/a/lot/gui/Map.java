@@ -297,7 +297,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             popupXPos = clickEvent.getX();
             popupYPos = clickEvent.getY();
             switch(itemType) {
-                case 1: showDescription.setText("POI");
+                case 1: showDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
                     descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
                     break;
                 case 2: showDescription.setText("Favorit");
