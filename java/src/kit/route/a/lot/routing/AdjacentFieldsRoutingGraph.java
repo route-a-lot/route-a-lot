@@ -209,7 +209,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public int getWeight(int from, int to) {
         for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
             if (edges[i] == to) {
-                return weights[i];
+                if (weights[i] > 0) {
+                    return weights[i];
+                } else {
+                    logger.error("Got zero weight from " + from + " to " + to);
+                }
             }
         }
         logger.warn("No weight found from ID " + Integer.valueOf(from) + " to " + Integer.valueOf(to));

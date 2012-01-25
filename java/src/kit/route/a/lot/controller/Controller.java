@@ -441,7 +441,7 @@ public class Controller {
         Controller ctrl = new Controller();
         File defaultMap = new File("./test/resources/karlsruhe_big.osm");
         loadState();
-        if (ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
+        if (false && ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
               ctrl.loadMap(ctrl.state.getLoadedMapFile());
         } else {
             if (defaultMap.exists()) {

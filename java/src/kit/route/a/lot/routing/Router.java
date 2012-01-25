@@ -146,7 +146,8 @@ public class Router {
         heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
         // start the calculation.
         int currentNode;
-
+        int selectionWeight;
+        
         while (heap.peek() != null) {
             currentPath = heap.poll();
             currentNode = currentPath.getNode();
@@ -163,9 +164,15 @@ public class Router {
             // (everything else would be a pain in the ass)
             if (currentNode == b.getTo()) {
                 // We can't return now, as there might be a shorter way via b.getFrom().
-                heap.add(new Route(-1, (int) (1 / b.getRatio()) * weightCalculator.calcWeight(b), currentPath));
+                selectionWeight = graph.getWeight(b.getFrom(), b.getTo());
+                if (selectionWeight > 0) {
+                    heap.add(new Route(-1, (int) (1 / b.getRatio()) * selectionWeight, currentPath));
+                }
             } else if (currentNode == b.getFrom()) {
-                heap.add(new Route(-1, (int) b.getRatio() * weightCalculator.calcWeight(b), currentPath));
+                selectionWeight = graph.getWeight(b.getTo(), b.getFrom());
+                if (selectionWeight > 0) {
+                    heap.add(new Route(-1, ((int) b.getRatio() * selectionWeight), currentPath));
+                }
             } else if (currentNode == -1) {
                 // This is the shortest path.
                 logger.info("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
