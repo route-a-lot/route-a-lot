@@ -97,7 +97,7 @@ public class Street extends MapElement {
 
     public float getDistanceTo(Coordinates pos) {
         int startNode = getClosestEdgeStartPosition(pos);
-        return getDistanceFromNodeToEdge(startNode, startNode + 1, pos);
+        return getDistanceFromNodeToEdge(nodes, startNode, startNode + 1, pos);
     }
 
     /*
@@ -108,7 +108,7 @@ public class Street extends MapElement {
         float nearestEdgeDistance = Float.MAX_VALUE;
         int nearestEdgeStartNode = 0;
         for (int i = 0; i < nodes.length - 1; i++) {
-            float currentDistance = getDistanceFromNodeToEdge(i, i + 1, pos);
+            float currentDistance = getDistanceFromNodeToEdge(nodes, i, i + 1, pos);
             if (currentDistance < nearestEdgeDistance) {
                 nearestEdgeDistance = currentDistance;
                 nearestEdgeStartNode = i;
@@ -121,7 +121,7 @@ public class Street extends MapElement {
      * returns the distance from the given coordinate to the given edge edge is given by the position of the
      * start - and endNode in the array nodes
      */
-    private float getDistanceFromNodeToEdge(int start, int end, Coordinates pos) {
+    private static float getDistanceFromNodeToEdge(Node[] nodes, int start, int end, Coordinates pos) {
         double b = getDistanceProj(nodes[start].getPos(), pos);
         double a = getDistanceProj(nodes[end].getPos(), pos);
         double c = getDistanceProj(nodes[start].getPos(), nodes[end].getPos());
@@ -227,13 +227,7 @@ public class Street extends MapElement {
     @Override
     public MapElement getReduced(int detail, float range) {
         Street result = new Street(name, wayInfo);
-
-        List<Node> newNodes = new ArrayList<Node>();
-        newNodes.add(nodes[0]);
-        adjustTube(newNodes, 0, nodes.length - 1, range);
-        newNodes.add(nodes[nodes.length - 1]);
-        result.setNodes(newNodes.toArray(new Node[newNodes.size()]));
-
+        result.setNodes(simplifyNodes(nodes, range));
         if (getLengthOfStreet(result) < range) {
             return null;
         } else if (result.nodes.length == nodes.length) {
@@ -242,21 +236,29 @@ public class Street extends MapElement {
             return result;
         }
     }
+    
+    public static Node[] simplifyNodes(Node[] nodes, float range) {
+        List<Node> newNodes = new ArrayList<Node>();
+        newNodes.add(nodes[0]);
+        adjustTube(nodes, newNodes, 0, nodes.length - 1, range);
+        newNodes.add(nodes[nodes.length - 1]);
+        return newNodes.toArray(new Node[newNodes.size()]);
+    }
 
-    private void adjustTube(Collection<Node> outNodes, int start, int end, float range) {
+    private static void adjustTube(Node[] nodes, Collection<Node> outNodes, int start, int end, float range) {
         float maxDistance = Float.MIN_VALUE;
         int maxDistIndex = 0;
         for (int i = start + 1; i < end; i++) {
-            float curDistance = getDistanceFromNodeToEdge(start, end, nodes[i].getPos());
+            float curDistance = getDistanceFromNodeToEdge(nodes, start, end, nodes[i].getPos());
             if (curDistance > maxDistance) {
                 maxDistance = curDistance;
                 maxDistIndex = i;
             }
         }
         if (maxDistance > range) {
-            adjustTube(outNodes, start, maxDistIndex, range);
+            adjustTube(nodes, outNodes, start, maxDistIndex, range);
             outNodes.add(nodes[maxDistIndex]);
-            adjustTube(outNodes, maxDistIndex, end, range);
+            adjustTube(nodes, outNodes, maxDistIndex, end, range);
         }
     }
 
@@ -267,5 +269,5 @@ public class Street extends MapElement {
         }
         return length;
     }
-
+    
 }

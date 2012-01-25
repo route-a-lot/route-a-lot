@@ -11,7 +11,6 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import static kit.route.a.lot.map.Util.*;
 
 
 public class Area extends MapElement {
@@ -123,10 +122,10 @@ public class Area extends MapElement {
             bottomRight.setLatitude(Math.max(bottomRight.getLatitude(), position.getLatitude()));
             bottomRight.setLongitude(Math.max(bottomRight.getLongitude(), position.getLongitude()));
         }
-        if (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude()) > range * 4 ||
-                Math.abs(topLeft.getLongitude() - bottomRight.getLongitude()) > range * 4) {
+        if (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude()) > range ||
+                Math.abs(topLeft.getLongitude() - bottomRight.getLongitude()) > range) {
             Area result = new Area(name, wayInfo);
-            result.setNodes(simplify(nodes, range));
+            result.setNodes(Street.simplifyNodes(nodes, range / 2));
             return result;
         } else {
             return null;
