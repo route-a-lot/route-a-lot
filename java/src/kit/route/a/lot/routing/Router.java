@@ -60,14 +60,15 @@ public class Router {
         int count = 0;  // saves at which permutation we are
         int[] permutation;  // the permutation
         boolean skip;
-        while (count < fak(size)) {
+        while (count < fak(size - 1)) {
             // Iterate over all permutations
             skip = false;
-            permutation = permutation(size - 1, count++);
+            permutation = permutation(size - 2, count++);
             length = i = 0;
             while(i + 1 < permutation.length) {
                 routeLength = routes[permutation[i]][permutation[++i]];
                 if (routeLength == -1) {
+                    logger.warn("Unroutable permutation: " + toString(permutation));
                     // permutation is not routable
                     skip = true;
                     break;
@@ -81,15 +82,26 @@ public class Router {
             }
             // We're still missing the length from the start to the permutation as well 
             // as from the permutation to  the target.
-            if (length + routes[permutation[i-1]][size - 1] +  routes[0][permutation[0]] < shortestLength
+            length += routes[permutation[i-1]][size - 1] +  routes[0][permutation[0]];
+            if (length < shortestLength
                     || shortestLength == -1) {
                 // We got a shorter permutation!
+                logger.info("Length of shortest permutation (so far) " + toString(permutation) + " :" + length);
                 shortest = permutation;
+                shortestLength = length;
             }
         }
         return setSelection(shortest);
     }
     
+    private static String toString(int[] permutation) {
+        String result = "";
+        for (int node: permutation) {
+            result += node + " ";
+        }
+        return result;
+    }
+
     private static List<Selection> setSelection(int[] mapping) {
         // Reorders the navigationNodes
         List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
@@ -97,12 +109,15 @@ public class Router {
             logger.warn("Got empty mapping, something failed.");
             return navigationNodes;
         }
+        logger.info("remapping NavNodes: " + toString(mapping));
         List<Selection> newNavigationNodes = new ArrayList<Selection>();
         newNavigationNodes.add(navigationNodes.get(0));
         for (int i = 0; i < mapping.length; i++) {
             newNavigationNodes.add(navigationNodes.get(mapping[i]));
         }
         newNavigationNodes.add(navigationNodes.get(navigationNodes.size() - 1));
+        logger.info("Old ordering: " + navigationNodes.toString());
+        logger.info("New ordering: " + newNavigationNodes.toString());
         return newNavigationNodes;
     }
 
@@ -182,7 +197,8 @@ public class Router {
                 logger.info("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
                 return currentPath.getRoute();
             }
-            for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
+            //for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
+            for (Integer to : graph.getAllNeighbors(currentNode)) {
                 // Here we add the new paths.
                 // renderer.drawEdge(new Selection(to, currentPath.getNode(), 0, new Coordinates(0, 0)));
                 selectionWeight = graph.getWeight(currentNode, to);

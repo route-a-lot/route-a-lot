@@ -28,7 +28,7 @@ public class Util {
             logger.warn("Can't calculate parmutations for " + p + ", returning null.");
             return null;
         }
-        if (p == 0) {
+        if (p == 1) {
             return new int[] {1};
         } else {
             return insert(permutation(p-1, n / p), p, n % p);
@@ -49,7 +49,7 @@ public class Util {
             result[i] = array[i];
         }
         result[pos] = element;
-        for (int i = pos; i < result.length; i++) {
+        for (int i = pos; i < array.length; i++) {
             result[i+1] = array[i];
         }
         return result;

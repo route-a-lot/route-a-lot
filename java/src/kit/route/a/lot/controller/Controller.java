@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 
 import kit.route.a.lot.common.Context;
@@ -199,11 +200,10 @@ public class Controller {
      * Operation orderNavNodes
      */
     public void orderNavNodes() {  
-        Collection<Selection> col = Router.optimizeRoute();  
+        List<Selection> col = Router.optimizeRoute();  
+        state.setNavigationNodes(col);
         Router.calculateRoute();
-        //guiHandler.setNavNodesOrder(new ArrayList<Integer>());   //TODO make this list
-        state.setNavigationNodes(new ArrayList<Selection>());
-        state.getNavigationNodes().addAll(col);
+        guiHandler.updateGUI();
     }
 
     /**
