@@ -184,6 +184,9 @@ public class Controller {
         }
     }
     
+    /**
+     * Operation deleteNavNode 
+     */
     public void deleteNavNode(Coordinates pos) {
         for (int i = 0; i < state.getNavigationNodes().size(); i++) {
             Node node = new Node(state.getNavigationNodes().get(i).getPosition());
@@ -278,7 +281,11 @@ public class Controller {
      * Operation exportRoute
      */
     public void exportRoute(String path) {
-        File routeFile = new File(path);
+        String kmlPath = path;
+        if (!kmlPath.endsWith(".kml")) {
+            kmlPath += ".kml";
+        }
+        File routeFile = new File(kmlPath);
         if (state.getCurrentRoute().size() != 0) {
             RouteIO.exportCurrentRouteToKML(routeFile);
         }
@@ -336,9 +343,6 @@ public class Controller {
             topLeft.setLongitude(pos.getLongitude() - state.getClickRadius());
             bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
             bottomRight.setLongitude(pos.getLongitude() + state.getClickRadius());
-            System.err.println("pos: "+state.getNavigationNodes().get(i).getPosition());
-            System.err.println("ul: "+topLeft);
-            System.err.println("br: "+bottomRight);
             if (node.isInBounds(topLeft, bottomRight)) {
                 System.err.println("asdasd");
                 guiHandler.thisWasClicked(GUI.NAVNODE, pos);
@@ -361,7 +365,9 @@ public class Controller {
      */
     public void getPOIInfo(Coordinates pos) {   
         POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
-        //TODO tell gui
+        if (info != null) {
+            guiHandler.showPoiDescription(info, pos);
+        }
     }
 
     /**
