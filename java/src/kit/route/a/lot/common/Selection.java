@@ -8,8 +8,8 @@ public class Selection {
     	private int toID;
     	private float ratio;
     	private Coordinates position;
-    	//public String name; braucht die Selection das? wäre für anzeige in der NavNodes-Liste -> GUI
-
+    	private String name;
+    	
     	public Selection(int fromID, int toID, float ratio, Coordinates position) {
        		this.fromID = fromID;
         	this.toID = toID;
@@ -17,6 +17,14 @@ public class Selection {
         	this.position = position;  
     	}
     
+    	public String getName() {
+    	    return name;
+    	}
+    	
+    	public void setName(String name) {
+    	    this.name = name;
+    	}
+    	
     	public int getFrom() {
         	return fromID;
     	}

@@ -100,17 +100,17 @@ public class Controller {
         guiHandler.addHighwayMalusListener(new HighwayMalusListener(this));
         guiHandler.addCloseListener(new CloseListener(this));
         guiHandler.addGetPoiDescriptionListener(new GetPoiDescriptionListener(this));
-        guiHandler.addSwitchMapModeListener(new GeneralListener() {
-            @Override
-            public void handleEvent(GeneralEvent event) {
-                Renderer oldRenderer = renderer;
-                renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
-                renderer.inheritCache(oldRenderer);
-            }         
-        });
-        guiHandler.setView(state.getCenterCoordinates());
-        guiHandler.updateMapList(state.getImportedMaps());           
-        System.out.println(state.getImportedMaps().size());
+//        guiHandler.addSwitchMapModeListener(new GeneralListener() {
+//            @Override
+//            public void handleEvent(GeneralEvent event) {
+//                Renderer oldRenderer = renderer;
+//                renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
+//                renderer.inheritCache(oldRenderer);
+//            }         
+//        });
+//        guiHandler.setView(state.getCenterCoordinates());
+//        guiHandler.updateMapList(state.getImportedMaps());           
+//        System.out.println(state.getImportedMaps().size());
     }
         
     
@@ -219,6 +219,9 @@ public class Controller {
         guiHandler.updateNavPointsList(newList);
         calculateRoute();
         guiHandler.updateGUI();
+//        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
+//            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
+//        }
     }
 
     /**
@@ -424,10 +427,10 @@ public class Controller {
      * Operation getPOIInfo
      */
     public void getPOIInfo(Coordinates pos) {   
-        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
-        if (info != null) {
-            guiHandler.showPoiDescription(info, pos);
-        }
+//        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
+//        if (info != null) {
+//            guiHandler.showPoiDescription(info, pos);
+//        }
     }
 
     /**

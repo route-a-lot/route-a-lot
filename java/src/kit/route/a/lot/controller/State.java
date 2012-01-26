@@ -101,7 +101,7 @@ public class State {
         loadedHeightmap = new Heightmap();
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        centerCoordinates = null;
+        centerCoordinates = new Coordinates(0, 0);
         detailLevel = 2;
         clickRadius = 80; // TODO use it
         routeDescription = new RouteDescription();

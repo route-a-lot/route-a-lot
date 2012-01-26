@@ -92,8 +92,10 @@ public class Street extends MapElement {
 
     public Selection getSelection(Coordinates pos) {
         int start = getClosestEdgeStartPosition(pos);
-        return new Selection(nodes[start].getID(), nodes[start + 1].getID(), getRatio(start, start + 1, pos),
+        Selection newSel = new Selection(nodes[start].getID(), nodes[start + 1].getID(), getRatio(start, start + 1, pos),
                 pos);
+        newSel.setName(wayInfo.getAddress().getStreet());
+        return newSel;
     }
 
 

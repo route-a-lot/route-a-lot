@@ -35,7 +35,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     public QTGeographicalOperator() {
         for(int i = 0; i < countZoomlevel; i++) {
-            zoomlevels[i] = null;
+            zoomlevels[i] = new QTNode(new Coordinates(0,0), new Coordinates(0,0));
         }
     }
     
