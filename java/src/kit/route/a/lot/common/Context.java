@@ -13,10 +13,6 @@ public abstract class Context {
     }
     
     public abstract void drawImage(Coordinates position, Image image, int detail);
-       
-    public float getScale() {
-        return 1;
-    };
 
     public Coordinates getTopLeft() {
         return topLeft;

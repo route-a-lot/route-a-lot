@@ -16,16 +16,6 @@ public class Context2D extends Context {
         }
         output = surface;
     }
-    
-    /*public Context2D(Coordinates topLeft, int width, int height, float scale, Graphics surface) {
-        super(width, height, topLeft, null);
-        output = surface;
-        projection = Projection.getNewProjection(topLeft);
-        Coordinates localTopLeft = projection.geoCoordinatesToLocalCoordinates(topLeft);
-        Coordinates localBottomRight =
-                new Coordinates(localTopLeft.getLatitude() - height, localTopLeft.getLongitude() + width);
-        bottomRight = projection.localCoordinatesToGeoCoordinates(localBottomRight);
-    }*/
 
     @Override
     public void drawImage(Coordinates position, Image image, int detail) {
