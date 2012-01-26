@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.DeleteFavoriteEvent;
@@ -287,6 +288,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     
     public void popUpTriggered(int itemType, Coordinates position) {
         if (clickEvent.isPopupTrigger()) {
+            descriptionMenu.setVisible(false);
             popupXPos = clickEvent.getX();
             popupYPos = clickEvent.getY();
             switch(itemType) {
@@ -305,15 +307,17 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             addFavoriteItem.setVisible(itemType == 0);
             deleteFavoriteItem.setVisible(itemType == 2);
             deleteNavPoint.setVisible(itemType == 3);
-            
             navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+            
         } else if((oldPopUpXPos >= newPopUpXPos - 2 && oldPopUpXPos <= newPopUpXPos + 2)
                 || (oldPopUpYPos == newPopUpYPos - 2 && oldPopUpYPos == newPopUpYPos + 2)){
             popupXPos = clickEvent.getX();
             popupYPos = clickEvent.getY();
             switch(itemType) {
-                case 1: showDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
-                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+                case 1: 
+//                    showDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
+//                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+                    Listeners.fireEvent(gui.getListener().poiDescription, new PositionEvent(position));
                     break;
                 case 2: showDescription.setText("Favorit");
                     descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
@@ -323,5 +327,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     break;
             }
         }
+    }
+    
+    public void showPoiDescrip(POIDescription poiDescription) {
+        showDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
     }
 }

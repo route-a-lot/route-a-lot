@@ -118,8 +118,8 @@ public class GUIHandler {
         listener.addClickPositionListener(clickPositionListener);
     }
     
-    public void addGetPoiDescriptionListener(GeneralListener posDescriptionListener) {
-        //TODO
+    public void addGetPoiDescriptionListener(GeneralListener poiDescriptionListener) {
+        listener.addPoiDescriptionListener(poiDescriptionListener);
     }
     
     public void addHighwayMalusListener(GeneralListener highwayMalusListener) {
