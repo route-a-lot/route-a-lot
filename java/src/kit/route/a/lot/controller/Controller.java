@@ -43,6 +43,7 @@ import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.Renderer3D;
 import kit.route.a.lot.map.Node;
+import kit.route.a.lot.routing.Precalculator;
 import kit.route.a.lot.routing.Router;
 
 import org.apache.log4j.Logger;
@@ -172,6 +173,7 @@ public class Controller {
         } else {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
+            Precalculator.precalculate();
             state.getLoadedMapInfo().buildZoomlevels();
             state.getLoadedMapInfo().trimm();
             renderer.resetRenderCache();

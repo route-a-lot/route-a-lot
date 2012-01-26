@@ -20,6 +20,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private int[] edges;
     private int[] weights;
     private long[] arcFlags;
+    private AdjacentFieldsRoutingGraph metisGraph;
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
@@ -48,15 +49,14 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         areaID = new byte[maxNodeID + 2];
-        edges = endID; //TODO DISCUSS: .clone()?
-        weights = weight;
-        arcFlags = new long[startID.length];
-        Arrays.fill(arcFlags, ~ (long) 0);
+        edges = endID; //TODO DISCUSS: .clone()?-
     }
-    
-    private void doIDMapping() {
-        // TODO Auto-generated method stub
         
+    public void buildUndirectedGraph(int[] startID, int[] endID, int maxNodeID) {
+        int[] newStartID = new int[startID.length * 2];
+        int[] newEndID = new int[endID.length * 2];
+        metisGraph = new AdjacentFieldsRoutingGraph();
+        metisGraph.buildGraph(newStartID, newEndID, newStartID, maxNodeID);
     }
 
     /**
@@ -264,12 +264,12 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         int[] endID = new int[edges.length];
         int[] weight = new int[edges.length];
         AdjacentFieldsRoutingGraph result = new AdjacentFieldsRoutingGraph();
-        int j = 0;
-        for (int i = 0; i < edges.length; i++) {
-            for (; i >= edgesPos[j+1]; j++);
-            weight[i] = weights[i];
-            startID[i] = edges[i];
-            endID[i] = j;
+        for (int i = 0; i < edgesPos.length - 1; i++) {
+            for (int j = edgesPos[i]; j < edgesPos[i + 1]; j++) {
+                weight[j] = weights[j];
+                startID[j] = edges[j];
+                endID[j] = i;
+            }
         }
         result.buildGraph(startID, endID, weight, edgesPos.length);
         return result;
@@ -277,16 +277,20 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
 
     @Override
     public String getMetisRepresentation() {
+        return metisGraph.getMetis();
+    }
+    
+    private String getMetis() {
         // returns a representation of the graph suitable for Metis.
         //TODO: edges.length isn't what is required by Metis (it works with undirected graphs only)
         String result = "";
-        result += String.valueOf(edgesPos.length);
+        result += String.valueOf(edgesPos.length - 1);
         result += " ";
         result += String.valueOf(edges.length);
         result += "\n";
-        for (int i = 0; i < edgesPos.length; i++) {
+        for (int i = 0; i < edgesPos.length - 1; i++) {
             for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {
-                result += String.valueOf(edges[j]);
+                result += String.valueOf(edges[j] + 1);
                 result += " ";
             }
             result += "\n";

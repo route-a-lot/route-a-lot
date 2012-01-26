@@ -26,10 +26,10 @@ public class Precalculator {
      * @return
      */
     
-    private RoutingGraph graph, inverted;
+    private static RoutingGraph graph, inverted;
     private static Logger logger = Logger.getLogger(Precalculator.class);
     
-    public void precalculate() {
+    public static void precalculate() {
         logger.info("Starting precalculation...");
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
@@ -42,11 +42,10 @@ public class Precalculator {
         } else {
             logger.error("Failed to do precalculation");
         }
-        inverted = null; // Let the garbage-collector take care of it
         return;
     }
 
-    private void createFlags(int node) {
+    private static void createFlags(int node) {
         logger.info("Calculating ArcFlags for ID " + String.valueOf(node));
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
@@ -75,10 +74,10 @@ public class Precalculator {
         logger.info("Done calculating ArcFlags for ID " + String.valueOf(node));
     }
 
-    private boolean doAreas() {
+    private static boolean doAreas() {
         String AREAS = "63";
         String FILE = "graph.txt";
-        // Now this is dirty
+        String BINARY = "/home/stud/s_jacob/bin/gpmetis";
         logger.info("Creating " + AREAS + " Areas with Metis...");
         // Write graph file
         try {
@@ -93,18 +92,18 @@ public class Precalculator {
         //calculate areas with Metis
         String buffer = "";
         try {
-            Process process = Runtime.getRuntime().exec("gpmetis "+ FILE + " " + AREAS);
+            Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             // read the output from the command
             while ((buffer = stdInput.readLine()) != null) {
-                logger.debug(buffer);
+                logger.debug("Metis: " + buffer);
             }
             
             // read any errors from the attempted command
             while ((buffer = stdError.readLine()) != null) {
-                logger.error(buffer);
+                logger.error("Metis: " + buffer);
             }
         } catch (IOException e) {
             logger.error("kmetis couldn't be executed.");

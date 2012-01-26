@@ -35,7 +35,7 @@ public class Util {
         }
     }
     
-    public static int fak (int i) {
+    public static int fak(int i) {
         if (i == 1) {
             return 1;
         } else {
