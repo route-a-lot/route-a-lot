@@ -24,7 +24,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
-        logger.info("Creating routing graph with " + maxNodeID + " ID's");
+        logger.info("Creating routing graph with " + maxNodeID + " ID's and "  + startID.length + " edges");
         // assert same non-null array size
         if (startID.length == 0) {
             logger.error("Array length is zero, aborting.");
@@ -39,7 +39,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         sortByKey(startID, endID, weight);
 
         // copy data to internal structures
-        edgesPos = new int[maxNodeID + 2];
+        edgesPos = new int[maxNodeID + 1];
         edgesPos[0] = 0;
         for (int i = 1; i < startID.length; i++) {
             // for each edge
@@ -49,12 +49,23 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         areaID = new byte[maxNodeID + 2];
-        edges = endID; //TODO DISCUSS: .clone()?-
+        edges = endID; //TODO DISCUSS: .clone()? 
+        weights = weight;
+        arcFlags = new long[startID.length];
+        Arrays.fill(arcFlags, ~ (long) 0);
     }
         
-    public void buildUndirectedGraph(int[] startID, int[] endID, int maxNodeID) {
+    public void buildGraphWithUniqueEdges(int[] startID, int[] endID, int maxNodeID) {
         int[] newStartID = new int[startID.length * 2];
         int[] newEndID = new int[endID.length * 2];
+        for (int i = 0; i < startID.length; i++) {
+            newStartID[i] = startID[i];
+            newEndID[i] = endID[i];
+        }
+        for (int i = 0; i < startID.length; i++) {
+            newStartID[startID.length + i - 1] = endID[i];
+            newEndID[startID.length + i - 1] = startID[i];
+        }
         metisGraph = new AdjacentFieldsRoutingGraph();
         metisGraph.buildGraph(newStartID, newEndID, newStartID, maxNodeID);
     }
@@ -271,7 +282,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 endID[j] = i;
             }
         }
-        result.buildGraph(startID, endID, weight, edgesPos.length);
+        result.buildGraph(startID, endID, weight, edgesPos.length - 1);
         return result;
     }
 
@@ -282,20 +293,29 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     private String getMetis() {
         // returns a representation of the graph suitable for Metis.
-        //TODO: edges.length isn't what is required by Metis (it works with undirected graphs only)
         String result = "";
-        result += String.valueOf(edgesPos.length - 1);
+        result += String.valueOf(edgesPos.length);  
+        /* -1 because of .length,
+         * -1 because the last one is a dummy and 
+         * +1 because we increase every ID by 1 for Metis.
+         */
         result += " ";
-        result += String.valueOf(edges.length);
+        result += String.valueOf(edges.length / 2);
         result += "\n";
         for (int i = 0; i < edgesPos.length - 1; i++) {
+            // For all Nodes
+            for (int node: getAllNeighbors(i)) {
+                /*if (getWeight(node, i) < 0 || getWeight(i, node) < 0) {
+                    logger.fatal("Got inconsisten graph (missing edge between + " + i + " and " + node + ")");
+                }*/
+            }
             for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {
-                result += String.valueOf(edges[j] + 1);
+                result += String.valueOf(edges[j] + 1); // Metis doesn't like ID 0.
                 result += " ";
             }
             result += "\n";
         }
-        return result;
+        return result + "\0";
     }
 
     @Override

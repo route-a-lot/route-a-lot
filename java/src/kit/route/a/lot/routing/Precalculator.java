@@ -106,7 +106,7 @@ public class Precalculator {
                 logger.error("Metis: " + buffer);
             }
         } catch (IOException e) {
-            logger.error("kmetis couldn't be executed.");
+            logger.error(BINARY + " failed to execute");
             return false;
         }
         

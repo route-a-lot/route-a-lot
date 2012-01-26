@@ -74,7 +74,7 @@ public class Controller {
         importHeightMap("./srtm/");
 
         loadState();
-        if (state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
+        if (false && state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
               loadMap(state.getLoadedMapFile());
         } else if (defaultMap.exists()) {
               logger.info("import default map...");
