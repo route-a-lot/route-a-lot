@@ -1,22 +1,26 @@
 package kit.route.a.lot.common;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import kit.route.a.lot.map.MapElement;
 
 
 public class StringTrie<T> {
-
-    /**
-     * Operation insert
-     * 
-     * @param name
-     *            -
-     * @param element
-     *            -
-     * @return
-     * @return
-     */
-    public void insert(String name, T element) {
-
+    
+    private ArrayList<MapElement> tree;
+    
+    private StringTrie(){
+        tree = new ArrayList();
+    }
+    
+    
+    public ArrayList<MapElement> getTree(){
+        return tree;
+    }
+    
+    public void insert(String name, MapElement element) {
+                tree.add(element);
     }
 
     /**
@@ -27,6 +31,7 @@ public class StringTrie<T> {
      * @return List<T>
      */
     public List<T> search(String name) {
+        /*Textvervollständigung ist nicht implementiert*/
         return null;
     }
 }
