@@ -69,7 +69,7 @@ public class Controller {
     }
     
     private Controller() {
-        File defaultMap = new File("./test/resources/karlsruhe_big.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_biger.osm");
         
         importHeightMap("./srtm/");
 
@@ -100,17 +100,16 @@ public class Controller {
         guiHandler.addHighwayMalusListener(new HighwayMalusListener(this));
         guiHandler.addCloseListener(new CloseListener(this));
         guiHandler.addGetPoiDescriptionListener(new GetPoiDescriptionListener(this));
-//        guiHandler.addSwitchMapModeListener(new GeneralListener() {
-//            @Override
-//            public void handleEvent(GeneralEvent event) {
-//                Renderer oldRenderer = renderer;
-//                renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
-//                renderer.inheritCache(oldRenderer);
-//            }         
-//        });
-//        guiHandler.setView(state.getCenterCoordinates());
-//        guiHandler.updateMapList(state.getImportedMaps());           
-//        System.out.println(state.getImportedMaps().size());
+        guiHandler.addSwitchMapModeListener(new GeneralListener() {
+            @Override
+            public void handleEvent(GeneralEvent event) {
+                Renderer oldRenderer = renderer;
+                renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
+                renderer.inheritCache(oldRenderer);
+            }         
+        });
+        guiHandler.setView(state.getCenterCoordinates());
+        guiHandler.updateMapList(state.getImportedMaps());           
     }
         
     
@@ -189,7 +188,6 @@ public class Controller {
             }
             setViewToMapCenter();
             guiHandler.setView(state.getCenterCoordinates());
-            guiHandler.updateMapList(state.getImportedMaps());
         }
        
     }
