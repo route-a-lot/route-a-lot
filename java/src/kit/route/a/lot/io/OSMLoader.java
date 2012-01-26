@@ -994,7 +994,7 @@ public class OSMLoader {
         }
 
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
-        state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs);
+        state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
 
     }
 }
