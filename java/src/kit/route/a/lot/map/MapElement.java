@@ -3,13 +3,14 @@ package kit.route.a.lot.map;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Comparator;
 
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
-public abstract class MapElement {
+public abstract class MapElement implements Comparator<MapElement>{
 
     /** constant used in a stream for announcing {@link Node} element data following */
     protected static final byte DESCRIPTOR_NODE = 1;
@@ -164,5 +165,13 @@ public abstract class MapElement {
      * @throws IOException element could not be saved to the stream
      */
     protected abstract void save(DataOutputStream stream) throws IOException;
+    
+    public abstract boolean equals(MapElement other);
+
+    public abstract int compare(MapElement one, MapElement other);
+       
+
+   
+
  
 }

@@ -69,5 +69,16 @@ public class Node extends MapElement {
     public MapElement getReduced(int detail, float rang) {
         return this;
     }
+    
+    public boolean equals(MapElement other){
+        /*wird nicht verwendet*/
+        return false;
+    }
+
+    public int compare(MapElement one, MapElement other){
+        /*wird nicht verwendet*/
+        return 0;
+    }
+
 
 }

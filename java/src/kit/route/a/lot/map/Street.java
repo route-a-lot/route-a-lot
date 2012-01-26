@@ -7,15 +7,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.common.Projection;
 
 
 public class Street extends MapElement {
@@ -270,5 +271,40 @@ public class Street extends MapElement {
         }
         return length;
     }
+    
+    public boolean equals(MapElement other){
+
+        if(name.equals(other.getName()) ){
+            return true;
+        }
+        return false;
+    }
+
+    public int compare(MapElement one, MapElement other){
+        int value;
+        int otherValue;
+        String otherName = other.getName();
+        int minlength = otherName.length();
+        if(name.length() < minlength){
+            minlength = name.length();
+        }
+
+        for(int i = 0; i < minlength; i++){
+            value = Character.getNumericValue( name.charAt(i) );
+            otherValue = Character.getNumericValue( otherName.charAt(i) );
+
+            if(value > otherValue){
+                return otherValue - value;
+            } else if(value < otherValue) {
+                return value - otherValue;
+            }               
+        }
+
+        /*wenn Präfix gleich aber dieser String kürzer 
+                  steht er lexikographisch weiter vorne*/
+        return name.length() - otherName.length();
+    }
+
+    
     
 }
