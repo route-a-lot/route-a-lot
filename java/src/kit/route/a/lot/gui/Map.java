@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -54,7 +55,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private JMenuItem deleteNavPoint;
     private JMenuItem deleteFavoriteItem;
     private JLabel popUpName;
-    private JLabel showDescription;
+    private JLabel showPoiName;
+    private JLabel showPoiDescription;
     private MouseEvent clickEvent;
     Component canvas;
     
@@ -124,10 +126,12 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         navNodeMenu.add(deleteFavoriteItem);
         navNodeMenu.add(deleteNavPoint);
         
-        showDescription = new JLabel();
+        showPoiDescription = new JLabel();
+        showPoiName = new JLabel();
         
         descriptionMenu = new JPopupMenu();
-        descriptionMenu.add(showDescription);
+        descriptionMenu.add(showPoiName);
+        descriptionMenu.add(showPoiDescription);
         
         canvas.addMouseListener(new MouseAdapter() {          
             @Override // used for dragging, relocate?
@@ -142,6 +146,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void mouseReleased(MouseEvent me) {
                 newPopUpXPos = me.getX();
                 newPopUpYPos = me.getY();
+                checkPopup(me);
+            }
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                newPopUpXPos = me.getX();
+                newPopUpYPos = me.getY();
+                oldPopUpXPos = me.getX();
+                oldPopUpYPos = me.getY();
                 checkPopup(me);
             }
         });
@@ -319,17 +331,17 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
 //                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
                     Listeners.fireEvent(gui.getListener().poiDescription, new PositionEvent(position));
                     break;
-                case 2: showDescription.setText("Favorit");
-                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-                    break;
-                default: showDescription.setText("");
+                default: showPoiDescription.setText("");
+                    showPoiName.setText("");
                     descriptionMenu.setVisible(false);
                     break;
             }
         }
     }
     
-    public void showPoiDescrip(POIDescription poiDescription) {
-        showDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
+    public void showPoiDescription(POIDescription poiDescription) {
+        showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + "</div></html>");
+        showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
+        descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }
 }

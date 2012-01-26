@@ -37,6 +37,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.controller.listener.GeneralListener;
 import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
@@ -718,4 +719,9 @@ public class GUI extends JFrame {
     public void popUpTrigger(int itemType, Coordinates position) {
         map.popUpTriggered(itemType, position);
     }
+    
+    public void showPoiDescription(POIDescription poiDescription) {
+        map.showPoiDescription(poiDescription);
+    }
+    
 }

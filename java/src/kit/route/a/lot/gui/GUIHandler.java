@@ -155,7 +155,7 @@ public class GUIHandler {
     }
     
     public void showPoiDescription(POIDescription descr, Coordinates pos) {
-        //TODO
+        gui.showPoiDescription(descr);
     }
     
     public void thisWasClicked(int element, Coordinates pos){
