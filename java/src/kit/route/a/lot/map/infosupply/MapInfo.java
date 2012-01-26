@@ -28,19 +28,21 @@ public class MapInfo {
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
+    
+    private Coordinates geoTopLeft;
 
     public MapInfo() {
         elementDB = new ArrayElementDB();
         geographicalOperator = new QTGeographicalOperator();
+        geoTopLeft = new Coordinates();
     }
 
     /**
      * Constructor
      */
     public MapInfo(Coordinates upLeft, Coordinates bottomRight) {
-        geographicalOperator = new QTGeographicalOperator();
+        this();
         geographicalOperator.setBounds(upLeft, bottomRight);
-        elementDB = new ArrayElementDB();
     }
 
     /**
@@ -320,8 +322,16 @@ public class MapInfo {
         logger.debug("Swapping node " + id1 + " and " + id2);
     }
     
-    public Collection<MapElement> getBaseLAyerForPositionAndRadius(Coordinates pos, float radius) {
+    public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius) {
         return geographicalOperator.getBaseLayerForAPositionAndRadius(pos, radius);
+    }
+    
+    public Coordinates getGeoTopLeft() {
+        return geoTopLeft;
+    }
+
+    public void setGeoTopLeft(Coordinates geoTopLeft) {
+        this.geoTopLeft = geoTopLeft;
     }
 
 }

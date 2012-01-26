@@ -19,8 +19,7 @@ public abstract class Projection {
     }
     
     public static Projection getProjectionForCurrentMap() {
-        Coordinates topLeft = new Coordinates();
-        State.getInstance().getLoadedMapInfo().getBounds(topLeft, null);
+        Coordinates topLeft = State.getInstance().getLoadedMapInfo().getGeoTopLeft();
         return getNewProjection(topLeft);
     }
 
