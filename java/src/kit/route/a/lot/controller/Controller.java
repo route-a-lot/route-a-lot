@@ -19,6 +19,7 @@ import kit.route.a.lot.controller.listener.CloseListener;
 import kit.route.a.lot.controller.listener.DeleteNavNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
 import kit.route.a.lot.controller.listener.GeneralListener;
+import kit.route.a.lot.controller.listener.GetPoiDescriptionListener;
 import kit.route.a.lot.controller.listener.HeightMalusListener;
 import kit.route.a.lot.controller.listener.HighwayMalusListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
@@ -98,6 +99,7 @@ public class Controller {
         guiHandler.addHeightMalusListener(new HeightMalusListener(this));
         guiHandler.addHighwayMalusListener(new HighwayMalusListener(this));
         guiHandler.addCloseListener(new CloseListener(this));
+        guiHandler.addGetPoiDescriptionListener(new GetPoiDescriptionListener(this));
         guiHandler.addSwitchMapModeListener(new GeneralListener() {
             @Override
             public void handleEvent(GeneralEvent event) {

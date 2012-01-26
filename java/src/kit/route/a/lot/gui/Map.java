@@ -299,6 +299,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     public void popUpTriggered(int itemType, Coordinates position) {
+        descriptionMenu.setVisible(false);
         if (clickEvent.isPopupTrigger()) {
             descriptionMenu.setVisible(false);
             popupXPos = clickEvent.getX();
@@ -323,11 +324,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             
         } else if((oldPopUpXPos >= newPopUpXPos - 2 && oldPopUpXPos <= newPopUpXPos + 2)
                 || (oldPopUpYPos == newPopUpYPos - 2 && oldPopUpYPos == newPopUpYPos + 2)){
+            descriptionMenu.setVisible(false);
             popupXPos = clickEvent.getX();
             popupYPos = clickEvent.getY();
             switch(itemType) {
                 case 1: 
-//                    showDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
+//                    showPoiName.setText("POI");
+//                    showPoiDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
 //                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
                     Listeners.fireEvent(gui.getListener().poiDescription, new PositionEvent(position));
                     break;
@@ -340,7 +343,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     public void showPoiDescription(POIDescription poiDescription) {
-        showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + "</div></html>");
+        showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + ":" + "</div></html>");
         showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }
