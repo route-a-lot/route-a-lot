@@ -231,7 +231,7 @@ public class GUI extends JFrame {
         scrolling = new JSlider();
         scrolling.setMaximum(9);
         scrolling.setMinimum(0);
-        scrolling.setValue(0);
+        scrolling.setValue(3);
         scrolling.setMajorTickSpacing(1);
         scrolling.setMinorTickSpacing(1);
         scrolling.setLabelTable(allScrollingTicks);
@@ -244,6 +244,12 @@ public class GUI extends JFrame {
                 map.setZoomlevel(scrolling.getValue());
                 map.calculateView();
             }
+        });
+        listener.viewChanged.add(new GeneralListener() {
+            @Override
+            public void handleEvent(GeneralEvent event) {
+                scrolling.setValue(Math.min(map.getZoomlevel(), 9));
+            }         
         });
 
         mapButtonPanel.add(l_routeText);
@@ -263,9 +269,9 @@ public class GUI extends JFrame {
 
         addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent arg0) {
-                listener.fireEvent(listener.close, new TextEvent("closed"));
-            }  
+            public void windowClosing(WindowEvent e) {
+                Listeners.fireEvent(listener.close, new GeneralEvent());
+            }
         });
         this.pack();
     }

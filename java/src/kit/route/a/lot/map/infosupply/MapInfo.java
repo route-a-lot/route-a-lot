@@ -280,6 +280,7 @@ public class MapInfo {
      * @throws IOException a stream read error occurred
      */
     public void loadFromStream(DataInputStream stream) throws IOException {
+        geoTopLeft = Coordinates.loadFromStream(stream);
         logger.info("load element db...");
         elementDB.loadFromStream(stream);
         logger.info("load geo operator...");
@@ -295,6 +296,7 @@ public class MapInfo {
      * @throws IOException a stream write error occurred
      */
     public void saveToStream(DataOutputStream stream) throws IOException {
+        geoTopLeft.saveToStream(stream);
         logger.info("save element db...");
         elementDB.saveToStream(stream);
         logger.info("save geo operator...");

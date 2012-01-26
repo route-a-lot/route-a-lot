@@ -162,6 +162,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     /**
+     * Returns the zoom level.
+     */
+    public int getZoomlevel() {
+        return this.zoomlevel;
+    }
+    
+    /**
      * Called when a popup entry concerning navigation nodes has been clicked.
      * Correspondingly adds a navigation node to the list.
      */
@@ -231,7 +238,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     @Override
     public void mouseMoved(MouseEvent e) {
         Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
-        gui.l_position.setText(mousePosCoordinates.toString());
+        //Coordinates geoCoordinates = Projection.getProjectionForCurrentMap().localCoordinatesToGeoCoordinates(mousePosCoordinates);
+        gui.l_position.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
     }
 
     /**

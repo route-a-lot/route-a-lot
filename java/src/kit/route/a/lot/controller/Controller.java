@@ -39,6 +39,7 @@ import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
 import kit.route.a.lot.map.rendering.Renderer;
+import kit.route.a.lot.map.rendering.Renderer3D;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.routing.Router;
 
@@ -47,9 +48,9 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
 
-    private Renderer renderer;
-    private GUIHandler guiHandler;
-    private State state;
+    private Renderer renderer = new Renderer();
+    private GUIHandler guiHandler = new GUIHandler();
+    private State state = State.getInstance();
 
     private static Logger logger = Logger.getLogger(Controller.class);
     
@@ -64,9 +65,6 @@ public class Controller {
     }
     
     private Controller() {
-        guiHandler = new GUIHandler();
-        renderer = new Renderer();
-        state = State.getInstance();
         File defaultMap = new File("./test/resources/karlsruhe_big.osm");
         
         importHeightMap("./srtm/");

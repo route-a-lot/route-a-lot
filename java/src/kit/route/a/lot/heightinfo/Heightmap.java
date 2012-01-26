@@ -45,12 +45,9 @@ public class Heightmap implements IHeightmap {
     }//end getTiles
 
     @Override
-    public int getHeight(Coordinates pos) {
-        Projection proj = Projection.getProjectionForCurrentMap();
-        Coordinates geoPos = proj.localCoordinatesToGeoCoordinates(pos);
-        System.out.println(geoPos.getLongitude());
-        int lat = (int)geoPos.getLatitude();
-        int lon = (int)geoPos.getLongitude();
+    public int getHeight(Coordinates pos) {   
+        int lat = (int)pos.getLatitude();
+        int lon = (int)pos.getLongitude();
         Coordinates origin = new Coordinates((float)lat,(float)lon);
         HeightTile tmpTile = new HeightTile(0,0,origin);
         iterator = map.iterator();
@@ -58,7 +55,7 @@ public class Heightmap implements IHeightmap {
         while(iterator.hasNext()) {
             HeightTile tile = iterator.next();
             if(tile.equals(tmpTile)){
-                return tile.getHeight(geoPos);
+                return tile.getHeight(pos);
             }//end if
         }//end while
         return 0;

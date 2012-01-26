@@ -34,6 +34,10 @@ public class Context3D extends Context {
     bottomRight = projection.localCoordinatesToGeoCoordinates(localBottomRight);
     }*/
 
+    public GL getGL() {
+        return output.getGL();
+    }
+    
     @Override
     public void drawImage(Coordinates position, Image image, int detail) {
         GL gl = output.getGL();
@@ -46,33 +50,25 @@ public class Context3D extends Context {
         float y = (position.getLatitude() - topLeft.getLatitude()) / Projection.getZoomFactor(detail);
         
         
-        gl.glPushMatrix();
-        //Projection proj = State.getInstance().getCurrentRenderer().
-        float hgt = State.getInstance().getLoadedHeightmap().getHeight(position);
-        
-        logger.info(hgt);
-        
+        gl.glPushMatrix();       
+        //float hgt = State.getInstance().getLoadedHeightmap().getHeight(position);       
+        //logger.info(hgt);        
         gl.glRotatef(15f, 1f, 0f, 0f);         
-        gl.glTranslatef(x - width, y - width, -300);
-        gl.glTranslatef(0, 0, hgt * 10);
+        gl.glTranslatef(x - width, y - width, (float) (4000 * Math.atan(Math.PI/2)));
+        //gl.glTranslatef(0, 0, hgt * 10);
         gl.glEnable(GL.GL_TEXTURE_2D);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture);        
         gl.glBegin(GL.GL_QUADS);        
         gl.glTexCoord2f(0f, 0f);
-        gl.glVertex3i(0, 0, 0); 
-        
+        gl.glVertex3i(0, 0, 0);         
         gl.glTexCoord2f(0, 1);
-        gl.glVertex3i(0, height, 0);  
-        
+        gl.glVertex3i(0, height, 0);         
         gl.glTexCoord2f(1, 1);
-        gl.glVertex3i(width, height, 0);   
-        
+        gl.glVertex3i(width, height, 0);           
         gl.glTexCoord2f(1, 0);
-        gl.glVertex3i(width, 0, 0);       
-        
+        gl.glVertex3i(width, 0, 0);               
         gl.glTexCoord2f(0, 0);
-        gl.glVertex3i(0, 0, 0);
-        
+        gl.glVertex3i(0, 0, 0);        
         gl.glEnd();        
         gl.glDisable(GL.GL_TEXTURE_2D);
         
@@ -82,8 +78,6 @@ public class Context3D extends Context {
     
     public int createTexture(GL gl, GLU glu, BufferedImage image)
     {
-        //gl.glShadeModel(GL.GL_SMOOTH);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
         int tex = Textures.genTexture(gl);
         gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
         Textures.makeRGBTexture(gl, glu, image, GL.GL_TEXTURE_2D, false);

@@ -51,6 +51,10 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context, int detail) {
+        
+        //Projection proj = Projection.getProjectionForCurrentMap();
+        //System.out.println(context.getTopLeft() +" /// "+ proj.localCoordinatesToGeoCoordinates(context.getTopLeft()));
+      
         int tileDim = (int) (200 * Projection.getZoomFactor(detail));
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");
