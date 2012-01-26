@@ -626,7 +626,7 @@ public class GUI extends JFrame {
      */
     public void updateMapChooser(ArrayList<String> maps) {
         for(String map : maps) {
-            chooseImportedMap.addItem(map);
+            chooseImportedMap.addItem(map); //TODO keine doppelten NAmen
         }
     }
     

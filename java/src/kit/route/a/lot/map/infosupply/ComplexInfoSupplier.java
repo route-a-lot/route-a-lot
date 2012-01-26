@@ -31,7 +31,6 @@ public class ComplexInfoSupplier {
         for(int i = 0; i < route.size() - 1; i++){
             length += Street.getDistanceInMeter(mapInfo.getNodePosition(route.get(i)), mapInfo.getNodePosition(route.get(i + 1)));
         }
-        System.err.println(length);
         return length;
     }
 

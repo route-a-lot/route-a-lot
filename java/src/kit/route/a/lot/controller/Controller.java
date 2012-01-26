@@ -94,6 +94,7 @@ public class Controller {
         guiHandler.addSaveRouteListener(new SaveRouteListner(this));
         guiHandler.addLoadRouteListener(new LoadRouteListener(this));
         guiHandler.addExportRouteListener(new ExportRouteListener(this));
+        guiHandler.addDeleteFavListener(new DeleteNavNodeListener(this));
         guiHandler.addSetSpeedListener(new SpeedListener(this));
         guiHandler.addClickPositionListener(new ClickPositionListener(this));
         guiHandler.addHeightMalusListener(new HeightMalusListener(this));
@@ -404,7 +405,6 @@ public class Controller {
             bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
             bottomRight.setLongitude(pos.getLongitude() + state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
-                System.err.println("asdasd");
                 guiHandler.thisWasClicked(GUI.NAVNODE, pos);
                 return;
             }

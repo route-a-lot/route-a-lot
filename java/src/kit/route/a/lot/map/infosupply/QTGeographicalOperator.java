@@ -141,8 +141,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        if (zoomlevel > countZoomlevel) {
-            zoomlevel = countZoomlevel;
+        if (zoomlevel >= countZoomlevel) {
+            zoomlevel = countZoomlevel - 1;
         }
         zoomlevels[zoomlevel].addOverlayElementsToCollection(upLeft, bottomRight, elements);
         return elements;
