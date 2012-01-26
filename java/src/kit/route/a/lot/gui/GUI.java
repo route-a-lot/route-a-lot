@@ -214,6 +214,19 @@ public class GUI extends JFrame {
         });
 
         graphics = new JButton("2D/3D");
+        graphics.addActionListener(new ActionListener() {            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                mapContents.remove(map);
+                if (map instanceof Map2D) {
+                    map = new Map3D(map.gui); // this doesn't work
+                } else {
+                    map = new Map2D(map.gui); // this doesn't work
+                }
+                mapContents.add(map, BorderLayout.CENTER);
+                Listeners.fireEvent(listener.switchMapMode, new GeneralEvent());
+            }  
+        });
 
         Hashtable<Integer, JLabel> allScrollingTicks = new Hashtable<Integer, JLabel>();
 

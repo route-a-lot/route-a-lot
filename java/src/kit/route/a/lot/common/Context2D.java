@@ -8,7 +8,7 @@ import java.awt.Image;
 public class Context2D extends Context {
  
     private Graphics output;   
-
+    
     public Context2D(Coordinates topLeft, Coordinates bottomRight, Graphics surface) {
         super(topLeft, bottomRight);
         if (surface == null) {

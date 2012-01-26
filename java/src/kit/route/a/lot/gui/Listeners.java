@@ -27,6 +27,7 @@ public class Listeners {
     public List<GeneralListener> deleteNavPoint;
     public List<GeneralListener> deleteFavPoint;
     public List<GeneralListener> loadMap;
+    public List<GeneralListener> switchMapMode; // TODO finish
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.

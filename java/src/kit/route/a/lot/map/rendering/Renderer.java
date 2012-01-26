@@ -30,10 +30,8 @@ public class Renderer {
      */
     private RenderCache cache;
     private static Logger logger = Logger.getLogger(Renderer.class);
-
     protected State state = State.getInstance();
-
-    protected ArrayList<Selection> drawEdges = new ArrayList<Selection>(); //TODO delete
+    private ArrayList<Selection> drawEdges = new ArrayList<Selection>(); //TODO delete
     
     /**
      * Creates a new renderer.
@@ -51,10 +49,6 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context, int detail) {
-        
-        //Projection proj = Projection.getProjectionForCurrentMap();
-        //System.out.println(context.getTopLeft() +" /// "+ proj.localCoordinatesToGeoCoordinates(context.getTopLeft()));
-      
         int tileDim = (int) (200 * Projection.getZoomFactor(detail));
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");

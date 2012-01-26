@@ -19,11 +19,18 @@ public abstract class Context {
     };
 
     public Coordinates getTopLeft() {
-        return this.topLeft;
+        return topLeft;
     }
     
     public Coordinates getBottomRight() {
-        return this.bottomRight;
+        return bottomRight;
     } 
     
+    public float getWidth() {
+        return bottomRight.getLongitude() - topLeft.getLongitude();
+    }
+    
+    public float getHeight() {
+        return bottomRight.getLatitude() - topLeft.getLatitude();
+    }
 }
