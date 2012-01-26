@@ -11,6 +11,6 @@ class RouteComparator<T> implements Comparator<T> {
     // Comperator used in Heap
     @Override
     public int compare(T a, T b) {
-        return ((Route) a).length() - ((Route) b).length();
+        return ((Route) a).getLength() - ((Route) b).getLength();
     }
 }

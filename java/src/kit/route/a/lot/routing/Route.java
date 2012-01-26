@@ -21,7 +21,7 @@ public class Route {
 
     public Route(int to, int weight, Route route) {
         this.to = to;
-        this.weight = route.weight + weight;
+        this.weight = weight;
         from = route;
     }
 
@@ -56,8 +56,12 @@ public class Route {
         }
     }
 
-    public int length() {
-        return weight;
+    public int getLength() {
+        if (from == null) {
+            return weight;
+        } else {
+            return weight + from.getLength();
+        }
     }
     
     public String toString() {

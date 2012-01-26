@@ -49,7 +49,7 @@ public class Router {
                     logger.warn("Ignoring route ...");
                     routes[j][i] = -1;
                 } else {
-                    routes[j][i] = route.length();
+                    routes[j][i] = route.getLength();
                 }
             }
         }
