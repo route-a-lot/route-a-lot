@@ -329,10 +329,7 @@ public class GUI extends JFrame {
         s_speed.addChangeListener(new ChangeListener() {    
             @Override
             public void stateChanged(ChangeEvent ce) {
-                NumberEvent intEvent = new NumberEvent(Integer.parseInt(s_speed.getValue().toString()));
-                for(GeneralListener lis: listener.speed) {
-                    lis.handleEvent(intEvent);
-                }
+                listener.fireEvent(listener.speed, new NumberEvent(Integer.parseInt(s_speed.getValue().toString())));
             }
         });
         

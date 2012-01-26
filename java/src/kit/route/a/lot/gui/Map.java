@@ -136,6 +136,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         canvas.addMouseListener(new MouseAdapter() {          
             @Override // used for dragging, relocate?
             public void mousePressed(MouseEvent me) {
+                popupXPos = me.getX();
+                popupYPos = me.getY();
                 oldMousePosX = me.getX(); 
                 oldMousePosY = me.getY();
                 oldPopUpXPos = me.getX();
@@ -144,12 +146,15 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             }     
             @Override
             public void mouseReleased(MouseEvent me) {
+                popupXPos = me.getX();
+                popupYPos = me.getY();
                 newPopUpXPos = me.getX();
                 newPopUpYPos = me.getY();
-                checkPopup(me);
             }
             @Override
             public void mouseClicked(MouseEvent me) {
+                popupXPos = me.getX();
+                popupYPos = me.getY();
                 newPopUpXPos = me.getX();
                 newPopUpYPos = me.getY();
                 oldPopUpXPos = me.getX();
@@ -302,8 +307,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         descriptionMenu.setVisible(false);
         if (clickEvent.isPopupTrigger()) {
             descriptionMenu.setVisible(false);
-            popupXPos = clickEvent.getX();
-            popupYPos = clickEvent.getY();
             switch(itemType) {
                 case 0: popUpName.setText("");
                     break;
@@ -343,7 +346,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     public void showPoiDescription(POIDescription poiDescription) {
-        showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + ":" + "</div></html>");
+        showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + "</div></html>");
         showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }
