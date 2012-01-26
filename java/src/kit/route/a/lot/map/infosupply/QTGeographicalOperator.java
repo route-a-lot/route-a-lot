@@ -141,6 +141,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
             Coordinates bottomRight) {
         HashSet<MapElement> elements = new HashSet<MapElement>();
+        if (zoomlevel > countZoomlevel) {
+            zoomlevel = countZoomlevel;
+        }
         zoomlevels[zoomlevel].addOverlayElementsToCollection(upLeft, bottomRight, elements);
         return elements;
     }
@@ -195,7 +198,12 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void addToOverlay(MapElement element) {
-        zoomlevels[0].addToOverlay(element);
+        for (int i = 0; i < countZoomlevel; i++) {
+            MapElement reduced = element.getReduced(i, 0);
+            if (reduced != null) {
+                zoomlevels[i].addToOverlay(reduced);
+            }
+        }
     }
     
     /**

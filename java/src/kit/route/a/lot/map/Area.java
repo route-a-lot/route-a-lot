@@ -80,7 +80,10 @@ public class Area extends MapElement {
         return inside || area.contains(box) || area.intersects(box);
 
     }
-    
+
+    /**
+     * Returns a selection with pos = the center of the area and from and to as normal (routable edge).
+     */
     @Override
     public Selection getSelection() {
         // TODO Auto-generated method stub

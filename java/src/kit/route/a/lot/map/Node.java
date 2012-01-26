@@ -67,7 +67,11 @@ public class Node extends MapElement {
 
     @Override
     public MapElement getReduced(int detail, float rang) {
-        return this;
+        if (detail > 2) {
+            return null;
+        } else {
+            return this;
+        }
     }
     
     public boolean equals(MapElement other){

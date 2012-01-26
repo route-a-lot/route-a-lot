@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,8 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.Area;
+import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
@@ -31,7 +34,14 @@ public class Renderer {
     private RenderCache cache;
     private static Logger logger = Logger.getLogger(Renderer.class);
     protected State state = State.getInstance();
-    private ArrayList<Selection> drawEdges = new ArrayList<Selection>(); //TODO delete
+    
+    private BufferedImage routeImage = null;
+    private Coordinates routeTopLeft = new Coordinates();
+    private Coordinates routeBottomRight = new Coordinates();
+    private Integer[] drawnRoute = new Integer[0];
+    private int drawnRouteDetail = -1;
+    private static final int drawBuffer = 200;
+    private static final float routeSize = 20;
     
     /**
      * Creates a new renderer.
@@ -67,6 +77,7 @@ public class Renderer {
         }
         drawRoute(context, detail);
         drawNavPoints(context, detail);
+        drawOverlay(context, detail);
     }
 
 
@@ -90,16 +101,11 @@ public class Renderer {
      * and caching it.
      * 
      * @return true if a tile was drawn
+     * 
      */
     public boolean prerenderIdle() {
         return false; // TODO: implement
     }
-    
-    private BufferedImage routeImage = null;
-    private Coordinates routeTopLeft = new Coordinates();
-    private Integer[] drawnRoute = new Integer[0];
-    private int drawnRouteDetail = -1;
-    private static final int routeSize = 16;
 
     /**
      * Draws the given route on the given rendering context.
@@ -109,7 +115,14 @@ public class Renderer {
         List<Integer> route = state.getCurrentRoute();
         List<Selection> navPoints = state.getNavigationNodes();
         
-        if (route != null && !routeIsEqual(route.toArray(new Integer[route.size()]), drawnRoute) || drawnRouteDetail != detail) {
+        boolean mustDrawRoute = route != null && !routeIsEqual(route.toArray(new Integer[route.size()]), drawnRoute);
+        mustDrawRoute = mustDrawRoute || drawnRouteDetail != detail;
+        mustDrawRoute = mustDrawRoute || routeTopLeft.getLatitude() >= context.getTopLeft().getLatitude()
+                || routeTopLeft.getLongitude() >= context.getTopLeft().getLongitude();
+        mustDrawRoute = mustDrawRoute || routeBottomRight.getLatitude() <= context.getBottomRight().getLatitude()
+                || routeBottomRight.getLongitude() <= context.getBottomRight().getLongitude();
+        
+        if (mustDrawRoute) {
             drawnRoute = route.toArray(new Integer[route.size()]);
             drawnRouteDetail = detail;
             
@@ -117,24 +130,41 @@ public class Renderer {
                 MapInfo mapInfo = state.getLoadedMapInfo();
                 Node[] routeNodes = new Node[drawnRoute.length];
                 routeTopLeft = new Coordinates(Float.MAX_VALUE, Float.MAX_VALUE);
-                Coordinates routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
+                routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
                 
                 // find route bounding rectangle dimensions
                 for (int i = 0; i < routeNodes.length; i++) {
                     routeNodes[i] = mapInfo.getNode(drawnRoute[i]);
-                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, routeNodes[i].getPos());
+                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, routeNodes[i].getPos(), detail);
                 }
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());
                     Coordinates nodeOnEdge = getSelectedNodeOnEdge(from, to, navSelection.getRatio());
-                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, nodeOnEdge);
-                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, navSelection.getPosition());
+                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, nodeOnEdge, detail);
+                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, navSelection.getPosition(), detail);
+                }
+                
+                // adjust border coordinates if the route is bigger than the context window
+                if (routeTopLeft.getLatitude() < context.getTopLeft().getLatitude() - drawBuffer) {
+                    routeTopLeft.setLatitude(context.getTopLeft().getLatitude() - drawBuffer);
+                }
+                if (routeTopLeft.getLongitude() < context.getTopLeft().getLongitude() - drawBuffer) {
+                    routeTopLeft.setLongitude(context.getTopLeft().getLongitude() - drawBuffer);
+                }
+                if (routeBottomRight.getLatitude() > context.getBottomRight().getLatitude() + drawBuffer) {
+                    routeBottomRight.setLatitude(context.getBottomRight().getLatitude() + drawBuffer);
+                }
+                if (routeBottomRight.getLongitude() > context.getBottomRight().getLongitude() + drawBuffer) {
+                    routeBottomRight.setLongitude(context.getBottomRight().getLongitude() + drawBuffer);
                 }
 
-                // define bounding rectangle TODO: this can be very inefficient
                 int width = (int) Math.abs(routeTopLeft.getLongitude() - routeBottomRight.getLongitude()) / Projection.getZoomFactor(detail);
                 int height = (int) Math.abs(routeTopLeft.getLatitude() - routeBottomRight.getLatitude()) / Projection.getZoomFactor(detail);
+                if (width == 0 || height == 0) {
+                    routeImage = null;
+                    return;
+                }
                 routeImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 
                 // configure rendering context
@@ -146,51 +176,18 @@ public class Renderer {
                 
                 // TODO refactor: its not very good using the method from Street better would be for example Util again
                 routeNodes = Street.simplifyNodes(routeNodes, Projection.getZoomFactor(detail) * 3);
-                int currentRouteSize = routeSize / Projection.getZoomFactor(detail);
+                float currentRouteSize = routeSize / Projection.getZoomFactor(detail / 2);
+                float currentRouteSizeUnderlay = (routeSize + 2) / Projection.getZoomFactor(detail / 2);
                 
                 // draw route shadow
-                graphics.setStroke(new BasicStroke(currentRouteSize + 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                graphics.setColor(new Color(0xaa076a07, true));
-                for (int i = 1; i < routeNodes.length; i++) {
-                    drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
-                }
-                for (Selection navSelection : navPoints) {
-                    Node from = mapInfo.getNode(navSelection.getFrom());
-                    Node to = mapInfo.getNode(navSelection.getTo());
-                    Coordinates nodeOnEdge = getSelectedNodeOnEdge(from, to, navSelection.getRatio());
-                    if (idIsInRoute(from.getID(), drawnRoute)) {
-                        drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-                    }
-                    if (idIsInRoute(to.getID(), drawnRoute)) {
-                        drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-                    }
-                    drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
-                }
+                graphics.setStroke(new BasicStroke(currentRouteSizeUnderlay, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                graphics.setColor(new Color(0x9a076a07, true));
+                drawRouteLines(routeNodes, navPoints, detail, graphics, mapInfo);
                 
                 // draw route
                 graphics.setStroke(new BasicStroke(currentRouteSize, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                graphics.setColor(new Color(0xaa2d0b7b, true));
-                for (int i = 1; i < routeNodes.length; i++) {
-                    drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
-                }
-                
-                for (Selection sel : drawEdges) {   //delete
-                    drawLineBetweenCoordinates(State.getInstance().getLoadedMapInfo().getNodePosition(sel.getFrom()),
-                            State.getInstance().getLoadedMapInfo().getNodePosition(sel.getFrom()), detail, graphics);
-                }
-                
-                for (Selection navSelection : navPoints) {
-                    Node from = mapInfo.getNode(navSelection.getFrom());
-                    Node to = mapInfo.getNode(navSelection.getTo());
-                    Coordinates nodeOnEdge = getSelectedNodeOnEdge(from, to, navSelection.getRatio());
-                    if (idIsInRoute(from.getID(), drawnRoute)) {
-                        drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-                    }
-                    if (idIsInRoute(to.getID(), drawnRoute)) {
-                        drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-                    }
-                    drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
-                }
+                graphics.setColor(new Color(0x9a370d94, true));
+                drawRouteLines(routeNodes, navPoints, detail, graphics, mapInfo);
                 
 //                // draw route nodes
 //                graphics.setColor(Color.CYAN);
@@ -211,9 +208,32 @@ public class Renderer {
             context.drawImage(routeTopLeft, routeImage, detail);
         }
     }
-    
-    public void drawEdge(Selection sel){    //TODO delete
-        drawEdges.add(sel);
+
+    private void drawRouteLines(Node[] routeNodes, List<Selection> navPoints, int detail,
+            Graphics2D graphics, MapInfo mapInfo) {
+        for (int i = 1; i < routeNodes.length; i++) {
+            drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
+        }
+        for (int i = 0; i < navPoints.size(); i++) {
+            Selection navSelection = navPoints.get(i);
+            Node from = mapInfo.getNode(navSelection.getFrom());
+            Node to = mapInfo.getNode(navSelection.getTo());
+            Coordinates nodeOnEdge = getSelectedNodeOnEdge(from, to, navSelection.getRatio());
+            boolean drawedFrom = false;
+            boolean drawedTo = false;
+            if (idIsInRoute(from.getID(), drawnRoute)) {
+                drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
+                drawedFrom = true;
+            }
+            if (idIsInRoute(to.getID(), drawnRoute)) {
+                drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
+                drawedTo = true;
+            }
+            if (drawedFrom && drawedTo && (i == 0 || i == navPoints.size() - 1)) {
+                logger.error("Drawed whole selection a the end of the route.");
+            }
+            drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+        }
     }
     
     private boolean idIsInRoute(int id, Integer[] route) {
@@ -225,10 +245,10 @@ public class Renderer {
         return false;
     }
     
-    private void adjustBorderCoordinates(Coordinates topLeft, Coordinates bottomRight, Coordinates point) {
+    private void adjustBorderCoordinates(Coordinates topLeft, Coordinates bottomRight, Coordinates point, int detail) {
         float curLat = point.getLatitude();
         float curLon = point.getLongitude();
-        int buffer = routeSize;
+        float buffer = routeSize * Projection.getZoomFactor(detail / 2);
         if (curLat - buffer < topLeft.getLatitude()) {
             topLeft.setLatitude(curLat - buffer);
         }
@@ -282,34 +302,71 @@ public class Renderer {
 
     /**
      */
-    private void drawPOI(Context context, int detail) {
-        State state = State.getInstance();
-        MapInfo mapInfo = state.getLoadedMapInfo();
-        mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight());
+    private void drawOverlay(Context context, int detail) {
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        Collection<MapElement> elements = mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight());
+
+        int size = 8;
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = image.createGraphics();
+        graphics.setComposite(AlphaComposite.Src);
+        graphics.setColor(new Color(0, true));
+        graphics.fillRect(0, 0, size, size);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setColor(Color.ORANGE);
+        graphics.fillOval(0, 0, size, size);
+
+        for (MapElement element : elements) {
+            if (element instanceof Node) {
+                Node node = (Node) element;
+                Coordinates drawPosition = new Coordinates(node.getPos().getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
+                        node.getPos().getLongitude() - (size/2 * Projection.getZoomFactor(detail)));
+                context.drawImage(drawPosition, image, detail);
+            }
+            if (element instanceof Area) {
+                Area area = (Area) element;
+                if (area.getSelection() != null) {
+                    Coordinates pos = area.getSelection().getPosition();
+                    Coordinates drawPosition = new Coordinates(pos.getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
+                            pos.getLongitude() - (size/2 * Projection.getZoomFactor(detail)));
+                    context.drawImage(drawPosition, image, detail);
+                } else {
+                    logger.warn("Area returned null-selection");
+                }
+            }
+        }
     }
     
     private void drawNavPoints(Context context, int detail) {
         List<Selection> points = state.getNavigationNodes();
-        for (Selection point : points) {
-            BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
-            Graphics2D graphics = image.createGraphics();
-            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
-            graphics.setColor(Color.ORANGE);
-            graphics.fillOval(0, 0, 5, 5);
-            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
-            Node to = state.getLoadedMapInfo().getNode(point.getTo());
-            context.drawImage(from.getPos(), image, detail);
-            context.drawImage(to.getPos(), image, detail);
-            
-            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
-            graphics.setColor(Color.CYAN);
-            graphics.fillOval(0, 0, 5, 5);
-            context.drawImage(selectedNodeOnEdge, image, detail);
+        int size = 7;
 
-            graphics.setColor(Color.RED);
-            graphics.fillOval(0, 0, 5, 5);
-            context.drawImage(point.getPosition(), image, detail);
+        BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = image.createGraphics();
+        graphics.setComposite(AlphaComposite.Src);
+        graphics.setColor(new Color(0, true));
+        graphics.fillRect(0, 0, size, size);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        graphics.setColor(Color.RED);
+        graphics.fillOval(0, 0, size, size);
+
+        for (Selection point : points) {
+//            graphics.setColor(Color.ORANGE);
+//            graphics.fillOval(0, 0, 5, 5);
+//            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
+//            Node to = state.getLoadedMapInfo().getNode(point.getTo());
+//            context.drawImage(from.getPos(), image, detail);
+//            context.drawImage(to.getPos(), image, detail);
+//            
+//            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
+//            graphics.setColor(Color.CYAN);
+//            graphics.fillOval(0, 0, 5, 5);
+//            context.drawImage(selectedNodeOnEdge, image, detail);
+
+            Coordinates drawPosition = new Coordinates(point.getPosition().getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
+                    point.getPosition().getLongitude() - (size/2 * Projection.getZoomFactor(detail)));
+            context.drawImage(drawPosition, image, detail);
         }
     }
 
