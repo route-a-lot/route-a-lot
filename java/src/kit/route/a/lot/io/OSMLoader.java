@@ -31,6 +31,8 @@ public class OSMLoader {
 
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
+    private ArrayList<Integer> uniqueEdgeStartIds;
+    private ArrayList<Integer> uniqueEdgeEndIds;
     private int maxWayNodeId = -1;
 
     float minLat, maxLat, minLon, maxLon;
@@ -896,6 +898,13 @@ public class OSMLoader {
                                 }
                             }
                         }
+                        
+                        uniqueEdgeStartIds.add(curWayIds.get(0));
+                        for (int i = 1; i < curWayIds.size() - 1; i++) {
+                            uniqueEdgeEndIds.add(curWayIds.get(i));
+                            uniqueEdgeStartIds.add(curWayIds.get(i));
+                        }
+                        uniqueEdgeEndIds.add(curWayIds.get(curWayIds.size() - 1));
 
                         if (curWayInfo.getOneway() == WayInfo.ONEWAY_NO
                                 || curWayInfo.getOneway() == WayInfo.ONEWAY_YES) {
@@ -964,6 +973,14 @@ public class OSMLoader {
             endIDs[i] = endIds.get(i);
             weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
         }
+        
+        int countUniqueIDs = uniqueEdgeStartIds.size();
+        int[] uniqueEdgeStartIDs = new int[countUniqueIDs];
+        int[] uniqueEdgeEndIDs = new int[countUniqueIDs];
+        for (int i = 0; i < countUniqueIDs; i++) {
+            uniqueEdgeStartIDs[i] = uniqueEdgeStartIds.get(i);
+            uniqueEdgeEndIDs[i] = uniqueEdgeEndIds.get(i);
+        }
 
         for (int i = 0; i < startIDs.length; i++) {
             if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
@@ -977,6 +994,7 @@ public class OSMLoader {
         }
 
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
+        state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs);
 
     }
 }
