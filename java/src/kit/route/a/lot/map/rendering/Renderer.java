@@ -281,13 +281,11 @@ public class Renderer {
     }
 
     /**
-     * Draws a point of interest on the current rendering context.
-     * 
-     * @param poi
-     *            the POI to be drawn
      */
-    @SuppressWarnings("unused")
-    private void drawPOI(POINode poi) {
+    private void drawPOI(Context context, int detail) {
+        State state = State.getInstance();
+        MapInfo mapInfo = state.getLoadedMapInfo();
+        mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight());
     }
     
     private void drawNavPoints(Context context, int detail) {
@@ -297,17 +295,17 @@ public class Renderer {
             Graphics2D graphics = image.createGraphics();
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             
-//            graphics.setColor(Color.ORANGE);
-//            graphics.fillOval(0, 0, 5, 5);
-//            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
-//            Node to = state.getLoadedMapInfo().getNode(point.getTo());
-//            context.drawImage(from.getPos(), image, detail);
-//            context.drawImage(to.getPos(), image, detail);
+            graphics.setColor(Color.ORANGE);
+            graphics.fillOval(0, 0, 5, 5);
+            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
+            Node to = state.getLoadedMapInfo().getNode(point.getTo());
+            context.drawImage(from.getPos(), image, detail);
+            context.drawImage(to.getPos(), image, detail);
             
-//            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
-//            graphics.setColor(Color.CYAN);
-//            graphics.fillOval(0, 0, 5, 5);
-//            context.drawImage(selectedNodeOnEdge, image, detail);
+            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
+            graphics.setColor(Color.CYAN);
+            graphics.fillOval(0, 0, 5, 5);
+            context.drawImage(selectedNodeOnEdge, image, detail);
 
             graphics.setColor(Color.RED);
             graphics.fillOval(0, 0, 5, 5);
