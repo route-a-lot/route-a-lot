@@ -389,6 +389,8 @@ public class Controller {
     public void setSpeed(int speed) {
         if(speed >= 0) {
             state.setSpeed(speed);
+            guiHandler.showRouteValues(ComplexInfoSupplier.getDuration(state.getCurrentRoute(), speed),
+                    ComplexInfoSupplier.getLength(state.getCurrentRoute()));
         }
     }
     
@@ -480,9 +482,9 @@ public class Controller {
         if (state.getNavigationNodes().size() >= 2) {
             try {
                 state.setCurrentRoute(Router.calculateRoute());
-                //for(Integer inte : state.getCurrentRoute()) {
-                    // System.out.println(inte);
-                //}
+                int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
+                int length = ComplexInfoSupplier.getLength(state.getCurrentRoute());
+                guiHandler.showRouteValues(duration, length);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -21,14 +21,18 @@ public class ComplexInfoSupplier {
      *            -
      * @return int
      */
-    public static int getDuration(ArrayList<Integer> route, int speed) {
-        double speedInMeterPerSecond = speed * 3.6; 
-        int time = 0;
+    public static int getDuration(List<Integer> route, int speed) {
+        return (int) (getLength(route) / (speed / 3.6));
+    }
+    
+    public static int getLength(List<Integer> route) {
+        int length = 0;
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         for(int i = 0; i < route.size() - 1; i++){
-            time += Street.getDistanceProj(mapInfo.getNodePosition(route.get(i)), mapInfo.getNodePosition(route.get(i + 1))) / speedInMeterPerSecond;
+            length += Street.getDistanceInMeter(mapInfo.getNodePosition(route.get(i)), mapInfo.getNodePosition(route.get(i + 1)));
         }
-        return time;
+        System.err.println(length);
+        return length;
     }
 
     
