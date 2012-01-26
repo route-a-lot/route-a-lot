@@ -788,7 +788,7 @@ public class GUI extends JFrame {
         int hours = duration/3600;
         int minutes = duration/60;
         int seconds = duration - (hours * 3600) - (minutes * 60);
-        float kilometers = length/1000;
+        float kilometers = length/1000f;
         if(hours!=0) {
             l_position.setText("(" + kilometers + "km, " + hours + "st " + minutes + "min" + ")");
         } else if(minutes!=0) {

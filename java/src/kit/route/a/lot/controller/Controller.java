@@ -110,7 +110,8 @@ public class Controller {
             }         
         });
         guiHandler.setView(state.getCenterCoordinates());
-        guiHandler.updateMapList(state.getImportedMaps());           
+        guiHandler.updateMapList(state.getImportedMaps()); 
+        guiHandler.setSpeed(state.getSpeed());
     }
         
     
