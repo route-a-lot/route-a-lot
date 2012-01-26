@@ -75,5 +75,11 @@ public class GraphMock implements RoutingGraph {
     @Override
     public void readAreas(String areas) {
     }
+
+    @Override
+    public void buildGraphWithUniqueEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }
