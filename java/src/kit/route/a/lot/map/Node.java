@@ -33,7 +33,7 @@ public class Node extends MapElement {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return null;
     }
 
