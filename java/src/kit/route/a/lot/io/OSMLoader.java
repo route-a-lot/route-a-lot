@@ -49,6 +49,8 @@ public class OSMLoader {
         weightCalculator = WeightCalculator.getInstance();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
+        uniqueEdgeStartIds = new ArrayList<Integer>();
+        uniqueEdgeEndIds = new ArrayList<Integer>();
     }
 
     /**
@@ -114,7 +116,7 @@ public class OSMLoader {
 
         Coordinates upLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
-        projection = ProjectionFactory.getNewProjection(upLeft);
+        projection = ProjectionFactory.getNewProjection(upLeft, bottomRight);
         state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
         state.getLoadedMapInfo().setGeoTopLeft(upLeft);
 
@@ -993,8 +995,8 @@ public class OSMLoader {
             }
         }
 
-        state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
-        state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
+//        state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
+//        state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
 
     }
 }

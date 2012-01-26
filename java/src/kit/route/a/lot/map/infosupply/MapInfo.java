@@ -30,11 +30,13 @@ public class MapInfo {
     private AddressOperator addressOperator;
     
     private Coordinates geoTopLeft;
+    private Coordinates geoBottomRight;
 
     public MapInfo() {
         elementDB = new ArrayElementDB();
         geographicalOperator = new QTGeographicalOperator();
         geoTopLeft = new Coordinates();
+        geoBottomRight = new Coordinates();
     }
 
     /**
@@ -281,6 +283,7 @@ public class MapInfo {
      */
     public void loadFromStream(DataInputStream stream) throws IOException {
         geoTopLeft = Coordinates.loadFromStream(stream);
+        geoBottomRight = Coordinates.loadFromStream(stream);
         logger.info("load element db...");
         elementDB.loadFromStream(stream);
         logger.info("load geo operator...");
@@ -297,6 +300,7 @@ public class MapInfo {
      */
     public void saveToStream(DataOutputStream stream) throws IOException {
         geoTopLeft.saveToStream(stream);
+        geoBottomRight.saveToStream(stream);
         logger.info("save element db...");
         elementDB.saveToStream(stream);
         logger.info("save geo operator...");
@@ -334,6 +338,14 @@ public class MapInfo {
 
     public void setGeoTopLeft(Coordinates geoTopLeft) {
         this.geoTopLeft = geoTopLeft;
+    }
+    
+    public Coordinates getGeoBottomRight() {
+        return geoBottomRight;
+    }
+    
+    public void setGeoBottomRight(Coordinates geoBottomRight) {
+        this.geoBottomRight = geoBottomRight;
     }
 
 }

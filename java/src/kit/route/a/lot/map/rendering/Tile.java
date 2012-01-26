@@ -20,7 +20,6 @@ import kit.route.a.lot.map.Street;
 
 public class Tile {
 
-    public static final float BASE_TILE_DIM = 0.005f;
     //private static Logger logger = Logger.getLogger(Tile.class);
 
     private Coordinates topLeft;
@@ -30,29 +29,6 @@ public class Tile {
     private int width;
     private int height;
     private static int num = 0;
-
-    /**
-     * Creates an new (empty) tile using the defined resolution.
-     * 
-     * @param topLeft
-     *            the northwestern corner of the tile
-     * @param bottomRight
-     *            the southeastern corner of the tile
-     * @param detail
-     *            the desired level of detail
-     * @param width
-     *            the width (in pixels) of the tile output
-     * @param height
-     *            the height (in pixels) of the tile output
-     */
-    public Tile(Coordinates topLeft, Coordinates bottomRight, int detail, int width, int height) {
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
-        this.detail = detail;
-        this.width = width;
-        this.height = height;
-        this.data = null;
-    }
 
     /**
      * Creates an new (empty) tile using a calculated resolution
@@ -65,7 +41,9 @@ public class Tile {
      *            the desired level of detail
      */
     public Tile(Coordinates topLeft, Coordinates bottomRight, int detail) {
-        this(topLeft, bottomRight, detail, 0, 0);
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
+        this.detail = detail;
         width = (int) Math.abs(topLeft.getLongitude() - bottomRight.getLongitude());
         height = (int) Math.abs(topLeft.getLatitude() - bottomRight.getLatitude());
     }
@@ -85,9 +63,6 @@ public class Tile {
         // graphics.setFont(new Font("Arial", Font.BOLD, 32));
         // graphics.drawChars((new Integer(num)).toString().concat("    ").toCharArray(), 0, 5, 5, 50);
         // num++;
-        if (++num % 100 == 0) {
-            // System.out.println("Rendering tile " + num);
-        }
 
         Graphics2D graphics = data.createGraphics();
 
@@ -160,20 +135,6 @@ public class Tile {
         return this.data;
     }
 
-    /**
-     * Sets the tile image.
-     * 
-     * @param data
-     *            new tile image
-     */
-    protected void setData(BufferedImage data) {
-        this.data = data;
-        if (data != null) {
-            this.width = data.getWidth();
-            this.height = data.getHeight();
-        }
-    }
-
     protected void draw(MapElement element) {
         throw new UnsupportedOperationException("Can't draw an element with type "
                 + element.getClass().toString());
@@ -185,7 +146,7 @@ public class Tile {
      * @param poi
      *            the node to be drawn
      */
-    protected void draw(Node node, Graphics2D graphics) {
+    private void draw(Node node, Graphics2D graphics) {
         int size = 3;
 
         Coordinates localCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(node.getPos(), topLeft, detail);
@@ -201,7 +162,7 @@ public class Tile {
      * @param area
      *            the area to be drawn.
      */
-    protected void draw(Area area, Graphics2D graphics) {
+    private void draw(Area area, Graphics2D graphics) {
         int[] xPoints, yPoints;
         int nPoints;
         Node[] nodes = area.getNodes();
@@ -249,7 +210,7 @@ public class Tile {
      * @param street
      *            the street to be drawn
      */
-    protected void draw(Street street, boolean top, Graphics2D graphics) {
+    private void draw(Street street, boolean top, Graphics2D graphics) {
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
         int[] xPoints = new int[nPoints];
@@ -321,7 +282,7 @@ public class Tile {
         
     }
     
-    protected void drawStreetArrows(Street street, Graphics2D graphics) {
+    private void drawStreetArrows(Street street, Graphics2D graphics) {
         if (detail > 1 || street.getWayInfo().getOneway() == WayInfo.ONEWAY_NO) {
             return;
         }
@@ -396,18 +357,6 @@ public class Tile {
         rotatedVector.setLongitude((float) ((Math.cos(angle * Math.PI / 180) * vector.getLongitude() - Math.sin(angle * Math.PI / 180) * vector.getLatitude()) * 180 / Math.PI));
         rotatedVector.setLatitude((float) ((Math.sin(angle * Math.PI / 180) * vector.getLongitude() + Math.cos(angle * Math.PI / 180) * vector.getLatitude()) * 180 / Math.PI));
         return rotatedVector;
-    }
-
-    /**
-     * Derives a hash code using the tiles defining attributes' values, such as the origin coordinates and the
-     * level of detail.
-     * 
-     * @return the hash code
-     */
-    @Override
-    public int hashCode() {
-        // EXTEND: better hash code derivation
-        return (int) (Math.round((topLeft.getLongitude() + topLeft.getLatitude() * 100) * 1000) + detail);
     }
 
     public static long getSpecifier(Coordinates topLeft, int detail) {
