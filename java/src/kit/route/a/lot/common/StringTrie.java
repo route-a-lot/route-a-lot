@@ -10,7 +10,7 @@ public class StringTrie<T> {
     
     private ArrayList<MapElement> tree;
     
-    private StringTrie(){
+    public StringTrie(){
         tree = new ArrayList();
     }
     

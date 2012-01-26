@@ -76,5 +76,42 @@ public class Util {
             return filename;
         return filename.substring(0, extensionIndex);
     }
+    
+    
+    
+    
+    
+    public static void getFaceNormal(float[] norm, float[] pa, float[] pb, float[] pc) {
+        float[][] vect = new float[2][3];
+        float[][] point = new float[3][3];
+
+        for (int a = 0; a < 3; a++) {
+            point[0][a] = pa[a];
+            point[1][a] = pb[a]; 
+            point[2][a] = pc[a];
+        }
+      
+        for (int a = 0; a < 2; a++) {
+            for (int b = 0; b < 3; b++) {
+                vect[a][b] = point[2-a][b] - point[0][b];
+            }
+        }
+        crossProduct(norm, vect[0], vect[1]);
+        normalize(norm);
+    }
+    
+    private static void crossProduct(float[] c, float[] a, float[] b) {  
+        c[0] = a[1]*b[2] - b[1]*a[2];
+        c[1] = a[2]*b[0] - b[2]*a[0];
+        c[2] = a[0]*b[1] - b[0]*a[1];
+    }
+    
+    private static void normalize(float[] vec) {
+        float length = (float) Math.sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
+        for (int a = 0; a < 3; a++) {
+            vec[a] /= length;
+        }
+    }
+
 
 }

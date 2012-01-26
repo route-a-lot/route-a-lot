@@ -25,7 +25,7 @@ public interface IHeightmap {
      *            -
      * @return float
      */
-    public int getHeight(Coordinates pos);
+    public float getHeight(Coordinates pos);
 
     /**
      * Operation addHeightTile

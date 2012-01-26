@@ -108,7 +108,6 @@ public class GUI extends JFrame {
     private ArrayList<JButton> alladdedButtons;
    
     private Map map;
-    private Map mapBackup;
     
     private int key = 0;
     private String choosenMap;
@@ -655,7 +654,7 @@ public class GUI extends JFrame {
             tab1.remove(alladdedButtons.get(i));
             alladdedButtons.remove(i);
             alladdedNavPoints.remove(i);
-            listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
+            Listeners.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
         }
         startPoint.setText("");
         endPoint.setText("");

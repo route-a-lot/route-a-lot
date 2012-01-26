@@ -32,16 +32,35 @@ public class Map3D extends Map implements GLEventListener {
         gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
         gl.glEnable(GL.GL_BLEND);
         gl.glBlendFunc(GL.GL_SRC_ALPHA,GL.GL_ONE_MINUS_SRC_ALPHA);
+        
+        /*float[] lightPos = { 5,5,5,1};        // light position
+        float[] noAmbient = { 0.2f, 0.2f, 0.2f, 1f };   // low ambient light
+        float[] diffuse =  { 1f, 1f, 1f, 1f };      // full diffuse color
+        gl.glEnable(GL.GL_LIGHTING);
+        gl.glEnable(GL.GL_LIGHT0);
+        gl.glLightfv(GL.GL_LIGHT0, GL.GL_AMBIENT, noAmbient, 0);
+        gl.glLightfv(GL.GL_LIGHT0, GL.GL_DIFFUSE, diffuse, 0);
+        gl.glLightfv(GL.GL_LIGHT0, GL.GL_POSITION,lightPos, 0);
+        
+        float[] rgba = {0.3f, 0.5f, 1f};
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, rgba, 0);
+        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, rgba, 0);
+        gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 0.5f);//*/
+
+        
+        //gl.glLightModelfv(GL.GL_LIGHT_MODEL_AMBIENT, FloatBuffer.wrap(new float[] {0.2f, 0.2f, 0.2f, 1.0f}));
     }
     
     @Override
     public void display(GLAutoDrawable g) {
         GL gl = g.getGL();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        gl.glLoadIdentity();
+        gl.glLoadIdentity(); 
         gl.glScalef(1f, -1f, 1f);
-        float height = (bottomRight.getLatitude() - topLeft.getLatitude());
         
+        
+        float height = (bottomRight.getLatitude() - topLeft.getLatitude());
+        //gl.glTranslatef(0f , 0f, -0.2f); 
         gl.glTranslatef(-0.049019f , -0.28f, 0.05f); // camera correction // TODO dynamic
         gl.glRotatef(20, 1,0,0); // camera angle
         gl.glScalef(1 / height, 1 / height, 1 / height);
@@ -64,7 +83,7 @@ public class Map3D extends Map implements GLEventListener {
         
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        (new GLU()).gluPerspective(85.0, width/(float)height, 0.001, 1000);
+        (new GLU()).gluPerspective(85.0, width/(float)height, 0.001, 500);
         gl.glMatrixMode(GL.GL_MODELVIEW);
     }
     

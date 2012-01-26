@@ -27,7 +27,7 @@ public interface IHeightTile {
      * @return
      * @return
      */
-    public void setHeight(int x, int y, int height);
+    public void setHeight(int x, int y, float height);
 
     /**
      * Operation getHeight
@@ -36,7 +36,7 @@ public interface IHeightTile {
      *            -
      * @return float
      */
-    public int getHeight(Coordinates pos);
+    public float getHeight(Coordinates pos);
 
     /**
      * Operation setHeight

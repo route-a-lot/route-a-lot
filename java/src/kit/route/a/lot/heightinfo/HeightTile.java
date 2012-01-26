@@ -42,20 +42,26 @@ public class HeightTile implements IHeightTile {
     }
 
     @Override
-    public void setHeight(int x, int y, int height) {
-        data[x][y] = height;
+    public void setHeight(int x, int y, float height) {
+        data[x][y] = (int) height;
     }
 
     @Override
-    public int getHeight(Coordinates pos) {
-        /* die Tiles sind im abstand von einem Grad aufgebaut
-        das origin ist ganzzahlig */
-        float lat = pos.getLatitude() - origin.getLatitude();
-        float lon = pos.getLongitude() - origin.getLongitude();
+    public float getHeight(Coordinates pos) {
+        // die Tiles sind im abstand von einem Grad aufgebaut. das origin ist ganzzahlig
+        float latDiff = pos.getLatitude() - origin.getLatitude();
+        float lonDiff = pos.getLongitude() - origin.getLongitude();
         /*Intervallänge: 1°/1201*/
-        int x = (int)(lat*width);
-        int y = (int)(lon*width);
+        int x = (int)(latDiff*width);
+        int y = (int)(lonDiff*height);
         
+        /*float facX = Math.abs(lonDiff - x / (float) width);
+        float facY = Math.abs(latDiff - y / (float) height);        
+        
+        float interpolateX1 = data[x][y] + (data[x+1][y] - data[x][y]) * facX;
+        float interpolateX2 = data[x][y+1] + (data[x+1][y+1] - data[x][y+1]) * facX;
+        float interpolateY = interpolateX1 + (interpolateX2 - interpolateX1) * facY;
+        return interpolateY;*/
         return data[x][y];
     }
 
