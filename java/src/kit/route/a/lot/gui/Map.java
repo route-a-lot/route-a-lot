@@ -264,9 +264,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseMoved(MouseEvent e) {
-        Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
+//        Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
         //Coordinates geoCoordinates = Projection.getProjectionForCurrentMap().localCoordinatesToGeoCoordinates(mousePosCoordinates);
-        gui.l_position.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
+//        gui.l_position.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
     }
 
     /**

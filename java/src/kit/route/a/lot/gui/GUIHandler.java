@@ -177,4 +177,8 @@ public class GUIHandler {
     public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {
         gui.showNavNodeDescription(navNodeDescription, navNodeIndex);
     }
+    
+    public void showRouteValues(int duration, int length) {
+        gui.showRouteValues(duration, length);
+    }
 }

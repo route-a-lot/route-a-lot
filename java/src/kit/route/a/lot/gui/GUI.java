@@ -432,13 +432,9 @@ public class GUI extends JFrame {
         highwayMalus.setPaintTicks(true);
         highwayMalus.setSnapToTicks(true);
         highwayMalus.addChangeListener(new ChangeListener() {
-            
             @Override
             public void stateChanged(ChangeEvent e) {
-                NumberEvent intEvent = new NumberEvent(highwayMalus.getValue());
-                for(GeneralListener lis: listener.highwayMalus) {
-                    lis.handleEvent(intEvent);
-                }
+                listener.fireEvent(listener.highwayMalus, new NumberEvent(highwayMalus.getValue()));
             }
         });
         
@@ -455,10 +451,7 @@ public class GUI extends JFrame {
         reliefmalus.addChangeListener(new ChangeListener() {        
             @Override
             public void stateChanged(ChangeEvent arg0) {
-                NumberEvent intEvent = new NumberEvent(reliefmalus.getValue());
-                for(GeneralListener lis: listener.heightMalus) {
-                    lis.handleEvent(intEvent);
-                }
+                listener.fireEvent(listener.heightMalus, new NumberEvent(reliefmalus.getValue()));
             }
         });
         
@@ -737,4 +730,18 @@ public class GUI extends JFrame {
         alladdedNavPoints.get(navNodeIndex - 1).setText(navNodeDescription);
     }
     
+    public void showRouteValues(int duration, int length) {
+        int hours = duration/3600;
+        int minutes = duration/60;
+        int seconds = duration - (hours * 3600) - (minutes * 60);
+        float kilometers = length/1000;
+        if(hours!=0) {
+            l_position.setText("(" + kilometers + "km, " + hours + "st " + minutes + "min" + ")");
+        } else if(minutes!=0) {
+            l_position.setText("(" + kilometers + "km, " + minutes + "min" + ")");
+        } else {
+            l_position.setText("(" + kilometers + "km, " + seconds + "sek" + ")");
+        }
+        repaint();
+    }
 }
