@@ -283,12 +283,9 @@ public class Controller {
      * Operation orderNavNodes
      */
     public void orderNavNodes() {  
-        System.err.println(state.getNavigationNodes());
         List<Selection> col = Router.optimizeRoute();  
-        
         state.setNavigationNodes(col);
-        System.err.println(state.getNavigationNodes());
-        Router.calculateRoute();
+        state.setCurrentRoute(Router.calculateRoute());
         guiHandler.updateGUI();
     }
 
