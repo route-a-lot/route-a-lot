@@ -16,6 +16,7 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.AddressOperatorTest.AdressTester;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -35,6 +36,7 @@ public class MapInfo {
     public MapInfo() {
         elementDB = new ArrayElementDB();
         geographicalOperator = new QTGeographicalOperator();
+        addressOperator = new TrieAddressOperator();
         geoTopLeft = new Coordinates();
         geoBottomRight = new Coordinates();
     }
@@ -106,6 +108,7 @@ public class MapInfo {
             street.setNodes(nodes);
             elementDB.addMapElement(street);
             geographicalOperator.addToBaseLayer(street);
+            addressOperator.add(street);
         } else {
             Area area = new Area(name, wayInfo);
             Node[] nodes = new Node[ids.size()];

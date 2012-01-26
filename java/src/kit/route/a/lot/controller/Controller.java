@@ -69,7 +69,7 @@ public class Controller {
     }
     
     private Controller() {
-        File defaultMap = new File("./test/resources/karlsruhe_biger.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_small.osm");
         
         importHeightMap("./srtm/");
 
@@ -223,6 +223,35 @@ public class Controller {
 //            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
 //        }
     }
+    
+    /**
+     * Same as above with names
+     * 
+     */
+    public void addNavNode(String name, int position) {
+        Selection newSel = state.getLoadedMapInfo().select(name);
+        if (newSel != null) {
+            if (position == 0 && state.getNavigationNodes().size() > 1) {
+                state.getNavigationNodes().remove(0);
+                state.getNavigationNodes().add(0, newSel);
+            } else if (position == state.getNavigationNodes().size() && state.getNavigationNodes().size() > 1) {
+                state.getNavigationNodes().remove(state.getNavigationNodes().remove(state.getNavigationNodes().size() - 1));
+                state.getNavigationNodes().add(newSel);
+            } else {
+                state.getNavigationNodes().add(position, newSel);
+            }
+        }
+        ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
+        for (Selection sel : state.getNavigationNodes()) {
+            newList.add(sel.getPosition());
+        }
+        guiHandler.updateNavPointsList(newList);
+        calculateRoute();
+        guiHandler.updateGUI();
+//        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
+//            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
+//        }
+    }
 
     /**
      * Operation deleteNavNode
@@ -296,6 +325,7 @@ public class Controller {
      */
     public void addFavorite(Coordinates pos, String name, String description) {  
         state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, 0, description));  //TODO category
+        guiHandler.updateGUI();
     }
 
     /**
