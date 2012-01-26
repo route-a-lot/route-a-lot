@@ -692,19 +692,28 @@ public class GUI extends JFrame {
     }
     
     public void updateNavNodes(ArrayList<Coordinates> newNavPointsList) {
-        for(int i = 0 ; i < alladdedButtons.size(); i++) {
+//        for(int i = 0 ; i < alladdedButtons.size(); i++) {
+//            tab1.remove(alladdedNavPoints.get(i));
+//            tab1.remove(alladdedButtons.get(i));
+//            alladdedButtons.remove(i);
+//            alladdedNavPoints.remove(i);
+//            listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
+//        }
+        while(alladdedButtons.size() != 0) {
+            int i = alladdedButtons.size() - 1;
             tab1.remove(alladdedNavPoints.get(i));
             tab1.remove(alladdedButtons.get(i));
             alladdedButtons.remove(i);
             alladdedNavPoints.remove(i);
-//            listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
+            i--;
         }
         startPoint.setText("");
         endPoint.setText("");
         this.navPointsList = new ArrayList<Coordinates>(newNavPointsList);
         if(this.navPointsList.size() - 2 > 0) {
-            for(int i = 0; i < this.navPointsList.size(); i++) {
+            for(int i = 1; i < newNavPointsList.size() - 1; i++) {
                 addTextfieldButton();
+                alladdedNavPoints.get(i-1).setText(newNavPointsList.get(i).toString());
             }
             startPoint.setText(this.navPointsList.get(0).toString());
             endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).toString());
@@ -714,9 +723,9 @@ public class GUI extends JFrame {
         } else if(this.navPointsList.size() == 1){
             startPoint.setText(this.navPointsList.get(0).toString());
         }
-        for(int i = 0; i < alladdedNavPoints.size(); i++) {
-            listener.fireEvent(listener.getNavNodeDescription, new PositionEvent(navPointsList.get(i + 1)));
-        }
+//        for(int i = 0; i < alladdedNavPoints.size(); i++) {
+//            listener.fireEvent(listener.getNavNodeDescription, new PositionEvent(newNavPointsList.get(i + 1)));
+//        }
         repaint();
     }
     

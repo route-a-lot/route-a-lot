@@ -204,14 +204,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             case 0: pos = 0; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()));
                     break;
             case 1: switch (type) {
-                        case 0 : pos = 0; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())); break; 
+                        case 0 : pos = 0; gui.getNavPointsList().set(0, getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())); break; 
                         default : pos = 1; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()));
                     }
                     break;
             default: switch (type) {
                         case 0 : pos = 0; break;
-                        case 1 : pos = gui.getNavPointsList().size() - 1; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()));
-                        case 2 : pos = gui.getNavPointsList().size(); 
+                        case 1 : pos = gui.getNavPointsList().size() - 1; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())); break;
+                        case 2 : pos = gui.getNavPointsList().size() - 1;
                         break;
                     }
         }    
