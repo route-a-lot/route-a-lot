@@ -34,6 +34,10 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int oldMousePosY;
     private int popupXPos;
     private int popupYPos;
+    private int oldPopUpXPos;
+    private int oldPopUpYPos;
+    private int newPopUpXPos;
+    private int newPopUpYPos;
     private Coordinates center;
     protected int zoomlevel = 3;
     protected Coordinates topLeft = new Coordinates();
@@ -129,10 +133,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void mousePressed(MouseEvent me) {
                 oldMousePosX = me.getX(); 
                 oldMousePosY = me.getY();
+                oldPopUpXPos = me.getX();
+                oldPopUpYPos = me.getY();
                 checkPopup(me);
             }     
             @Override
             public void mouseReleased(MouseEvent me) {
+                newPopUpXPos = me.getX();
+                newPopUpYPos = me.getY();
                 checkPopup(me);
             }
         });
@@ -298,7 +306,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             deleteNavPoint.setVisible(itemType == 3);
             
             navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-        } else {
+        } else if((oldPopUpXPos >= newPopUpXPos - 2 && oldPopUpXPos <= newPopUpXPos + 2)
+                || (oldPopUpYPos == newPopUpYPos - 2 && oldPopUpYPos == newPopUpYPos + 2)){
             popupXPos = clickEvent.getX();
             popupYPos = clickEvent.getY();
             switch(itemType) {
