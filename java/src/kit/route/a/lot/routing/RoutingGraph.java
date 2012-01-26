@@ -78,7 +78,7 @@ public interface RoutingGraph {
 
     public RoutingGraph getInverted();
 
-    public Collection<Integer> getRelevantNeighbors(int node, byte[] bs);
+    public Collection<Integer> getRelevantNeighbors(int node, byte[] areas);
     public Collection<Integer> getAllNeighbors(int node);
 
     public void setArcFlag(int node, int node2, byte area);
