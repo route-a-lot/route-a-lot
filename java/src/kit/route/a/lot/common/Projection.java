@@ -12,15 +12,5 @@ public abstract class Projection {
     public static int getZoomFactor(int detail) {
         return (int) Math.pow(2, detail);
     }
-    
-    public static Projection getNewProjection(Coordinates topLeft) {
-        float scale = 5E-6f;
-        return new MercatorProjection(topLeft, scale);
-    }
-    
-    public static Projection getProjectionForCurrentMap() {
-        Coordinates topLeft = State.getInstance().getLoadedMapInfo().getGeoTopLeft();
-        return getNewProjection(topLeft);
-    }
 
 }

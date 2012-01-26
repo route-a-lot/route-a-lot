@@ -13,6 +13,7 @@ import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Textures;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
@@ -55,7 +56,7 @@ public class Renderer3D extends Renderer {
         super.render(context2D, detail);
   
         IHeightmap heightData = State.getInstance().getLoadedHeightmap();
-        Projection projection = Projection.getProjectionForCurrentMap();
+        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
         GL gl = ((Context3D) context).getGL();
         
         // move camera up so that it won't intersect hills, TODO doesn't seem to work    

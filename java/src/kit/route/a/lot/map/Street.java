@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
@@ -161,7 +162,7 @@ public class Street extends MapElement {
      * params are projected coordinates on the current map
      */
     public static double getDistanceInMeter(Coordinates pos1, Coordinates pos2) {
-        Projection projection = Projection.getProjectionForCurrentMap();
+        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
         Coordinates geoPos1 = projection.localCoordinatesToGeoCoordinates(pos1);
         Coordinates geoPos2 = projection.localCoordinatesToGeoCoordinates(pos2);
         double pos1LongRad = Math.abs(geoPos1.getLongitude()) / 180 * Math.PI; // coordinates in deg

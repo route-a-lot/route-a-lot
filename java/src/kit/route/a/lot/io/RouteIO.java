@@ -32,6 +32,7 @@ import org.w3c.dom.Element;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -147,7 +148,7 @@ public class RouteIO {
             lineStringElement.appendChild(coordinatesElement);
             
             StringBuilder coordinatesSB = new StringBuilder();
-            Projection projection = Projection.getProjectionForCurrentMap();
+            Projection projection = ProjectionFactory.getProjectionForCurrentMap();
             MapInfo mapInfo = state.getLoadedMapInfo();
             for (int i = 0; i < route.size(); i++) {
                 Coordinates localCoordinates = mapInfo.getNode(route.get(i)).getPos();

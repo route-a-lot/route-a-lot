@@ -16,6 +16,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
@@ -111,7 +112,7 @@ public class OSMLoader {
 
         Coordinates upLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
-        projection = Projection.getNewProjection(upLeft);
+        projection = ProjectionFactory.getNewProjection(upLeft);
         state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
         state.getLoadedMapInfo().setGeoTopLeft(upLeft);
 

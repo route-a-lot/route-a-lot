@@ -13,6 +13,7 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Node;
@@ -79,7 +80,7 @@ public class RendererTest {
         topLeft = new Coordinates(0.012f, -0.012f);
         bottomRight = new Coordinates(49.008375f, 8.414061f);
         bottomRight = new Coordinates(-0.012f, 0.012f);
-        Projection projection = Projection.getNewProjection(new Coordinates(49.019887f, 8.394492f)); //2.9E-5f
+        Projection projection = ProjectionFactory.getNewProjection(new Coordinates(49.019887f, 8.394492f)); //2.9E-5f
         topLeft = projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.019887f, 8.394492f));
         bottomRight = new Coordinates(550, 550);
 
