@@ -74,7 +74,7 @@ public class Controller {
         importHeightMap("./srtm/");
 
         loadState();
-        if (false && state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
+        if (state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
               loadMap(state.getLoadedMapFile());
         } else if (defaultMap.exists()) {
               logger.info("import default map...");
@@ -282,8 +282,11 @@ public class Controller {
      * Operation orderNavNodes
      */
     public void orderNavNodes() {  
+        System.err.println(state.getNavigationNodes());
         List<Selection> col = Router.optimizeRoute();  
+        
         state.setNavigationNodes(col);
+        System.err.println(state.getNavigationNodes());
         Router.calculateRoute();
         guiHandler.updateGUI();
     }
