@@ -216,7 +216,7 @@ public class Controller {
         for (Selection sel : state.getNavigationNodes()) {
             newList.add(sel.getPosition());
         }
-        guiHandler.setNavNodesOrder(newList);
+        guiHandler.updateNavPointsList(newList);
         calculateRoute();
         guiHandler.updateGUI();
     }
@@ -235,7 +235,7 @@ public class Controller {
             for (Selection sel : state.getNavigationNodes()) {
                 newList.add(sel.getPosition());
             }
-            guiHandler.setNavNodesOrder(newList);
+            guiHandler.updateNavPointsList(newList);
             calculateRoute();
             guiHandler.updateGUI();
         }
@@ -261,7 +261,7 @@ public class Controller {
                 for (Selection sel : state.getNavigationNodes()) {
                     newList.add(sel.getPosition());
                 }
-                guiHandler.setNavNodesOrder(newList);
+                guiHandler.updateNavPointsList(newList);
                 calculateRoute();
                 guiHandler.updateGUI();
             }

@@ -29,6 +29,7 @@ public class Listeners {
     public List<GeneralListener> loadMap;
     public List<GeneralListener> switchMapMode;
     public List<GeneralListener> poiDescription;
+    public List<GeneralListener> getNavNodeDescription;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
@@ -55,6 +56,7 @@ public class Listeners {
         optimizeRoute = new ArrayList<GeneralListener>();
         switchMapMode = new ArrayList<GeneralListener>();
         poiDescription = new ArrayList<GeneralListener>();
+        getNavNodeDescription = new ArrayList<GeneralListener>();
     }
     
     public void addViewChangedListener(GeneralListener viewChangedListener) {
@@ -119,6 +121,9 @@ public class Listeners {
     }
     public void addPoiDescriptionListener(GeneralListener poiDescriptionListener) {
         poiDescription.add(poiDescriptionListener);
+    }
+    public void addGetNavNodeDescriptionListener(GeneralListener getNavNodeDescriptionListener) {
+        getNavNodeDescription.add(getNavNodeDescriptionListener);
     }
     
     public static void fireEvent(List<GeneralListener> listener, GeneralEvent event) {

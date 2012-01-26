@@ -40,6 +40,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.controller.listener.GeneralListener;
 import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.PositionEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
@@ -713,6 +714,9 @@ public class GUI extends JFrame {
         } else if(this.navPointsList.size() == 1){
             startPoint.setText(this.navPointsList.get(0).toString());
         }
+        for(int i = 0; i < alladdedNavPoints.size(); i++) {
+            listener.fireEvent(listener.getNavNodeDescription, new PositionEvent(navPointsList.get(i + 1)));
+        }
         repaint();
     }
     
@@ -722,6 +726,10 @@ public class GUI extends JFrame {
     
     public void showPoiDescription(POIDescription poiDescription) {
         map.showPoiDescription(poiDescription);
+    }
+    
+    public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {
+        alladdedNavPoints.get(navNodeIndex - 1).setText(navNodeDescription);
     }
     
 }

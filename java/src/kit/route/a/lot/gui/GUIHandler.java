@@ -142,6 +142,10 @@ public class GUIHandler {
         listener.addSwitchMapModeListener(switchMapModeListener);
     }
     
+    public void addGetNavNodeDescriptionListener(GeneralListener getNavNodeDescriptionListener) {
+        listener.addGetNavNodeDescriptionListener(getNavNodeDescriptionListener);
+    }
+    
     public void setView(Coordinates center) {
         gui.setView(center);
     }
@@ -168,5 +172,9 @@ public class GUIHandler {
     
     public void setNavNodesOrder(ArrayList<Coordinates> orderedList) {
         gui.setNavPointsOrdered(orderedList);
+    }
+    
+    public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {
+        gui.showNavNodeDescription(navNodeDescription, navNodeIndex);
     }
 }
