@@ -39,7 +39,7 @@ public class Street extends MapElement {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return (this.name != null) ? this.name : "";
     }
 
