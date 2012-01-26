@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,7 +76,7 @@ public class GUI extends JFrame {
     private JButton deleteMapButton;
     private JButton activateMapButton;
     private JButton heightMapManagement;
-    private JButton deleteRoute;
+//    private JButton deleteRoute;
     
     private JComboBox chooseImportedMap;
 
@@ -99,6 +101,7 @@ public class GUI extends JFrame {
     private JPanel mapContents;
     private JPanel mapButtonPanel;
     private JPanel tab1;
+    private JPanel tab1_stopoverPanel;
     private JPanel tab2;
     private JPanel tab3;
 
@@ -296,7 +299,9 @@ public class GUI extends JFrame {
         tab1 = new JPanel();
         tabbpane.addTab("Planen", null, tab1, "1");
         // tabbpane.setMnemonicAt(1, KeyEvent.VK_2);
-        tab1.setLayout(new GridLayout(0,2));
+        tab1.setLayout(new GridBagLayout());
+        GridBagConstraints constraint = new GridBagConstraints();
+        constraint.fill = GridBagConstraints.HORIZONTAL;
         startPoint = new JTextField();
         startPoint.setPreferredSize(new Dimension(this.getWidth() * 2 / 5 - 30, 20));
         startPoint.addActionListener(new ActionListener() {
@@ -335,25 +340,60 @@ public class GUI extends JFrame {
         
         l_speed = new JLabel("hm/h");
         
-        deleteRoute = new JButton("Lösche Route");
-        deleteRoute.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                for(int i = navPointsList.size() - 1; i >= 0; i--) {
-                    listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
-                }
-                repaint();
-            }
-        });
+//        deleteRoute = new JButton("Lösche Route");
+//        deleteRoute.addActionListener(new ActionListener() {
+//            
+//            @Override
+//            public void actionPerformed(ActionEvent arg0) {
+//                for(int i = navPointsList.size() - 1; i >= 0; i--) {
+//                    listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
+//                }
+//                repaint();
+//            }
+//        });
 
-        tab1.add(startPoint);
-        tab1.add(endPoint);
-        tab1.add(addTextPoints);
-        tab1.add(optimizeRoute);
-        tab1.add(s_speed);
-        tab1.add(l_speed);
-        tab1.add(deleteRoute);
+        tab1_stopoverPanel = new JPanel();
+        tab1_stopoverPanel.setLayout(new GridBagLayout());
+        
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.gridwidth = 3;
+        tab1.add(startPoint, constraint);
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 0;
+        constraint.gridy = 1;
+        constraint.gridwidth = 3;
+        tab1.add(tab1_stopoverPanel, constraint);
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 0;
+        constraint.gridy = 2;
+        constraint.gridwidth = 3;
+        tab1.add(endPoint, constraint);
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 1;
+        constraint.gridy = 3;
+        tab1.add(addTextPoints, constraint);
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 1;
+        constraint.gridy = 4;
+        tab1.add(optimizeRoute, constraint);
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 0;
+        constraint.gridy = 5;
+        tab1.add(s_speed, constraint);
+        constraint.fill = GridBagConstraints.HORIZONTAL;
+        constraint.weighty = 0.5;
+        constraint.gridx = 1;
+        constraint.gridy = 5;
+        tab1.add(l_speed, constraint);
+//        tab1.add(deleteRoute);
 
         alladdedNavPoints = new ArrayList<JTextField>();
         alladdedButtons = new ArrayList<JButton>();
@@ -362,6 +402,7 @@ public class GUI extends JFrame {
           @Override 
           public void actionPerformed(ActionEvent arg0) {
               addTextfieldButton();
+              repaint();
            }
         });
         
@@ -578,17 +619,30 @@ public class GUI extends JFrame {
     }
     
     private void addTextfieldButton() {
+        GridBagConstraints tab1_constraint = new GridBagConstraints();
         final JTextField navPointField = new JTextField();
+        navPointField.setPreferredSize(new Dimension(tab1.getWidth() - 60, 20));
         final JButton navPointButton = new JButton("x");
         alladdedNavPoints.add(navPointField); 
         alladdedButtons.add(navPointButton);
-        tab1.add(navPointField); 
-        tab1.add(navPointButton);
+        tab1_constraint.fill = GridBagConstraints.HORIZONTAL;
+        tab1_constraint.weighty = 0.5;
+        tab1_constraint.gridx = 0;
+        tab1_constraint.gridy = alladdedButtons.size() - 1;
+        tab1_constraint.gridwidth = 2;
+        tab1_stopoverPanel.add(navPointField, tab1_constraint);
+        tab1_constraint.fill = GridBagConstraints.HORIZONTAL;
+        tab1_constraint.weighty = 0.5;
+        tab1_constraint.gridx = 3;
+        tab1_constraint.gridy = alladdedButtons.size() - 1;
+        tab1_constraint.gridwidth = 1;
+        tab1_stopoverPanel.add(navPointButton, tab1_constraint);
         navPointField.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedNavPoints.size(); i++) {
                   if(alladdedNavPoints.get(i) == navPointField) {
+                      
                       repaint();
                   }
               }
@@ -600,8 +654,8 @@ public class GUI extends JFrame {
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedButtons.size(); i++) {
                   if(alladdedButtons.get(i) == navPointButton) {
-                      tab1.remove(alladdedNavPoints.get(i));
-                      tab1.remove(alladdedButtons.get(i));
+                      tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
+                      tab1_stopoverPanel.remove(alladdedButtons.get(i));
                       alladdedButtons.remove(i);
                       alladdedNavPoints.remove(i);
                       listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i+1));
@@ -640,8 +694,8 @@ public class GUI extends JFrame {
     
     public void setNavPointsOrdered(ArrayList<Coordinates> orderedNavPointsList) {
         for(int i = 0 ; i < alladdedButtons.size(); i++) {
-            tab1.remove(alladdedNavPoints.get(i));
-            tab1.remove(alladdedButtons.get(i));
+            tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
+            tab1_stopoverPanel.remove(alladdedButtons.get(i));
             alladdedButtons.remove(i);
             alladdedNavPoints.remove(i);
             Listeners.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
@@ -690,8 +744,8 @@ public class GUI extends JFrame {
 //        }
         while(alladdedButtons.size() != 0) {
             int i = alladdedButtons.size() - 1;
-            tab1.remove(alladdedNavPoints.get(i));
-            tab1.remove(alladdedButtons.get(i));
+            tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
+            tab1_stopoverPanel.remove(alladdedButtons.get(i));
             alladdedButtons.remove(i);
             alladdedNavPoints.remove(i);
             i--;
