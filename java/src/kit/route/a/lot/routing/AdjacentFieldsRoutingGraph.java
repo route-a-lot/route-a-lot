@@ -39,7 +39,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         sortByKey(startID, endID, weight);
 
         // copy data to internal structures
-        edgesPos = new int[maxNodeID + 1];
+        edgesPos = new int[maxNodeID + 1];  // Plus one dummy.
         edgesPos[0] = 0;
         for (int i = 1; i < startID.length; i++) {
             // for each edge
@@ -181,7 +181,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             return new ArrayList<Integer>();
         }
         Collection<Integer> relevantEdges = new ArrayList<Integer>();
-        logger.info("Getting neighbours for node " + node);
         long flags = 0;
         for (byte area: destAreas) {
             // create bitmask
@@ -306,7 +305,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             // For all Nodes
             for (int node: getAllNeighbors(i)) {
                 /*if (getWeight(node, i) < 0 || getWeight(i, node) < 0) {
-                    logger.fatal("Got inconsisten graph (missing edge between + " + i + " and " + node + ")");
+                    logger.fatal("Got inconsistent graph (missing edge between + " + i + " and " + node + ")");
                 }*/
             }
             for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {

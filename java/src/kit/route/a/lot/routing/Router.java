@@ -82,7 +82,7 @@ public class Router {
             }
             // We're still missing the length from the start to the permutation as well 
             // as from the permutation to  the target.
-            length += routes[permutation[i-1]][size - 1] +  routes[0][permutation[0]];
+            length += routes[permutation[i]][size - 1] +  routes[0][permutation[0]];
             if (length < shortestLength
                     || shortestLength == -1) {
                 // We got a shorter permutation!
@@ -197,8 +197,8 @@ public class Router {
                 logger.info("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
                 return currentPath.getRoute();
             }
-            //for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
-            for (Integer to : graph.getAllNeighbors(currentNode)) {
+            for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
+            //(for (Integer to : graph.getAllNeighbors(currentNode)) {
                 // Here we add the new paths.
                 // renderer.drawEdge(new Selection(to, currentPath.getNode(), 0, new Coordinates(0, 0)));
                 selectionWeight = graph.getWeight(currentNode, to);
