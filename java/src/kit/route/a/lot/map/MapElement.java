@@ -27,7 +27,7 @@ public abstract class MapElement {
      * Returns the name of the map element.
      * @return the name of the map element
      */
-    protected abstract String getName();
+    public abstract String getName();
 
     /**
      * Returns the MapElement ID.
