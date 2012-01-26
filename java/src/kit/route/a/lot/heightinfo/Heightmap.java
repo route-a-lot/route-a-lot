@@ -2,6 +2,7 @@ package kit.route.a.lot.heightinfo;
 import java.util.Iterator;
 import java.util.HashSet;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
 
 
 public class Heightmap implements IHeightmap {
@@ -45,8 +46,11 @@ public class Heightmap implements IHeightmap {
 
     @Override
     public int getHeight(Coordinates pos) {
-        int lat = (int)pos.getLatitude();
-        int lon = (int)pos.getLongitude();
+        Projection proj = Projection.getProjectionForCurrentMap();
+        Coordinates geoPos = proj.localCoordinatesToGeoCoordinates(pos);
+        System.out.println(geoPos.getLongitude());
+        int lat = (int)geoPos.getLatitude();
+        int lon = (int)geoPos.getLongitude();
         Coordinates origin = new Coordinates((float)lat,(float)lon);
         HeightTile tmpTile = new HeightTile(0,0,origin);
         iterator = map.iterator();
@@ -54,7 +58,7 @@ public class Heightmap implements IHeightmap {
         while(iterator.hasNext()) {
             HeightTile tile = iterator.next();
             if(tile.equals(tmpTile)){
-                return tile.getHeight(pos);
+                return tile.getHeight(geoPos);
             }//end if
         }//end while
         return 0;

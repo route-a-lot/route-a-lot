@@ -10,6 +10,7 @@ import java.util.HashSet;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.common.WayInfo;
@@ -17,7 +18,6 @@ import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
-import kit.route.a.lot.map.rendering.Projection;
 
 import org.apache.log4j.Logger;
 

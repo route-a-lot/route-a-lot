@@ -19,11 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.DeleteFavoriteEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
-import kit.route.a.lot.map.rendering.Projection;
 
 
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {
@@ -35,7 +35,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int popupXPos;
     private int popupYPos;
     private Coordinates center;
-    protected int zoomlevel = 2;
+    protected int zoomlevel = 3;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
     

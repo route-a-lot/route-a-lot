@@ -3,7 +3,6 @@ package kit.route.a.lot.common;
 import java.awt.Graphics;
 import java.awt.Image;
 
-import kit.route.a.lot.map.rendering.Projection;
 
 
 public class Context2D extends Context {

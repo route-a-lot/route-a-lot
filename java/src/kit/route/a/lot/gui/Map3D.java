@@ -2,7 +2,8 @@ package kit.route.a.lot.gui;
 
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.gui.event.ChangeViewEvent;
-import net.java.games.jogl.*;
+import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 
 
 public class Map3D extends Map implements GLEventListener {
@@ -17,20 +18,20 @@ public class Map3D extends Map implements GLEventListener {
     
     public GLCanvas createCanvas() {
         GLCapabilities glCaps = new GLCapabilities();
-        GLCanvas result = GLDrawableFactory.getFactory().createGLCanvas(glCaps);
+        GLCanvas result = new GLCanvas(glCaps);
         result.addGLEventListener(this);
         return result;
     }
      
     
     @Override
-    public void init(GLDrawable g) {
+    public void init(GLAutoDrawable g) {
         GL gl = g.getGL();
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     }
     
     @Override
-    public void display(GLDrawable g) {
+    public void display(GLAutoDrawable g) {
         GL gl = g.getGL();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity();
@@ -41,18 +42,18 @@ public class Map3D extends Map implements GLEventListener {
     }
 
     @Override
-    public void displayChanged(GLDrawable g, boolean arg1, boolean arg2) {
+    public void displayChanged(GLAutoDrawable g, boolean arg1, boolean arg2) {
         // TODO ???   
     }
 
     @Override
-    public void reshape(GLDrawable g, int x, int y, int width, int height) {
+    public void reshape(GLAutoDrawable g, int x, int y, int width, int height) {
         calculateView();
         GL gl = g.getGL();
         
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        g.getGLU().gluPerspective(85.0, width/(float)height, 5.0, 1000.0);
+        (new GLU()).gluPerspective(85.0, width/(float)height, 5.0, 1000.0);
         gl.glMatrixMode(GL.GL_MODELVIEW);
     }
     

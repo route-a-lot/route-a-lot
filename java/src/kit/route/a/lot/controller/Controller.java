@@ -53,15 +53,60 @@ public class Controller {
 
     private static Logger logger = Logger.getLogger(Controller.class);
     
+    /**
+     * Operation main
+     * 
+     * @param args :-)
+     */
+    public static void main(String[] args) {
+        PropertyConfigurator.configure("config/log4j.conf");
+        new Controller();
+    }
     
     private Controller() {
-        renderer = new Renderer();
         guiHandler = new GUIHandler();
+        renderer = new Renderer();
         state = State.getInstance();
+        File defaultMap = new File("./test/resources/karlsruhe_big.osm");
+        
+        importHeightMap("./srtm/");
+
+        loadState();
+        if (state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
+              loadMap(state.getLoadedMapFile());
+        } else if (defaultMap.exists()) {
+              logger.info("import default map...");
+              importMap(defaultMap);
+              setViewToMapCenter();
+        } else {
+              logger.warn("no map loaded."); //TODO not loading map 
+        }                        
+        
+        guiHandler.addListenerAddNavNode(new SelectNavNodeListener(this));
+        guiHandler.addChangedViewListener(new ChangeViewListener(this));
+        guiHandler.addListenerImportMap(new ImportOsmFileListener(this));  
+        guiHandler.addOptimizeRouteListener(new OrderNavNodesListener(this));
+        guiHandler.addDeleteNavNodeListener(new DeleteNavNodeListener(this));
+        guiHandler.addLoadMapListener(new LoadMapListener(this));
+        guiHandler.addAddFavoriteListener(new AddFavoriteListener(this));
+        guiHandler.addSaveRouteListener(new SaveRouteListner(this));
+        guiHandler.addLoadRouteListener(new LoadRouteListener(this));
+        guiHandler.addExportRouteListener(new ExportRouteListener(this));
+        guiHandler.addSetSpeedListener(new SpeedListener(this));
+        guiHandler.addClickPositionListener(new ClickPositionListener(this));
+        guiHandler.addHeightMalusListener(new HeightMalusListener(this));
+        guiHandler.addHighwayMalusListener(new HighwayMalusListener(this));
+        guiHandler.addCloseListener(new CloseListener(this));
+        guiHandler.setView(state.getCenterCoordinates());
+        guiHandler.updateMapList(state.getImportedMaps());        
+        System.out.println(state.getImportedMaps().size());
     }
         
     
     public void setViewToMapCenter() {
+        if (state.getLoadedMapInfo() == null) {
+            return;
+        }
         Coordinates upLeft = new Coordinates();
         Coordinates bottomRight = new Coordinates();
         state.getLoadedMapInfo().getBounds(upLeft, bottomRight);
@@ -463,56 +508,6 @@ public class Controller {
         }
     }
     
-    /**
-     * Operation main
-     * 
-     * @param args :-)
-     */
-    public static void main(String[] args) {
-        
-        PropertyConfigurator.configure("config/log4j.conf");
-        Controller ctrl = new Controller();
-        File defaultMap = new File("./test/resources/karlsruhe_big.osm");
-        loadState();
-        if (ctrl.state.getLoadedMapFile() != null && ctrl.state.getLoadedMapFile().exists()) {
-              ctrl.loadMap(ctrl.state.getLoadedMapFile());
-        } else {
-            if (defaultMap.exists()) {
-                logger.info("import default map...");
-                ctrl.importMap(defaultMap);
-                ctrl.setViewToMapCenter();
-                try {
-                    StateIO.saveState(new File("./state.state")); // TODO: move saveState call to program exit
-                } catch (IOException e) {
-                    logger.error("state saving: Write error occurred.");
-                    e.printStackTrace();
-                }
-            } else {
-                logger.warn("no map loaded."); //TODO not loading map 
-            }
-        }    
-        ctrl.guiHandler.addListenerAddNavNode(new SelectNavNodeListener(ctrl));
-        ctrl.guiHandler.addChangedViewListener(new ChangeViewListener(ctrl));
-        ctrl.guiHandler.addListenerImportMap(new ImportOsmFileListener(ctrl));  
-        ctrl.setViewToMapCenter();
-        System.out.println(ctrl.state.getImportedMaps().size());
-        ctrl.guiHandler.setView(ctrl.state.getCenterCoordinates());
-        ctrl.guiHandler.updateMapList(ctrl.state.getImportedMaps());
-        ctrl.guiHandler.addOptimizeRouteListener(new OrderNavNodesListener(ctrl));
-        ctrl.guiHandler.addDeleteNavNodeListener(new DeleteNavNodeListener(ctrl));
-        ctrl.guiHandler.addLoadMapListener(new LoadMapListener(ctrl));
-        ctrl.guiHandler.addAddFavoriteListener(new AddFavoriteListener(ctrl));
-        ctrl.guiHandler.addSaveRouteListener(new SaveRouteListner(ctrl));
-        ctrl.guiHandler.addLoadRouteListener(new LoadRouteListener(ctrl));
-        ctrl.guiHandler.addExportRouteListener(new ExportRouteListener(ctrl));
-        ctrl.guiHandler.addSetSpeedListener(new SpeedListener(ctrl));
-        ctrl.guiHandler.addClickPositionListener(new ClickPositionListener(ctrl));
-        ctrl.guiHandler.addHeightMalusListener(new HeightMalusListener(ctrl));
-        ctrl.guiHandler.addHighwayMalusListener(new HighwayMalusListener(ctrl));
-        ctrl.guiHandler.addCloseListener(new CloseListener(ctrl));
-    }
-
-
     public Renderer getRender() {
         return renderer;
     }

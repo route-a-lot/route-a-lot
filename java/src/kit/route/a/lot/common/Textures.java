@@ -1,20 +1,14 @@
 package kit.route.a.lot.common;
 
-import java.awt.Image;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
-import java.io.IOException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import javax.imageio.ImageIO;
+import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 
-import net.java.games.jogl.GL;
-import net.java.games.jogl.GLU;
-import net.java.games.jogl.util.BufferUtils;
+import com.sun.opengl.util.BufferUtil;
 
 public class Textures
 {	
@@ -27,7 +21,7 @@ public class Textures
         case BufferedImage.TYPE_INT_RGB:
         {
           int[] data = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
-          dest = ByteBuffer.allocateDirect(data.length * BufferUtils.SIZEOF_INT);
+          dest = ByteBuffer.allocateDirect(data.length * BufferUtil.SIZEOF_INT);
           dest.order(ByteOrder.nativeOrder());
           dest.asIntBuffer().put(data, 0, data.length);
           break;
@@ -51,12 +45,12 @@ public class Textures
     public static int genTexture(GL gl)
     {
       final int[] tmp = new int[1];
-      gl.glGenTextures(1, tmp);
+      gl.glGenTextures(1, tmp, 0);
       return tmp[0];
     }
     
     public static void delTexture(GL gl, int tex)
     {
-      gl.glDeleteTextures(1, new int[]{tex});
+      gl.glDeleteTextures(1, new int[]{tex}, 0);
     }
 }

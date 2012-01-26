@@ -75,8 +75,8 @@ public class HeightTile implements IHeightTile {
     
     public boolean equals(HeightTile other){
 
-        return ((origin.getLatitude() == other.getOrigin().getLatitude()) &&
-             (origin.getLongitude() == other.getOrigin().getLongitude() ) );
+        return (Math.abs(origin.getLatitude() - other.getOrigin().getLatitude()) < 0.005) &&
+               (Math.abs(origin.getLongitude() - other.getOrigin().getLongitude()) < 0.005);
     }
    
     @Override

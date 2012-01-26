@@ -1,7 +1,10 @@
-package kit.route.a.lot.map.rendering;
+package kit.route.a.lot.common;
 
 import static org.junit.Assert.*;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.MercatorProjection;
+import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.SimpleProjection;
 
 import org.junit.Test;
 

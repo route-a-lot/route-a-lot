@@ -150,7 +150,7 @@ public class GUI extends JFrame {
         mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        map = new Map2D(this);
+        map = new Map2D(this); // TODO automatic choice
         
         statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));

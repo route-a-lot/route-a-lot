@@ -10,6 +10,7 @@ import java.util.Collection;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;

@@ -14,7 +14,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.map.rendering.Projection;
+import kit.route.a.lot.common.Projection;
 
 
 public class Street extends MapElement {

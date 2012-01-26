@@ -34,9 +34,9 @@ public class SRTMLoader implements HeightLoader {
     }
 
         @Override
-        public void load(File file) {
+        public void load(File dataDirectory) {
         
-            File[] dateien = file.listFiles();
+            File[] dateien = dataDirectory.listFiles();
             HeightTile tile;
             FileInputStream in;
             DataInputStream bin;

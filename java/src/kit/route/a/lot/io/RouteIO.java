@@ -31,10 +31,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.map.rendering.Projection;
 
 public class RouteIO {
 

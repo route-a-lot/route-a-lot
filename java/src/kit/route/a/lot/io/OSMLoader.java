@@ -15,11 +15,10 @@ import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.rendering.Projection;
-
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

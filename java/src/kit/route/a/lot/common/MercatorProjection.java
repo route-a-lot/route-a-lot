@@ -1,6 +1,5 @@
-package kit.route.a.lot.map.rendering;
+package kit.route.a.lot.common;
 
-import kit.route.a.lot.common.Coordinates;
 
 
 public class MercatorProjection extends Projection {
