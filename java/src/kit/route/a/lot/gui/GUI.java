@@ -106,6 +106,7 @@ public class GUI extends JFrame {
     private ArrayList<JButton> alladdedButtons;
    
     private Map map;
+    private Map mapBackup;
     
     private int key = 0;
     private String choosenMap;
@@ -150,7 +151,7 @@ public class GUI extends JFrame {
         mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        map = new Map2D(this); // TODO automatic choice
+        map = new Map2D(this);
         
         statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
@@ -216,15 +217,12 @@ public class GUI extends JFrame {
         graphics = new JButton("2D/3D");
         graphics.addActionListener(new ActionListener() {            
             @Override
-            public void actionPerformed(ActionEvent arg0) {
-                mapContents.remove(map);
-                if (map instanceof Map2D) {
-                    map = new Map3D(map.gui); // this doesn't work
-                } else {
-                    map = new Map2D(map.gui); // this doesn't work
-                }
-                mapContents.add(map, BorderLayout.CENTER);
+            public void actionPerformed(ActionEvent event) {
                 Listeners.fireEvent(listener.switchMapMode, new GeneralEvent());
+                mapContents.remove(map);
+                map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
+                mapContents.add(map, BorderLayout.CENTER); 
+                mapContents.validate();
             }  
         });
 

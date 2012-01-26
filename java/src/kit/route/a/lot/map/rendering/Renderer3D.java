@@ -20,7 +20,7 @@ import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
-    private static final float HEIGHT_STEPS = 10;
+    private static final float HEIGHT_STEPS = 150;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
     static {
         logger.setLevel(Level.INFO);
@@ -42,7 +42,6 @@ public class Renderer3D extends Renderer {
         float width = context.getWidth();
         float height = context.getHeight();
         
-        // render usual 2D to a new image. output is a bit larger than strict screen size
         BufferedImage img = new BufferedImage((int) (width / Projection.getZoomFactor(detail)), 
                                               (int) (height / Projection.getZoomFactor(detail)),
                                               BufferedImage.TYPE_INT_RGB);           

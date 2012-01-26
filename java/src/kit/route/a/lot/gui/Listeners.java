@@ -27,7 +27,7 @@ public class Listeners {
     public List<GeneralListener> deleteNavPoint;
     public List<GeneralListener> deleteFavPoint;
     public List<GeneralListener> loadMap;
-    public List<GeneralListener> switchMapMode; // TODO finish
+    public List<GeneralListener> switchMapMode;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
@@ -52,6 +52,7 @@ public class Listeners {
         deleteFavPoint = new ArrayList<GeneralListener>();
         loadMap = new ArrayList<GeneralListener>();
         optimizeRoute = new ArrayList<GeneralListener>();
+        switchMapMode = new ArrayList<GeneralListener>();
     }
     
     public void addViewChangedListener(GeneralListener viewChangedListener) {
@@ -110,6 +111,9 @@ public class Listeners {
     }
     public void addLoadMapListener(GeneralListener loadMapListener) {
         loadMap.add(loadMapListener);
+    }
+    public void addSwitchMapModeListener(GeneralListener switchMapModeListener) {
+        switchMapMode.add(switchMapModeListener);
     }
     
     public static void fireEvent(List<GeneralListener> listener, GeneralEvent event) {

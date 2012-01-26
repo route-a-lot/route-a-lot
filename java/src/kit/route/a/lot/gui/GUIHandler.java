@@ -134,9 +134,12 @@ public class GUIHandler {
         listener.addImportHeightMapListener(importHeightMapListener);
     }
     
-
-    public void addCloseListener(GeneralListener closeListener) { //doesn't work
+    public void addCloseListener(GeneralListener closeListener) { //doesn't work ... obsolete comment?
         listener.addCloseListener(closeListener);
+    }
+    
+    public void addSwitchMapModeListener(GeneralListener switchMapModeListener) {
+        listener.addSwitchMapModeListener(switchMapModeListener);
     }
     
     public void setView(Coordinates center) {

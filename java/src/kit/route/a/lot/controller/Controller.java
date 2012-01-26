@@ -18,6 +18,7 @@ import kit.route.a.lot.controller.listener.ClickPositionListener;
 import kit.route.a.lot.controller.listener.CloseListener;
 import kit.route.a.lot.controller.listener.DeleteNavNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
+import kit.route.a.lot.controller.listener.GeneralListener;
 import kit.route.a.lot.controller.listener.HeightMalusListener;
 import kit.route.a.lot.controller.listener.HighwayMalusListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
@@ -30,6 +31,7 @@ import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.ChangeViewListener;
 import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.gui.GUIHandler;
+import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
@@ -95,8 +97,16 @@ public class Controller {
         guiHandler.addHeightMalusListener(new HeightMalusListener(this));
         guiHandler.addHighwayMalusListener(new HighwayMalusListener(this));
         guiHandler.addCloseListener(new CloseListener(this));
+        guiHandler.addSwitchMapModeListener(new GeneralListener() {
+            @Override
+            public void handleEvent(GeneralEvent event) {
+                Renderer oldRenderer = renderer;
+                renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
+                renderer.inheritCache(oldRenderer);
+            }         
+        });
         guiHandler.setView(state.getCenterCoordinates());
-        guiHandler.updateMapList(state.getImportedMaps());        
+        guiHandler.updateMapList(state.getImportedMaps());           
         System.out.println(state.getImportedMaps().size());
     }
         
