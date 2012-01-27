@@ -17,9 +17,9 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
+import java.lang.Comparable;
 
-
-public class Street extends MapElement {
+public class Street extends MapElement implements Comparable<Street>{
 
     private Node[] nodes;
 
@@ -274,7 +274,7 @@ public class Street extends MapElement {
         return length;
     }
     
-    public boolean equals(MapElement other){
+    public boolean equals(Street other){
 
         if(name.equals(other.getName()) ){
             return true;
@@ -282,7 +282,7 @@ public class Street extends MapElement {
         return false;
     }
 
-    public int compare(MapElement one, MapElement other){
+    public int compareTo(Street other){
         int value;
         int otherValue;
         String otherName = other.getName();
@@ -293,10 +293,11 @@ public class Street extends MapElement {
 
         for(int i = 0; i < minlength; i++){
             value = Character.getNumericValue( name.charAt(i) );
+            if(value < 0 || value > 25){value = 25;}
             otherValue = Character.getNumericValue( otherName.charAt(i) );
-
+            if(value < 0 || otherValue > 25){otherValue = 25;}
             if(value > otherValue){
-                return otherValue - value;
+                return value - otherValue;
             } else if(value < otherValue) {
                 return value - otherValue;
             }               

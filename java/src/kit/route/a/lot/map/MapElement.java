@@ -10,7 +10,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
-public abstract class MapElement implements Comparator<MapElement>{
+public abstract class MapElement{
 
     /** constant used in a stream for announcing {@link Node} element data following */
     protected static final byte DESCRIPTOR_NODE = 1;
@@ -166,9 +166,9 @@ public abstract class MapElement implements Comparator<MapElement>{
      */
     protected abstract void save(DataOutputStream stream) throws IOException;
     
-    public abstract boolean equals(MapElement other);
+    //public abstract boolean equals(MapElement other);
 
-    public abstract int compare(MapElement one, MapElement other);
+    //public abstract int compare(MapElement one, MapElement other);
        
 
    
