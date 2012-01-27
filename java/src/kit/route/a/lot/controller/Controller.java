@@ -19,6 +19,7 @@ import kit.route.a.lot.controller.listener.AddFavoriteListener;
 import kit.route.a.lot.controller.listener.ClickPositionListener;
 import kit.route.a.lot.controller.listener.CloseListener;
 import kit.route.a.lot.controller.listener.DeleteFavoriteListener;
+import kit.route.a.lot.controller.listener.DeleteMapListener;
 import kit.route.a.lot.controller.listener.DeleteNavNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
 import kit.route.a.lot.controller.listener.GeneralListener;
@@ -118,6 +119,7 @@ public class Controller {
         guiHandler.addAutoCompletitionListener(new SuggestionListener(this));
         guiHandler.addGetNavNodeDescriptionListener(new SearchNameListener(this));
         guiHandler.addFavDescriptionListener( new ShowFavoriteDescriptionListener(this));
+        guiHandler.addDeleteMapListener(new DeleteMapListener(this));
         guiHandler.setView(state.getCenterCoordinates());
         guiHandler.updateMapList(state.getImportedMaps()); 
         guiHandler.setSpeed(state.getSpeed());
@@ -427,6 +429,19 @@ public class Controller {
             return;
         }
         guiHandler.thisWasClicked(GUI.FREEMAPSPACE, pos);
+    }
+    
+    public void deleteMap(String path){
+        File del = new File(path);
+        if(del.exists()) {
+            del.delete();
+        }
+        for (int i = 0; i < state.getImportedMaps().size(); i++) {
+            if (state.getImportedMaps().get(i).equals(path)) {
+                state.getImportedMaps().remove(i);
+            }
+        }
+        guiHandler.updateMapList(state.getImportedMaps());
     }
 
     /**

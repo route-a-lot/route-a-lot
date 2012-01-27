@@ -121,6 +121,7 @@ public class GUI extends JFrame {
     private ArrayList<JTextField> alladdedNavPoints;
     private ArrayList<JButton> alladdedButtons;
     private ArrayList<JMenuItem> textuelProposals;
+    private ArrayList<String> importedMaps;
    
     private Map map;
     
@@ -560,7 +561,9 @@ public class GUI extends JFrame {
                 GUI.this.importMapFileChooser();
             }
         });
-             
+        
+        importedMaps = new ArrayList<String>();
+        
         chooseImportedMap = new JComboBox();
         chooseImportedMap.setEditable(true);
         
@@ -763,6 +766,10 @@ public class GUI extends JFrame {
      * @param maps the new entries
      */
     public void updateMapChooser(ArrayList<String> maps) {
+        for(int i = 0; i < importedMaps.size(); i++) {
+            chooseImportedMap.removeItem(chooseImportedMap.getItemAt(i));
+        }
+        importedMaps = new ArrayList<String>(maps);
         for(String map : maps) {
             chooseImportedMap.addItem(map); //TODO keine doppelten NAmen
         }
