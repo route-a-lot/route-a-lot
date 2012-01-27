@@ -111,7 +111,7 @@ public class Precalculator {
         }
         
         // read resulting file
-        String filePath = FILE + ".part." + AREAS + "Parts";
+        String filePath = FILE + ".part." + AREAS;
         byte[] areas = new byte[(int) new File(filePath).length()];
         BufferedInputStream file = null;
         try {

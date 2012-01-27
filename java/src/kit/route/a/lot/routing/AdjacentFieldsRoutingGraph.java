@@ -35,8 +35,18 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             return;
         }
         
+        String out = "";
+        for (int i: startID) {
+            out += " " + i;
+        }
+        logger.info("Before sorting: " + out);
         // sort arrays simultaneously by startID
         sortByKey(startID, endID, weight);
+        out = "";
+        for (int i: startID) {
+            out += " " + i;
+        }
+        logger.info("After sorting:  " + out);
 
         // copy data to internal structures
         edgesPos = new int[maxNodeID + 1];  // Plus one dummy.
@@ -63,13 +73,35 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             newEndID[i] = endID[i];
         }
         for (int i = 0; i < startID.length; i++) {
-            newStartID[startID.length + i - 1] = endID[i];
-            newEndID[startID.length + i - 1] = startID[i];
+            newStartID[startID.length + i] = endID[i];
+            newEndID[startID.length + i] = startID[i];
         }
         metisGraph = new AdjacentFieldsRoutingGraph();
         metisGraph.buildGraph(newStartID, newEndID, newStartID, maxNodeID);
     }
 
+    /*
+    private static void sortByKey(int[] key, int[] data1, int[] data2) {
+        boolean done = true;
+        while(!done) {
+            done = true;
+            for (int i = 0; i < key.length - 1; i++) {
+                if (key[i] > key[i + 1]) {
+                    done = false;
+                    key[i + 1] += key[i];
+                    key[i] = key[i + 1] - key[i];
+                    key[i + 1] -= key[i];
+                    data1[i + 1] += data1[i];
+                    data1[i] = data1[i + 1] - data1[i];
+                    data1[i + 1] -= data1[i];
+                    data2[i + 1] += data2[i];
+                    data2[i] = data2[i + 1] - data2[i];
+                    data2[i + 1] -= data2[i];
+                }
+            }
+        }
+    }*/
+    
     /**
      * Sorts the given integer arrays via Quicksort, using the key array as reference
      * while the data arrays are sorted in just the same manner.
@@ -80,7 +112,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
      * @throws IllegalArgumentException either argument is <code>null</code>
      *          or the arrays are not of equal size
      */
-    private void sortByKey(int[] key, int[] data1, int[] data2) {
+   private void sortByKey(int[] key, int[] data1, int[] data2) {
         if ((key == null) || (data1 == null) || (data2 == null)
                 || (key.length != data1.length) || (key.length != data2.length)) {
             throw new IllegalArgumentException();
