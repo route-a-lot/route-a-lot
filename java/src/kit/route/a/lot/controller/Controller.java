@@ -455,10 +455,10 @@ public class Controller {
      * Operation getPOIInfo
      */
     public void getPOIInfo(Coordinates pos) {   
-//        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
-//        if (info != null) {
-//            guiHandler.showPoiDescription(info, pos);
-//        }
+        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
+        if (info != null) {
+            guiHandler.showPoiDescription(info, pos);
+        }
     }
 
     /**
