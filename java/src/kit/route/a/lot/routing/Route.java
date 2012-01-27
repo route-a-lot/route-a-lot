@@ -30,7 +30,7 @@ public class Route {
     }
 
     public Route() {
-        to = 0;
+        to = -1;
         length = 0;
         from = null;
     }

@@ -131,14 +131,14 @@ public class Router {
             if (prev == navPoint) {
                 continue;
             }
-            logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString());
+            logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
             route = fromAToB(prev, navPoint);
-            if (route == null) {
-                logger.warn("Failed to find route, returning null");
-                return null;
+            if (route != null) {
+                result.addAll(route.toList());
+                prev = navPoint;
+            } else {
+                logger.warn("Ignoring " + navPoint + " for routing." + " (no path found).");
             }
-            prev = navPoint;
-            result.addAll(route.toList());
         }
         // // System.out.println(route.size());
         return result;
@@ -208,8 +208,8 @@ public class Router {
             }
         }
         // No path was found, maybe raise an error?
-        logger.error("Couldn't find any route at all from " + a.toString() + " to " + b.toString()
+        logger.debug("Couldn't find any route at all from " + a.toString() + " to " + b.toString()
                 + ". Are you sure it is even possible?");
-        return new Route();
+        return null;
     }
 }
