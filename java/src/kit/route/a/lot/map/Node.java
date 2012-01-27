@@ -73,16 +73,4 @@ public class Node extends MapElement {
             return this;
         }
     }
-    
-    public boolean equals(MapElement other){
-        /*wird nicht verwendet*/
-        return false;
-    }
-
-    public int compare(MapElement one, MapElement other){
-        /*wird nicht verwendet*/
-        return 0;
-    }
-
-
 }
