@@ -37,7 +37,13 @@ public interface AddressOperator {
      * @return
      */
     void add(MapElement element);
-
+    /**
+     * 
+     * 
+     */
+    void buildTrie();
+    
+    
     /**
      * Operation loadFromStream
      * 
