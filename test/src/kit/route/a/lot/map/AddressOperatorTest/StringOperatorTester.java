@@ -33,7 +33,11 @@ public class StringOperatorTester {
             ArrayList<MapElement> tree = mapElements.getTree();
             Street [] tmp = new Street[1];
             Street[] elements = tree.toArray(tmp);
+            System.out.println(elements[0].getName());
+            System.out.println(elements[1].getName());
+            System.out.println(elements[2].getName());
             Street item = new Street(address,null);
+            
             int index = Arrays.binarySearch(elements,item);
             System.out.println("Index"+ index);
             Street foundItem = (Street)elements[index];
