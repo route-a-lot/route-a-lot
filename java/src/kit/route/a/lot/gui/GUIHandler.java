@@ -152,6 +152,10 @@ public class GUIHandler {
         listener.addAutoCompletitionListener(autoCompletitionListener);
     }
     
+    public void addDeleteMapListener(GeneralListener deleteMapListener) {
+        listener.addDeleteMapListener(deleteMapListener);
+    }
+    
     public void setView(Coordinates center) {
         gui.setView(center);
     }

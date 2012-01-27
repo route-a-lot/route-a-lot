@@ -566,7 +566,7 @@ public class GUI extends JFrame {
         deleteMapButton.addActionListener(new ActionListener() {    
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String deletedMap = chooseImportedMap.getSelectedItem().toString();//TODO
+                listener.fireEvent(listener.deleteMap, new TextEvent(chooseImportedMap.getSelectedItem().toString()));
             }
         });
         
