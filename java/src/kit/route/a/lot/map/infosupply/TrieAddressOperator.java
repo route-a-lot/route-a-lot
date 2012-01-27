@@ -23,9 +23,9 @@ public class TrieAddressOperator implements AddressOperator {
     }
 
     @Override
-    public List<String> suggestCompletions(String expression) {
-        // TODO Auto-generated method stub
-        return null;
+    public ArrayList<String> suggestCompletions(String expression) {
+        ArrayList<String> completions = mapElements.search(expression);
+        return completions;
     }
 
     @Override
