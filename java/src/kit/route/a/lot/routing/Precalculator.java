@@ -83,7 +83,7 @@ public class Precalculator {
     private static boolean doAreas() {
         String AREAS = "63";
         String FILE = "graph.txt";
-        String BINARY = "./gpmetis";
+        String BINARY = "gpmetis";
         logger.info("Creating " + AREAS + " Areas with Metis...");
         // Write graph file
         try {
@@ -101,7 +101,7 @@ public class Precalculator {
             Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
+            
             // read the output from the command
             while ((buffer = stdInput.readLine()) != null) {
                 logger.info("Metis: " + buffer);
@@ -112,10 +112,27 @@ public class Precalculator {
                 logger.error("Metis: " + buffer);
             }
         } catch (IOException e) {
-            logger.error(BINARY + " failed to execute");
-            return false;
+            BINARY = "./gpmetis";
+            try {
+                Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
+                BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+                
+                // read the output from the command
+                while ((buffer = stdInput.readLine()) != null) {
+                    logger.info("Metis: " + buffer);
+                }
+                
+                // read any errors from the attempted command
+                while ((buffer = stdError.readLine()) != null) {
+                    logger.error("Metis: " + buffer);
+                }
+            } catch (IOException e1) {
+                logger.error(BINARY + " failed to execute");
+                return false;
+            }
         }
-        
+
         // read resulting file
         String filePath = FILE + ".part." + AREAS;
         byte[] areas = new byte[(int) new File(filePath).length()];
