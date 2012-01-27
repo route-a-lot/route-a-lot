@@ -513,7 +513,7 @@ public class Controller {
     
     private static void loadState() {
         File stateFile = new File("./state.state");
-        if (false && stateFile.exists()) {   
+        if (stateFile.exists()) {   
             logger.info("load state file..."); 
             try { 
                 StateIO.loadState(stateFile); 
