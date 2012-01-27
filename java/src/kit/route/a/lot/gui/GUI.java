@@ -17,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -742,7 +743,7 @@ public class GUI extends JFrame {
         return navPointsList;
     }
     
-    public void updateNavNodes(ArrayList<Selection> newNavPointsList) {
+    public void updateNavNodes(List<Selection> newNavPointsList) {
         while(alladdedButtons.size() != 0) {
             int i = alladdedButtons.size() - 1;
             tab1_stopoverPanel.remove(alladdedNavPoints.get(i));

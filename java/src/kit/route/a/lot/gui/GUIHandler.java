@@ -1,6 +1,7 @@
 package kit.route.a.lot.gui;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -44,7 +45,7 @@ public class GUIHandler {
         gui.updateMapChooser(maps);
     }
     
-    public void updateNavPointsList(ArrayList<Selection> navPointsList) {
+    public void updateNavPointsList(List<Selection> navPointsList) {
         gui.updateNavNodes(navPointsList);
     }
 
