@@ -316,5 +316,7 @@ public class OSMType {
     public static final int WATERWAY_WATERFALL = 1978;
 
     public static final int NON_PHYSICAL = 2000;
+    
+    public static final int FAVOURITE = 4;
 
 }

@@ -12,6 +12,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -157,10 +158,10 @@ public class ArrayElementDB implements ElementDB {
     public boolean isFavorite(Coordinates pos, int detailLevel, int radius) {
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - (detailLevel + 1) * 2 * radius);
-        UL.setLongitude(pos.getLongitude() -(detailLevel + 1) * 2 * radius);
-        BR.setLatitude(pos.getLatitude() + (detailLevel + 1) * 2 * radius);
-        BR.setLongitude(pos.getLongitude() + (detailLevel + 1) * 2 * radius);
+        UL.setLatitude(pos.getLatitude() - Projection.getZoomFactor(detailLevel) * radius);
+        UL.setLongitude(pos.getLongitude() -Projection.getZoomFactor(detailLevel) * radius);
+        BR.setLatitude(pos.getLatitude() + Projection.getZoomFactor(detailLevel) * radius);
+        BR.setLongitude(pos.getLongitude() + Projection.getZoomFactor(detailLevel) * radius);
         
         for (POINode fav : favorites) {
             if(fav.isInBounds(UL, BR)) {

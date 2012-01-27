@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
@@ -299,7 +300,7 @@ public class Renderer {
         node.setLongitude(from.getPos().getLongitude() + vector.getLongitude());
         return node;
     }
-
+    
     /**
      */
     private void drawOverlay(Context context, int detail) {
@@ -313,13 +314,14 @@ public class Renderer {
         graphics.setColor(new Color(0, true));
         graphics.fillRect(0, 0, size, size);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(Color.ORANGE);
+        graphics.setColor(Color.BLUE);
         graphics.fillOval(0, 0, size, size);
 
         for (MapElement element : elements) {
             if (element instanceof Node) {
                 if (element instanceof POINode && (((POINode) element).getInfo().getName() == null 
-                        || ((POINode) element).getInfo().getName().equals(""))){
+                        || ((POINode) element).getInfo().getName().equals("")
+                        || ((POINode) element).getInfo().getCategory() != OSMType.FAVOURITE)){
                     continue;
                 }
                 Node node = (Node) element;
@@ -328,15 +330,7 @@ public class Renderer {
                 context.drawImage(drawPosition, image, detail);
             }
             if (element instanceof Area) {
-                Area area = (Area) element;
-                if (area.getSelection() != null) {
-                    Coordinates pos = area.getSelection().getPosition();
-                    Coordinates drawPosition = new Coordinates(pos.getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
-                            pos.getLongitude() - (size/2 * Projection.getZoomFactor(detail)));
-                    context.drawImage(drawPosition, image, detail);
-                } else {
-                    logger.warn("Area returned null-selection");
-                }
+                continue;
             }
         }
     }

@@ -237,10 +237,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - (detailLevel + 1) * 2 * radius);
-        UL.setLongitude(pos.getLongitude() -(detailLevel + 1) * 2 * radius);
-        BR.setLatitude(pos.getLatitude() + (detailLevel + 1) * 2 * radius);
-        BR.setLongitude(pos.getLongitude() + (detailLevel + 1) * 2 * radius);
+        UL.setLatitude(pos.getLatitude() - Projection.getZoomFactor(detailLevel) *  radius);
+        UL.setLongitude(pos.getLongitude() -Projection.getZoomFactor(detailLevel) *  radius);
+        BR.setLatitude(pos.getLatitude() + Projection.getZoomFactor(detailLevel) * radius);
+        BR.setLongitude(pos.getLongitude() + Projection.getZoomFactor(detailLevel) * radius);
         Collection<MapElement> elements = getOverlay(0, UL, BR);
         for (MapElement element : elements) {
             if (element instanceof POINode && element.isInBounds(UL, BR) && ((POINode) element).getInfo().getName() != null

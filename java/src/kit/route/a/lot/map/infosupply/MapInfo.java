@@ -320,7 +320,9 @@ public class MapInfo {
     
     public void swapNodeIds(int id1, int id2) {
         elementDB.swapNodeIds(id1, id2);
-        logger.debug("Swapping node " + id1 + " and " + id2);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Swapping node " + id1 + " and " + id2);
+        }
     }
     
     public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius) {

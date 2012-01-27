@@ -15,12 +15,16 @@ import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.infosupply.MapInfo;
+
+import org.apache.log4j.Logger;
 
 
 public class Tile {
 
-    //private static Logger logger = Logger.getLogger(Tile.class);
+    private static Logger logger = Logger.getLogger(Tile.class);
 
     private Coordinates topLeft;
     private Coordinates bottomRight;
@@ -28,7 +32,7 @@ public class Tile {
     private BufferedImage data;
     private int width;
     private int height;
-    private static int num = 0;
+//    private static int num = 0;
 
     /**
      * Creates an new (empty) tile using a calculated resolution
@@ -105,6 +109,8 @@ public class Tile {
         //double mapElements = (middle - start) / 1000000;
         //double drawing = (end - middle) / 1000000;
         // System.out.println("time for mapElements " + mapElements + "ms; for drawing " + drawing + "ms");
+        
+        drawPOIs(graphics);
 
         graphics.dispose();
 
@@ -147,14 +153,15 @@ public class Tile {
      *            the node to be drawn
      */
     private void draw(Node node, Graphics2D graphics) {
-        int size = 3;
-
-        Coordinates localCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(node.getPos(), topLeft, detail);
         graphics.setColor(Color.LIGHT_GRAY);
+        drawPoint(node.getPos(), 3, graphics);
+    }
+    
+    private void drawPoint(Coordinates globalCoordinates, int size, Graphics2D graphics) {
+        Coordinates localCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(globalCoordinates, topLeft, detail);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
     }
-
 
     /**
      * Draws an area on the tile.
@@ -357,6 +364,35 @@ public class Tile {
         rotatedVector.setLongitude((float) ((Math.cos(angle * Math.PI / 180) * vector.getLongitude() - Math.sin(angle * Math.PI / 180) * vector.getLatitude()) * 180 / Math.PI));
         rotatedVector.setLatitude((float) ((Math.sin(angle * Math.PI / 180) * vector.getLongitude() + Math.cos(angle * Math.PI / 180) * vector.getLatitude()) * 180 / Math.PI));
         return rotatedVector;
+    }
+    
+    /**
+     */
+    private void drawPOIs(Graphics2D graphics) {
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        Collection<MapElement> elements = mapInfo.getOverlay(detail, topLeft, bottomRight);
+
+        int size = 8;
+        graphics.setColor(Color.ORANGE);
+
+        for (MapElement element : elements) {
+            if (element instanceof Node) {
+                if (element instanceof POINode && (((POINode) element).getInfo().getName() == null 
+                        || ((POINode) element).getInfo().getName().equals("")
+                        || ((POINode) element).getInfo().getCategory() == OSMType.FAVOURITE)){
+                    continue;
+                }
+                drawPoint(((Node) element).getPos(), size, graphics);
+            }
+            if (element instanceof Area) {
+                Area area = (Area) element;
+                if (area.getSelection() != null) {
+                    drawPoint(area.getSelection().getPosition(), size, graphics);
+                } else {
+                    logger.warn("Area returned null-selection");
+                }
+            }
+        }
     }
 
     public static long getSpecifier(Coordinates topLeft, int detail) {

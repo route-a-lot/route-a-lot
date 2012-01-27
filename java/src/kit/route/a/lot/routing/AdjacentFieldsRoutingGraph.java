@@ -254,7 +254,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
             if (edges[i] == to) {
                 if (weights[i] > 0) {
-                    logger.debug("Weight from " + from + " to " + to + " is " + weights[i]);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Weight from " + from + " to " + to + " is " + weights[i]);
+                    }
                     return weights[i];
                 } else {
                     logger.debug("Got zero weight from " + from + " to " + to + ", returning 1");

@@ -10,6 +10,7 @@ import java.util.List;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 
@@ -269,10 +270,10 @@ public class Controller {
             Node node = new Node(state.getNavigationNodes().get(i).getPosition());
             Coordinates topLeft = new Coordinates();
             Coordinates bottomRight = new Coordinates();
-            topLeft.setLatitude(pos.getLatitude() - (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-            topLeft.setLongitude(pos.getLongitude() -(state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-            bottomRight.setLatitude(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-            bottomRight.setLongitude(pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            topLeft.setLatitude(pos.getLatitude() - Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
+            topLeft.setLongitude(pos.getLongitude() - Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
+            bottomRight.setLatitude(pos.getLatitude() + Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
+            bottomRight.setLongitude(pos.getLongitude() + Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
                 state.getNavigationNodes().remove(i);
                 state.setCurrentRoute(new ArrayList<Integer>());
