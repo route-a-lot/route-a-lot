@@ -58,7 +58,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
 
-    private Renderer renderer = new Renderer3D();
+    private Renderer renderer = new Renderer();
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
 

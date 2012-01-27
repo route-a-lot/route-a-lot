@@ -152,7 +152,7 @@ public class RouteIO {
             MapInfo mapInfo = state.getLoadedMapInfo();
             for (int i = 0; i < route.size(); i++) {
                 Coordinates localCoordinates = mapInfo.getNode(route.get(i)).getPos();
-                Coordinates geoCoordinates = projection.geoCoordinatesToLocalCoordinates(localCoordinates);
+                Coordinates geoCoordinates = projection.localCoordinatesToGeoCoordinates(localCoordinates);
                 
                 coordinatesSB.append(geoCoordinates.getLongitude() + "," + geoCoordinates.getLatitude());
                 if (i % 3 == 2) {
@@ -186,9 +186,9 @@ public class RouteIO {
                 placemarkElement.appendChild(pointElement);
                 coordinatesElement = document.createElement("coordinates");
                 pointElement.appendChild(coordinatesElement);
-                Coordinates nodePosition = navNodes.get(i).getPosition();
+                Coordinates nodePosition = projection.localCoordinatesToGeoCoordinates(navNodes.get(i).getPosition());
                 String coordinates = nodePosition.getLongitude() + "," + nodePosition.getLatitude();
-                pointElement.appendChild(document.createTextNode(coordinates));
+                coordinatesElement.appendChild(document.createTextNode(coordinates));
             }
             
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
