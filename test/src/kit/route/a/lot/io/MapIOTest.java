@@ -26,7 +26,6 @@ public class MapIOTest {
             OSMLoader osmLoader = new OSMLoader();
             osmLoader.importMap(karlsruheMap);
             State state = State.getInstance();
-            state.getLoadedMapInfo().buildZoomlevels();
             
             // Controller.setViewToMapCenter() externalized:
             Coordinates upLeft = new Coordinates();
