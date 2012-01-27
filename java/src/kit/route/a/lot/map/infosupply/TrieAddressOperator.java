@@ -32,9 +32,9 @@ public class TrieAddressOperator implements AddressOperator {
     public Selection select(String address) {
         // TODO Auto-generated method stub
             ArrayList<MapElement> tree = mapElements.getTree();
-            MapElement [] tmp = new MapElement[8];
-            MapElement[] elements = tree.toArray(tmp);
-            Street item = new Street();
+            Street [] tmp = new Street[1];
+            Street[] elements = tree.toArray(tmp);
+            Street item = new Street(address,null);
             int index = Arrays.binarySearch(elements,item);
             Street foundItem = (Street)elements[index];
             Node[] nodes = foundItem.getNodes(); 
@@ -43,12 +43,18 @@ public class TrieAddressOperator implements AddressOperator {
             return selection;     
 
     }
-
+ 
     @Override
     public void add(MapElement element) {
         if(element instanceof Street){
             mapElements.insert(null,element);
         }
+    }
+    
+    @Override
+    public void buildTrie(){
+        /*sortieren mit radixSort*/
+        mapElements.radixSort();
     }
 
     @Override
