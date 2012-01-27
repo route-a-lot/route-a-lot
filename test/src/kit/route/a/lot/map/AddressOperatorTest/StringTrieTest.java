@@ -53,11 +53,13 @@ public class StringTrieTest {
         Street[] elements = tree.toArray(tmp);
         for(int i = 0; i < elements.length;i++){
             tmpName = elements[i].getName();
-            if(first < Character.getNumericValue(tmpName.charAt(0))){
-                /*bricht ab wenn erster Buchstabe lexikographisch größer ist*/
-                return completions;
-            }else if(tmpName.startsWith(name)){
-                completions.add(elements[i].getName());
+            if(!(tmpName == null)){
+                if(first < Character.getNumericValue(tmpName.charAt(0))){
+                    /*bricht ab wenn erster Buchstabe lexikographisch größer ist*/
+                    return completions;
+                }else if(tmpName.startsWith(name)){
+                    completions.add(elements[i].getName());
+                }
             }
         }
         return completions;
