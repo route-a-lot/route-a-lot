@@ -183,12 +183,12 @@ public class Router {
             // (everything else would be a pain in the ass)
             if (currentNode == b.getTo()) {
                 // We can't return now, as there might be a shorter way via b.getFrom().
-                selectionWeight = graph.getWeight(b.getFrom(), b.getTo());
+                selectionWeight = graph.getWeight(b.getTo(), b.getFrom());
                 if (selectionWeight > 0) {
                     heap.add(new Route(-1, (int) (1 / b.getRatio()) * selectionWeight, currentPath));
                 }
             } else if (currentNode == b.getFrom()) {
-                selectionWeight = graph.getWeight(b.getTo(), b.getFrom());
+                selectionWeight = graph.getWeight(b.getFrom(), b.getTo());
                 if (selectionWeight > 0) {
                     heap.add(new Route(-1, ((int) b.getRatio() * selectionWeight), currentPath));
                 }
@@ -198,9 +198,7 @@ public class Router {
                 return currentPath.getRoute();
             }
             for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
-            //(for (Integer to : graph.getAllNeighbors(currentNode)) {
                 // Here we add the new paths.
-                // renderer.drawEdge(new Selection(to, currentPath.getNode(), 0, new Coordinates(0, 0)));
                 selectionWeight = graph.getWeight(currentNode, to);
                 if (selectionWeight > 0) {
                     heap.add(new Route(to, selectionWeight, currentPath));

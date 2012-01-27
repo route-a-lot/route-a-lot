@@ -34,7 +34,7 @@ public class Precalculator {
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
         if (doAreas()) {
-            logger.info("Starting calculating of ArcFlags");
+            logger.info("Starting calculation of ArcFlags");
             for (int i = 0; i < graph.getIDCount(); i++) {
                 // I suppose we could run some parallel.
                 createFlags(i);
@@ -56,6 +56,7 @@ public class Precalculator {
         heap.add(new Route(node, 0));
         byte area = graph.getAreaID(node);
         int currentNode;
+        int weight;
         while (heap.peek() != null) {
             currentPath = heap.poll();
             currentNode = currentPath.getNode();
@@ -67,7 +68,12 @@ public class Precalculator {
             // At this point, we have the shortest way for sure.
             graph.setArcFlag(currentNode, currentPath.getRoute().getNode(), area);
             for (Integer from: inverted.getAllNeighbors(currentNode)) {
-                heap.add(new Route(from, graph.getWeight(from, currentNode), currentPath));
+                weight = graph.getWeight(from, currentNode);
+                if (weight > 0) {
+                    heap.add(new Route(from, weight, currentPath));
+                } else {
+                    logger.fatal("Got negative weights, please fix");
+                }
             }
         }
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
