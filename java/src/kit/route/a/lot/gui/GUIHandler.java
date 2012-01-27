@@ -156,6 +156,10 @@ public class GUIHandler {
         listener.addDeleteMapListener(deleteMapListener);
     }
     
+    public void addFavDescriptionListener(GeneralListener favDescriptionListener) {
+        listener.addFavDescriptionListener(favDescriptionListener);
+    }
+    
     public void setView(Coordinates center) {
         gui.setView(center);
     }
@@ -170,6 +174,10 @@ public class GUIHandler {
     
     public void showPoiDescription(POIDescription descr, Coordinates pos) {
         gui.showPoiDescription(descr);
+    }
+    
+    public void showFavDescription(POIDescription favDescription) {
+        gui.showFavDescription(favDescription);
     }
     
     public void thisWasClicked(int element, Coordinates pos){

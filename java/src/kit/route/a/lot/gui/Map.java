@@ -14,10 +14,12 @@ import java.awt.event.MouseWheelListener;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -49,6 +51,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     protected GUI gui;
     private JPopupMenu navNodeMenu;
     private JPopupMenu descriptionMenu;
+    private JPopupMenu favoriteMenu;
     private JMenuItem startItem;
     private JMenuItem endItem;
     private JMenuItem stopoverItem;
@@ -58,6 +61,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private JLabel popUpName;
     private JLabel showPoiName;
     private JLabel showPoiDescription;
+    private JTextField favoriteNameField;
+    private JTextField favoriteDescriptionField;
+    private JButton addFavoriteButton;
     private MouseEvent clickEvent;
     Component canvas;
     
@@ -98,9 +104,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         addFavoriteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Coordinates favoriteCoordinates =
-                    getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY());
-                Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(favoriteCoordinates, "", ""));
+                favoriteNameField.setText("Name hier einfügen...");
+                favoriteDescriptionField.setText("Beschreibung hier einfügen...");
+                favoriteMenu.show(canvas, popupXPos - canvas.getX(), popupYPos - canvas.getY());
             }
         });
         deleteFavoriteItem.addActionListener(new ActionListener() {
@@ -134,6 +140,28 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         descriptionMenu.setBackground(Color.WHITE);
         descriptionMenu.add(showPoiName);
         descriptionMenu.add(showPoiDescription);
+        
+        favoriteNameField = new JTextField("Name hier einfügen...");
+        favoriteDescriptionField = new JTextField("Beschreibung hier einfügen...");
+        addFavoriteButton = new JButton("Ok");
+        addFavoriteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                if(!favoriteNameField.getText().equals("Name hier einfügen...") && !favoriteNameField.getText().equals("")) {
+                    if(favoriteDescriptionField.getText().equals("Beschreibung hier einfügen...") || favoriteDescriptionField.getText().equals("")) {
+                        Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), ""));
+                    } else {
+                        Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), favoriteDescriptionField.getText()));
+                    }
+                }
+                favoriteMenu.setVisible(false);
+            }
+        });
+        
+        favoriteMenu = new JPopupMenu();
+        favoriteMenu.add(favoriteNameField);
+        favoriteMenu.add(favoriteDescriptionField);
+        favoriteMenu.add(addFavoriteButton);
         
         canvas.addMouseListener(new MouseAdapter() {          
             @Override // used for dragging, relocate?
@@ -339,6 +367,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
 //                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
                     Listeners.fireEvent(gui.getListener().poiDescription, new PositionEvent(position));
                     break;
+                case 2:
+                    Listeners.fireEvent(gui.getListener().favDescription, new PositionEvent(position));
+                    break;
                 default: showPoiDescription.setText("");
                     showPoiName.setText("");
                     descriptionMenu.setVisible(false);
@@ -350,6 +381,12 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     public void showPoiDescription(POIDescription poiDescription) {
         showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + "</div></html>");
         showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
+        descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+    }
+    
+    public void showFavDescription(POIDescription favDescription) {
+        showPoiName.setText("<html><div width='80px'>" + favDescription.getName() + "</div></html>");
+        showPoiDescription.setText("<html><div width='80px'>" + favDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }
 }

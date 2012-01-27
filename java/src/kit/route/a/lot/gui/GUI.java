@@ -397,6 +397,8 @@ public class GUI extends JFrame {
         tab1_stopoverPanel = new JPanel();
         tab1_stopoverPanel.setLayout(new GridBagLayout());
         
+        textuelProposals = new ArrayList<JMenuItem>();
+        
         popUpTextuelCompletition = new JPopupMenu("Completition");
         popUpTextuelCompletition.setBackground(Color.WHITE);
         
@@ -844,6 +846,10 @@ public class GUI extends JFrame {
     
     public void showPoiDescription(POIDescription poiDescription) {
         map.showPoiDescription(poiDescription);
+    }
+    
+    public void showFavDescription(POIDescription favDescription) {
+        map.showFavDescription(favDescription);
     }
     
     public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {

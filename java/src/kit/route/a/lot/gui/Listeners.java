@@ -32,6 +32,7 @@ public class Listeners {
     public List<GeneralListener> getNavNodeDescription;
     public List<GeneralListener> autoCompletition;
     public List<GeneralListener> deleteMap;
+    public List<GeneralListener> favDescription;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
@@ -61,6 +62,7 @@ public class Listeners {
         getNavNodeDescription = new ArrayList<GeneralListener>();
         autoCompletition = new ArrayList<GeneralListener>();
         deleteMap = new ArrayList<GeneralListener>();
+        favDescription = new ArrayList<GeneralListener>();
     }
     
     public void addViewChangedListener(GeneralListener viewChangedListener) {
@@ -134,6 +136,9 @@ public class Listeners {
     }
     public void addDeleteMapListener(GeneralListener deleteMapListener) {
         deleteMap.add(deleteMapListener);
+    }
+    public void addFavDescriptionListener(GeneralListener favDescriptionListener) {
+        favDescription.add(favDescriptionListener);
     }
     
     public static void fireEvent(List<GeneralListener> listener, GeneralEvent event) {
