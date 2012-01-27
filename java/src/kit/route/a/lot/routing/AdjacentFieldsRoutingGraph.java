@@ -27,7 +27,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
         IntList lst = new IntList(startID); 
-        logger.info("Creating routing graph with " + maxNodeID + " ID's and "  + startID.length + " edges");
+        logger.info("Creating routing graph with " + (maxNodeID + 1) + " ID's and "  + startID.length + " edges");
         // assert same non-null array size
         if (startID.length == 0) {
             logger.error("Array length is zero, aborting.");
@@ -40,7 +40,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         // sort arrays simultaneously by startID
         sortByKey(startID, endID, weight);
         // copy data to internal structures
-        edgesPos = new int[maxNodeID + 1];  // Plus one dummy.
+        edgesPos = new int[maxNodeID + 2];  // Plus one dummy, and plus one cuz ID 0 needs space as well.
         edgesPos[0] = 0;
         for (int i = 1; i < startID.length; i++) {
             // for each edge
@@ -49,11 +49,12 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 edgesPos[id] = i;
             }
         }
-        areaID = new byte[maxNodeID];
+        edgesPos[edgesPos.length - 1] = endID.length;
+        areaID = new byte[maxNodeID + 1];
         edges = endID.clone(); //TODO DISCUSS: .clone()? 
         weights = weight.clone();
         arcFlags = new long[startID.length];
-        Arrays.fill(arcFlags, ~ (long) 0);
+        Arrays.fill(arcFlags, (long) 0);
     }
         
     public void buildGraphWithUniqueEdges(int[] startID, int[] endID, int maxNodeID) {
@@ -246,13 +247,17 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
 
     public int getWeight(int from, int to) {
+        if (from < 0 || to < 0) {
+            logger.error("Can't get weights for negative ID's (" + from + "/" + to + ")");
+            return -1;
+        }
         for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
             if (edges[i] == to) {
                 if (weights[i] > 0) {
                     logger.debug("Weight from " + from + " to " + to + " is " + weights[i]);
                     return weights[i];
                 } else {
-                    logger.info("Got zero weight from " + from + " to " + to);
+                    logger.warn("Got zero weight from " + from + " to " + to);
                     return 1;
                 }
             }
@@ -293,20 +298,26 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
     
     public int getIDCount() {
-        return edgesPos.length;
+        return edgesPos.length - 1;
     }
 
     @Override
     public RoutingGraph getInverted() {
         // Deep "copy"
-        int[] startID = new int[edges.length];
+        int[] endID = new int[edges.length];    // TODO: warum -2?
+        Arrays.fill(endID, -42); // Better than 0 isn't it? (at least we will know sth. failed.)
         AdjacentFieldsRoutingGraph result = new AdjacentFieldsRoutingGraph();
+        int prev = -1;
+        int j = 0;
         for (int i = 0; i < edgesPos.length - 1; i++) {
-            for (int j = edgesPos[i]; j < edgesPos[i + 1]; j++) {
-                startID[j] = edges[j];
+            for (j = edgesPos[i]; j < edgesPos[i + 1]; j++) {
+                endID[j] = i;
+                if (++prev != j) {
+                    logger.fatal("Hier: " + j);
+                }
             }
         }
-        result.buildGraph(edges.clone(), startID, weights.clone(), edgesPos.length - 1);
+        result.buildGraph(edges.clone(), endID, weights.clone(), edgesPos.length - 2);
         return result;
     }
 
@@ -318,13 +329,13 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private String getMetis() {
         // returns a representation of the graph suitable for Metis.
         String result = "";
-        result += String.valueOf(edgesPos.length);  
+        result += String.valueOf(edgesPos.length - 1);  
         /*
          * -1 because the last one is a dummy and 
          * +1 because we increase every ID by 1 for Metis.
          */
         result += " ";
-        result += String.valueOf(edges.length / 2 - 1);
+        result += String.valueOf(edges.length / 2);
         result += "\n";
         int k = 0;
         for (int i = 0; i < edgesPos.length - 1; i++) {
@@ -342,11 +353,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         // TODO: way to slow, might require error-handling
         int i = 0;
         for (String area: areas.split("\\s+")) {
-            try {
-                areaID[i++] = (byte) Integer.parseInt(area);
-            } catch (ArrayIndexOutOfBoundsException err){
-                logger.warn("Metis bugs, please fix");
-            }
+            areaID[i++] = (byte) Integer.parseInt(area);
         }
     }
 }

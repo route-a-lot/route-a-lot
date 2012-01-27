@@ -37,8 +37,8 @@ public class Precalculator {
             for (int i = 0; i < graph.getIDCount(); i++) {
                 // I suppose we could run some parallel.
                 createFlags(i);
-                logger.info("Succesfully created ArcFlags");
             }
+            logger.info("Succesfully created ArcFlags");
         } else {
             logger.error("Failed to do precalculation");
         }
