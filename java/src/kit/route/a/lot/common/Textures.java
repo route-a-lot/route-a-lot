@@ -12,13 +12,13 @@ import com.sun.opengl.util.BufferUtil;
 
 public class Textures
 {	
-   
-    public static void makeRGBTexture(GL gl, GLU glu, BufferedImage img, int target, boolean mipmapped)
+    public static boolean enabled = false;
+    public static void makeRGBTexture(GL gl, BufferedImage img, int target)
     {
       ByteBuffer dest = null;
       switch (img.getType())
       {
-        case BufferedImage.TYPE_INT_RGB:
+        case BufferedImage.TYPE_INT_RGB: // TODO
         {
           int[] data = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
           dest = ByteBuffer.allocateDirect(data.length * BufferUtil.SIZEOF_INT);
@@ -29,17 +29,8 @@ public class Textures
         default:
           throw new RuntimeException("Unsupported image type " + img.getType());
       }
-      
-      if (mipmapped)
-      {
-        glu.gluBuild2DMipmaps(target, GL.GL_RGB8, img.getWidth(),
-                img.getHeight(), GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, dest);
-      }
-      else
-      {
-        gl.glTexImage2D(target, 0, GL.GL_RGB, img.getWidth(),
-                img.getHeight(), 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, dest);
-      }
+      gl.glTexImage2D(target, 0, GL.GL_RGB, img.getWidth(), img.getHeight(),
+              0, GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dest);
     }
 
     public static int genTexture(GL gl)

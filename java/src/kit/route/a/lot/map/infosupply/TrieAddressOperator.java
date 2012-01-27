@@ -59,13 +59,11 @@ public class TrieAddressOperator implements AddressOperator {
 
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
-        // TODO Auto-generated method stub
-
+        mapElements = StringTrie.loadFromStream(stream);
     }
 
     @Override
     public void saveToStream(DataOutputStream stream) throws IOException {
-        // TODO Auto-generated method stub
-
+        mapElements.saveToStream(stream);
     }
 }

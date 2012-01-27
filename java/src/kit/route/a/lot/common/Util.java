@@ -82,21 +82,9 @@ public class Util {
     
     
     public static void getFaceNormal(float[] norm, float[] pa, float[] pb, float[] pc) {
-        float[][] vect = new float[2][3];
-        float[][] point = new float[3][3];
-
-        for (int a = 0; a < 3; a++) {
-            point[0][a] = pa[a];
-            point[1][a] = pb[a]; 
-            point[2][a] = pc[a];
-        }
-      
-        for (int a = 0; a < 2; a++) {
-            for (int b = 0; b < 3; b++) {
-                vect[a][b] = point[2-a][b] - point[0][b];
-            }
-        }
-        crossProduct(norm, vect[0], vect[1]);
+        float[] v1 = new float[] {pb[0]-pa[0], pb[1]-pa[1], pb[2]-pa[2]};
+        float[] v2 = new float[] {pc[0]-pa[0], pc[1]-pa[1], pc[2]-pa[2]};
+        crossProduct(norm, v1, v2);
         normalize(norm);
     }
     

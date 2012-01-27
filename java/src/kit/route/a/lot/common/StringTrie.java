@@ -8,6 +8,9 @@ import kit.route.a.lot.map.Street;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.lang.Character;
 import java.lang.String;
 import java.util.Arrays;
@@ -17,7 +20,6 @@ import java.util.Collection;
 public class StringTrie {
     
     private ArrayList<MapElement> tree;
-    private Iterator<MapElement> iterator;
     private int maxLength;
     
     public StringTrie(){
@@ -31,10 +33,10 @@ public class StringTrie {
     }
     
     public void insert(String name, MapElement element) {
-                tree.add(element);
-                if(element.getName().length() > maxLength){
-                    maxLength = element.getName().length();
-                }
+        tree.add(element);
+        if(element.getName().length() > maxLength){
+            maxLength = element.getName().length();
+        }
     }   
 
     public ArrayList<String> search(String name) {
@@ -58,7 +60,7 @@ public class StringTrie {
     
     public void radixSort(){
         for(int i = (maxLength-1); i >=0; i--){
-            iterator = tree.iterator();
+            Iterator<MapElement> iterator = tree.iterator();
             while(iterator.hasNext()){
                 MapElement e = iterator.next();
                 if(e.getName().length() < (i+1)){
@@ -81,7 +83,7 @@ public class StringTrie {
         for(int i =0; i<26; i++){
             buckets[i] = new ArrayList<MapElement>();
         }
-        iterator =  tree.iterator();
+        Iterator<MapElement> iterator =  tree.iterator();
         while(iterator.hasNext()){
             MapElement element = iterator.next();
             System.out.println(element.getID());
@@ -98,4 +100,22 @@ public class StringTrie {
 
     }//end ksort 
 
+    public static StringTrie loadFromStream(DataInputStream stream) throws IOException {      
+        StringTrie result = new StringTrie();
+        int treeSize = stream.readInt();
+        for(int i = 0; i < treeSize; i++) {
+            result.tree.add(MapElement.loadFromStream(stream, true));
+        }
+        result.maxLength = stream.readInt();
+        return result;
+    }
+    
+    public void saveToStream(DataOutputStream stream) throws IOException {
+        stream.writeInt(tree.size());
+        for(MapElement element: tree) {
+            MapElement.saveToStream(stream, element, true);
+        }
+        stream.writeInt(maxLength);          
+    }
+    
 }

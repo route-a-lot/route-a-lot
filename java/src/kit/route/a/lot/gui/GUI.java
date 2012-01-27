@@ -164,7 +164,7 @@ public class GUI extends JFrame {
         mapButtonPanel = new JPanel();
         mapButtonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
 
-        map = new Map2D(this);
+        map = new Map3D(this);
         
         statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));

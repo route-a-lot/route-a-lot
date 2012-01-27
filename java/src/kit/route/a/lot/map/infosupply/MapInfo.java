@@ -284,7 +284,7 @@ public class MapInfo {
         logger.info("load geo operator...");
         geographicalOperator.loadFromStream(stream);
         //TODO: load address operator
-        //addressOperator.loadFromStream(stream);
+        addressOperator.loadFromStream(stream);
     }
 
     /**
@@ -301,7 +301,7 @@ public class MapInfo {
         logger.info("save geo operator...");
         geographicalOperator.saveToStream(stream);
         //TODO: save address operator
-        //addressOperator.saveToStream(stream);
+        addressOperator.saveToStream(stream);
     }
 
     public void printQuadTree() {
