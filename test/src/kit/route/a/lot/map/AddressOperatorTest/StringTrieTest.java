@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.Street;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.lang.Character;
@@ -43,9 +45,22 @@ public class StringTrieTest {
      *            -
      * @return List<T>
      */
-    public List<String> search(String name) {
-        /*Textvervollständigung ist nicht implementiert*/
-        return null;
+    public ArrayList<String> search(String name) {
+        int first = Character.getNumericValue(name.charAt(0));
+        String tmpName;
+        ArrayList<String> completions = new ArrayList<String>(10);
+        Street [] tmp = new Street[1];
+        Street[] elements = tree.toArray(tmp);
+        for(int i = 0; i < elements.length;i++){
+            tmpName = elements[i].getName();
+            if(first < Character.getNumericValue(tmpName.charAt(0))){
+                /*bricht ab wenn erster Buchstabe lexikographisch größer ist*/
+                return completions;
+            }else if(tmpName.startsWith(name)){
+                completions.add(elements[i].getName());
+            }
+        }
+        return completions;
     }
     
     public void RadixSort(){

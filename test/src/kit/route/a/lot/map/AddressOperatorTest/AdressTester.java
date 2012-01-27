@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.AddressOperatorTest;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
@@ -64,25 +65,51 @@ public class AdressTester {
         s2.setNodes(node2);
         Street s3 = new Street("Karlsruher Weg",null);
         s3.setNodes(node3);
+        /*zum testen von Suggest Completions*/
+        Street s4 = new Street("Bellheimer Straße",null);
+        Street s5 = new Street("Hagenbacher Straße",null);
+        Street s6 = new Street("Bergzaberner Straße",null);
+        Street s7= new Street("Kaiserslauterner Straße",null);
+        Street s8 = new Street("Ballstrasse",null);
+        Street s9 = new Street("Ballonweg",null);
         
         String scharf = "ß";
         System.out.println("scharf: "+Character.getNumericValue(scharf.charAt(0)));
-        //tester.add(s1);
+        tester.add(s1);
         tester.add(s2);
         tester.add(s3);
-        tester.add(s1);
+        tester.add(s4);
+        tester.add(s5);
+        tester.add(s6);
+        tester.add(s7);
+        tester.add(s8);
+        tester.add(s9);
         
         ArrayList<MapElement> elements = tester.getTrie().getTree();
         System.out.println("alte Reihenfolge");
         System.out.println(elements.get(0).getName());
         System.out.println(elements.get(1).getName());
         System.out.println(elements.get(2).getName());
+        System.out.println(elements.get(3).getName());
+        System.out.println(elements.get(4).getName());
+        System.out.println(elements.get(5).getName());
+        System.out.println(elements.get(6).getName());
+        System.out.println(elements.get(7).getName());
+        System.out.println(elements.get(8).getName());
+        
         tester.getTrie().RadixSort();
         elements = tester.getTrie().getTree();
         System.out.println("neue Reihenfolge");
         System.out.println(elements.get(0).getName());
         System.out.println(elements.get(1).getName());
         System.out.println(elements.get(2).getName());
+        System.out.println(elements.get(3).getName());
+        System.out.println(elements.get(4).getName());
+        System.out.println(elements.get(5).getName());
+        System.out.println(elements.get(6).getName());
+        System.out.println(elements.get(7).getName());
+        System.out.println(elements.get(8).getName());
+        
         
         Selection selection = tester.select("Bannwaldallee");
         System.out.println("FromID: "+selection.getFrom()+"ToID: "+selection.getTo());
@@ -103,6 +130,35 @@ public class AdressTester {
         <nd ref="335900923"/>
         <nd ref="335900916"/>*/
         
-    }
+        /*TestSuggestCompletions*/
+        /*Test1*/
+        ArrayList<String> completions = tester.suggestCompletions("B");
+        Iterator<String> iterator = completions.iterator();
+        while(iterator.hasNext()){
+            System.out.println("I would suggest:"+iterator.next());
+        }//end while
+        System.out.println("next test");
+        /*Test2*/
+        completions = tester.suggestCompletions("Be");
+        iterator = completions.iterator();
+        while(iterator.hasNext()){
+            System.out.println("I would suggest:"+iterator.next());
+        }//end while
+        System.out.println("next test");
+        /*Test3*/
+        completions = tester.suggestCompletions("Ball");
+        iterator = completions.iterator();
+        while(iterator.hasNext()){
+            System.out.println("I would suggest:"+iterator.next());
+        }//end while
+        System.out.println("next test");
+        /*Test4*/
+        completions = tester.suggestCompletions("K");
+        iterator = completions.iterator();
+        while(iterator.hasNext()){
+            System.out.println("I would suggest:"+iterator.next());
+        }//end while
+        
+    }//end main
 
-}
+}//end class
