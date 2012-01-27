@@ -41,6 +41,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int newPopUpXPos;
     private int newPopUpYPos;
     private Coordinates center;
+    private Coordinates popUpPosition;
     protected int zoomlevel = 3;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
@@ -105,14 +106,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         deleteFavoriteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                Listeners.fireEvent(gui.getListener().deleteFavPoint, new DeleteFavoriteEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())));
+                Listeners.fireEvent(gui.getListener().deleteFavPoint, new DeleteFavoriteEvent(popUpPosition));
             }
         });
         deleteNavPoint.addActionListener(new ActionListener() {
             
             @Override
             public void actionPerformed(ActionEvent e) {
-                Listeners.fireEvent(gui.getListener().deleteNavPoint, new PositionEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())));
+                Listeners.fireEvent(gui.getListener().deleteNavPoint, new PositionEvent(popUpPosition));
             }
         });
         
@@ -304,6 +305,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     public void popUpTriggered(int itemType, Coordinates position) {
+        popUpPosition = position;
         descriptionMenu.setVisible(false);
         if (clickEvent.isPopupTrigger()) {
             descriptionMenu.setVisible(false);

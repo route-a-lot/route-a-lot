@@ -180,7 +180,7 @@ public class GUIHandler {
         gui.showRouteValues(duration, length);
     }
     
-    public void showCompletition(ArrayList<String> completition) {
+    public void showCompletition(List<String> completition) {
         gui.showCompletition(completition);
     }
 }

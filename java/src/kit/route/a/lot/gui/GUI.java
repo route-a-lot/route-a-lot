@@ -850,7 +850,7 @@ public class GUI extends JFrame {
         alladdedNavPoints.get(navNodeIndex - 1).setText(navNodeDescription);
     }
     
-    public void showCompletition(ArrayList<String> completition) {
+    public void showCompletition(List<String> completition) {
         while(textuelProposals.size() != 0) {
             int i = textuelProposals.size() - 1;
             popUpTextuelCompletition.remove(textuelProposals.get(i));
