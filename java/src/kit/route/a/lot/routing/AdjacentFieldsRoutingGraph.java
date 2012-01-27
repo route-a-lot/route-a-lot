@@ -236,7 +236,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         } 
         Collection<Integer> relevantEdges = new ArrayList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
-            // don't filter at all
             relevantEdges.add(edges[i]);
         }
         return relevantEdges;
@@ -249,7 +248,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                     logger.debug("Weight from " + from + " to " + to + " is " + weights[i]);
                     return weights[i];
                 } else {
-                    logger.error("Got zero weight from " + from + " to " + to);
+                    logger.info("Got zero weight from " + from + " to " + to);
                     return 1;
                 }
             }
@@ -297,17 +296,13 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public RoutingGraph getInverted() {
         // Deep "copy"
         int[] startID = new int[edges.length];
-        int[] endID = new int[edges.length];
-        int[] weight = new int[edges.length];
         AdjacentFieldsRoutingGraph result = new AdjacentFieldsRoutingGraph();
         for (int i = 0; i < edgesPos.length - 1; i++) {
             for (int j = edgesPos[i]; j < edgesPos[i + 1]; j++) {
-                weight[j] = weights[j];
                 startID[j] = edges[j];
-                endID[j] = i;
             }
         }
-        result.buildGraph(startID, endID, weight, edgesPos.length - 1);
+        result.buildGraph(edges.clone(), startID, weights.clone(), edgesPos.length - 1);
         return result;
     }
 

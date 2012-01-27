@@ -49,13 +49,12 @@ public class Precalculator {
         logger.info("Calculating ArcFlags for ID " + String.valueOf(node));
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
+        Arrays.fill(seen, false);
         Route currentPath = null;
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
-        Arrays.fill(seen, false);
         heap.add(new Route(node, 0));
         byte area = graph.getAreaID(node);
         int currentNode;
-        
         while (heap.peek() != null) {
             currentPath = heap.poll();
             currentNode = currentPath.getNode();
@@ -65,9 +64,9 @@ public class Precalculator {
             }
             seen[currentNode] = true;
             // At this point, we have the shortest way for sure.
-            graph.setArcFlag(currentPath.getRoute().getNode(), currentNode, area);
-            for (Integer to: inverted.getAllNeighbors(currentNode)) {
-                heap.add(new Route(to, graph.getWeight(currentNode, to), currentPath));
+            graph.setArcFlag(currentNode, currentPath.getRoute().getNode(), area);
+            for (Integer from: inverted.getAllNeighbors(currentNode)) {
+                heap.add(new Route(from, graph.getWeight(from, currentNode), currentPath));
             }
         }
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
