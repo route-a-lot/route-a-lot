@@ -62,13 +62,16 @@ public class HeightTile implements IHeightTile {
         float facX = Math.abs(lonDiff - x / (float) width);
         float facY = Math.abs(latDiff - y / (float) height);        
         
-        
-        
-        float interpolateX1 = data[x][y] + (data[x+1][y] - data[x][y]) * facX;
+        int h = data[x][y];
+        if(h == -32768){
+            h = data[x+1][y];
+        }
+        float interpolateX1 = h + (data[x+1][y] - h) * facX;
         float interpolateX2 = data[x][y+1] + (data[x+1][y+1] - data[x][y+1]) * facX;
         float interpolateY = interpolateX1 + (interpolateX2 - interpolateX1) * facY;
         return interpolateY;
         //return data[x][y];
+        
     }
 
     @Override
