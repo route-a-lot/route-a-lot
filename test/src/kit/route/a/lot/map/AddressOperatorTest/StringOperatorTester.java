@@ -36,7 +36,9 @@ public class StringOperatorTester {
             Street[] elements = tree.toArray(tmp);
             Street item = new Street(address,null);
             
+            
             int index = Arrays.binarySearch(elements,item);
+            if(index < 0){return null;}
             System.out.println("Index"+ index);
             Street foundItem = (Street)elements[index];
             Node[] nodes = foundItem.getNodes(); 
