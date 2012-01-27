@@ -63,7 +63,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private JTextField favoriteDescriptionField;
     private JButton addFavoriteButton;
     private MouseEvent clickEvent;
-    Component canvas;
+    private Component canvas;
     
     /**
      * Creates a map canvas, including its context menu.

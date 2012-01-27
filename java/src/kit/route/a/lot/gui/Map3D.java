@@ -19,7 +19,7 @@ public class Map3D extends Map implements GLEventListener {
         super(gui);
     }
     
-    public Component createCanvas() {
+    protected Component createCanvas() {
         GLCapabilities glCaps = new GLCapabilities();
         //GLCanvas result = new GLCanvas(glCaps);
         GLJPanel result = new GLJPanel(glCaps);
