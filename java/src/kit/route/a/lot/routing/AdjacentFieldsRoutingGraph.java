@@ -257,7 +257,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                     logger.debug("Weight from " + from + " to " + to + " is " + weights[i]);
                     return weights[i];
                 } else {
-                    logger.warn("Got zero weight from " + from + " to " + to);
+                    logger.debug("Got zero weight from " + from + " to " + to + ", returning 1");
                     return 1;
                 }
             }

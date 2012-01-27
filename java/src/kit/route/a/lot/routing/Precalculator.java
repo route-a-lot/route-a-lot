@@ -46,7 +46,7 @@ public class Precalculator {
     }
 
     private static void createFlags(int node) {
-        logger.info("Calculating ArcFlags for ID " + String.valueOf(node));
+        logger.debug("Calculating ArcFlags for ID " + String.valueOf(node));
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false);
@@ -70,13 +70,13 @@ public class Precalculator {
             }
         }
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
-        logger.info("Done calculating ArcFlags for ID " + String.valueOf(node));
+        logger.debug("Done calculating ArcFlags for ID " + String.valueOf(node));
     }
 
     private static boolean doAreas() {
         String AREAS = "63";
         String FILE = "graph.txt";
-        String BINARY = "/home/stud/s_jacob/bin/gpmetis";
+        String BINARY = "./gpmetis";
         logger.info("Creating " + AREAS + " Areas with Metis...");
         // Write graph file
         try {
