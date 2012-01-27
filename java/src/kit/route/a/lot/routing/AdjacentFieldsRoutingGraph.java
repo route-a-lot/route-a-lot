@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import kit.route.a.lot.common.IntList;
+
 import org.apache.log4j.Logger;
 
 
@@ -24,6 +26,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
+        IntList lst = new IntList(startID); 
         logger.info("Creating routing graph with " + maxNodeID + " ID's and "  + startID.length + " edges");
         // assert same non-null array size
         if (startID.length == 0) {
@@ -34,20 +37,8 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             logger.error("The lengths of the arrays don't match, aborting.");
             return;
         }
-        
-        String out = "";
-        for (int i: startID) {
-            out += " " + i;
-        }
-        logger.info("Before sorting: " + out);
         // sort arrays simultaneously by startID
         sortByKey(startID, endID, weight);
-        out = "";
-        for (int i: startID) {
-            out += " " + i;
-        }
-        logger.info("After sorting:  " + out);
-
         // copy data to internal structures
         edgesPos = new int[maxNodeID + 1];  // Plus one dummy.
         edgesPos[0] = 0;
@@ -58,9 +49,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 edgesPos[id] = i;
             }
         }
-        areaID = new byte[maxNodeID + 2];
-        edges = endID; //TODO DISCUSS: .clone()? 
-        weights = weight;
+        areaID = new byte[maxNodeID];
+        edges = endID.clone(); //TODO DISCUSS: .clone()? 
+        weights = weight.clone();
         arcFlags = new long[startID.length];
         Arrays.fill(arcFlags, ~ (long) 0);
     }
@@ -77,26 +68,27 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             newEndID[startID.length + i] = startID[i];
         }
         metisGraph = new AdjacentFieldsRoutingGraph();
-        metisGraph.buildGraph(newStartID, newEndID, newStartID, maxNodeID);
+        metisGraph.buildGraph(newStartID, newEndID, newStartID.clone(), maxNodeID);
     }
 
     /*
     private static void sortByKey(int[] key, int[] data1, int[] data2) {
         boolean done = true;
+        int temp;
         while(!done) {
             done = true;
             for (int i = 0; i < key.length - 1; i++) {
                 if (key[i] > key[i + 1]) {
                     done = false;
-                    key[i + 1] += key[i];
-                    key[i] = key[i + 1] - key[i];
-                    key[i + 1] -= key[i];
-                    data1[i + 1] += data1[i];
-                    data1[i] = data1[i + 1] - data1[i];
-                    data1[i + 1] -= data1[i];
-                    data2[i + 1] += data2[i];
-                    data2[i] = data2[i + 1] - data2[i];
-                    data2[i + 1] -= data2[i];
+                    temp = key[i];
+                    key[i] = key[i + 1];
+                    key[i + 1] = temp;
+                    temp = data1[i];
+                    data1[i] = data1[i + 1];
+                    data1[i] =  temp;
+                    temp = data2[i];
+                    data2[i] = data2[i + 1];
+                    data2[i] =  temp;
                 }
             }
         }
@@ -112,12 +104,13 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
      * @throws IllegalArgumentException either argument is <code>null</code>
      *          or the arrays are not of equal size
      */
-   private void sortByKey(int[] key, int[] data1, int[] data2) {
+   protected static int[] sortByKey(int[] key, int[] data1, int[] data2) {
         if ((key == null) || (data1 == null) || (data2 == null)
                 || (key.length != data1.length) || (key.length != data2.length)) {
             throw new IllegalArgumentException();
         }
-        sortByKeyInternal(key, data1, data2, 0, key.length - 1);
+        logger.debug("nuff said");
+        return sortByKeyInternal(key, data1, data2, 0, key.length - 1);
     }
     
     /**
@@ -132,7 +125,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
      * @param low the lowest index to be sorted
      * @param high the highest index to be sorted
      */
-    private void sortByKeyInternal(int[] key, int[] data1, int[] data2, int low, int high) {
+    private static int[] sortByKeyInternal(int[] key, int[] data1, int[] data2, int low, int high) {
         int i = low, j = high;
         int pivot = key[low + (high-low)/2];
 
@@ -158,11 +151,12 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             }
         }
         if (low < j) {
-            sortByKeyInternal(key, data1, data2, low, j);
+            key = sortByKeyInternal(key, data1, data2, low, j);
         }
         if (i < high) {
-            sortByKeyInternal(key, data1, data2, i, high);
+            key = sortByKeyInternal(key, data1, data2, i, high);
         }
+        return key;
     }
 
     @Override
@@ -326,20 +320,15 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         // returns a representation of the graph suitable for Metis.
         String result = "";
         result += String.valueOf(edgesPos.length);  
-        /* -1 because of .length,
+        /*
          * -1 because the last one is a dummy and 
          * +1 because we increase every ID by 1 for Metis.
          */
         result += " ";
-        result += String.valueOf(edges.length / 2);
+        result += String.valueOf(edges.length / 2 - 1);
         result += "\n";
+        int k = 0;
         for (int i = 0; i < edgesPos.length - 1; i++) {
-            // For all Nodes
-            for (int node: getAllNeighbors(i)) {
-                /*if (getWeight(node, i) < 0 || getWeight(i, node) < 0) {
-                    logger.fatal("Got inconsistent graph (missing edge between + " + i + " and " + node + ")");
-                }*/
-            }
             for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {
                 result += String.valueOf(edges[j] + 1); // Metis doesn't like ID 0.
                 result += " ";
@@ -354,7 +343,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         // TODO: way to slow, might require error-handling
         int i = 0;
         for (String area: areas.split("\\s+")) {
-            areaID[i++] = (byte) Integer.parseInt(area);
+            try {
+                areaID[i++] = (byte) Integer.parseInt(area);
+            } catch (ArrayIndexOutOfBoundsException err){
+                logger.warn("Metis bugs, please fix");
+            }
         }
     }
 }

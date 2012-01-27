@@ -5,6 +5,14 @@ public class IntList {
     protected int[] data = new int[8];
     protected transient int size = 0;
 
+    public IntList(int[] data) {
+        this.data = data;
+        size = data.length;
+    }
+    
+    public IntList() {
+    }
+    
     /** Return an element of the array */
     public int get(int index) throws ArrayIndexOutOfBoundsException {
       if (index >= size) {

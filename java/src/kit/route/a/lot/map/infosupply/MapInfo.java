@@ -16,7 +16,6 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
-import kit.route.a.lot.map.AddressOperatorTest.AdressTester;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
