@@ -1,5 +1,7 @@
 package kit.route.a.lot.gui;
 
+import java.awt.Component;
+
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.gui.event.ChangeViewEvent;
 import javax.media.opengl.*;
@@ -17,9 +19,11 @@ public class Map3D extends Map implements GLEventListener {
         super(gui);
     }
     
-    public GLCanvas createCanvas() {
+    public Component createCanvas() {
         GLCapabilities glCaps = new GLCapabilities();
-        GLCanvas result = new GLCanvas(glCaps);
+        //GLCanvas result = new GLCanvas(glCaps);
+        GLJPanel result = new GLJPanel(glCaps);
+        
         result.addGLEventListener(this);
         return result;
     }

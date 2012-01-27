@@ -12,7 +12,6 @@ import com.sun.opengl.util.BufferUtil;
 
 public class Textures
 {	
-    public static boolean enabled = false;
     public static void makeRGBTexture(GL gl, BufferedImage img, int target)
     {
       ByteBuffer dest = null;

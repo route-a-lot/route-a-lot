@@ -3,6 +3,7 @@ package kit.route.a.lot.map.rendering;
 import java.awt.image.BufferedImage;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GLException;
 import javax.media.opengl.glu.GLU;
 
 import org.apache.log4j.Level;
@@ -22,7 +23,7 @@ import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
-    private static final float HEIGHT_STEPS = 50;
+    private static final float HEIGHT_STEPS = 80;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
     static {
         logger.setLevel(Level.INFO);
@@ -71,8 +72,12 @@ public class Renderer3D extends Renderer {
         
         IHeightmap heightData = State.getInstance().getLoadedHeightmap();
         Projection projection = ProjectionFactory.getProjectionForCurrentMap();
-        int texture = createTexture(gl, new GLU(), img);
-    
+        int texture;
+        try {
+            texture = createTexture(gl, new GLU(), img);
+        } catch (GLException e) {
+            texture = -1;
+        }
         // move camera up so that it won't intersect hills  
         Coordinates pos = new Coordinates((float)(bottomRight.getLongitude() + topLeft.getLongitude()) * 0.5f,
                                           (float)(bottomRight.getLatitude() + topLeft.getLatitude()) * 0.5f);
@@ -91,7 +96,8 @@ public class Renderer3D extends Renderer {
         //texYOffset = (texYOffset - topLeft.getLatitude()) / context.getHeight();
         
         
-        // create texture and render height mesh           
+        // create texture and render height mesh    
+
         gl.glEnable(GL.GL_TEXTURE_2D);   
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture);     
         float stepSize = context.getHeight() / HEIGHT_STEPS;
@@ -102,14 +108,14 @@ public class Renderer3D extends Renderer {
 //        float[] vertex;
         
         gl.glColor3f(1,1,1);
-        for (int x = 0; x < xSteps; x++) {       
+        for (int x = 0; x < xSteps; x++) {    
             gl.glBegin(GL.GL_TRIANGLE_STRIP);
             for (int y = 0; y < HEIGHT_STEPS; y++) {
                 pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                 pos.setLongitude(topLeft.getLongitude() + x * stepSize); 
                 gl.glTexCoord2f(x / xSteps, y / HEIGHT_STEPS);  
                 float h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos)) * 10;
-                float color = ((h > 2000) ? 2000 : h) / 2000f;
+                float color = ((h > 1000) ? 1000 : h) / 1000f;
                 
                 gl.glColor3f(color, color, color);
                 //vertex = new float[] {pos.getLongitude(), pos.getLatitude(), h};
@@ -124,7 +130,7 @@ public class Renderer3D extends Renderer {
                 gl.glTexCoord2f((x + 1) / xSteps, y / HEIGHT_STEPS) ;
                 
                 h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos)) * 10;
-                color = ((h > 2000) ? 2000 : h) / 2000f;
+                color = ((h > 1000) ? 1000 : h) / 1000f;
                 
                 gl.glColor3f(color, color, color);
                 //vertex = new float[] {pos.getLongitude(), pos.getLatitude(), h};
@@ -179,9 +185,7 @@ public class Renderer3D extends Renderer {
     {
         int tex = Textures.genTexture(gl);
         gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
-        Textures.enabled = true;
         Textures.makeRGBTexture(gl, image, GL.GL_TEXTURE_2D);
-        Textures.enabled = false;
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP); 
