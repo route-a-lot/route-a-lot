@@ -280,7 +280,6 @@ public class GUI extends JFrame {
         createTab2();
         createTab3();
         
-        pack();
         validate();
 
         addWindowListener(new WindowAdapter() {
@@ -311,7 +310,7 @@ public class GUI extends JFrame {
         startPoint.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedStart = startPoint.getText();
+                listener.fireEvent(listener.getNavNodeDescription, new TextEvent(startPoint.getText()));
             }
         });
         
@@ -320,7 +319,7 @@ public class GUI extends JFrame {
         endPoint.addActionListener(new ActionListener() {       
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String selectedEnd = endPoint.getText();
+                listener.fireEvent(listener.getNavNodeDescription, new TextEvent(endPoint.getText()));
             }
         });
         addTextPoints = new JButton("+");
@@ -676,7 +675,8 @@ public class GUI extends JFrame {
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedNavPoints.size(); i++) {
                   if(alladdedNavPoints.get(i) == navPointField) {
-                      
+                      listener.fireEvent(listener.getNavNodeDescription, new TextEvent(alladdedNavPoints.get(i).getText()));
+                      alladdedNavPoints.get(i).setBackground(Color.red);
                       repaint();
                   }
               }
@@ -688,11 +688,15 @@ public class GUI extends JFrame {
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedButtons.size(); i++) {
                   if(alladdedButtons.get(i) == navPointButton) {
-                      tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
-                      tab1_stopoverPanel.remove(alladdedButtons.get(i));
-                      alladdedButtons.remove(i);
-                      alladdedNavPoints.remove(i);
-                      listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i+1));
+                      int a = i;
+                      if(!alladdedNavPoints.get(i).getText().equals("")) {
+                          listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i+1));
+                      } else  {
+                          tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
+                          tab1_stopoverPanel.remove(alladdedButtons.get(i));
+                          alladdedButtons.remove(i);
+                          alladdedNavPoints.remove(i);
+                      }
                       repaint();
                   }
               }
