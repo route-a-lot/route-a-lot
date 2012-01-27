@@ -27,12 +27,6 @@ public interface GeographicalOperator {
     public void getBounds(Coordinates upLeft, Coordinates bottomRight);
 
     /**
-     * Creates all zoom level layers, requiring a complete base
-     * zoom level base layer and overlay.
-     */
-    public void buildZoomlevels();
-
-    /**
      * Selects the map element nearest to the given position, incrementally increasing
      * the search radius if needed.
      * 

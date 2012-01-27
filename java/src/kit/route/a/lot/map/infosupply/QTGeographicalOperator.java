@@ -58,12 +58,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
             bottomRight.setLongitude(zoomlevels[0].getBottomRight().getLongitude());
         }
     }
-
-    @Override
-    public void buildZoomlevels() {
-        logger.info("You called buildZoomlevels but it is doing nothing!");
-    }
-
     
     @Override
     public Selection select(Coordinates pos) {

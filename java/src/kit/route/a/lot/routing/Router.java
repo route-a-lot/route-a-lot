@@ -86,7 +86,7 @@ public class Router {
             if (length < shortestLength
                     || shortestLength == -1) {
                 // We got a shorter permutation!
-                logger.info("Length of shortest permutation (so far) " + toString(permutation) + " :" + length);
+                logger.debug("Length of shortest permutation (so far) " + toString(permutation) + " :" + length);
                 shortest = permutation;
                 shortestLength = length;
             }
@@ -116,8 +116,8 @@ public class Router {
             newNavigationNodes.add(navigationNodes.get(mapping[i]));
         }
         newNavigationNodes.add(navigationNodes.get(navigationNodes.size() - 1));
-        logger.info("Old ordering: " + navigationNodes.toString());
-        logger.info("New ordering: " + newNavigationNodes.toString());
+        logger.debug("Old ordering: " + navigationNodes.toString());
+        logger.debug("New ordering: " + newNavigationNodes.toString());
         return newNavigationNodes;
     }
 
@@ -131,7 +131,7 @@ public class Router {
             if (prev == navPoint) {
                 continue;
             }
-            logger.info("Calculating route from " + prev.toString() + " to " + navPoint.toString());
+            logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString());
             route = fromAToB(prev, navPoint);
             if (route == null) {
                 logger.warn("Failed to find route, returning null");
@@ -194,7 +194,7 @@ public class Router {
                 }
             } else if (currentNode == -1) {
                 // This is the shortest path.
-                logger.info("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
+                logger.debug("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
                 return currentPath.getRoute();
             }
             for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {

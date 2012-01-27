@@ -177,7 +177,6 @@ public class Controller {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
             Precalculator.precalculate();
-            state.getLoadedMapInfo().buildZoomlevels();
             state.getLoadedMapInfo().trimm();
             renderer.resetRenderCache();
             state.setLoadedMapFile(new File("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral"));

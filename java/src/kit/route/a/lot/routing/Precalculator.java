@@ -34,6 +34,7 @@ public class Precalculator {
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
         if (doAreas()) {
+            logger.info("Starting calculating of ArcFlags");
             for (int i = 0; i < graph.getIDCount(); i++) {
                 // I suppose we could run some parallel.
                 createFlags(i);
@@ -97,7 +98,7 @@ public class Precalculator {
 
             // read the output from the command
             while ((buffer = stdInput.readLine()) != null) {
-                logger.debug("Metis: " + buffer);
+                logger.info("Metis: " + buffer);
             }
             
             // read any errors from the attempted command

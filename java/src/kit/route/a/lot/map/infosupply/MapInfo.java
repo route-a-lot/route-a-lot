@@ -211,13 +211,6 @@ public class MapInfo {
     }
 
     /**
-     * Builds the zoomLevels for the view.
-     */
-    public void buildZoomlevels() {
-        geographicalOperator.buildZoomlevels();
-    }
-
-    /**
      * Operation suggestCompletions
      * 
      * @param expression
