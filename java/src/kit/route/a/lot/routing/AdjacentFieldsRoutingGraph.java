@@ -168,9 +168,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         edgesPos = new int[nodeCount];
         areaID = new byte[nodeCount];
         for (int i = 0; i < nodeCount; i++) {
-            edgesPos[i] = stream.readInt();
-            areaID[i] = stream.readByte();
-        } 
+            edgesPos[i] = stream.readInt();         
+        }
+        for (int i = 0; i < nodeCount-1; i++) {
+            areaID[i] = stream.readByte();        
+        }        
         int edgeCount = stream.readInt();
         edges = new int[edgeCount];
         weights = new int[edgeCount];
@@ -188,9 +190,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             throw new IllegalArgumentException();
         }
         stream.writeInt(edgesPos.length);
-        for (int i = 0; i < edgesPos.length; i++) {
-            stream.writeInt(edgesPos[i]);
-            stream.writeByte(areaID[i]);
+        for (int pos: edgesPos) {
+            stream.writeInt(pos);       
+        }
+        for (byte id: areaID) {
+            stream.writeByte(id);       
         }
         stream.writeInt(edges.length);
         for (int i = 0; i < edges.length; i++) {

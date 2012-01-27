@@ -758,35 +758,35 @@ public class GUI extends JFrame {
         if(this.navPointsList.size() - 2 > 0) {
             for(int i = 1; i < newNavPointsList.size() - 1; i++) {
                 addTextfieldButton();
-                if(newNavPointsList.get(i).getName().equals(null)) {
+                if(newNavPointsList.get(i).getName() == null) {
                     alladdedNavPoints.get(i-1).setText(newNavPointsList.get(i).getPosition().toString());
                 } else {
                     alladdedNavPoints.get(i-1).setText(newNavPointsList.get(i).getName());
                 }
             }
-            if(newNavPointsList.get(0).getName().equals(null)) {
+            if(newNavPointsList.get(0).getName() == null) {
                 startPoint.setText(newNavPointsList.get(0).getPosition().toString());
             } else {
                 startPoint.setText(this.navPointsList.get(0).getName());
             }
-            if(newNavPointsList.get(this.navPointsList.size() - 1).getName().equals(null)) {
+            if(newNavPointsList.get(this.navPointsList.size() - 1).getName() == null) {
                 endPoint.setText(newNavPointsList.get(this.navPointsList.size() - 1).getPosition().toString());
             } else {
                 endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).getName());
             }
         } else if(this.navPointsList.size() == 2) {
-            if(newNavPointsList.get(0).getName().equals(null)) {
+            if(newNavPointsList.get(0).getName() == null) {
                 startPoint.setText(newNavPointsList.get(0).getPosition().toString());
             } else {
                 startPoint.setText(this.navPointsList.get(0).getName());
             }
-            if(newNavPointsList.get(1).getName().equals(null)) {
+            if(newNavPointsList.get(1).getName() == null) {
                 endPoint.setText(newNavPointsList.get(1).getPosition().toString());
             } else {
                 endPoint.setText(this.navPointsList.get(1).getName());
             }
         } else if(this.navPointsList.size() == 1){
-            if(newNavPointsList.get(0).getName().equals(null)) {
+            if(newNavPointsList.get(0).getName() == null) {
                 startPoint.setText(newNavPointsList.get(0).getPosition().toString());
             } else {
                 startPoint.setText(this.navPointsList.get(0).getName());

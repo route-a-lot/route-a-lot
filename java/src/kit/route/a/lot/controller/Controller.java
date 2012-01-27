@@ -212,11 +212,7 @@ public class Controller {
                 state.getNavigationNodes().add(position, newSel);
             }
         }
-        ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
-        for (Selection sel : state.getNavigationNodes()) {
-            newList.add(sel.getPosition());
-        }
-        guiHandler.updateNavPointsList(newList);
+        guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
         guiHandler.updateGUI();
 //        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
@@ -241,11 +237,7 @@ public class Controller {
                 state.getNavigationNodes().add(position, newSel);
             }
         }
-        ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
-        for (Selection sel : state.getNavigationNodes()) {
-            newList.add(sel.getPosition());
-        }
-        guiHandler.updateNavPointsList(newList);
+        guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
         guiHandler.updateGUI();
 //        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
@@ -260,14 +252,7 @@ public class Controller {
         if (pos < state.getNavigationNodes().size()) {
             state.getNavigationNodes().remove(pos);
             state.setCurrentRoute(new ArrayList<Integer>());
-            calculateRoute();
-            state.setCurrentRoute(new ArrayList<Integer>());
-            calculateRoute();
-            ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
-            for (Selection sel : state.getNavigationNodes()) {
-                newList.add(sel.getPosition());
-            }
-            guiHandler.updateNavPointsList(newList);
+            guiHandler.updateNavPointsList(state.getNavigationNodes());
             calculateRoute();
             guiHandler.updateGUI();
         }
@@ -288,12 +273,7 @@ public class Controller {
             if (node.isInBounds(topLeft, bottomRight)) {
                 state.getNavigationNodes().remove(i);
                 state.setCurrentRoute(new ArrayList<Integer>());
-                calculateRoute();
-                ArrayList<Coordinates> newList = new ArrayList<Coordinates>();
-                for (Selection sel : state.getNavigationNodes()) {
-                    newList.add(sel.getPosition());
-                }
-                guiHandler.updateNavPointsList(newList);
+                guiHandler.updateNavPointsList(state.getNavigationNodes());
                 calculateRoute();
                 guiHandler.updateGUI();
             }
@@ -533,7 +513,7 @@ public class Controller {
     
     private static void loadState() {
         File stateFile = new File("./state.state");
-        if (false && stateFile.exists()) {   
+        if (stateFile.exists()) {   
             logger.info("load state file..."); 
             try { 
                 StateIO.loadState(stateFile); 
