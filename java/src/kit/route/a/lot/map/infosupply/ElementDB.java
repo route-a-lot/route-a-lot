@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.POINode;
@@ -50,7 +51,9 @@ public interface ElementDB {
      * Deletes the favorite with the given ID from the elementID.
      * @param id the ID of the favorite
      */
-    public void deleteFavorite(Coordinates pos);
+    public void deleteFavorite(Coordinates pos, int detailLevel, int radius);
+    
+    public POIDescription getFavDescr(Coordinates pos, float radius, int detailLevel);
     
     /**
      * Loads all elements from the given stream to the id store. 

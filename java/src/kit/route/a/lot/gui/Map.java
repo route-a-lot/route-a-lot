@@ -159,6 +159,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         });
         
         favoriteMenu = new JPopupMenu();
+        favoriteMenu.setBackground(Color.WHITE);
         favoriteMenu.add(favoriteNameField);
         favoriteMenu.add(favoriteDescriptionField);
         favoriteMenu.add(addFavoriteButton);
@@ -379,13 +380,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     public void showPoiDescription(POIDescription poiDescription) {
-        showPoiName.setText("<html><div width='80px'>" + poiDescription.getName() + "</div></html>");
+        showPoiName.setText("<html><div width='80px'><u>" + poiDescription.getName() + "</u></div></html>");
         showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }
     
     public void showFavDescription(POIDescription favDescription) {
-        showPoiName.setText("<html><div width='80px'>" + favDescription.getName() + "</div></html>");
+        showPoiName.setText("<html><div width='160px'><u>" + favDescription.getName() + "</u></div></html>");
         showPoiDescription.setText("<html><div width='80px'>" + favDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }

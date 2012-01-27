@@ -158,8 +158,8 @@ public class MapInfo {
      * @param position
      *            the position of the favorite
      */
-    public void deleteFavorite(Coordinates position) {
-        elementDB.deleteFavorite(position);
+    public void deleteFavorite(Coordinates position, int detailLevel, int radius) {
+        elementDB.deleteFavorite(position, detailLevel, radius);
     }
     
     public boolean isFavorite(Coordinates position, int deteilLevel, int radius) {
@@ -343,6 +343,10 @@ public class MapInfo {
     
     public void setGeoBottomRight(Coordinates geoBottomRight) {
         this.geoBottomRight = geoBottomRight;
+    }
+    
+    public POIDescription showFavDescription(Coordinates pos, float radius, int detailLevel){
+        return elementDB.getFavDescr(pos, radius, detailLevel);
     }
 
 }

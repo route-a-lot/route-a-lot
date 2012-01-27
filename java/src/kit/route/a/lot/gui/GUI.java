@@ -798,7 +798,9 @@ public class GUI extends JFrame {
             i--;
         }
         startPoint.setText("");
+        startPoint.setBackground(Color.WHITE);
         endPoint.setText("");
+        endPoint.setBackground(Color.WHITE);
         this.navPointsList = new ArrayList<Selection>(newNavPointsList);
         if(this.navPointsList.size() - 2 > 0) {
             for(int i = 1; i < newNavPointsList.size() - 1; i++) {

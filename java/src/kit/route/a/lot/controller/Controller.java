@@ -9,6 +9,7 @@ import java.util.List;
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
@@ -17,6 +18,7 @@ import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.listener.AddFavoriteListener;
 import kit.route.a.lot.controller.listener.ClickPositionListener;
 import kit.route.a.lot.controller.listener.CloseListener;
+import kit.route.a.lot.controller.listener.DeleteFavoriteListener;
 import kit.route.a.lot.controller.listener.DeleteNavNodeListener;
 import kit.route.a.lot.controller.listener.ExportRouteListener;
 import kit.route.a.lot.controller.listener.GeneralListener;
@@ -29,6 +31,7 @@ import kit.route.a.lot.controller.listener.OrderNavNodesListener;
 import kit.route.a.lot.controller.listener.SearchNameListener;
 import kit.route.a.lot.controller.listener.SelectNavNodeListener;
 import kit.route.a.lot.controller.listener.LoadRouteListener;
+import kit.route.a.lot.controller.listener.ShowFavoriteDescriptionListener;
 import kit.route.a.lot.controller.listener.SpeedListener;
 import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.ChangeViewListener;
@@ -97,7 +100,7 @@ public class Controller {
         guiHandler.addSaveRouteListener(new SaveRouteListner(this));
         guiHandler.addLoadRouteListener(new LoadRouteListener(this));
         guiHandler.addExportRouteListener(new ExportRouteListener(this));
-        guiHandler.addDeleteFavListener(new DeleteNavNodeListener(this));
+        guiHandler.addDeleteFavListener(new DeleteFavoriteListener(this));
         guiHandler.addSetSpeedListener(new SpeedListener(this));
         guiHandler.addClickPositionListener(new ClickPositionListener(this));
         guiHandler.addHeightMalusListener(new HeightMalusListener(this));
@@ -114,6 +117,7 @@ public class Controller {
         });
         guiHandler.addAutoCompletitionListener(new SuggestionListener(this));
         guiHandler.addGetNavNodeDescriptionListener(new SearchNameListener(this));
+        guiHandler.addFavDescriptionListener( new ShowFavoriteDescriptionListener(this));
         guiHandler.setView(state.getCenterCoordinates());
         guiHandler.updateMapList(state.getImportedMaps()); 
         guiHandler.setSpeed(state.getSpeed());
@@ -308,7 +312,7 @@ public class Controller {
      * Operation addFavorite
      */
     public void addFavorite(Coordinates pos, String name, String description) {  
-        state.getLoadedMapInfo().addFavorite(pos, new POIDescription("Favorit", 0, description));  //TODO category
+        state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, OSMType.FAVOURITE, description));  //TODO category
         guiHandler.updateGUI();
     }
 
@@ -316,7 +320,7 @@ public class Controller {
      * Operation deleteFavorite
      */
     public void deleteFavorite(Coordinates pos) {
-        state.getLoadedMapInfo().deleteFavorite(pos);
+        state.getLoadedMapInfo().deleteFavorite(pos, state.getDetailLevel(), state.getClickRadius());
         guiHandler.updateGUI();
     }
 
@@ -374,18 +378,6 @@ public class Controller {
         }
     }
 
-    /**
-     * Operation typeAddress
-     */
-    public void typeAddress() {  //TODO
-    }
-
-    /**
-     * Operation searchAddress
-     */
-    public void searchAddress() {   //TODO
-        
-    }
 
     public void getCompletition(String str) {
         guiHandler.showCompletition(state.getLoadedMapInfo().suggestCompletions(str));
@@ -537,6 +529,13 @@ public class Controller {
                     }
                 }
             }
+        }
+    }
+    
+    public void showPOIDescription(Coordinates pos) {
+        POIDescription poiDesc = state.getLoadedMapInfo().showFavDescription(pos, state.getClickRadius(), state.getDetailLevel());
+        if (poiDesc != null) {
+            guiHandler.showFavDescription(poiDesc);
         }
     }
    
