@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.listener.GeneralListener;
 
 
@@ -43,7 +44,7 @@ public class GUIHandler {
         gui.updateMapChooser(maps);
     }
     
-    public void updateNavPointsList(ArrayList<Coordinates> navPointsList) {
+    public void updateNavPointsList(ArrayList<Selection> navPointsList) {
         gui.updateNavNodes(navPointsList);
     }
 
@@ -164,14 +165,6 @@ public class GUIHandler {
     
     public void thisWasClicked(int element, Coordinates pos){
         gui.popUpTrigger(element, pos);
-    }
-    
-    public void deleteNavNodeFromList(Coordinates coordinates) {
-        gui.deleteNavNodesFromList(coordinates);
-    }
-    
-    public void setNavNodesOrder(ArrayList<Coordinates> orderedList) {
-        gui.setNavPointsOrdered(orderedList);
     }
     
     public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {

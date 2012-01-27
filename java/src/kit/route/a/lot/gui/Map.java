@@ -196,7 +196,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     
     /**
      * Called when a popup entry concerning navigation nodes has been clicked.
-     * Correspondingly adds a navigation node to the list.
      */
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -206,16 +205,16 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         int pos = 0;
         
         switch (gui.getNavPointsList().size()) {
-            case 0: pos = 0; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()));
+            case 0: pos = 0;
                     break;
             case 1: switch (type) {
-                        case 0 : pos = 0; gui.getNavPointsList().set(0, getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())); break; 
-                        default : pos = 1; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()));
+                        case 0 : pos = 0; break; 
+                        default : pos = 1;
                     }
                     break;
             default: switch (type) {
                         case 0 : pos = 0; break;
-                        case 1 : pos = gui.getNavPointsList().size() - 1; gui.getNavPointsList().add(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY())); break;
+                        case 1 : pos = gui.getNavPointsList().size() - 1; break;
                         case 2 : pos = gui.getNavPointsList().size();
                         break;
                     }

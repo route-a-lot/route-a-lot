@@ -40,6 +40,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.listener.GeneralListener;
 import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
@@ -122,7 +123,7 @@ public class GUI extends JFrame {
     private File importedHeightMap;
     private DefaultListModel textRouteList;
     
-    private ArrayList<Coordinates> navPointsList;
+    private ArrayList<Selection> navPointsList;
     private Listeners listener;
     
     /**
@@ -134,7 +135,7 @@ public class GUI extends JFrame {
         super("Route-A-Lot");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-        navPointsList = new ArrayList<Coordinates>();
+        navPointsList = new ArrayList<Selection>();
         this.listener = listener;
     }
     
@@ -439,25 +440,25 @@ public class GUI extends JFrame {
            }
         });
         
-        listener.targetSelected.add(new GeneralListener() {
-            @Override
-            public void handleEvent(GeneralEvent event) {
-                int index = ((SelectNavNodeEvent) event).getIndex();
-                Coordinates pos = ((SelectNavNodeEvent) event).getPosition();
-                if( index == 0) {
-                    startPoint.setText(pos.toString());
-                } else if(index == navPointsList.size() - 1) {
-                    endPoint.setText(pos.toString());
-                } else {
-                    while(alladdedNavPoints.size() < navPointsList.size() - 2) {
-                        addTextfieldButton();
-                    }
-                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
-                        alladdedNavPoints.get(i).setText(navPointsList.get(i + 1).toString());
-                    }
-                }
-            }         
-        });
+//        listener.targetSelected.add(new GeneralListener() {
+//            @Override
+//            public void handleEvent(GeneralEvent event) {
+//                int index = ((SelectNavNodeEvent) event).getIndex();
+//                Coordinates pos = ((SelectNavNodeEvent) event).getPosition();
+//                if( index == 0) {
+//                    startPoint.setText(pos.toString());
+//                } else if(index == navPointsList.size() - 1) {
+//                    endPoint.setText(pos.toString());
+//                } else {
+//                    while(alladdedNavPoints.size() < navPointsList.size() - 2) {
+//                        addTextfieldButton();
+//                    }
+//                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
+//                        alladdedNavPoints.get(i).setText(navPointsList.get(i + 1).toString());
+//                    }
+//                }
+//            }         
+//        });
     }
     
     /**
@@ -675,8 +676,8 @@ public class GUI extends JFrame {
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedNavPoints.size(); i++) {
                   if(alladdedNavPoints.get(i) == navPointField) {
-                      listener.fireEvent(listener.getNavNodeDescription, new TextEvent(alladdedNavPoints.get(i).getText()));
                       alladdedNavPoints.get(i).setBackground(Color.red);
+                      listener.fireEvent(listener.getNavNodeDescription, new TextEvent(alladdedNavPoints.get(i).getText()));
                       repaint();
                   }
               }
@@ -688,8 +689,7 @@ public class GUI extends JFrame {
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedButtons.size(); i++) {
                   if(alladdedButtons.get(i) == navPointButton) {
-                      int a = i;
-                      if(!alladdedNavPoints.get(i).getText().equals("")) {
+                      if(!alladdedNavPoints.get(i).getText().equals("") && alladdedButtons.size() == navPointsList.size()-2) {
                           listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i+1));
                       } else  {
                           tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
@@ -730,56 +730,19 @@ public class GUI extends JFrame {
         s_speed.setValue(speed);
     }
     
-    public void setNavPointsOrdered(ArrayList<Coordinates> orderedNavPointsList) {
-        for(int i = 0 ; i < alladdedButtons.size(); i++) {
-            tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
-            tab1_stopoverPanel.remove(alladdedButtons.get(i));
-            alladdedButtons.remove(i);
-            alladdedNavPoints.remove(i);
-            Listeners.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
-        }
-        startPoint.setText("");
-        endPoint.setText("");
-        this.navPointsList = orderedNavPointsList;
-        if(this.navPointsList.size() - 2 > 0) {
-            for(int i = 0; i < this.navPointsList.size(); i++) {
-                addTextfieldButton();
-            }
-            startPoint.setText(this.navPointsList.get(0).toString());
-            endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).toString());
-        } else if(this.navPointsList.size() == 2) {
-            startPoint.setText(this.navPointsList.get(0).toString());
-            endPoint.setText(this.navPointsList.get(1).toString());
-        } else if(this.navPointsList.size() == 1){
-            startPoint.setText(this.navPointsList.get(0).toString());
-        }
-        repaint(); 
-    }
-    
     public void setZoomlevel(int zoomlevel) {
         scrolling.setValue(zoomlevel);
-    }
-    
-    public void deleteNavNodesFromList(Coordinates coordinates) {
-        navPointsList.remove(coordinates);
     }
     
     public Listeners getListener() {
         return listener;
     }
     
-    public ArrayList<Coordinates> getNavPointsList() {
+    public ArrayList<Selection> getNavPointsList() {
         return navPointsList;
     }
     
-    public void updateNavNodes(ArrayList<Coordinates> newNavPointsList) {
-//        for(int i = 0 ; i < alladdedButtons.size(); i++) {
-//            tab1.remove(alladdedNavPoints.get(i));
-//            tab1.remove(alladdedButtons.get(i));
-//            alladdedButtons.remove(i);
-//            alladdedNavPoints.remove(i);
-//            listener.fireEvent(listener.deleteNavPoint, new NumberEvent(i));
-//        }
+    public void updateNavNodes(ArrayList<Selection> newNavPointsList) {
         while(alladdedButtons.size() != 0) {
             int i = alladdedButtons.size() - 1;
             tab1_stopoverPanel.remove(alladdedNavPoints.get(i));
@@ -790,23 +753,44 @@ public class GUI extends JFrame {
         }
         startPoint.setText("");
         endPoint.setText("");
-        this.navPointsList = new ArrayList<Coordinates>(newNavPointsList);
+        this.navPointsList = new ArrayList<Selection>(newNavPointsList);
         if(this.navPointsList.size() - 2 > 0) {
             for(int i = 1; i < newNavPointsList.size() - 1; i++) {
                 addTextfieldButton();
-                alladdedNavPoints.get(i-1).setText(newNavPointsList.get(i).toString());
+                if(newNavPointsList.get(i).getName().equals(null)) {
+                    alladdedNavPoints.get(i-1).setText(newNavPointsList.get(i).getPosition().toString());
+                } else {
+                    alladdedNavPoints.get(i-1).setText(newNavPointsList.get(i).getName());
+                }
             }
-            startPoint.setText(this.navPointsList.get(0).toString());
-            endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).toString());
+            if(newNavPointsList.get(0).getName().equals(null)) {
+                startPoint.setText(newNavPointsList.get(0).getPosition().toString());
+            } else {
+                startPoint.setText(this.navPointsList.get(0).getName());
+            }
+            if(newNavPointsList.get(this.navPointsList.size() - 1).getName().equals(null)) {
+                endPoint.setText(newNavPointsList.get(this.navPointsList.size() - 1).getPosition().toString());
+            } else {
+                endPoint.setText(this.navPointsList.get(this.navPointsList.size() - 1).getName());
+            }
         } else if(this.navPointsList.size() == 2) {
-            startPoint.setText(this.navPointsList.get(0).toString());
-            endPoint.setText(this.navPointsList.get(1).toString());
+            if(newNavPointsList.get(0).getName().equals(null)) {
+                startPoint.setText(newNavPointsList.get(0).getPosition().toString());
+            } else {
+                startPoint.setText(this.navPointsList.get(0).getName());
+            }
+            if(newNavPointsList.get(1).getName().equals(null)) {
+                endPoint.setText(newNavPointsList.get(1).getPosition().toString());
+            } else {
+                endPoint.setText(this.navPointsList.get(1).getName());
+            }
         } else if(this.navPointsList.size() == 1){
-            startPoint.setText(this.navPointsList.get(0).toString());
+            if(newNavPointsList.get(0).getName().equals(null)) {
+                startPoint.setText(newNavPointsList.get(0).getPosition().toString());
+            } else {
+                startPoint.setText(this.navPointsList.get(0).getName());
+            }
         }
-//        for(int i = 0; i < alladdedNavPoints.size(); i++) {
-//            listener.fireEvent(listener.getNavNodeDescription, new PositionEvent(newNavPointsList.get(i + 1)));
-//        }
         repaint();
     }
     
