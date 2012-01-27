@@ -30,8 +30,6 @@ public abstract class QuadTree {
     protected abstract void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elememts);
     
-    protected abstract void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> baseLayer, Set<MapElement> overlay);
 
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
         double width = Math.abs(this.bottomRight.getLongitude() - this.upLeft.getLongitude());

@@ -174,14 +174,6 @@ public class QTLeaf extends QuadTree {
         
     }
 
-    @Override
-    protected void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> baseLayer, Set<MapElement> overlay) {
-        if(isInBounds(upLeft, bottomRight)) {
-            baseLayer.addAll(baseLayer);
-            overlay.addAll(overlay);
-        }
-    }
 
     @Override
     protected void trimm() {

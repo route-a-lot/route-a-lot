@@ -158,16 +158,6 @@ public class QTNode extends QuadTree {
         
     }
 
-    @Override
-    protected void addBaseLayerAndOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> baseLayer, Set<MapElement> overlay) {
-        if (isInBounds(upLeft, bottomRight)) {
-            for(QuadTree qt : children) {
-                qt.addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
-          
-            }  
-        }
-    }
 
     @Override
     protected void trimm() {
