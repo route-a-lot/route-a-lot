@@ -30,6 +30,7 @@ public class Listeners {
     public List<GeneralListener> switchMapMode;
     public List<GeneralListener> poiDescription;
     public List<GeneralListener> getNavNodeDescription;
+    public List<GeneralListener> autoCompletition;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
@@ -57,6 +58,7 @@ public class Listeners {
         switchMapMode = new ArrayList<GeneralListener>();
         poiDescription = new ArrayList<GeneralListener>();
         getNavNodeDescription = new ArrayList<GeneralListener>();
+        autoCompletition = new ArrayList<GeneralListener>();
     }
     
     public void addViewChangedListener(GeneralListener viewChangedListener) {
@@ -124,6 +126,9 @@ public class Listeners {
     }
     public void addGetNavNodeDescriptionListener(GeneralListener getNavNodeDescriptionListener) {
         getNavNodeDescription.add(getNavNodeDescriptionListener);
+    }
+    public void addAutoCompletitionListener(GeneralListener autoCompletitionListener) {
+        autoCompletition.add(autoCompletitionListener);
     }
     
     public static void fireEvent(List<GeneralListener> listener, GeneralEvent event) {

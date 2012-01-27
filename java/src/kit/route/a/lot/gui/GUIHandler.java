@@ -148,6 +148,10 @@ public class GUIHandler {
         listener.addGetNavNodeDescriptionListener(getNavNodeDescriptionListener);
     }
     
+    public void addAutoCompletitionListener(GeneralListener autoCompletitionListener) {
+        listener.addAutoCompletitionListener(autoCompletitionListener);
+    }
+    
     public void setView(Coordinates center) {
         gui.setView(center);
     }
@@ -174,5 +178,9 @@ public class GUIHandler {
     
     public void showRouteValues(int duration, int length) {
         gui.showRouteValues(duration, length);
+    }
+    
+    public void showCompletition(ArrayList<String> completition) {
+        gui.showCompletition(completition);
     }
 }

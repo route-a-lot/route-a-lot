@@ -130,6 +130,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         showPoiName = new JLabel();
         
         descriptionMenu = new JPopupMenu();
+        descriptionMenu.setBackground(Color.WHITE);
         descriptionMenu.add(showPoiName);
         descriptionMenu.add(showPoiDescription);
         

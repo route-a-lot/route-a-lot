@@ -12,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -28,7 +31,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
@@ -48,6 +53,7 @@ import kit.route.a.lot.gui.event.PositionEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
+import kit.route.a.lot.gui.event.TextPositionEvent;
 
 
 public class GUI extends JFrame {
@@ -105,27 +111,27 @@ public class GUI extends JFrame {
     private JPanel tab1;
     private JPanel tab1_allComponents;
     private JPanel tab1_stopoverPanel;
-    private JPanel tab2;
+//    private JPanel tab2;
     private JPanel tab3;
+    
+    private JPopupMenu popUpTextuelCompletition;
 
     private JSpinner s_speed;
 
     private ArrayList<JTextField> alladdedNavPoints;
     private ArrayList<JButton> alladdedButtons;
+    private ArrayList<JMenuItem> textuelProposals;
    
     private Map map;
     
-    private int key = 0;
-    private String choosenMap;
-    private File importedMapFile;
-    private File loadedRouteFile;
-    private File savedRouteFile;
-    private File exportedRouteFile;
-    private File importedHeightMap;
-    private DefaultListModel textRouteList;
-    
     private ArrayList<Selection> navPointsList;
     private Listeners listener;
+    
+    private int popUpX;
+    private int popUpY;
+    private int popUpFieldPosition;
+    
+    private boolean enterPressed = false;
     
     /**
      * Creates the GUI window, using the given view center coordinates.
@@ -279,7 +285,7 @@ public class GUI extends JFrame {
         mapButtonPanel.add(scrolling);
         
         createTab1();
-        createTab2();
+//        createTab2();
         createTab3();
         
         validate();
@@ -312,7 +318,22 @@ public class GUI extends JFrame {
         startPoint.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listener.fireEvent(listener.getNavNodeDescription, new TextEvent(startPoint.getText()));
+                startPoint.setBackground(Color.red);
+                enterPressed = true;
+                listener.fireEvent(listener.getNavNodeDescription, new TextPositionEvent(startPoint.getText(), 0));
+            }
+        });
+        startPoint.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(enterPressed == false) {
+                    popUpX = startPoint.getX();
+                    popUpY = startPoint.getY() + startPoint.getHeight();
+                    popUpFieldPosition = 0;
+                    listener.fireEvent(listener.autoCompletition, new TextEvent(startPoint.getText()));
+                } else {
+                    enterPressed = false;
+                }
             }
         });
         
@@ -321,9 +342,25 @@ public class GUI extends JFrame {
         endPoint.addActionListener(new ActionListener() {       
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                listener.fireEvent(listener.getNavNodeDescription, new TextEvent(endPoint.getText()));
+                endPoint.setBackground(Color.red);
+                enterPressed = true;
+                listener.fireEvent(listener.getNavNodeDescription, new TextPositionEvent(endPoint.getText(), navPointsList.size()-1));
             }
         });
+        endPoint.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(enterPressed == false) {
+                    popUpX = endPoint.getX();
+                    popUpY = endPoint.getY() + endPoint.getHeight();
+                    popUpFieldPosition = navPointsList.size() - 1;
+                    listener.fireEvent(listener.autoCompletition, new TextEvent(endPoint.getText()));
+                } else {
+                    enterPressed = false;
+                }
+            }
+        });
+        
         addTextPoints = new JButton("+");
         
         optimizeRoute = new JButton("Reihenfolge optimieren");
@@ -359,6 +396,9 @@ public class GUI extends JFrame {
 
         tab1_stopoverPanel = new JPanel();
         tab1_stopoverPanel.setLayout(new GridBagLayout());
+        
+        popUpTextuelCompletition = new JPopupMenu("Completition");
+        popUpTextuelCompletition.setBackground(Color.WHITE);
         
         constraint.fill = GridBagConstraints.HORIZONTAL;
         constraint.weighty = 0.5;
@@ -440,52 +480,32 @@ public class GUI extends JFrame {
               repaint();
            }
         });
-        
-//        listener.targetSelected.add(new GeneralListener() {
-//            @Override
-//            public void handleEvent(GeneralEvent event) {
-//                int index = ((SelectNavNodeEvent) event).getIndex();
-//                Coordinates pos = ((SelectNavNodeEvent) event).getPosition();
-//                if( index == 0) {
-//                    startPoint.setText(pos.toString());
-//                } else if(index == navPointsList.size() - 1) {
-//                    endPoint.setText(pos.toString());
-//                } else {
-//                    while(alladdedNavPoints.size() < navPointsList.size() - 2) {
-//                        addTextfieldButton();
-//                    }
-//                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
-//                        alladdedNavPoints.get(i).setText(navPointsList.get(i + 1).toString());
-//                    }
-//                }
-//            }         
-//        });
     }
     
-    /**
-     * Builds the component tab2 and all its sub components,
-     * in the process adding all event listeners.
-     */
-    private void createTab2() {
-        tab2 = new JPanel();
-        tabbpane.addTab("Beschreibung", null, tab2, "2");
-        // tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
-        textRouteList = new DefaultListModel();
-        String[] data = {"one", "two", "three", "four", "five", "six", "seve", "eight"};
-        textRoute = new JList(textRouteList);
-        for(int i = 0; i < data.length; i++) {
-            textRouteList.add(i, data[i]);
-        }
-        textRoute.setPreferredSize(new Dimension(tab2.getSize()));
-        textRouteScrollPane = new JScrollPane(textRoute);
-        tab2.add(textRoute);
-        /*
-        textRouteList.add(textRoute.getModel().getSize(), "ende");
-        textRouteList.add(0, "anfangawdwadfadwadwadwad");
-        textRouteList.set(3, "replaced");
-        textRouteList.remove(2);
-        */
-    }
+//    /**
+//     * Builds the component tab2 and all its sub components,
+//     * in the process adding all event listeners.
+//     */
+//    private void createTab2() {
+//        tab2 = new JPanel();
+//        tabbpane.addTab("Beschreibung", null, tab2, "2");
+//        // tabbpane.setMnemonicAt(2, KeyEvent.VK_2);
+//        textRouteList = new DefaultListModel();
+//        String[] data = {"one", "two", "three", "four", "five", "six", "seve", "eight"};
+//        textRoute = new JList(textRouteList);
+//        for(int i = 0; i < data.length; i++) {
+//            textRouteList.add(i, data[i]);
+//        }
+//        textRoute.setPreferredSize(new Dimension(tab2.getSize()));
+//        textRouteScrollPane = new JScrollPane(textRoute);
+//        tab2.add(textRoute);
+//        /*
+//        textRouteList.add(textRoute.getModel().getSize(), "ende");
+//        textRouteList.add(0, "anfangawdwadfadwadwadwad");
+//        textRouteList.set(3, "replaced");
+//        textRouteList.remove(2);
+//        */
+//    }
     
     /**
      * Builds the component tab3 and all its sub components,
@@ -541,18 +561,12 @@ public class GUI extends JFrame {
              
         chooseImportedMap = new JComboBox();
         chooseImportedMap.setEditable(true);
-        chooseImportedMap.addItemListener(new ItemListener() {      
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                choosenMap = chooseImportedMap.getSelectedItem().toString();
-            }
-        });
         
         deleteMapButton = new JButton("Entfernen");
         deleteMapButton.addActionListener(new ActionListener() {    
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                String deletedMap = chooseImportedMap.getSelectedItem().toString();
+                String deletedMap = chooseImportedMap.getSelectedItem().toString();//TODO
             }
         });
         
@@ -593,7 +607,6 @@ public class GUI extends JFrame {
         importFC.setFileFilter(filter);
         int returnValue = importFC.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
-            importedMapFile = importFC.getSelectedFile();
             Listeners.fireEvent(listener.importOsmFile,
                     new TextEvent(importFC.getSelectedFile().getPath()));
         }
@@ -608,7 +621,6 @@ public class GUI extends JFrame {
         importHeightMap.setFileFilter(filter);
         int returnValue = importHeightMap.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
-            importedHeightMap = importHeightMap.getSelectedFile();
             Listeners.fireEvent(listener.importHeightMap,
                     new TextEvent(importHeightMap.getSelectedFile().getPath()));
         }
@@ -621,7 +633,6 @@ public class GUI extends JFrame {
         loadRoute = new JFileChooser();
         int returnValue = loadRoute.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
-            loadedRouteFile = loadRoute.getSelectedFile();
             Listeners.fireEvent(listener.loadRoute,
                     new TextEvent(loadRoute.getSelectedFile().getPath()));
         }
@@ -634,7 +645,6 @@ public class GUI extends JFrame {
         saveRoute = new JFileChooser();
         int returnValue = saveRoute.showSaveDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
-            savedRouteFile = saveRoute.getSelectedFile();
             listener.fireEvent(listener.saveRoute,
                     new TextEvent(saveRoute.getSelectedFile().getPath()));
         }
@@ -647,7 +657,6 @@ public class GUI extends JFrame {
         exportRoute = new JFileChooser();
         int returnValue = exportRoute.showDialog(this, "Exportieren");
         if(returnValue == JFileChooser.APPROVE_OPTION) {
-            exportedRouteFile = exportRoute.getSelectedFile();
             listener.fireEvent(listener.exportRoute,
                     new TextEvent(exportRoute.getSelectedFile().getPath()));
         }
@@ -678,14 +687,32 @@ public class GUI extends JFrame {
               for(int i = 0; i < alladdedNavPoints.size(); i++) {
                   if(alladdedNavPoints.get(i) == navPointField) {
                       alladdedNavPoints.get(i).setBackground(Color.red);
-                      listener.fireEvent(listener.getNavNodeDescription, new TextEvent(alladdedNavPoints.get(i).getText()));
+                      enterPressed = true;
+                      listener.fireEvent(listener.getNavNodeDescription, new TextPositionEvent(alladdedNavPoints.get(i).getText(), i + 1));
                       repaint();
                   }
               }
           }
         });
+        navPointField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if(enterPressed == false) {
+                    popUpX = navPointField.getX();
+                    popUpY = navPointField.getY() + navPointField.getHeight();
+                    for(int i = 0; i < alladdedNavPoints.size(); i++) {
+                        if(alladdedNavPoints.get(i) == navPointField) {
+                            popUpFieldPosition = i + 1;
+                        }
+                    }
+                    listener.fireEvent(listener.autoCompletition, new TextEvent(navPointField.getText()));
+                } else {
+                    enterPressed = false;
+                }
+            }
+        });
+        
         navPointButton.addActionListener(new ActionListener() {
-          
           @Override
           public void actionPerformed(ActionEvent arg0) {
               for(int i = 0; i < alladdedButtons.size(); i++) {
@@ -704,6 +731,22 @@ public class GUI extends JFrame {
           }
         });
         tab1.validate();
+    }
+    
+    private void addMenuItem(String name) {
+        final JMenuItem item = new JMenuItem(name);
+        textuelProposals.add(item);
+        popUpTextuelCompletition.add(item);
+        item.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for(int i = 0; i < textuelProposals.size(); i++) {
+                    if(textuelProposals.get(i) == item) {
+                        listener.fireEvent(listener.addTextualNavPoint, new TextPositionEvent(textuelProposals.get(i).getText(), popUpFieldPosition));
+                    }
+                }
+            }
+        });
     }
     
     /**
@@ -807,9 +850,25 @@ public class GUI extends JFrame {
         alladdedNavPoints.get(navNodeIndex - 1).setText(navNodeDescription);
     }
     
+    public void showCompletition(ArrayList<String> completition) {
+        while(textuelProposals.size() != 0) {
+            int i = textuelProposals.size() - 1;
+            popUpTextuelCompletition.remove(textuelProposals.get(i));
+            popUpTextuelCompletition.remove(textuelProposals.get(i));
+            textuelProposals.remove(i);
+            textuelProposals.remove(i);
+            i--;
+        }
+        for(int i = 0; i < completition.size(); i++) {
+            addMenuItem(completition.get(i));
+        }
+        popUpTextuelCompletition.show(tab1_allComponents, popUpX, popUpY);
+        repaint();
+    }
+    
     public void showRouteValues(int duration, int length) {
         int hours = duration/3600;
-        int minutes = duration/60;
+        int minutes = (duration - hours*3600)/60;
         int seconds = duration - (hours * 3600) - (minutes * 60);
         float kilometers = length/1000f;
         if(hours!=0) {
