@@ -135,7 +135,7 @@ public class MapInfo {
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
         POINode newPOI = new POINode(position, description);
         elementDB.addNode(id, newPOI);
-        geographicalOperator.addToOverlay(newPOI);
+        geographicalOperator.addToOverlay(newPOI);      
     }
 
     /**
@@ -162,8 +162,8 @@ public class MapInfo {
         elementDB.deleteFavorite(position);
     }
     
-    public boolean isFavorite(Coordinates position) {
-        return elementDB.isFavorite(position);
+    public boolean isFavorite(Coordinates position, int deteilLevel, int radius) {
+        return elementDB.isFavorite(position, deteilLevel, radius);
     }
 
     /**
@@ -174,8 +174,8 @@ public class MapInfo {
      * 
      * @return the description of the POI
      */
-    public POIDescription getPOIDescription(Coordinates pos, float radius) {
-        return geographicalOperator.getPOIDescription(pos, radius);
+    public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
+        return geographicalOperator.getPOIDescription(pos, radius, detailLevel);
     }
 
     /**

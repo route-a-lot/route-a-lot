@@ -318,6 +318,10 @@ public class Renderer {
 
         for (MapElement element : elements) {
             if (element instanceof Node) {
+                if (element instanceof POINode && (((POINode) element).getInfo().getName() == null 
+                        || ((POINode) element).getInfo().getName().equals(""))){
+                    continue;
+                }
                 Node node = (Node) element;
                 Coordinates drawPosition = new Coordinates(node.getPos().getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
                         node.getPos().getLongitude() - (size/2 * Projection.getZoomFactor(detail)));

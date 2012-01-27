@@ -154,16 +154,16 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public boolean isFavorite(Coordinates pos) {
-        Coordinates topLeft = new Coordinates();
-        Coordinates bottomRight = new Coordinates();
-        topLeft.setLongitude(pos.getLongitude() - State.getInstance().getClickRadius());
-        topLeft.setLatitude(pos.getLatitude() - State.getInstance().getClickRadius());
-        bottomRight.setLongitude(pos.getLongitude() + State.getInstance().getClickRadius());
-        bottomRight.setLatitude(pos.getLatitude() + State.getInstance().getClickRadius());
+    public boolean isFavorite(Coordinates pos, int detailLevel, int radius) {
+        Coordinates UL = new Coordinates();
+        Coordinates BR = new Coordinates();
+        UL.setLatitude(pos.getLatitude() - (detailLevel + 1) * 2 * radius);
+        UL.setLongitude(pos.getLongitude() -(detailLevel + 1) * 2 * radius);
+        BR.setLatitude(pos.getLatitude() + (detailLevel + 1) * 2 * radius);
+        BR.setLongitude(pos.getLongitude() + (detailLevel + 1) * 2 * radius);
         
         for (POINode fav : favorites) {
-            if(fav.isInBounds(topLeft, bottomRight)) {
+            if(fav.isInBounds(UL, BR)) {
                 return true;
             }
         }

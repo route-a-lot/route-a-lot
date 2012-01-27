@@ -265,10 +265,10 @@ public class Controller {
             Node node = new Node(state.getNavigationNodes().get(i).getPosition());
             Coordinates topLeft = new Coordinates();
             Coordinates bottomRight = new Coordinates();
-            topLeft.setLatitude(pos.getLatitude() - state.getClickRadius());
-            topLeft.setLongitude(pos.getLatitude() - state.getClickRadius());
-            bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
-            topLeft.setLongitude(pos.getLatitude() + state.getClickRadius());
+            topLeft.setLatitude(pos.getLatitude() - (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            topLeft.setLongitude(pos.getLongitude() -(state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            bottomRight.setLatitude(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            bottomRight.setLongitude(pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
                 state.getNavigationNodes().remove(i);
                 state.setCurrentRoute(new ArrayList<Integer>());
@@ -303,7 +303,7 @@ public class Controller {
      * Operation addFavorite
      */
     public void addFavorite(Coordinates pos, String name, String description) {  
-        state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, 0, description));  //TODO category
+        state.getLoadedMapInfo().addFavorite(pos, new POIDescription("Favorit", 0, description));  //TODO category
         guiHandler.updateGUI();
     }
 
@@ -410,20 +410,20 @@ public class Controller {
             Node node = new Node(state.getNavigationNodes().get(i).getPosition());
             Coordinates topLeft = new Coordinates();
             Coordinates bottomRight = new Coordinates();
-            topLeft.setLatitude(pos.getLatitude() - state.getClickRadius());
-            topLeft.setLongitude(pos.getLongitude() - state.getClickRadius());
-            bottomRight.setLatitude(pos.getLatitude() + state.getClickRadius());
-            bottomRight.setLongitude(pos.getLongitude() + state.getClickRadius());
+            topLeft.setLatitude(pos.getLatitude() - (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            topLeft.setLongitude(pos.getLongitude() -(state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            bottomRight.setLatitude(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
+            bottomRight.setLongitude(pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
                 guiHandler.thisWasClicked(GUI.NAVNODE, pos);
                 return;
             }
         }    
-        if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius()) != null) {
+        if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel()) != null) {
             guiHandler.thisWasClicked(GUI.POI, pos);
             return;
         } 
-        if(state.getLoadedMapInfo().isFavorite(pos)) {
+        if(state.getLoadedMapInfo().isFavorite(pos, state.getDetailLevel(), state.getClickRadius())) {
             guiHandler.thisWasClicked(GUI.FAVORITE, pos);
             return;
         }
@@ -434,7 +434,7 @@ public class Controller {
      * Operation getPOIInfo
      */
     public void getPOIInfo(Coordinates pos) {   
-        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius());
+        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel());
         if (info != null) {
             guiHandler.showPoiDescription(info, pos);
         }

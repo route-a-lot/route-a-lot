@@ -141,7 +141,7 @@ public class Street extends MapElement implements Comparable<Street>{
     }
 
     // a= side between end and pos, b = s. between pos and start, c = s. between start and end
-    public static double getTriangleCHeight(double a, double b, double c) {
+    private static double getTriangleCHeight(double a, double b, double c) {
         double angleBC = Math.acos((b * b + c * c - a * a) / (2 * b * c));
         double angleAB = Math.acos((a * a + c * c - b * b) / (2 * a * c));
         if (angleBC > Math.PI / 2 || angleAB > Math.PI / 2) { //

@@ -230,16 +230,22 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
 
     @Override
-    public POIDescription getPOIDescription(Coordinates pos, float radius) {
+    public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
+        if (detailLevel > 2) {
+            return null;
+        }
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - radius);
-        UL.setLongitude(pos.getLongitude() - radius);
-        BR.setLatitude(pos.getLatitude() + radius);
-        BR.setLongitude(pos.getLongitude() + radius);
+        System.err.println(detailLevel);
+        System.err.println(radius);
+        UL.setLatitude(pos.getLatitude() - (detailLevel + 1) * 2 * radius);
+        UL.setLongitude(pos.getLongitude() -(detailLevel + 1) * 2 * radius);
+        BR.setLatitude(pos.getLatitude() + (detailLevel + 1) * 2 * radius);
+        BR.setLongitude(pos.getLongitude() + (detailLevel + 1) * 2 * radius);
         Collection<MapElement> elements = getOverlay(0, UL, BR);
         for (MapElement element : elements) {
-            if (element instanceof POINode && element.isInBounds(UL, BR)) {
+            if (element instanceof POINode && element.isInBounds(UL, BR) && ((POINode) element).getInfo().getName() != null
+                    && !((POINode) element).getInfo().getName().equals("")) {
                 return ((POINode) element).getInfo();
             }
         }
