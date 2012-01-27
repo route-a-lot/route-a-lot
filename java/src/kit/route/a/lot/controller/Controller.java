@@ -25,11 +25,13 @@ import kit.route.a.lot.controller.listener.HighwayMalusListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.LoadMapListener;
 import kit.route.a.lot.controller.listener.OrderNavNodesListener;
+import kit.route.a.lot.controller.listener.SearchNameListener;
 import kit.route.a.lot.controller.listener.SelectNavNodeListener;
 import kit.route.a.lot.controller.listener.LoadRouteListener;
 import kit.route.a.lot.controller.listener.SpeedListener;
 import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.ChangeViewListener;
+import kit.route.a.lot.controller.listener.SuggestionListener;
 import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.gui.event.GeneralEvent;
@@ -109,6 +111,8 @@ public class Controller {
                 renderer.inheritCache(oldRenderer);
             }         
         });
+        guiHandler.addAutoCompletitionListener(new SuggestionListener(this));
+        guiHandler.addGetNavNodeDescriptionListener(new SearchNameListener(this));
         guiHandler.setView(state.getCenterCoordinates());
         guiHandler.updateMapList(state.getImportedMaps()); 
         guiHandler.setSpeed(state.getSpeed());
@@ -382,17 +386,19 @@ public class Controller {
         
     }
 
-//    /**
-//     * Operation searchPOI
-//     */
-//    public void searchPOI() {   //TODO needed?
-//    }
-//
-//    /**
-//     * Operation searchFavorite
-//     */
-//    public void searchFavorite() {  //TODO needed?
-//    }
+    public void getCompletition(String str) {
+        guiHandler.showCompletition(state.getLoadedMapInfo().suggestCompletions(str));
+    }
+    
+    public void getNavNodeFromText(String str) {
+        Selection sel = state.getLoadedMapInfo().select(str);
+        if (sel != null) {
+            state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, sel);
+            guiHandler.updateNavPointsList(state.getNavigationNodes());
+            calculateRoute();
+            guiHandler.updateGUI();
+        }
+    }
 
     /**
      * Operation setSpeed

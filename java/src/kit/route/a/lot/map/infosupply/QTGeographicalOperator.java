@@ -14,6 +14,7 @@ import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.POINode;
@@ -236,8 +237,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         Coordinates UL = new Coordinates();
         Coordinates BR = new Coordinates();
-        System.err.println(detailLevel);
-        System.err.println(radius);
         UL.setLatitude(pos.getLatitude() - (detailLevel + 1) * 2 * radius);
         UL.setLongitude(pos.getLongitude() -(detailLevel + 1) * 2 * radius);
         BR.setLatitude(pos.getLatitude() + (detailLevel + 1) * 2 * radius);
@@ -267,6 +266,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
             QuadTree.saveToStream(stream, zoomlevels[i]);
         }
     }
+    
+
     
     /*@Override
     public void getOverlayAndBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight,
