@@ -152,7 +152,7 @@ public class QTLeaf extends QuadTree {
     }
 
     @Override
-    protected void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+    protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
         Set<MapElement> elememts) {
         if(isInBounds(upLeft, bottomRight)) {
             for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {
@@ -164,7 +164,7 @@ public class QTLeaf extends QuadTree {
     }
 
     @Override
-    protected void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+    protected void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elememts) {
         if(isInBounds(upLeft, bottomRight)) {
             for (int i = 0; i < countArrayElementsSize(overlay); i++) {

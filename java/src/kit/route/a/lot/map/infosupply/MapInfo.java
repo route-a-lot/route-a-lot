@@ -161,16 +161,16 @@ public class MapInfo {
         elementDB.deleteFavorite(position, detailLevel, radius);
     }
     
-    public boolean isFavorite(Coordinates position, int deteilLevel, int radius) {
-        return elementDB.isFavorite(position, deteilLevel, radius);
+    public POIDescription getFavoriteDescription(Coordinates position, int detailLevel, int radius) {
+        return elementDB.getFavoriteDescription(position, detailLevel, radius);
     }
 
     /**
      * Returns a description of the POI at the given area (little area around the given position)
      * 
-     * @param pos
-     *            the position of the POI
-     * 
+     * @param pos the position of the POI
+     * @param radius the maximum distance a POI may have to <code>pos</code>
+     * @param detailLevel the level of detail currently shown
      * @return the description of the POI
      */
     public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
@@ -308,13 +308,9 @@ public class MapInfo {
             ((QTGeographicalOperator) geographicalOperator).printQuadTree();
         }
     }
-
-    public MapElement[] getAllElements() {
-        return elementDB.getAllElements();
-    }
     
     public void trimm() {
-        geographicalOperator.trimm();
+        geographicalOperator.compactifyDatastructures();
     }
     
     public void swapNodeIds(int id1, int id2) {
@@ -325,7 +321,7 @@ public class MapInfo {
     }
     
     public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius) {
-        return geographicalOperator.getBaseLayerForAPositionAndRadius(pos, radius);
+        return geographicalOperator.getBaseLayer(pos, radius);
     }
     
     public Coordinates getGeoTopLeft() {
@@ -342,10 +338,6 @@ public class MapInfo {
     
     public void setGeoBottomRight(Coordinates geoBottomRight) {
         this.geoBottomRight = geoBottomRight;
-    }
-    
-    public POIDescription showFavDescription(Coordinates pos, float radius, int detailLevel){
-        return elementDB.getFavDescr(pos, radius, detailLevel);
     }
 
 }

@@ -26,15 +26,19 @@ public interface GeographicalOperator {
      */
     public void getBounds(Coordinates upLeft, Coordinates bottomRight);
 
-    /**
-     * Selects the map element nearest to the given position, incrementally increasing
-     * the search radius if needed.
-     * 
-     * @param pos the given position
-     * @return a {@link Selection} derived from the nearest map element
-     */
-    public Selection select(Coordinates pos);
 
+    /**
+     * Adds a {@link MapElement} to the base layer.
+     * @param element the MapElement to be added
+     */
+    public void addToBaseLayer(MapElement element);
+
+    /**
+     * Adds a {@link MapElement} to the overlay.
+     * @param element the MapElement to be added
+     */
+    public void addToOverlay(MapElement element);
+    
     /**
      * Retrieves all MapElements belonging to the base layer of the given
      * zoom level within the defined boundary.
@@ -44,8 +48,7 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all base layer MapElements in the queried section
      */
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
-            Coordinates bottomRight);
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight);
 
     /**
      * Retrieves all MapElements belonging to the overlay of the given
@@ -56,8 +59,9 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all overlay MapElements in the queried section
      */
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
-            Coordinates bottomRight);
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight);
+    
+    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius);
     
     /*/**
      * Returns the overlay corresponding to the last base layer query.
@@ -69,29 +73,16 @@ public interface GeographicalOperator {
     public void getOverlayAndBaseLayer(int zoomLevel, Coordinates upLeft,
             Coordinates bottomRight, Set<MapElement> baseLayer, Set<MapElement> overlay);*/
 
-    /**
-     * Adds a {@link MapElement} to the base layer.
-     * 
-     * @param element the MapElement to be added
-     */
-    public void addToBaseLayer(MapElement element);
-
-    /**
-     * Adds a {@link MapElement} to the overlay.
-     * 
-     * @param element the MapElement to be added
-     */
-    public void addToOverlay(MapElement element);
-
     
     /**
-     * Deletes the favorite nearest to the given Coordinates and returns it's id.
+     * Selects the map element nearest to the given position, incrementally increasing
+     * the search radius if needed.
+     * 
      * @param pos the given position
-     * @return the deleted favorite's id
+     * @return a {@link Selection} derived from the nearest map element
      */
-    public int deleteFavorite(Coordinates pos);
-    
-
+    public Selection select(Coordinates pos);
+   
     /**
      * Retrieves the description object of the {@link POINode} that is next to the given position.
      * @param pos the given position
@@ -107,7 +98,6 @@ public interface GeographicalOperator {
      * @throws IOException a stream read error occurred
      */
     public void loadFromStream(DataInputStream stream) throws IOException;
-
     
     /**
      * Saves the geographic representation of a map to the stream.
@@ -117,8 +107,10 @@ public interface GeographicalOperator {
      */
     public void saveToStream(DataOutputStream stream) throws IOException;
     
-    public void trimm();
+    /**
+     * Reduces memory consumption by trimming all internal capacities to the actually used size.
+     * Should be called when further change in the data structures is unlikely.
+     */
+    public void compactifyDatastructures();
     
-    public Collection<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius);
-
 }

@@ -23,27 +23,21 @@ import org.apache.log4j.Logger;
 
 public class QTGeographicalOperator implements GeographicalOperator {
 
-    /** The warning and error console output for this class */
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
-    
     private static float baseLayerMultiplier = 3;
-    
     private static int countZoomlevel = 9;
-    
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     private QuadTree zoomlevels[] = new QuadTree[countZoomlevel];
     
     public QTGeographicalOperator() {
-        for(int i = 0; i < countZoomlevel; i++) {
-            zoomlevels[i] = new QTNode(new Coordinates(0,0), new Coordinates(0,0));
-        }
+        setBounds(new Coordinates(), new Coordinates());
     }
     
     @Override
-    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
+    public void setBounds(Coordinates topLeft, Coordinates bottomRight) {
         zoomlevels = new QuadTree[countZoomlevel];
         for (int i = 0; i < countZoomlevel; i++) {
-            zoomlevels[i] = new QTNode(upLeft, bottomRight);
+            zoomlevels[i] = new QTNode(topLeft, bottomRight);
         }
     }
 
@@ -59,89 +53,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
     }
     
-    @Override
-    public Selection select(Coordinates pos) {
-        logger.debug("ClickPositionCoordinates(long/lal): " + pos.getLongitude() + " / " + pos.getLatitude());
-        float radius = 1f;
-        Selection sel = null;
-        while(sel == null && radius < 1000000000) {  //limit for avoiding errors on maps without edges
-            sel = select(pos, radius);
-            radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
-        }
-        logger.debug("StartNodeId: " + sel.getFrom());
-        logger.debug("EndNodeId: " + sel.getTo());
-        return sel;
-    }
     
-    /**
-     * Selects the map element nearest to the given position, taking all map elements
-     * within a search radius into consideration.
-     * 
-     * @param pos the given position
-     * @param radius the search radius
-     * @return a {@link Selection} derived from the nearest map element
-     */
-    private Selection select(Coordinates pos, float radius) {
-        Collection<MapElement> elements = getBaseLayerForAPositionAndRadius(pos, radius);
-        
-        // find element nearest to pos
-        MapElement closestElement = null;
-        float closestDistance = Float.MAX_VALUE;  
-        for (MapElement element: elements) {
-            if(element instanceof Street && ((Street) element).getWayInfo().isRoutable()) {  //TODO only routeable
-                float distance = ((Street) element).getDistanceTo(pos);
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestElement = element; 
-                } 
-            }
-        }
-        return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
-    }
-       
-    public Collection<MapElement> getBaseLayerForAPositionAndRadius(Coordinates pos, float radius) {
-        Coordinates UL = new Coordinates();
-        Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - radius);
-        UL.setLongitude(pos.getLongitude() - radius);
-        BR.setLatitude(pos.getLatitude() + radius);
-        BR.setLongitude(pos.getLongitude() + radius);
-        return getBaseLayer(0, UL, BR);
-    }
     
-    @Override
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft,
-            Coordinates bottomRight) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("called: getBaseLayer()");
-            logger.trace(" upLeft: " + upLeft);
-            logger.trace(" bottomRight: " + bottomRight);
-            logger.trace(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
-            logger.trace(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
-            logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
-            logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
-        }
-
-        if (zoomlevel >= countZoomlevel) {
-            zoomlevel = countZoomlevel - 1;
-        }
-        
-        HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[zoomlevel].addBaseLayerElementsToCollection(upLeft, bottomRight, elements);
-        return elements;
-    }
-    
-    @Override
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft,
-            Coordinates bottomRight) {
-        HashSet<MapElement> elements = new HashSet<MapElement>();
-        if (zoomlevel >= countZoomlevel) {
-            zoomlevel = countZoomlevel - 1;
-        }
-        zoomlevels[zoomlevel].addOverlayElementsToCollection(upLeft, bottomRight, elements);
-        return elements;
-    }
-        
     @Override
     public void addToBaseLayer(MapElement element) {
         zoomlevels[0].addToBaseLayer(element);
@@ -199,61 +112,113 @@ public class QTGeographicalOperator implements GeographicalOperator {
             }
         }
     }
-    
-    /**
-     * prints a string representing the quadtree
-     */
-    public void printQuadTree() {
-        System.out.println(quadTreeAsString(0));
+      
+    @Override
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
+        /*if (logger.isTraceEnabled()) {
+            logger.trace("called: getBaseLayer()");
+            logger.trace(" upLeft: " + upLeft);
+            logger.trace(" bottomRight: " + bottomRight);
+            logger.trace(" QT Bounds UL Lon: " + zoomlevels[0].getUpLeft().getLongitude());
+            logger.trace(" QT Bounds UL Lat: " + zoomlevels[0].getUpLeft().getLatitude());
+            logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
+            logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
+        }*/    
+        HashSet<MapElement> elements = new HashSet<MapElement>();
+        zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryBaseLayer(upLeft, bottomRight, elements);
+        return elements;
     }
     
-    private String quadTreeAsString(int level) {
-        return zoomlevels[level].toString(0, new ArrayList<Integer>());
+    @Override
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
+        HashSet<MapElement> elements = new HashSet<MapElement>();
+        zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryOverlay(upLeft, bottomRight, elements);
+        return elements;
     }
+       
+    @Override
+    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius) {
+        Coordinates UL = new Coordinates(pos.getLatitude() - radius, pos.getLongitude() - radius);
+        Coordinates BR = new Coordinates(pos.getLatitude() + radius, pos.getLongitude() + radius);
+        return getBaseLayer(0, UL, BR);
+    }    
     
-    private Collection<MapElement> getOverlayForAPositionAndRadius(Coordinates pos, float radius) {
-        Coordinates UL = new Coordinates();
-        Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - radius);
-        UL.setLongitude(pos.getLongitude() - radius);
-        BR.setLatitude(pos.getLatitude() + radius);
-        BR.setLongitude(pos.getLongitude() + radius);
+    /*private Collection<MapElement> getOverlay(Coordinates pos, float radius) {
+        Coordinates UL = new Coordinates(pos.getLatitude() - radius, pos.getLongitude() - radius);
+        Coordinates BR = new Coordinates(pos.getLatitude() + radius, pos.getLongitude() + radius);
         return getOverlay(0, UL, BR);
     }
     
+    @Override
+    public void getOverlayAndBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> baseLayer, Set<MapElement> overlay) {
+        zoomlevels[zoomlevel].addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
+    }*/
     
     
     @Override
-    public int deleteFavorite(Coordinates pos) {
-        // TODO Auto-generated method stub
-        return 0;
+    public Selection select(Coordinates pos) {
+        logger.debug("ClickPositionCoordinates(long/lal): " + pos.getLongitude() + " / " + pos.getLatitude());
+        float radius = 1f;
+        Selection sel = null;
+        while(sel == null && radius < 1000000000) {  //limit for avoiding errors on maps without edges
+            sel = select(pos, radius);
+            radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
+        }
+        logger.debug("StartNodeId: " + sel.getFrom());
+        logger.debug("EndNodeId: " + sel.getTo());
+        return sel;
     }
-
+    
+    /**
+     * Selects the map element nearest to the given position, taking all map elements
+     * within a search radius into consideration.
+     * 
+     * @param pos the given position
+     * @param radius the search radius
+     * @return a {@link Selection} derived from the nearest map element
+     */
+    private Selection select(Coordinates pos, float radius) {
+        Collection<MapElement> elements = getBaseLayer(pos, radius);
+        
+        // find element nearest to pos
+        MapElement closestElement = null;
+        float closestDistance = Float.MAX_VALUE;  
+        for (MapElement element: elements) {
+            if(element instanceof Street && ((Street) element).getWayInfo().isRoutable()) {  //TODO only routeable
+                float distance = ((Street) element).getDistanceTo(pos);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestElement = element; 
+                } 
+            }
+        }
+        return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
+    }
+       
     @Override
     public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
         if (detailLevel > 2) {
             return null;
         }
-        Coordinates UL = new Coordinates();
-        Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - Projection.getZoomFactor(detailLevel) *  radius);
-        UL.setLongitude(pos.getLongitude() -Projection.getZoomFactor(detailLevel) *  radius);
-        BR.setLatitude(pos.getLatitude() + Projection.getZoomFactor(detailLevel) * radius);
-        BR.setLongitude(pos.getLongitude() + Projection.getZoomFactor(detailLevel) * radius);
-        POINode currentPOI = null;
-        double currentDistance = radius;
+        POINode closestElement = null;
+        float closestDistance = (Projection.getZoomFactor(detailLevel) + 1) *  radius;
+        Coordinates UL = new Coordinates(pos.getLatitude() - closestDistance, pos.getLongitude() - closestDistance);
+        Coordinates BR = new Coordinates(pos.getLatitude() + closestDistance, pos.getLongitude() + closestDistance);
         Collection<MapElement> elements = getOverlay(0, UL, BR);
         for (MapElement element : elements) {
             if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
-                if (Util.getDistance(pos, ((POINode) element).getPos()) < currentDistance) {
-                    currentPOI = (POINode) element;
-                    currentDistance = Util.getDistance(pos, currentPOI.getPos());
+                float newDistance = (float) Util.getDistance(pos, ((POINode) element).getPos());
+                if (newDistance < closestDistance) {
+                    closestElement = (POINode) element;
+                    closestDistance = newDistance;
                 }
             }
         }
-        return (currentPOI == null) ? null : currentPOI.getInfo();
-    }
-    
+        return (closestElement == null) ? null : closestElement.getInfo();
+    }    
+          
+
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
         for(int i = 0; i < zoomlevels.length; i++) {
@@ -271,17 +236,18 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
 
-    
-    /*@Override
-    public void getOverlayAndBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> baseLayer, Set<MapElement> overlay) {
-        zoomlevels[zoomlevel].addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
-    }*/
-
     @Override
-    public void trimm() {
+    public void compactifyDatastructures() {
         for (int i = 0; i < zoomlevels.length; i++) {
             zoomlevels[i].trimm();
         }
     } 
+       
+    /**
+     * Prints a string representing the quadtree.
+     */
+    public void printQuadTree() {
+        System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
+    }
+    
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.controller.State;
 
 public class Node extends MapElement {
 
@@ -15,12 +16,6 @@ public class Node extends MapElement {
     public Node(Coordinates pos) {
         lat = pos.getLatitude();
         lon = pos.getLongitude();
-    }
-
-    public Node(float latitude, float longitude, int id) {
-        lat = latitude;
-        lon = longitude;
-        this.id = id;
     }
 
     public Node() {
@@ -39,19 +34,23 @@ public class Node extends MapElement {
 
     @Override
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        float minLat = (float) Math.min(topLeft.getLatitude(), bottomRight.getLatitude());
-        float maxLat = (float) Math.max(topLeft.getLatitude(), bottomRight.getLatitude());
-        float minLon = (float) Math.min(topLeft.getLongitude(), bottomRight.getLongitude());
-        float maxLon = (float) Math.max(topLeft.getLongitude(), bottomRight.getLongitude());
-        return (lat <= maxLat && lat >= minLat && lon >= minLon && lon <= maxLon);
+        return getPos().isInBounds(topLeft, bottomRight);
     }
 
     @Override
-    public Selection getSelection() {
-        // TODO Auto-generated method stub
-        return null;
+    public Selection getSelection() { //TODO: verify
+        return State.getInstance().getLoadedMapInfo().select(getPos());
     }
 
+
+    @Override
+    public MapElement getReduced(int detail, float rang) {
+        if (detail > 2) {
+            return null;
+        } else {
+            return this;
+        }
+    }
 
     @Override
     protected void load(DataInputStream stream) throws IOException {
@@ -65,12 +64,4 @@ public class Node extends MapElement {
         stream.writeFloat(this.lon);
     }
 
-    @Override
-    public MapElement getReduced(int detail, float rang) {
-        if (detail > 2) {
-            return null;
-        } else {
-            return this;
-        }
-    }
 }

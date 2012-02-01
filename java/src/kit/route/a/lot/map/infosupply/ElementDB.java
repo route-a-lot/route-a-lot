@@ -51,8 +51,6 @@ public interface ElementDB {
      */
     public void deleteFavorite(Coordinates pos, int detailLevel, int radius);
     
-    public POIDescription getFavDescr(Coordinates pos, float radius, int detailLevel);
-    
     /**
      * Loads all elements from the given stream to the id store. 
      * 
@@ -68,10 +66,8 @@ public interface ElementDB {
      * @throws IOException a stream write error occurred
      */
     public void saveToStream(DataOutputStream stream) throws IOException;
-
-    public MapElement[] getAllElements();
     
-    public boolean isFavorite(Coordinates pos, int detailLevel, int radius);
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius);
     
     public void swapNodeIds(int id1, int id2);
     

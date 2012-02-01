@@ -16,8 +16,7 @@ public class Heightmap implements IHeightmap {
 	}
 
     @Override
-    public HashSet<HeightTile> 
-		getTiles(Coordinates upLeft, Coordinates bottomRight) {
+    public HashSet<HeightTile> getTiles(Coordinates upLeft, Coordinates bottomRight) {
 	
         this.tiles = new HashSet<HeightTile>();
 

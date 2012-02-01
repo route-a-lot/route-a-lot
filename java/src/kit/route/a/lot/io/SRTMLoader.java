@@ -1,6 +1,7 @@
 package kit.route.a.lot.io;
 
 import kit.route.a.lot.heightinfo.HeightTile;
+import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 
@@ -8,7 +9,7 @@ import java.io.File;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.EOFException;
+import org.apache.log4j.Logger;
 
 
 public class SRTMLoader implements HeightLoader {
@@ -21,20 +22,14 @@ public class SRTMLoader implements HeightLoader {
      * @return
      * @return
      **/
-    State state;
-    private int width;
-    private int height;
+    IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
+    private int width = 1201;
+    private int height = 1201;
     private final int MAX_DEVIATION = 10;
-
-    public SRTMLoader() {
-        this.width = 1201;
-        this.height = 1201;
-        state = State.getInstance();
-    }
+    private static Logger logger = Logger.getLogger(SRTMLoader.class);
 
     @Override
-    public void load(File dataDirectory) {
-
+    public void load(File dataDirectory) { 
         File[] dateien = dataDirectory.listFiles();
         if (dateien == null) {
             return;
@@ -42,33 +37,31 @@ public class SRTMLoader implements HeightLoader {
         HeightTile tile;
         FileInputStream in;
         DataInputStream bin;
-        Coordinates origin;
-        int lat = 0;
-        int lon = 0;
 
-        for (int k = 0; k < dateien.length; k++) {
-            String[] arr = dateien[k].getName().split("");
-            Integer hunderter;
-            Integer zehner;
-            Integer einer;
-            /* origin auslesen */
-            for (int l = 0; l < arr.length; l++) {
-                if (arr[l].equals("N")) {
-                    zehner = Integer.valueOf(arr[l + 1]);
-                    einer = Integer.valueOf(arr[l + 2]);
-                    lat = zehner.intValue() * 10 + einer.intValue();
-                } else if (arr[l].equals("E")) {
-                    hunderter = Integer.valueOf(arr[l + 1]);
-                    zehner = Integer.valueOf(arr[l + 2]);
-                    einer = Integer.valueOf(arr[l + 3]);
-                    lon = hunderter.intValue() * 100 + zehner.intValue() * 10 + einer.intValue();
+        for (File file: dateien) {
+            String[] fileNameParts = file.getName().split("\\.");
+            if ((fileNameParts.length != 2) || (fileNameParts[0].length() != 7)
+                    || !fileNameParts[1].equals("hgt")) {
+                continue;
+            }
+            String fileName = fileNameParts[0];  
+            try {
+                float lat = Float.parseFloat(fileName.substring(1, 3));
+                if (fileName.charAt(0) == 'S') {
+                    lat = -lat;
                 }
-            }// end for origin
-            origin = new Coordinates((float) lat, (float) lon);
-            tile = new HeightTile(width, height, origin);
+                float lon = Float.parseFloat(fileName.substring(4, 7));
+                if (fileName.charAt(3) == 'W') {
+                    lon = -lon;
+                }
+                tile = new HeightTile(width, height, new Coordinates(lat, lon));
+            } catch (NumberFormatException e) {
+                continue;
+            }
+            logger.info("Loading height file '" + file.getName() + "'...");
 
             try {
-                in = new FileInputStream(dateien[k]);
+                in = new FileInputStream(file);
                 bin = new DataInputStream(in);
                 int oldheight = 0;
                 for (int i = height - 1; i >= 0; i--) {
@@ -84,13 +77,11 @@ public class SRTMLoader implements HeightLoader {
                 }// for height
                 bin.close();
                 in.close();
-            } catch (EOFException eof) {
-                // System.out.println(eof);
             } catch (IOException e) {
-                // System.out.println(e);
+                logger.error("Invalid hgt file: '" + file.getName() + "'. Loading aborted.");
             }
             /* in HeightMap einfügen */
-            state.getLoadedHeightmap().addHeightTile(tile);
+            heightmap.addHeightTile(tile);
         }// end for dateien
     }
 }

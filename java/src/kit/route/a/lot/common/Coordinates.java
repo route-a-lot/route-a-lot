@@ -33,6 +33,15 @@ public class Coordinates {
         this.longitude = longitude;
     }
     
+    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        //TODO DISCUSS: unnecessary min/max?
+        float minLat = (float) Math.min(topLeft.getLatitude(), bottomRight.getLatitude());
+        float maxLat = (float) Math.max(topLeft.getLatitude(), bottomRight.getLatitude());
+        float minLon = (float) Math.min(topLeft.getLongitude(), bottomRight.getLongitude());
+        float maxLon = (float) Math.max(topLeft.getLongitude(), bottomRight.getLongitude());
+        return (latitude <= maxLat && latitude >= minLat && longitude >= minLon && longitude <= maxLon);
+    }
+    
     @Override
     public String toString() {
         return String.format("(LAT: %1$3.2f / LON: %2$3.2f)", latitude, longitude);

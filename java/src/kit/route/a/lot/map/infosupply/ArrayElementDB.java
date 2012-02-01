@@ -133,17 +133,6 @@ public class ArrayElementDB implements ElementDB {
         }
     }
 
-    
-    @Override
-    public MapElement[] getAllElements() {
-        List<MapElement> result = new ArrayList<MapElement>();
-        MapElement[] resultArray = new MapElement[nodes.size() + mapElements.size() + favorites.size()];
-        result.addAll(nodes);
-        result.addAll(mapElements);
-        result.addAll(favorites);
-        return (MapElement[]) result.toArray(resultArray);
-    }
-
     @Override
     public void swapNodeIds(int id1, int id2) {  
         nodes.get(id1).setID(id2);
@@ -152,37 +141,10 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public boolean isFavorite(Coordinates pos, int detailLevel, int radius) {
-        Coordinates UL = new Coordinates();
-        Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - Projection.getZoomFactor(detailLevel) * radius);
-        UL.setLongitude(pos.getLongitude() -Projection.getZoomFactor(detailLevel) * radius);
-        BR.setLatitude(pos.getLatitude() + Projection.getZoomFactor(detailLevel) * radius);
-        BR.setLongitude(pos.getLongitude() + Projection.getZoomFactor(detailLevel) * radius);
-        
-        for (POINode fav : favorites) {
-            if(fav.isInBounds(UL, BR)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public ArrayList<POINode> getFavorites() {
-        return favorites;
-    }
-
-    @Override
-    public POIDescription getFavDescr(Coordinates pos, float radius, int detailLevel) {
-        System.out.println("asdsad");
-        Coordinates UL = new Coordinates();
-        Coordinates BR = new Coordinates();
-        UL.setLatitude(pos.getLatitude() - Projection.getZoomFactor(detailLevel) * radius);
-        UL.setLongitude(pos.getLongitude() -Projection.getZoomFactor(detailLevel) * radius);
-        BR.setLatitude(pos.getLatitude() + Projection.getZoomFactor(detailLevel) * radius);
-        BR.setLongitude(pos.getLongitude() + Projection.getZoomFactor(detailLevel) * radius);
-        
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius) {
+        float adaptedRadius = Projection.getZoomFactor(detailLevel) * radius;
+        Coordinates UL = new Coordinates(pos.getLatitude() - adaptedRadius, pos.getLongitude() - adaptedRadius);
+        Coordinates BR = new Coordinates(pos.getLatitude() + adaptedRadius, pos.getLongitude() + adaptedRadius);      
         for (POINode fav : favorites) {
             if(fav.isInBounds(UL, BR)) {
                 return fav.getInfo();
@@ -190,4 +152,10 @@ public class ArrayElementDB implements ElementDB {
         }
         return null;
     }
+
+    @Override
+    public ArrayList<POINode> getFavorites() {
+        return favorites;
+    }
+
 }

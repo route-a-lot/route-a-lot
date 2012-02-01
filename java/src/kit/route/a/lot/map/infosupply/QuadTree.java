@@ -24,10 +24,10 @@ public abstract class QuadTree {
         this.bottomRight = bottomRight;
     }
 
-    protected abstract void addBaseLayerElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+    protected abstract void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elememts);
     
-    protected abstract void addOverlayElementsToCollection(Coordinates upLeft, Coordinates bottomRight,
+    protected abstract void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elememts);
     
 

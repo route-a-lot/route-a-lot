@@ -92,22 +92,25 @@ public class RendererTest {
         WayInfo wayInfo = new WayInfo();
         wayInfo.setBuilding(true);
         Node[] nodes = new Node[8];
-        nodes[0] = new Node(49.017945f, 8.404362f, 0);
-        nodes[1] = new Node(49.016397f, 8.408911f, 1);
-        nodes[2] = new Node(49.01423f, 8.410413f, 2);
-        nodes[3] = new Node(49.011866f, 8.409383f, 3);
-        nodes[4] = new Node(49.010036f, 8.404748f, 4);
-        nodes[5] = new Node(49.011584f, 8.399727f, 5);
-        nodes[6] = new Node(49.014118f, 8.398311f, 6);
-        nodes[7] = new Node(49.01696f, 8.400285f, 7);
-        nodes[0] = new Node(0.01f, 0.0f, 0);
-        nodes[1] = new Node(0.007f, 0.003f, 1);
-        nodes[2] = new Node(0.0f, 0.01f, 2);
-        nodes[3] = new Node(-0.007f, -0.003f, 3);
-        nodes[4] = new Node(-0.01f, -0.01f, 4);
-        nodes[5] = new Node(-0.007f, -0.003f, 5);
-        nodes[6] = new Node(0.0f, 0.0f, 6);
-        nodes[7] = new Node(0.007f, 0.003f, 7);
+        /*nodes[0] = new Node(new Coordinates(49.017945f, 8.404362f));
+        nodes[1] = new Node(new Coordinates(49.016397f, 8.408911f));
+        nodes[2] = new Node(new Coordinates(49.01423f, 8.410413f));
+        nodes[3] = new Node(new Coordinates(49.011866f, 8.409383f));
+        nodes[4] = new Node(new Coordinates(49.010036f, 8.404748f));
+        nodes[5] = new Node(new Coordinates(49.011584f, 8.399727f));
+        nodes[6] = new Node(new Coordinates(49.014118f, 8.398311f));
+        nodes[7] = new Node(new Coordinates(49.01696f, 8.400285f));*/
+        nodes[0] = new Node(new Coordinates(0.01f, 0.0f));
+        nodes[1] = new Node(new Coordinates(0.007f, 0.003f));
+        nodes[2] = new Node(new Coordinates(0.0f, 0.01f));
+        nodes[3] = new Node(new Coordinates(-0.007f, -0.003f));
+        nodes[4] = new Node(new Coordinates(-0.01f, -0.01f));
+        nodes[5] = new Node(new Coordinates(-0.007f, -0.003f));
+        nodes[6] = new Node(new Coordinates(0.0f, 0.0f));
+        nodes[7] = new Node(new Coordinates(0.007f, 0.003f));
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i].setID(i);
+        }
         Street street = new Street("", wayInfo);
         street.setNodes(nodes);
 //        mapInfo.addMapElement(street);

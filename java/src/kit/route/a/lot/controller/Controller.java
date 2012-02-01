@@ -359,45 +359,47 @@ public class Controller {
 
     public void passElementType(Coordinates pos) {
         //TODO: better approximation:
-        Coordinates topLeft = new Coordinates(pos.getLatitude() - (state.getDetailLevel() + 1) * 2 * state.getClickRadius(), 
-                    pos.getLongitude() -(state.getDetailLevel() + 1) * 2 * state.getClickRadius());       
-        Coordinates bottomRight = new Coordinates(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius(),
-                    pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
-            Node node = new Node(state.getNavigationNodes().get(i).getPosition());
+        float adaptedRadius = (state.getDetailLevel() + 1) * 2 * state.getClickRadius();
+        Coordinates topLeft = new Coordinates(pos.getLatitude() - adaptedRadius, pos.getLongitude() - adaptedRadius);       
+        Coordinates bottomRight = new Coordinates(pos.getLatitude() + adaptedRadius, pos.getLongitude() + adaptedRadius);
+        for (Selection navNode: state.getNavigationNodes()) {
+            Node node = new Node(navNode.getPosition());
             if (node.isInBounds(topLeft, bottomRight)) {
                 guiHandler.passElementType(GUI.NAVNODE, pos);
                 return;
             }
         }    
-        if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel()) != null) {
+        if (state.getLoadedMapInfo().getPOIDescription(pos,
+                state.getClickRadius(), state.getDetailLevel()) != null) {
             guiHandler.passElementType(GUI.POI, pos);
             return;
         } 
-        if(state.getLoadedMapInfo().isFavorite(pos, state.getDetailLevel(), state.getClickRadius())) {
+        if(state.getLoadedMapInfo().getFavoriteDescription(pos,
+                state.getDetailLevel(), state.getClickRadius()) != null) {
             guiHandler.passElementType(GUI.FAVORITE, pos);
             return;
         }
         guiHandler.passElementType(GUI.FREEMAPSPACE, pos);
     }
     
-    public void passSearchCompletion(String str) {
-        guiHandler.showSearchCompletion(state.getLoadedMapInfo().suggestCompletions(str));
-    }
-   
     public void passPOIDescription(Coordinates pos) {   
-        POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos,
+        POIDescription description = state.getLoadedMapInfo().getPOIDescription(pos, 
                 state.getClickRadius(), state.getDetailLevel());
-        if (info != null) {
-            guiHandler.showPOIDescription(info, pos);
+        if (description != null) {
+            guiHandler.showPOIDescription(description, pos);
         }
     }
 
     public void passFavDescription(Coordinates pos) {
-        POIDescription poiDesc = state.getLoadedMapInfo().showFavDescription(pos, state.getClickRadius(), state.getDetailLevel());
-        if (poiDesc != null) {
-            guiHandler.showFavDescription(poiDesc);
+        POIDescription description = state.getLoadedMapInfo().getFavoriteDescription(pos,
+                state.getDetailLevel(), state.getClickRadius());
+        if (description != null) {
+            guiHandler.showFavDescription(description);
         }
+    }
+    
+    public void passSearchCompletion(String str) {
+        guiHandler.showSearchCompletion(state.getLoadedMapInfo().suggestCompletions(str));
     }
     
     public void passTextRoute() {   //TODO

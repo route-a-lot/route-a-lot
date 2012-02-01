@@ -14,7 +14,7 @@ import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
 import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
-    private static State singleton = null;
+    private static State singleton = new State();
     
     private File loadedMapFile;
     private MapInfo loadedMapInfo;
@@ -24,7 +24,7 @@ public class State {
     private List<Integer> currentRoute;
     private Coordinates centerCoordinates;
     private int detailLevel;
-    private int clickRadius; // TODO needed?
+    private int clickRadius;
     private RouteDescription routeDescription;
     private int speed;
     private int duration;
@@ -40,19 +40,19 @@ public class State {
     public State() {
         resetMap();
         detailLevel = 2;
-        clickRadius = 5;
+        clickRadius = 10;
         speed = 15;
         duration = 0;
         heightMalus = 0;
         highwayMalus = 0;
         importedMaps = new ArrayList<String>();
+        loadedHeightmap = new Heightmap();
     }
     
     public void resetMap() {
         loadedMapFile = null;
         loadedMapInfo = new MapInfo();
-        loadedGraph = new AdjacentFieldsRoutingGraph();
-        loadedHeightmap = new Heightmap();
+        loadedGraph = new AdjacentFieldsRoutingGraph();      
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         centerCoordinates = new Coordinates(0, 0);
@@ -60,9 +60,6 @@ public class State {
     }
     
     public static State getInstance() {
-        if (singleton == null) {
-            singleton = new State();
-        }
         return singleton;
     }
 

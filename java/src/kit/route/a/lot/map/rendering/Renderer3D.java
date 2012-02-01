@@ -67,14 +67,14 @@ public class Renderer3D extends Renderer {
         
         
         GL gl = ((Context3D) context).getGL();
-        gl.glScalef(1,1,3);
+        gl.glScalef(1,1,10);
         
         // move camera up so that it won't intersect hills  
         Coordinates pos = new Coordinates((float)(bottomRight.getLongitude() + topLeft.getLongitude()) * 0.5f,
                                           (float)(bottomRight.getLatitude() + topLeft.getLatitude()) * 0.5f);
         float actFloor = getHeight(pos);
         float actCeil = actFloor;
-        gl.glTranslatef(0,0,-actCeil);
+        gl.glTranslatef(0,0,-lastFloor);
         
         /*gl.glTranslatef(topLeft.getLongitude(), topLeft.getLatitude(), 0);
         gl.glScalef(context.getWidth(), context.getHeight(), 1);
