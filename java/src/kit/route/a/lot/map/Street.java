@@ -13,6 +13,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -125,18 +126,18 @@ public class Street extends MapElement implements Comparable<Street>{
      * start - and endNode in the array nodes
      */
     private static float getDistanceFromNodeToEdge(Node[] nodes, int start, int end, Coordinates pos) {
-        double b = getDistanceProj(nodes[start].getPos(), pos);
-        double a = getDistanceProj(nodes[end].getPos(), pos);
-        double c = getDistanceProj(nodes[start].getPos(), nodes[end].getPos());
+        double b = Util.getDistance(nodes[start].getPos(), pos);
+        double a = Util.getDistance(nodes[end].getPos(), pos);
+        double c = Util.getDistance(nodes[start].getPos(), nodes[end].getPos());
         if (c == 0) {
-            return (float) Street.getDistanceProj(nodes[start].getPos(), pos);
+            return (float) Util.getDistance(nodes[start].getPos(), pos);
         }
         float distance = (float) getTriangleCHeight(a, b, c);
         if (!(distance < 0)) {
             return distance;
         }
-        return (float) Math.min(getDistanceProj(nodes[start].getPos(), pos),
-                getDistanceProj(nodes[end].getPos(), pos));
+        return (float) Math.min(Util.getDistance(nodes[start].getPos(), pos),
+                Util.getDistance(nodes[end].getPos(), pos));
     }
 
     // a= side between end and pos, b = s. between pos and start, c = s. between start and end
@@ -151,11 +152,6 @@ public class Street extends MapElement implements Comparable<Street>{
             return -1; // if failure --> wrong angles, try: if(angleAB > Math.PI / 4 || angleAB < Math.PI / 8)
         }
         return Math.sin(angleBC) * b; // height of triangle (a = "hypothenuse" and h = "gegenkathete")
-    }
-
-    public static double getDistanceProj(Coordinates pos1, Coordinates pos2) {
-        return Math.sqrt(Math.pow(pos1.getLatitude() - pos2.getLatitude(), 2)
-                + Math.pow(pos1.getLongitude() - pos2.getLongitude(), 2));
     }
 
     /**
@@ -181,14 +177,14 @@ public class Street extends MapElement implements Comparable<Street>{
     }
 
     private float getRatio(int startNode, int endNode, Coordinates pos) {
-        double b = getDistanceProj(nodes[startNode].getPos(), pos);
-        double a = getDistanceProj(nodes[endNode].getPos(), pos);
-        double c = getDistanceProj(nodes[startNode].getPos(), nodes[endNode].getPos());
+        double b = Util.getDistance(nodes[startNode].getPos(), pos);
+        double a = Util.getDistance(nodes[endNode].getPos(), pos);
+        double c = Util.getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
         // float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b * b + c * c - a * a) / (2 * b * c));
         double angleAC = Math.acos((a * a + c * c - b * b) / (2 * a * c));
         if (angleBC > Math.PI / 2 || angleAC > Math.PI / 2) {
-            if (getDistanceProj(nodes[startNode].getPos(), pos) < getDistanceProj(nodes[endNode].getPos(),
+            if (Util.getDistance(nodes[startNode].getPos(), pos) < Util.getDistance(nodes[endNode].getPos(),
                     pos)) {
                 return 0.0f;
             } else {
@@ -268,7 +264,7 @@ public class Street extends MapElement implements Comparable<Street>{
     private static float getLengthOfStreet(Street street) {
         float length = 0;
         for (int i = 1; i < street.nodes.length; i++) {
-            length += getDistanceProj(street.nodes[i - 1].getPos(), street.nodes[i].getPos());
+            length += Util.getDistance(street.nodes[i - 1].getPos(), street.nodes[i].getPos());
         }
         return length;
     }

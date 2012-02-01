@@ -35,7 +35,7 @@ public class Coordinates {
     
     @Override
     public String toString() {
-        return "latitude: " + latitude + " - longitude: " + longitude;
+        return String.format("(LAT: %1$3.2f / LON: %2$3.2f)", latitude, longitude);
     }
     
     @Override

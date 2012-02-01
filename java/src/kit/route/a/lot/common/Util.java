@@ -113,6 +113,11 @@ public class Util {
     public static int clip(int value, int bottom, int top) {
         return (value < bottom) ? bottom : (value > top) ? top : value;
     }
+    
+    public static double getDistance(Coordinates pos1, Coordinates pos2) {
+        return Math.sqrt(Math.pow(pos1.getLatitude() - pos2.getLatitude(), 2)
+                       + Math.pow(pos1.getLongitude() - pos2.getLongitude(), 2));
+    }
 
 
 }

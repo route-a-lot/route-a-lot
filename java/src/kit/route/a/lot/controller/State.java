@@ -40,7 +40,7 @@ public class State {
     public State() {
         resetMap();
         detailLevel = 2;
-        clickRadius = 5; // TODO use it
+        clickRadius = 5;
         speed = 15;
         duration = 0;
         heightMalus = 0;

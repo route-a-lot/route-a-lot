@@ -357,29 +357,28 @@ public class Controller {
     }
 
 
-    public void passElementAtPosition(Coordinates pos) {
+    public void passElementType(Coordinates pos) {
+        //TODO: better approximation:
+        Coordinates topLeft = new Coordinates(pos.getLatitude() - (state.getDetailLevel() + 1) * 2 * state.getClickRadius(), 
+                    pos.getLongitude() -(state.getDetailLevel() + 1) * 2 * state.getClickRadius());       
+        Coordinates bottomRight = new Coordinates(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius(),
+                    pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
         for (int i = 0; i < state.getNavigationNodes().size(); i++) {
             Node node = new Node(state.getNavigationNodes().get(i).getPosition());
-            Coordinates topLeft = new Coordinates();
-            Coordinates bottomRight = new Coordinates();
-            topLeft.setLatitude(pos.getLatitude() - (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-            topLeft.setLongitude(pos.getLongitude() -(state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-            bottomRight.setLatitude(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
-            bottomRight.setLongitude(pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
-                guiHandler.passElementAtPosition(GUI.NAVNODE, pos);
+                guiHandler.passElementType(GUI.NAVNODE, pos);
                 return;
             }
         }    
         if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel()) != null) {
-            guiHandler.passElementAtPosition(GUI.POI, pos);
+            guiHandler.passElementType(GUI.POI, pos);
             return;
         } 
         if(state.getLoadedMapInfo().isFavorite(pos, state.getDetailLevel(), state.getClickRadius())) {
-            guiHandler.passElementAtPosition(GUI.FAVORITE, pos);
+            guiHandler.passElementType(GUI.FAVORITE, pos);
             return;
         }
-        guiHandler.passElementAtPosition(GUI.FREEMAPSPACE, pos);
+        guiHandler.passElementType(GUI.FREEMAPSPACE, pos);
     }
     
     public void passSearchCompletion(String str) {

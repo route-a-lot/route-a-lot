@@ -33,7 +33,7 @@ public class GUIHandler {
         gui.updateNavNodes(navPointsList);
     }
     
-    public void passElementAtPosition(int element, Coordinates pos){
+    public void passElementType(int element, Coordinates pos){
         gui.popUpTrigger(element, pos);
     }
     

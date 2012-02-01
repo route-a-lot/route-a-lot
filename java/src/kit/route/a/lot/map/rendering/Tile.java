@@ -10,6 +10,7 @@ import java.util.Collection;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
@@ -308,7 +309,7 @@ public class Tile {
         for (int i = 1; i < nPoints; i++) {
             Coordinates from = getLocalCoordinatesFromGlobalCoordinates(nodes[i-1].getPos());
             Coordinates to = getLocalCoordinatesFromGlobalCoordinates(nodes[i].getPos());
-            currentDistance += Street.getDistanceProj(from, to);
+            currentDistance += Util.getDistance(from, to);
 
             if (currentDistance > arrowDistance) {
                 currentDistance = 0;

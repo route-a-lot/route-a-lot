@@ -12,6 +12,7 @@ import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
@@ -239,14 +240,18 @@ public class QTGeographicalOperator implements GeographicalOperator {
         UL.setLongitude(pos.getLongitude() -Projection.getZoomFactor(detailLevel) *  radius);
         BR.setLatitude(pos.getLatitude() + Projection.getZoomFactor(detailLevel) * radius);
         BR.setLongitude(pos.getLongitude() + Projection.getZoomFactor(detailLevel) * radius);
+        POINode currentPOI = null;
+        double currentDistance = radius;
         Collection<MapElement> elements = getOverlay(0, UL, BR);
         for (MapElement element : elements) {
-            if (element instanceof POINode && element.isInBounds(UL, BR) && ((POINode) element).getInfo().getName() != null
-                    && !((POINode) element).getInfo().getName().equals("")) {
-                return ((POINode) element).getInfo();
+            if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
+                if (Util.getDistance(pos, ((POINode) element).getPos()) < currentDistance) {
+                    currentPOI = (POINode) element;
+                    currentDistance = Util.getDistance(pos, currentPOI.getPos());
+                }
             }
         }
-        return null;
+        return (currentPOI == null) ? null : currentPOI.getInfo();
     }
     
     @Override
