@@ -13,34 +13,18 @@ import kit.route.a.lot.controller.listener.GeneralListener;
 public class GUIHandler {
 
     private GUI gui;
-    private Listeners listener = new Listeners();
+    private Listeners listeners = new Listeners();
     
     public GUIHandler() {
-        createGUI();
-    }
-
-    public void createGUI() {
-        gui = new GUI(listener);
+        gui = new GUI(listeners);
         gui.setBounds(0, 25, 600, 600);
         gui.addContents();
     }
 
-
-    /**
-     * Operation updateGUI
-     * 
-     * @return
-     */
     public void updateGUI() {
         gui.updateGUI();
     }
 
-
-    /**
-     * Operation updateMapList
-     * 
-     * @return
-     */
     public void updateMapList(ArrayList<String> maps) {
         gui.updateMapChooser(maps);
     }
@@ -48,117 +32,11 @@ public class GUIHandler {
     public void updateNavPointsList(List<Selection> navPointsList) {
         gui.updateNavNodes(navPointsList);
     }
-
-    /**
-     * Operation addListenerImportMap
-     * 
-     * @return
-     */
-    public void addListenerImportMap(GeneralListener importOsmFileListener) {
-        listener.addImportOsmFileListener(importOsmFileListener);
-    }
-
-    /**
-     * Operation addListenerAddNavNode
-     * 
-     * @return
-     */
-    public void addListenerAddNavNode(GeneralListener targetSelectedListener) {
-        listener.addTargetSelectedListener(targetSelectedListener);
-    }
-
-    public void addChangedViewListener(GeneralListener viewChangedListener) {
-        listener.addViewChangedListener(viewChangedListener);
+    
+    public void passElementAtPosition(int element, Coordinates pos){
+        gui.popUpTrigger(element, pos);
     }
     
-    public void addOptimizeRouteListener(GeneralListener optimizeRouteListener) {
-        listener.addOptimizeRouteListener(optimizeRouteListener);
-    }
-    
-    public void addLoadMapListener(GeneralListener loadMapListener) {
-        listener.addLoadMapListener(loadMapListener);
-    }
-    
-    public void addDeleteNavNodeListener(GeneralListener deleteNavNodeListener) {
-        listener.addDeleteNavNodeListener(deleteNavNodeListener);
-    }
-    
-    public void addSwitchNavNodesListener (GeneralListener switchNavNodesListener) {
-        //TODO
-    }
-    
-    public void addAddFavoriteListener(GeneralListener addFavListener) {
-        listener.addFavoriteListener(addFavListener);
-    }
-    
-    public void addDeleteFavListener (GeneralListener deleteFavListener) {
-        listener.addDeleteFavListener(deleteFavListener);
-    }
-    
-    public void addSaveRouteListener(GeneralListener saveRouteListener) {
-        listener.addSaveRouteListener(saveRouteListener);
-    }
-    
-    public void addLoadRouteListener(GeneralListener loadRouteListener) {
-        listener.addLoadRouteListener(loadRouteListener);
-    }
-    
-    public void addExportRouteListener(GeneralListener exportRouteListener) {
-        listener.addExportRouteListener(exportRouteListener);
-    }
-    
-    public void printRouteListener(GeneralListener printRouteListener) {
-        listener.addPrintRouteListener(printRouteListener);
-        //TODO
-    }
-    
-    public void addSetSpeedListener(GeneralListener setSpeedListener) {
-        listener.addSetSpeedListener(setSpeedListener);
-    }
-    
-    public void addClickPositionListener(GeneralListener clickPositionListener) {
-        listener.addClickPositionListener(clickPositionListener);
-    }
-    
-    public void addGetPoiDescriptionListener(GeneralListener poiDescriptionListener) {
-        listener.addPoiDescriptionListener(poiDescriptionListener);
-    }
-    
-    public void addHighwayMalusListener(GeneralListener highwayMalusListener) {
-        listener.addHighwayMalusListener(highwayMalusListener);
-    }
-    
-    public void addHeightMalusListener(GeneralListener heightMalusListener) {
-        listener.addHeightMalusListener(heightMalusListener);
-    }
-    
-    public void addImportHeightMapListener(GeneralListener importHeightMapListener) {
-        listener.addImportHeightMapListener(importHeightMapListener);
-    }
-    
-    public void addCloseListener(GeneralListener closeListener) { //doesn't work ... obsolete comment?
-        listener.addCloseListener(closeListener);
-    }
-    
-    public void addSwitchMapModeListener(GeneralListener switchMapModeListener) {
-        listener.addSwitchMapModeListener(switchMapModeListener);
-    }
-    
-    public void addGetNavNodeDescriptionListener(GeneralListener getNavNodeDescriptionListener) {
-        listener.addGetNavNodeDescriptionListener(getNavNodeDescriptionListener);
-    }
-    
-    public void addAutoCompletitionListener(GeneralListener autoCompletitionListener) {
-        listener.addAutoCompletitionListener(autoCompletitionListener);
-    }
-    
-    public void addDeleteMapListener(GeneralListener deleteMapListener) {
-        listener.addDeleteMapListener(deleteMapListener);
-    }
-    
-    public void addFavDescriptionListener(GeneralListener favDescriptionListener) {
-        listener.addFavDescriptionListener(favDescriptionListener);
-    }
     
     public void setView(Coordinates center) {
         gui.setView(center);
@@ -168,20 +46,16 @@ public class GUIHandler {
         gui.setSpeed(speed);
     }
     
-    public void setRouteText(RouteDescription routeDescr) {
+    public void setRouteDecription(RouteDescription description) {
         //TODO
     }
     
-    public void showPoiDescription(POIDescription descr, Coordinates pos) {
-        gui.showPoiDescription(descr);
+    public void showPOIDescription(POIDescription description, Coordinates pos) {
+        gui.showPOIDescription(description);
     }
     
-    public void showFavDescription(POIDescription favDescription) {
-        gui.showFavDescription(favDescription);
-    }
-    
-    public void thisWasClicked(int element, Coordinates pos){
-        gui.popUpTrigger(element, pos);
+    public void showFavDescription(POIDescription description) {
+        gui.showFavDescription(description);
     }
     
     public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {
@@ -192,7 +66,110 @@ public class GUIHandler {
         gui.showRouteValues(duration, length);
     }
     
-    public void showCompletition(List<String> completition) {
-        gui.showCompletition(completition);
+    public void showSearchCompletion(List<String> completition) {
+        gui.showSearchCompletion(completition);
+    }
+    
+    
+    // LISTENER RECEPTION //
+
+    public void addImportMapListener(GeneralListener listener) {
+        listeners.addImportOsmFileListener(listener);
+    }
+
+    public void addAddNavNodeListener(GeneralListener listener) {
+        listeners.addTargetSelectedListener(listener);
+    }
+
+    public void addChangedViewListener(GeneralListener listener) {
+        listeners.addViewChangedListener(listener);
+    }
+    
+    public void addOptimizeRouteListener(GeneralListener listener) {
+        listeners.addOptimizeRouteListener(listener);
+    }
+    
+    public void addLoadMapListener(GeneralListener listener) {
+        listeners.addLoadMapListener(listener);
+    }
+    
+    public void addDeleteNavNodeListener(GeneralListener listener) {
+        listeners.addDeleteNavNodeListener(listener);
+    }
+    
+    public void addSwitchNavNodesListener (GeneralListener listener) {
+        //listeners.addSwitchNavNodesListener(listener); //TODO
+    }
+    
+    public void addAddFavoriteListener(GeneralListener listener) {
+        listeners.addFavoriteListener(listener);
+    }
+    
+    public void addDeleteFavListener (GeneralListener listener) {
+        listeners.addDeleteFavListener(listener);
+    }
+    
+    public void addSaveRouteListener(GeneralListener listener) {
+        listeners.addSaveRouteListener(listener);
+    }
+    
+    public void addLoadRouteListener(GeneralListener listener) {
+        listeners.addLoadRouteListener(listener);
+    }
+    
+    public void addExportRouteListener(GeneralListener listener) {
+        listeners.addExportRouteListener(listener);
+    }
+    
+    public void printRouteListener(GeneralListener listener) {
+        listeners.addPrintRouteListener(listener); //TODO
+    }
+    
+    public void addSetSpeedListener(GeneralListener listener) {
+        listeners.addSetSpeedListener(listener);
+    }
+    
+    public void addClickPositionListener(GeneralListener listener) {
+        listeners.addClickPositionListener(listener);
+    }
+    
+    public void addGetPoiDescriptionListener(GeneralListener listener) {
+        listeners.addPoiDescriptionListener(listener);
+    }
+    
+    public void addHighwayMalusListener(GeneralListener listener) {
+        listeners.addHighwayMalusListener(listener);
+    }
+    
+    public void addHeightMalusListener(GeneralListener listener) {
+        listeners.addHeightMalusListener(listener);
+    }
+    
+    public void addImportHeightMapListener(GeneralListener listener) {
+        listeners.addImportHeightMapListener(listener);
+    }
+    
+    public void addCloseListener(GeneralListener listener) {
+        listeners.addCloseListener(listener);
+    }
+    
+    public void addSwitchMapModeListener(GeneralListener listener) {
+        listeners.addSwitchMapModeListener(listener);
+    }
+    
+    public void addGetNavNodeDescriptionListener(GeneralListener listener) {
+        listeners.addGetNavNodeDescriptionListener(listener);
+    }
+    
+    public void addAutoCompletitionListener(GeneralListener listener) {
+        listeners.addAutoCompletitionListener(listener);
+    }
+    
+    public void addDeleteMapListener(GeneralListener listener) {
+        listeners.addDeleteMapListener(listener);
+    }
+    
+    public void addFavDescriptionListener(GeneralListener listener) {
+        listeners.addFavDescriptionListener(listener);
     }
 }

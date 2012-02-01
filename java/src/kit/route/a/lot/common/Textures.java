@@ -6,8 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
-
 import com.sun.opengl.util.BufferUtil;
 
 public class Textures

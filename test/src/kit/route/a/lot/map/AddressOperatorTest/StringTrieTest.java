@@ -2,17 +2,12 @@ package kit.route.a.lot.map.AddressOperatorTest;
 
 
 import java.util.ArrayList;
-import java.util.List;
-
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Street;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.lang.Character;
 import java.lang.String;
-import java.util.Arrays;
-import java.util.Collection;
 
 
 public class StringTrieTest {

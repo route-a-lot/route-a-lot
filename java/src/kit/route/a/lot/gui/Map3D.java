@@ -104,7 +104,7 @@ public class Map3D extends Map implements GLEventListener {
                         (float) (-0.5 * height / Math.atan(Math.PI/2))); // define unit size = 2D unit size
         
         //System.out.println("d: " + (-0.5 * height / Math.atan(Math.PI/2) / height));
-        Listeners.fireEvent(gui.getListener().viewChanged,
+        Listeners.fireEvent(gui.getListeners().viewChanged,
                 new ChangeViewEvent(new Context3D(topLeft, bottomRight, g), zoomlevel));
     }
 

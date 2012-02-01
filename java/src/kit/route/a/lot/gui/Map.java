@@ -110,14 +110,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         deleteFavoriteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                Listeners.fireEvent(gui.getListener().deleteFavPoint, new DeleteFavoriteEvent(popUpPosition));
+                Listeners.fireEvent(gui.getListeners().deleteFavPoint, new DeleteFavoriteEvent(popUpPosition));
             }
         });
         deleteNavPoint.addActionListener(new ActionListener() {
             
             @Override
             public void actionPerformed(ActionEvent e) {
-                Listeners.fireEvent(gui.getListener().deleteNavPoint, new PositionEvent(popUpPosition));
+                Listeners.fireEvent(gui.getListeners().deleteNavPoint, new PositionEvent(popUpPosition));
             }
         });
         
@@ -147,9 +147,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void actionPerformed(ActionEvent arg0) {
                 if(!favoriteNameField.getText().equals("Name hier einfügen...") && !favoriteNameField.getText().equals("")) {
                     if(favoriteDescriptionField.getText().equals("Beschreibung hier einfügen...") || favoriteDescriptionField.getText().equals("")) {
-                        Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), ""));
+                        Listeners.fireEvent(gui.getListeners().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), ""));
                     } else {
-                        Listeners.fireEvent(gui.getListener().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), favoriteDescriptionField.getText()));
+                        Listeners.fireEvent(gui.getListeners().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), favoriteDescriptionField.getText()));
                     }
                 }
                 favoriteMenu.setVisible(false);
@@ -241,7 +241,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                         break;
                     }
         }    
-        Listeners.fireEvent(gui.getListener().targetSelected,
+        Listeners.fireEvent(gui.getListeners().targetSelected,
                 new SelectNavNodeEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()), pos));
         canvas.repaint();
     }
@@ -251,7 +251,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     private void checkPopup(MouseEvent e) {
         clickEvent = e;
-        Listeners.fireEvent(gui.getListener().clickPosition, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
+        Listeners.fireEvent(gui.getListeners().clickPosition, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
     }
       
     /**
@@ -357,10 +357,10 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
 //                    showPoiName.setText("POI");
 //                    showPoiDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
 //                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-                    Listeners.fireEvent(gui.getListener().poiDescription, new PositionEvent(position));
+                    Listeners.fireEvent(gui.getListeners().poiDescription, new PositionEvent(position));
                     break;
                 case 2:
-                    Listeners.fireEvent(gui.getListener().favDescription, new PositionEvent(position));
+                    Listeners.fireEvent(gui.getListeners().favDescription, new PositionEvent(position));
                     break;
                 default: showPoiDescription.setText("");
                     showPoiName.setText("");
@@ -370,7 +370,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         }
     }
     
-    public void showPoiDescription(POIDescription poiDescription) {
+    public void showPOIDescription(POIDescription poiDescription) {
         showPoiName.setText("<html><div width='80px'><u>" + poiDescription.getName() + "</u></div></html>");
         showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);

@@ -6,8 +6,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.StringTrie;
 import kit.route.a.lot.map.MapElement;

@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-
-
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
@@ -62,14 +59,8 @@ public class Controller {
     private Renderer renderer = new Renderer();
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
-
     private static Logger logger = Logger.getLogger(Controller.class);
     
-    /**
-     * Operation main
-     * 
-     * @param args :-)
-     */
     public static void main(String[] args) {
         PropertyConfigurator.configure("config/log4j.conf");
         new Controller();
@@ -91,9 +82,9 @@ public class Controller {
               logger.warn("no map loaded."); //TODO not loading map 
         }                        
         
-        guiHandler.addListenerAddNavNode(new SelectNavNodeListener(this));
+        guiHandler.addAddNavNodeListener(new SelectNavNodeListener(this));
         guiHandler.addChangedViewListener(new ChangeViewListener(this));
-        guiHandler.addListenerImportMap(new ImportOsmFileListener(this));  
+        guiHandler.addImportMapListener(new ImportOsmFileListener(this));  
         guiHandler.addOptimizeRouteListener(new OrderNavNodesListener(this));
         guiHandler.addDeleteNavNodeListener(new DeleteNavNodeListener(this));
         guiHandler.addLoadMapListener(new LoadMapListener(this));
@@ -376,30 +367,30 @@ public class Controller {
             bottomRight.setLatitude(pos.getLatitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
             bottomRight.setLongitude(pos.getLongitude() + (state.getDetailLevel() + 1) * 2 * state.getClickRadius());
             if (node.isInBounds(topLeft, bottomRight)) {
-                guiHandler.thisWasClicked(GUI.NAVNODE, pos);
+                guiHandler.passElementAtPosition(GUI.NAVNODE, pos);
                 return;
             }
         }    
         if (state.getLoadedMapInfo().getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel()) != null) {
-            guiHandler.thisWasClicked(GUI.POI, pos);
+            guiHandler.passElementAtPosition(GUI.POI, pos);
             return;
         } 
         if(state.getLoadedMapInfo().isFavorite(pos, state.getDetailLevel(), state.getClickRadius())) {
-            guiHandler.thisWasClicked(GUI.FAVORITE, pos);
+            guiHandler.passElementAtPosition(GUI.FAVORITE, pos);
             return;
         }
-        guiHandler.thisWasClicked(GUI.FREEMAPSPACE, pos);
+        guiHandler.passElementAtPosition(GUI.FREEMAPSPACE, pos);
     }
     
     public void passSearchCompletion(String str) {
-        guiHandler.showCompletition(state.getLoadedMapInfo().suggestCompletions(str));
+        guiHandler.showSearchCompletion(state.getLoadedMapInfo().suggestCompletions(str));
     }
    
     public void passPOIDescription(Coordinates pos) {   
         POIDescription info = state.getLoadedMapInfo().getPOIDescription(pos,
                 state.getClickRadius(), state.getDetailLevel());
         if (info != null) {
-            guiHandler.showPoiDescription(info, pos);
+            guiHandler.showPOIDescription(info, pos);
         }
     }
 
@@ -483,4 +474,5 @@ public class Controller {
             logger.fatal("IO exception in StateIO");
         }
     }   
+
 }

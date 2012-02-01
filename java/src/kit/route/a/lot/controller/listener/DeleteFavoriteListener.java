@@ -3,7 +3,6 @@ package kit.route.a.lot.controller.listener;
 import kit.route.a.lot.controller.Controller;
 import kit.route.a.lot.gui.event.DeleteFavoriteEvent;
 import kit.route.a.lot.gui.event.GeneralEvent;
-import kit.route.a.lot.gui.event.PositionEvent;
 
 public class DeleteFavoriteListener implements GeneralListener {
 

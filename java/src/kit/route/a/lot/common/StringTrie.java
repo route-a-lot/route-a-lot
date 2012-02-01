@@ -1,20 +1,15 @@
 package kit.route.a.lot.common;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Street;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.Character;
 import java.lang.String;
-import java.util.Arrays;
-import java.util.Collection;
 
 
 public class StringTrie {

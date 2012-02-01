@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
-
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.map.Node;

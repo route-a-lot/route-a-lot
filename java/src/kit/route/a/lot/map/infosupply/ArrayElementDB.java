@@ -4,11 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;

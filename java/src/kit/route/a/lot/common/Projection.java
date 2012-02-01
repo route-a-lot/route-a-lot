@@ -1,7 +1,5 @@
 package kit.route.a.lot.common;
 
-import kit.route.a.lot.controller.State;
-
 
 public abstract class Projection {
 

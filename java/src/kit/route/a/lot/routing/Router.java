@@ -5,14 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import static kit.route.a.lot.common.Util.*;
-import kit.route.a.lot.controller.Controller;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.WeightCalculatorMock;
-import kit.route.a.lot.map.rendering.Renderer;
-
 import org.apache.log4j.Logger;
 
 

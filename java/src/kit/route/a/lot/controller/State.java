@@ -14,7 +14,22 @@ import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
 import kit.route.a.lot.routing.RoutingGraph;
 
 public class State {
-
+    private static State singleton = null;
+    
+    private File loadedMapFile;
+    private MapInfo loadedMapInfo;
+    private RoutingGraph loadedGraph;
+    private IHeightmap loadedHeightmap;
+    private List<Selection> navigationNodes;
+    private List<Integer> currentRoute;
+    private Coordinates centerCoordinates;
+    private int detailLevel;
+    private int clickRadius; // TODO needed?
+    private RouteDescription routeDescription;
+    private int speed;
+    private int duration;
+    private int heightMalus;
+    private int highwayMalus;
     private ArrayList<String> importedMaps = new ArrayList<String>(); /*
                                                                        * we need this list for the to know
                                                                        * which maps can be loaded, I would
@@ -22,79 +37,18 @@ public class State {
                                                                        * implicit
                                                                        */
 
-    private static State singleton = null;
-    /** Attributes */
-    /**
-     * 
-     */
-    private File loadedMapFile;
-    /**
-     * 
-     */
-    private MapInfo loadedMapInfo;
-    /**
-     * 
-     */
-    private RoutingGraph loadedGraph;
-    /**
-     * 
-     */
-    private IHeightmap loadedHeightmap;
-    /**
-     * 
-     */
-    private List<Selection> navigationNodes;
-    /**
-     * 
-     */
-    private List<Integer> currentRoute;
-    /**
-     * 
-     */
-    private Coordinates centerCoordinates;
-    /**
-     * 
-     */
-    private int detailLevel;
-    /**
-     * 
-     */
-    private int clickRadius; // TODO needed?
-    /**
-     * 
-     */
-    private RouteDescription routeDescription;
-    /**
-     * 
-     */
-    private int speed;
-    /**
-     * 
-     */
-    private int duration;
-    /**
-     * 
-     */
-    private int heightMalus;
-    /**
-     * 
-     */
-    private int highwayMalus;
-
-    /**
-     * Operation getInstance
-     * 
-     * @return State
-     */
-    public static State getInstance() {
-        if (singleton == null) {
-            singleton = new State();
-        }
-        return singleton;
-    }
-
-
     public State() {
+        resetMap();
+        detailLevel = 2;
+        clickRadius = 5; // TODO use it
+        speed = 15;
+        duration = 0;
+        heightMalus = 0;
+        highwayMalus = 0;
+        importedMaps = new ArrayList<String>();
+    }
+    
+    public void resetMap() {
         loadedMapFile = null;
         loadedMapInfo = new MapInfo();
         loadedGraph = new AdjacentFieldsRoutingGraph();
@@ -102,21 +56,19 @@ public class State {
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         centerCoordinates = new Coordinates(0, 0);
-        detailLevel = 2;
-        clickRadius = 5; // TODO use it
-        routeDescription = new RouteDescription();
-        speed = 15;
-        duration = 0;
-        heightMalus = 0;
-        highwayMalus = 0;
-        importedMaps = new ArrayList<String>();
+        routeDescription = new RouteDescription();        
     }
-
+    
+    public static State getInstance() {
+        if (singleton == null) {
+            singleton = new State();
+        }
+        return singleton;
+    }
 
     public ArrayList<String> getImportedMaps() {
         return importedMaps;
     }
-
 
     public void setImportedMaps(ArrayList<String> importedMaps) {
         this.importedMaps = importedMaps;
@@ -127,7 +79,6 @@ public class State {
         return this.loadedMapFile;
     }
 
-
     public void setLoadedMapFile(File loadedMapFile) {
         this.loadedMapFile = loadedMapFile;
     }
@@ -136,7 +87,6 @@ public class State {
     public MapInfo getLoadedMapInfo() {
         return loadedMapInfo;
     }
-
 
     public void setLoadedMapInfo(MapInfo loadedMapInfo) {
         this.loadedMapInfo = loadedMapInfo;
@@ -147,7 +97,6 @@ public class State {
         return loadedGraph;
     }
 
-
     public void setLoadedGraph(RoutingGraph loadedGraph) {
         this.loadedGraph = loadedGraph;
     }
@@ -156,7 +105,6 @@ public class State {
     public IHeightmap getLoadedHeightmap() {
         return loadedHeightmap;
     }
-
 
     public void setLoadedHeightmap(IHeightmap loadedHeightmap) {
         this.loadedHeightmap = loadedHeightmap;
@@ -167,7 +115,6 @@ public class State {
         return navigationNodes;
     }
 
-
     public void setNavigationNodes(List<Selection> navigationNodes) {
         this.navigationNodes = navigationNodes;
     }
@@ -176,7 +123,6 @@ public class State {
     public List<Integer> getCurrentRoute() {
         return currentRoute;
     }
-
 
     public void setCurrentRoute(List<Integer> currentRoute) {
         this.currentRoute = currentRoute;
@@ -187,7 +133,6 @@ public class State {
         return centerCoordinates;
     }
 
-
     public void setCenterCoordinates(Coordinates areaCoord) {
         this.centerCoordinates = areaCoord;
     }
@@ -196,7 +141,6 @@ public class State {
     public int getDetailLevel() {
         return detailLevel;
     }
-
 
     public void setDetailLevel(int detailLevel) {
         this.detailLevel = detailLevel;
@@ -207,7 +151,6 @@ public class State {
         return clickRadius;
     }
 
-
     public void setClickRadius(int clickRadius) {
         this.clickRadius = clickRadius;
     }
@@ -216,7 +159,6 @@ public class State {
     public RouteDescription getRouteDescription() {
         return routeDescription;
     }
-
 
     public void setRouteDescription(RouteDescription routeDescription) {
         this.routeDescription = routeDescription;
@@ -227,7 +169,6 @@ public class State {
         return speed;
     }
 
-
     public void setSpeed(int speed) {
         this.speed = speed;
     }
@@ -236,7 +177,6 @@ public class State {
     public int getDuration() {
         return duration;
     }
-
 
     public void setDuration(int duration) {
         this.duration = duration;
@@ -247,35 +187,17 @@ public class State {
         return heightMalus;
     }
 
-
     public void setHeightMalus(int heightMalus) {
         this.heightMalus = heightMalus;
     }
 
-
+    
     public int getHighwayMalus() {
         return highwayMalus;
     }
-
 
     public void setHighwayMalus(int heighwayMalus) {
         this.highwayMalus = heighwayMalus;
     }
 
-
-    public Heightmap getHeightMap() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void resetMap() {
-        loadedMapFile = null;
-        loadedMapInfo = new MapInfo();
-        loadedGraph = new AdjacentFieldsRoutingGraph();
-        navigationNodes = new ArrayList<Selection>();
-        currentRoute = new ArrayList<Integer>();
-        centerCoordinates = new Coordinates();
-        detailLevel = 2;
-        routeDescription = new RouteDescription();
-    }
 }

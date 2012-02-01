@@ -2,10 +2,7 @@ package kit.route.a.lot.map.AddressOperatorTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.StringTrie;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.Street;

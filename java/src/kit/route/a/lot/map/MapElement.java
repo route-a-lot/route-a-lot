@@ -3,8 +3,6 @@ package kit.route.a.lot.map;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Comparator;
-
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;

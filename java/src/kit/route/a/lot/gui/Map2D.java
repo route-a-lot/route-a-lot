@@ -25,7 +25,7 @@ public class Map2D extends Map  {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);           
-                Listeners.fireEvent(gui.getListener().viewChanged,
+                Listeners.fireEvent(gui.getListeners().viewChanged,
                         new ChangeViewEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
             }      
         };
