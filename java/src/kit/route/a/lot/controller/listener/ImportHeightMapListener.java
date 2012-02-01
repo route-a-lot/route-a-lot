@@ -17,7 +17,7 @@ public class ImportHeightMapListener implements GeneralListener {
     @Override
     public void handleEvent(GeneralEvent event) {
         if (event instanceof TextEvent) {
-            ctrl.importHeightMap(((TextEvent) event).getText());
+            ctrl.importHeightmap(((TextEvent) event).getText());
         }
 
     }

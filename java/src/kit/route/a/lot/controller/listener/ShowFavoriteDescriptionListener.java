@@ -20,7 +20,7 @@ public class ShowFavoriteDescriptionListener implements GeneralListener {
     @Override
     public void handleEvent(GeneralEvent event) {
         if (event instanceof PositionEvent) {
-            ctrl.showPOIDescription(((PositionEvent) event).getCoordinates());
+            ctrl.passFavDescription(((PositionEvent) event).getCoordinates());
         }
 
     }

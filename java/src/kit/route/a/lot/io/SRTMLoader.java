@@ -24,6 +24,7 @@ public class SRTMLoader implements HeightLoader {
     State state;
     private int width;
     private int height;
+    private final int MAX_DEVIATION = 10;
 
     public SRTMLoader() {
         this.width = 1201;
@@ -69,10 +70,16 @@ public class SRTMLoader implements HeightLoader {
             try {
                 in = new FileInputStream(dateien[k]);
                 bin = new DataInputStream(in);
-
+                int oldheight = 0;
                 for (int i = height - 1; i >= 0; i--) {
                     for (int j = 0; j < width; j++) {
-                        tile.setHeight(i, j, bin.readShort());
+                        int height = bin.readShort();
+                        if(j == 0) {
+                            oldheight = height;
+                        }
+                        height = Math.max(oldheight - MAX_DEVIATION, Math.min(oldheight + MAX_DEVIATION, height));
+                        tile.setHeight(i, j, height);
+                        oldheight = height;
                     }// for width
                 }// for height
                 bin.close();

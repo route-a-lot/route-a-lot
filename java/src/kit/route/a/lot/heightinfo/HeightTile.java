@@ -1,6 +1,7 @@
 package kit.route.a.lot.heightinfo;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Util;
 
 
 
@@ -34,7 +35,7 @@ public class HeightTile implements IHeightTile {
 
     @Override
     public int getHeight(int x, int y) {
-        return data[x][y];
+        return data[Util.clip(x, 0, width - 1)][Util.clip(y, 0, height - 1)];
     }
     
     public Coordinates getOrigin(){
@@ -55,24 +56,14 @@ public class HeightTile implements IHeightTile {
         int x = (int)(latDiff*width);
         int y = (int)(lonDiff*height);
         
-        if(x < 0 || y < 0 || x >= width || y >= height) {
-            return 0;
-        }
-        
-        float facX = Math.abs(lonDiff - x / (float) width);
-        float facY = Math.abs(latDiff - y / (float) height);        
-        
-        int h = data[x][y];
-        if(h == -32768){
-            h = data[x+1][y];
-        }
-        float interpolateX1 = h + (data[x+1][y] - h) * facX;
-        float interpolateX2 = data[x][y+1] + (data[x+1][y+1] - data[x][y+1]) * facX;
-        float interpolateY = interpolateX1 + (interpolateX2 - interpolateX1) * facY;
-        return interpolateY;
-        //return data[x][y];
-        
-    }
+        float ratioX = Math.abs(lonDiff - x / (float) width);
+        float ratioY = Math.abs(latDiff - y / (float) height);        
+
+        float interpolateX1 = getHeight(x,y)   + (getHeight(x+1,y)   - getHeight(x,y))   * ratioX;
+        float interpolateX2 = getHeight(x,y+1) + (getHeight(x+1,y+1) - getHeight(x,y+1)) * ratioX;
+        float interpolateY = interpolateX1 + (interpolateX2 - interpolateX1) * ratioY;
+        return interpolateY;        
+    }  
 
     @Override
     public void setHeight(Coordinates pos, int height) {
@@ -80,16 +71,12 @@ public class HeightTile implements IHeightTile {
         float lon = pos.getLongitude() - origin.getLongitude();
         /*Intervallänge: 1°/1201 */
         int x = (int)(lat*width);
-        int y = (int)(lon*width);
-        
+        int y = (int)(lon*width);        
         data[x][y] = height;
-
-
     }
 
     
     public boolean equals(HeightTile other){
-
         return (Math.abs(origin.getLatitude() - other.getOrigin().getLatitude()) < 0.005) &&
                (Math.abs(origin.getLongitude() - other.getOrigin().getLongitude()) < 0.005);
     }

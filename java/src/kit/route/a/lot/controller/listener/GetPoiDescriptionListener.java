@@ -16,7 +16,7 @@ public class GetPoiDescriptionListener implements GeneralListener {
     @Override
     public void handleEvent(GeneralEvent event) {
         if (event instanceof PositionEvent) {
-            ctrl.getPOIInfo(((PositionEvent) event).getCoordinates());
+            ctrl.passPOIDescription(((PositionEvent) event).getCoordinates());
         }
     }
 

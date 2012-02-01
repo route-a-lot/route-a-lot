@@ -20,7 +20,7 @@ public class SuggestionListener implements GeneralListener {
     @Override
     public void handleEvent(GeneralEvent event) {
         if (event instanceof TextEvent) {
-            ctrl.getCompletition(((TextEvent) event).getText());
+            ctrl.passSearchCompletion(((TextEvent) event).getText());
         }
     }
 

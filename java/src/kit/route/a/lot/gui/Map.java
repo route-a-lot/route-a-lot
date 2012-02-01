@@ -169,26 +169,19 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                 popupYPos = me.getY();
                 oldMousePosX = me.getX(); 
                 oldMousePosY = me.getY();
+                newPopUpXPos = me.getX();
+                newPopUpYPos = me.getY();
+                checkPopup(me);
                 oldPopUpXPos = me.getX();
                 oldPopUpYPos = me.getY();
-                checkPopup(me);
             }     
             @Override
             public void mouseReleased(MouseEvent me) {
-                popupXPos = me.getX();
-                popupYPos = me.getY();
-                newPopUpXPos = me.getX();
-                newPopUpYPos = me.getY();
+                mousePressed(me);
             }
             @Override
             public void mouseClicked(MouseEvent me) {
-                popupXPos = me.getX();
-                popupYPos = me.getY();
-                newPopUpXPos = me.getX();
-                newPopUpYPos = me.getY();
-                oldPopUpXPos = me.getX();
-                oldPopUpYPos = me.getY();
-                checkPopup(me);
+                mousePressed(me);
             }
         });
     }

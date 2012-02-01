@@ -23,11 +23,16 @@ import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
-    private static final float HEIGHT_STEPS = 80;
+    private float lastFloor = 0, lastCeil = 100;
+    
+    private static final float HEIGHT_STEPS = 50;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
     static {
         logger.setLevel(Level.INFO);
     }
+    private Projection projection;
+    private IHeightmap heightmap;
+    
     
     /**
      * Renders a map viewing rectangle in three dimensional form,
@@ -40,6 +45,8 @@ public class Renderer3D extends Renderer {
      */
     @Override
     public void render(Context context, int detail) {
+        heightmap = State.getInstance().getLoadedHeightmap();
+        projection = ProjectionFactory.getProjectionForCurrentMap();
         int factor = Projection.getZoomFactor(detail);
         if (factor < 0) {
             return;
@@ -57,7 +64,17 @@ public class Renderer3D extends Renderer {
                                               BufferedImage.TYPE_INT_RGB);   
         Context context2D = new Context2D(topLeft, bottomRight, img.createGraphics());
         super.render(context2D, detail);
+        
+        
         GL gl = ((Context3D) context).getGL();
+        gl.glScalef(1,1,3);
+        
+        // move camera up so that it won't intersect hills  
+        Coordinates pos = new Coordinates((float)(bottomRight.getLongitude() + topLeft.getLongitude()) * 0.5f,
+                                          (float)(bottomRight.getLatitude() + topLeft.getLatitude()) * 0.5f);
+        float actFloor = getHeight(pos);
+        float actCeil = actFloor;
+        gl.glTranslatef(0,0,-actCeil);
         
         /*gl.glTranslatef(topLeft.getLongitude(), topLeft.getLatitude(), 0);
         gl.glScalef(context.getWidth(), context.getHeight(), 1);
@@ -69,20 +86,6 @@ public class Renderer3D extends Renderer {
         gl.glVertex3f(0.9f,0.1f,0);
         gl.glEnd();*/
         
-        
-        IHeightmap heightData = State.getInstance().getLoadedHeightmap();
-        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
-        int texture;
-        try {
-            texture = createTexture(gl, new GLU(), img);
-        } catch (GLException e) {
-            texture = -1;
-        }
-        // move camera up so that it won't intersect hills  
-        Coordinates pos = new Coordinates((float)(bottomRight.getLongitude() + topLeft.getLongitude()) * 0.5f,
-                                          (float)(bottomRight.getLatitude() + topLeft.getLatitude()) * 0.5f);
-        gl.glTranslatef(0, 0,-heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos))*10);
-
         // delete this block for rending the height grid view dependent instead of map dependent
         //int tileDim = (int) (200 * Projection.getZoomFactor(detail));
         //if (tileDim < 0) {
@@ -96,8 +99,13 @@ public class Renderer3D extends Renderer {
         //texYOffset = (texYOffset - topLeft.getLatitude()) / context.getHeight();
         
         
-        // create texture and render height mesh    
-
+        // render height mesh    
+        int texture;
+        try {
+            texture = createTexture(gl, new GLU(), img);
+        } catch (GLException e) {
+            texture = -1;
+        }
         gl.glEnable(GL.GL_TEXTURE_2D);   
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture);     
         float stepSize = context.getHeight() / HEIGHT_STEPS;
@@ -113,11 +121,13 @@ public class Renderer3D extends Renderer {
             for (int y = 0; y < HEIGHT_STEPS; y++) {
                 pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                 pos.setLongitude(topLeft.getLongitude() + x * stepSize); 
-                gl.glTexCoord2f(x / xSteps, y / HEIGHT_STEPS);  
-                float h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos)) * 10;
-                float color = ((h > 1000) ? 1000 : h) / 1000f;
-                
+                  
+                float h = getHeight(pos);
+                if (h < actFloor) actFloor = h;
+                if (h > actCeil) actCeil = h;
+                float color = Util.mapFloat(h, lastFloor, lastCeil, 0.3f, 1);
                 gl.glColor3f(color, color, color);
+                gl.glTexCoord2f(x / xSteps, y / HEIGHT_STEPS);
                 //vertex = new float[] {pos.getLongitude(), pos.getLatitude(), h};
                 //Util.getFaceNormal(normal, vertex, vertex2, vertex1);
                 //gl.glNormal3f(-normal[0], -normal[1], -normal[2]);
@@ -127,12 +137,11 @@ public class Renderer3D extends Renderer {
                 //vertex1 = vertex;
                 
                 pos.setLongitude(pos.getLongitude() + stepSize);
-                gl.glTexCoord2f((x + 1) / xSteps, y / HEIGHT_STEPS) ;
                 
-                h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos)) * 10;
-                color = ((h > 1000) ? 1000 : h) / 1000f;
-                
+                h = getHeight(pos);
+                color = Util.mapFloat(h, lastFloor, lastCeil, 0.3f, 1);
                 gl.glColor3f(color, color, color);
+                gl.glTexCoord2f((x + 1) / xSteps, y / HEIGHT_STEPS) ;
                 //vertex = new float[] {pos.getLongitude(), pos.getLatitude(), h};
                 //Util.getFaceNormal(normal, vertex, vertex2, vertex1);
                 //gl.glNormal3f(normal[0], normal[1], normal[2]);
@@ -142,43 +151,37 @@ public class Renderer3D extends Renderer {
                 //vertex1 = vertex;
             }
             gl.glEnd();
-        }//*/
+        }
         gl.glDisable(GL.GL_TEXTURE_2D);
         Textures.delTexture(gl, texture);
-        
+        lastFloor = (actFloor / 3 + 5 * lastFloor) / 6;
+        lastCeil = (actCeil + 5 * lastCeil) / 6;
         
         // Code for showing the grid.
-        
-        /*gl.glColor3f(1,0,0);     
+        /*gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+        gl.glColor3f(1,0,0);     
         for (int x = 0; x < xSteps; x++) {       
             for (int y = 0; y < HEIGHT_STEPS; y++) {
                 gl.glBegin(GL.GL_LINE_STRIP);
-                pos.setLatitude(topLeft.getLatitude() + y * stepSize);
-                pos.setLongitude(topLeft.getLongitude() + x * stepSize);                
-                float h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos));
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h*10);
-                
-                pos.setLongitude(pos.getLongitude() + stepSize);
-                h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos));
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h*10);
-                
-                pos.setLongitude(pos.getLongitude() + stepSize);
-                h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos));
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h*10);
                 
                 pos.setLatitude(topLeft.getLatitude() + (y+1) * stepSize);
                 pos.setLongitude(topLeft.getLongitude() + x * stepSize);                
-                h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos));
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h*10);
+                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), getHeight(pos));
                 
                 pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                 pos.setLongitude(topLeft.getLongitude() + x * stepSize);                
-                h = heightData.getHeight(projection.localCoordinatesToGeoCoordinates(pos));
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h*10);
+                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), getHeight(pos));
+                
+                pos.setLongitude(topLeft.getLongitude() + (x+1) * stepSize);      
+                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), getHeight(pos));
+
                 gl.glEnd();
             }
-        }//*/
-        
+        }//*/  
+    }
+    
+    private float getHeight(Coordinates position) {
+        return heightmap.getHeight(projection.localCoordinatesToGeoCoordinates(position));
     }
     
     private int createTexture(GL gl, GLU glu, BufferedImage image)

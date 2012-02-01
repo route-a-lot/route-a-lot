@@ -17,7 +17,7 @@ public class ClickPositionListener implements GeneralListener {
     @Override
     public void handleEvent(GeneralEvent event) {
         if (event instanceof PositionEvent) {
-            ctrl.whatWasClicked(((PositionEvent) event).getCoordinates());
+            ctrl.passElementAtPosition(((PositionEvent) event).getCoordinates());
         }
     }
 
