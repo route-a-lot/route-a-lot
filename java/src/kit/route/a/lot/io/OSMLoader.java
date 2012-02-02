@@ -1,7 +1,11 @@
 package kit.route.a.lot.io;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +77,13 @@ public class OSMLoader {
         } catch (SAXException e1) {
             e1.printStackTrace();
         }
+        
+        InputStream inputStream = null;
+        try {
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
 
         maxLon = maxLat = Float.MIN_VALUE;
         minLon = minLat = Float.MAX_VALUE;
@@ -110,7 +121,7 @@ public class OSMLoader {
         }; // boundsHandler end
 
         try {
-            parser.parse(file, boundsHandler);
+            parser.parse(inputStream, boundsHandler);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SAXException e) {
@@ -960,7 +971,7 @@ public class OSMLoader {
         };
 
         try {
-            parser.parse(file, handler);
+            parser.parse(inputStream, handler);
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
