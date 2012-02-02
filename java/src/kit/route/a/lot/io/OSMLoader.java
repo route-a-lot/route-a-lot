@@ -971,6 +971,15 @@ public class OSMLoader {
         };
 
         try {
+            inputStream.close();
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        try {
             parser.parse(inputStream, handler);
         } catch (SAXException e) {
             e.printStackTrace();
