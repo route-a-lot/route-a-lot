@@ -54,10 +54,15 @@ public class Renderer3D extends Renderer {
         Coordinates topLeft = context.getTopLeft();
         Coordinates bottomRight = context.getBottomRight();
         
-        topLeft.setLatitude(topLeft.getLatitude() - 50 * factor);
+        /*topLeft.setLatitude(topLeft.getLatitude() - 50 * factor);
         topLeft.setLongitude(topLeft.getLongitude() - 80 * factor);
         bottomRight.setLongitude(bottomRight.getLongitude() + 80 * factor);
-        bottomRight.setLatitude(bottomRight.getLatitude() + 20 * factor);
+        bottomRight.setLatitude(bottomRight.getLatitude() + 20 * factor);*/
+        
+        topLeft.setLatitude(topLeft.getLatitude() - 230 * factor); //TODO UNDO
+        topLeft.setLongitude(topLeft.getLongitude() - 200 * factor);
+        bottomRight.setLongitude(bottomRight.getLongitude() + 200 * factor);
+        bottomRight.setLatitude(bottomRight.getLatitude() + 50 * factor);
         
         BufferedImage img = new BufferedImage((int) (context.getWidth() / factor), 
                                               (int) (context.getHeight() / factor),
@@ -74,7 +79,8 @@ public class Renderer3D extends Renderer {
                                           (float)(bottomRight.getLatitude() + topLeft.getLatitude()) * 0.5f);
         float actFloor = getHeight(pos);
         float actCeil = actFloor;
-        gl.glTranslatef(0,0,-lastFloor);
+        //gl.glTranslatef(0,0,-lastFloor);
+        gl.glTranslatef(0,0,-150); //TODO UNDO
         
         /*gl.glTranslatef(topLeft.getLongitude(), topLeft.getLatitude(), 0);
         gl.glScalef(context.getWidth(), context.getHeight(), 1);

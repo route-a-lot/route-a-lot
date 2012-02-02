@@ -19,7 +19,7 @@ public interface RenderCache {
 
 
     /**
-     * resets the cahe
+     * resets the cache
      */
     void resetCache();
 }

@@ -160,9 +160,9 @@ public class QTNode extends QuadTree {
 
 
     @Override
-    protected void trimm() {
+    protected void compactifyDataStructures() {
         for(QuadTree qt : children) {
-            qt.trimm();
+            qt.compactifyDataStructures();
         }
     }
 

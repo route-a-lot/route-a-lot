@@ -67,7 +67,7 @@ public class Controller {
     }
     
     private Controller() {
-        File defaultMap = new File("./test/resources/karlsruhe_small.osm");
+        File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         
         importHeightmap("./srtm/");
 
@@ -146,7 +146,7 @@ public class Controller {
             new OSMLoader().importMap(osmFile);
             Precalculator.precalculate();
             state.getLoadedMapInfo().compactifyDatastructures();
-            renderer.resetRenderCache();
+            renderer.resetCache();
             state.setLoadedMapFile(new File("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral"));
             state.getImportedMaps().add("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral");
             guiHandler.updateMapList(state.getImportedMaps());
@@ -183,7 +183,7 @@ public class Controller {
             }
             setViewToMapCenter(); 
             guiHandler.setView(state.getCenterCoordinates());
-            renderer.resetRenderCache();
+            renderer.resetCache();
         }
     }
 

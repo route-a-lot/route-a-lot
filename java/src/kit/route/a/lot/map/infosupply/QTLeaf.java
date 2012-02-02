@@ -3,6 +3,7 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -21,24 +22,6 @@ public class QTLeaf extends QuadTree {
         super(upLeft, bottomRight);
         overlay = new MapElement[1];
         baseLayer = new MapElement[1];
-    }
-
-    /**
-     * Operation getBaseLayer
-     * 
-     * @return Set<MapElement>
-     */
-    protected MapElement[] getBaseLayer() {
-        return baseLayer;
-    }
-
-    /**
-     * Operation getOverlay
-     * 
-     * @return Set<MapElement>
-     */
-    protected MapElement[] getOverlay() {
-        return overlay;
     }
 
     @Override
@@ -174,19 +157,9 @@ public class QTLeaf extends QuadTree {
         
     }
 
-
     @Override
-    protected void trimm() {
-        MapElement[] tempOverlay = overlay;
-        overlay = new MapElement[countArrayElementsSize(overlay)];
-        for (int i = 0; i < overlay.length; i++) {
-            overlay[i] = tempOverlay[i];
-        }
-        
-        MapElement[] tempBaseLayer = baseLayer;
-        baseLayer = new MapElement[countArrayElementsSize(baseLayer)];
-        for (int i = 0; i < baseLayer.length; i++) {
-            baseLayer[i] = tempBaseLayer[i];
-        }
+    protected void compactifyDataStructures() {
+        overlay = Arrays.copyOf(overlay, countArrayElementsSize(overlay));
+        baseLayer = Arrays.copyOf(baseLayer, countArrayElementsSize(baseLayer));
     }
 }

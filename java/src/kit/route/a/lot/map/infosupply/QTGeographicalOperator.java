@@ -239,7 +239,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void compactifyDatastructures() {
         for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i].trimm();
+            zoomlevels[i].compactifyDataStructures();
         }
     } 
        

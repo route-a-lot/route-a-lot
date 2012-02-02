@@ -25,10 +25,10 @@ public abstract class QuadTree {
     }
 
     protected abstract void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts);
+            Set<MapElement> elements);
     
     protected abstract void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts);
+            Set<MapElement> elements);
     
 
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
@@ -172,6 +172,6 @@ public abstract class QuadTree {
      */
     protected abstract void save(DataOutputStream stream) throws IOException;
     
-    protected abstract void trimm();
+    protected abstract void compactifyDataStructures();
 
 }

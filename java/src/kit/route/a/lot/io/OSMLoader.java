@@ -31,7 +31,7 @@ public class OSMLoader {
 
     private static Logger logger = Logger.getLogger(OSMLoader.class);
     static {
-        logger.setLevel(Level.OFF);
+        logger.setLevel(Level.INFO);
     }
 
     private ArrayList<Integer> startIds;
@@ -746,8 +746,8 @@ public class OSMLoader {
                                 // ignore
                             } else {
                                 ignoredKeys++;
-                                //logger.debug("Key ignored: " + key + ", value = " + value + " : "
-                                //        + ignoredKeys);
+                                logger.debug("Key ignored: " + key + ", value = " + value + " : "
+                                        + ignoredKeys);
                             }
                         } else {
                             logger.debug("Element ignored in polyline: " + qName);

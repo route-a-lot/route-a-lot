@@ -376,7 +376,7 @@ public class Renderer {
         this.cache = source.cache;
     }
 
-    public void resetRenderCache() {
+    public void resetCache() {
         cache.resetCache();
     }
 
