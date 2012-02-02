@@ -13,6 +13,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -596,6 +598,13 @@ public class GUI extends JFrame {
         importFC = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm", "osm");
         importFC.setFileFilter(filter);
+        File currentDir = null;
+        try {
+            currentDir = new File(new File(".").getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        importFC.setCurrentDirectory(currentDir);
         int returnValue = importFC.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {
             Listeners.fireEvent(listeners.importOsmFile,

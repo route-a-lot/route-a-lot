@@ -25,7 +25,6 @@ import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -34,9 +33,6 @@ import org.xml.sax.helpers.DefaultHandler;
 public class OSMLoader {
 
     private static Logger logger = Logger.getLogger(OSMLoader.class);
-    static {
-        logger.setLevel(Level.INFO);
-    }
 
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
@@ -64,7 +60,9 @@ public class OSMLoader {
 
     /**
      * Imports an osm map from file.
-     * @param file the osm File to be imported
+     * 
+     * @param file
+     *            the osm File to be imported
      */
     public void importMap(File file) {
 
@@ -77,7 +75,7 @@ public class OSMLoader {
         } catch (SAXException e1) {
             e1.printStackTrace();
         }
-        
+
         InputStream inputStream = null;
         try {
             inputStream = new BufferedInputStream(new FileInputStream(file));
@@ -91,8 +89,9 @@ public class OSMLoader {
         nodeCount = 0;
 
         DefaultHandler boundsHandler = new DefaultHandler() {
+
             public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+                    throws SAXException {
                 if (qName.equals("node")) {
                     nodeCount++;
                     if (nodeCount < 0) {
@@ -120,6 +119,7 @@ public class OSMLoader {
             }
         }; // boundsHandler end
 
+        logger.debug("Start calculating bounds...");
         try {
             parser.parse(inputStream, boundsHandler);
         } catch (IOException e) {
@@ -130,17 +130,20 @@ public class OSMLoader {
             }
         }
 
-        Coordinates upLeft = new Coordinates(maxLat, minLon);
+        Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
-        projection = ProjectionFactory.getNewProjection(upLeft, bottomRight);
-        state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(upLeft), projection.geoCoordinatesToLocalCoordinates(bottomRight));
-        state.getLoadedMapInfo().setGeoTopLeft(upLeft);
+        projection = ProjectionFactory.getNewProjection(topLeft, bottomRight);
+        state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(topLeft),
+                projection.geoCoordinatesToLocalCoordinates(bottomRight));
+        state.getLoadedMapInfo().setGeoTopLeft(topLeft);
+        logger.debug("Finished calculating bounds: topLeft=" + topLeft + ", bottomRight=" + bottomRight);
 
         osmIds = new long[nodeCount];
 
         DefaultHandler handler = new DefaultHandler() {
 
-            Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the new id
+            Map<Long, Integer> idMap = new HashMap<Long, Integer>(); // key is an OSM-id and value is the new
+                                                                     // id
 
             boolean inWay;
             boolean inPolyline;
@@ -161,7 +164,7 @@ public class OSMLoader {
             long ignoredKeys = 0;
 
             public void startElement(String uri, String localName, String qName, Attributes attributes)
-            throws SAXException {
+                    throws SAXException {
 
                 if ((inWay && inPolyline) || inNode) {
                     if (qName.equalsIgnoreCase("tag")) {
@@ -476,8 +479,7 @@ public class OSMLoader {
                     if (inPolyline) {
                         if (qName.equalsIgnoreCase("nd")) {
                             Long osmId = Long.parseLong(attributes.getValue("ref"));
-                            Integer newPolylineNode =
-                                idMap.get(osmId);
+                            Integer newPolylineNode = idMap.get(osmId);
                             if (newPolylineNode == null) {
                                 logger.error("Node id is not known: id = " + attributes.getValue("ref"));
                             }
@@ -543,8 +545,7 @@ public class OSMLoader {
                                 if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("designated")
                                         || value.equalsIgnoreCase("permissive")) {
                                     curWayInfo.setBicycle(WayInfo.BICYCLE_YES);
-                                } else if (value.equalsIgnoreCase("no")
-                                        || value.equalsIgnoreCase("private")) {
+                                } else if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("private")) {
                                     curWayInfo.setBicycle(WayInfo.BICYCLE_NO);
                                 } else if (value.equalsIgnoreCase("official")) {
                                     curWayInfo.setBicycle(WayInfo.BICYCLE_OFFICIAL);
@@ -558,8 +559,7 @@ public class OSMLoader {
                             } else if (key.equalsIgnoreCase("oneway")) {
                                 if (value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("true")) {
                                     curWayInfo.setOneway(WayInfo.ONEWAY_YES);
-                                } else if (value.equalsIgnoreCase("no")
-                                        || value.equalsIgnoreCase("false")) {
+                                } else if (value.equalsIgnoreCase("no") || value.equalsIgnoreCase("false")) {
                                     curWayInfo.setOneway(WayInfo.ONEWAY_NO);
                                 } else if (value.equalsIgnoreCase("-1")) {
                                     curWayInfo.setOneway(WayInfo.ONEWAY_OPPOSITE);
@@ -735,21 +735,20 @@ public class OSMLoader {
                                     curWayInfo.setLayer(Byte.parseByte(value));
                                 } catch (NumberFormatException e) {
                                     logger.error(e.toString());
-                                    logger.error("Could not parse " + value + " as Integer; used in "
-                                            + key + " in a " + qName);
+                                    logger.error("Could not parse " + value + " as Integer; used in " + key
+                                            + " in a " + qName);
                                 }
                             } else if (key.equalsIgnoreCase("lanes")) {
                                 try {
                                     curWayInfo.setLanes(Byte.parseByte(value));
                                 } catch (NumberFormatException e) {
                                     logger.error(e.toString());
-                                    logger.error("Could not parse " + value + " as Integer; used in "
-                                            + key + " in a " + qName);
+                                    logger.error("Could not parse " + value + " as Integer; used in " + key
+                                            + " in a " + qName);
                                 }
                             } else if (key.equalsIgnoreCase("note") || key.equalsIgnoreCase("maxspeed")
                                     || key.equalsIgnoreCase("created_by") || key.equalsIgnoreCase("foot")
-                                    || key.equalsIgnoreCase("source")
-                                    || key.equalsIgnoreCase("opening_date")
+                                    || key.equalsIgnoreCase("source") || key.equalsIgnoreCase("opening_date")
                                     || key.equalsIgnoreCase("landuse") /* TODO really ignore that? */
                                     || key.startsWith("building:") /* " */
                                     || key.equalsIgnoreCase("ref") || key.equalsIgnoreCase("planned")
@@ -821,8 +820,7 @@ public class OSMLoader {
                                 || key.equalsIgnoreCase("note") || key.equalsIgnoreCase("source_ref")) {
                             // ignore
                         } else {
-                            logger.debug("Unknown key in tags in a node: key: " + key + ", value: "
-                                    + value);
+                            logger.debug("Unknown key in tags in a node: key: " + key + ", value: " + value);
                         }
                     } else {
                         logger.error("Node inner elment ignored: " + qName);
@@ -837,7 +835,7 @@ public class OSMLoader {
                     geoCoordinates.setLongitude(Float.parseFloat(attributes.getValue("lon")));
 
                     curNodeCoordinates = projection.geoCoordinatesToLocalCoordinates(geoCoordinates);
-                    //                        // System.out.println("coordinates " + curNodeCoordinates);
+                    // // System.out.println("coordinates " + curNodeCoordinates);
                     curNodeId = idMap.size();
                     if (curNodeId >= Integer.MAX_VALUE) {
                         logger.error("Tried to import more than " + curNodeId + " nodes!");
@@ -905,18 +903,21 @@ public class OSMLoader {
                                 idMap.put(osmId2, curId);
                                 osmIds[maxWayNodeId] = osmId1;
                                 osmIds[curId] = osmId2;
-                                for (int index = curWayIds.lastIndexOf(maxWayNodeId); index != -1; index = curWayIds.lastIndexOf(maxWayNodeId)) {
+                                for (int index = curWayIds.lastIndexOf(maxWayNodeId); index != -1; index =
+                                        curWayIds.lastIndexOf(maxWayNodeId)) {
                                     curWayIds.set(index, tempSwap);
                                 }
-                                for (int index = curWayIds.lastIndexOf(curId); index != -1; index = curWayIds.lastIndexOf(curId)) {
+                                for (int index = curWayIds.lastIndexOf(curId); index != -1; index =
+                                        curWayIds.lastIndexOf(curId)) {
                                     curWayIds.set(index, maxWayNodeId);
                                 }
-                                for (int index = curWayIds.lastIndexOf(tempSwap); index != -1; index = curWayIds.lastIndexOf(tempSwap)) {
+                                for (int index = curWayIds.lastIndexOf(tempSwap); index != -1; index =
+                                        curWayIds.lastIndexOf(tempSwap)) {
                                     curWayIds.set(index, curId);
                                 }
                             }
                         }
-                        
+
                         uniqueEdgeStartIds.add(curWayIds.get(0));
                         for (int i = 1; i < curWayIds.size() - 1; i++) {
                             uniqueEdgeEndIds.add(curWayIds.get(i));
@@ -955,8 +956,8 @@ public class OSMLoader {
 
                     if (curType != 0) {
                         curNodePOIDescription.setCategory(curType);
-                        state.getLoadedMapInfo().addPOI(curNodeCoordinates, curNodeId,
-                                curNodePOIDescription, curAddress);
+                        state.getLoadedMapInfo().addPOI(curNodeCoordinates, curNodeId, curNodePOIDescription,
+                                curAddress);
                     } else {
                         state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                     }
@@ -978,7 +979,7 @@ public class OSMLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         try {
             parser.parse(inputStream, handler);
         } catch (SAXException e) {
@@ -1000,7 +1001,7 @@ public class OSMLoader {
             endIDs[i] = endIds.get(i);
             weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
         }
-        
+
         int countUniqueIDs = uniqueEdgeStartIds.size();
         int[] uniqueEdgeStartIDs = new int[countUniqueIDs];
         int[] uniqueEdgeEndIDs = new int[countUniqueIDs];

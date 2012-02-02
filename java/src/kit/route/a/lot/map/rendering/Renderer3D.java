@@ -27,9 +27,6 @@ public class Renderer3D extends Renderer {
     
     private static final float HEIGHT_STEPS = 80;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
-    static {
-        logger.setLevel(Level.INFO);
-    }
     private Projection projection;
     private IHeightmap heightmap;
     

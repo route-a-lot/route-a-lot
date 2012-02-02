@@ -108,7 +108,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 || (key.length != data1.length) || (key.length != data2.length)) {
             throw new IllegalArgumentException();
         }
-        logger.debug("nuff said");
         return sortByKeyInternal(key, data1, data2, 0, key.length - 1);
     }
     

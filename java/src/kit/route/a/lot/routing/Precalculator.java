@@ -36,7 +36,10 @@ public class Precalculator {
         if (doAreas()) {
             logger.info("Starting calculation of ArcFlags");
             for (int i = 0; i < graph.getIDCount(); i++) {
-                // I suppose we could run some parallel.
+                if (i % 1000 == 0) {
+                    logger.debug("Calculation of ArcFlags at " + (i * 100 / graph.getIDCount()) + "%");
+                }
+                // TODO I suppose we could run some parallel.
                 createFlags(i);
             }
             logger.info("Succesfully created ArcFlags");
@@ -120,7 +123,7 @@ public class Precalculator {
                 
                 // read the output from the command
                 while ((buffer = stdInput.readLine()) != null) {
-                    logger.info("Metis: " + buffer);
+                    logger.debug("Metis: " + buffer);
                 }
                 
                 // read any errors from the attempted command
@@ -132,7 +135,7 @@ public class Precalculator {
                 return false;
             }
         }
-
+        
         // read resulting file
         String filePath = FILE + ".part." + AREAS;
         byte[] areas = new byte[(int) new File(filePath).length()];
