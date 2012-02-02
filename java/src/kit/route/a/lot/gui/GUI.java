@@ -221,7 +221,7 @@ public class GUI extends JFrame {
                 map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
                 mapContents.add(map, BorderLayout.CENTER); 
                 mapContents.validate();
-                setZoomlevel(zoomlevel);
+                map.setZoomlevel(zoomlevel);
                 setView(center);
             }  
         });
