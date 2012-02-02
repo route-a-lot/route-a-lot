@@ -5,10 +5,13 @@ import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
 import org.apache.log4j.Logger;
 
 
@@ -35,8 +38,7 @@ public class SRTMLoader implements HeightLoader {
             return;
         }
         HeightTile tile;
-        FileInputStream in;
-        DataInputStream bin;
+        DataInputStream in;
 
         for (File file: dateien) {
             String[] fileNameParts = file.getName().split("\\.");
@@ -61,12 +63,11 @@ public class SRTMLoader implements HeightLoader {
             logger.info("Loading height file '" + file.getName() + "'...");
 
             try {
-                in = new FileInputStream(file);
-                bin = new DataInputStream(in);
+                in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
                 int oldheight = 0;
                 for (int i = height - 1; i >= 0; i--) {
                     for (int j = 0; j < width; j++) {
-                        int height = bin.readShort();
+                        int height = in.readShort();
                         if(j == 0) {
                             oldheight = height;
                         }
@@ -75,7 +76,6 @@ public class SRTMLoader implements HeightLoader {
                         oldheight = height;
                     }// for width
                 }// for height
-                bin.close();
                 in.close();
             } catch (IOException e) {
                 logger.error("Invalid hgt file: '" + file.getName() + "'. Loading aborted.");

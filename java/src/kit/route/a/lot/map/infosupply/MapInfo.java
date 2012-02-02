@@ -68,6 +68,7 @@ public class MapInfo {
         geographicalOperator.getBounds(upLeft, bottomRight);
     }
 
+    
     /**
      * Adds a node to the data structures.
      * 
@@ -160,6 +161,7 @@ public class MapInfo {
     public void deleteFavorite(Coordinates position, int detailLevel, int radius) {
         elementDB.deleteFavorite(position, detailLevel, radius);
     }
+    
     
     public POIDescription getFavoriteDescription(Coordinates position, int detailLevel, int radius) {
         return elementDB.getFavoriteDescription(position, detailLevel, radius);
@@ -309,12 +311,13 @@ public class MapInfo {
         }
     }
     
-    public void trimm() {
+    public void compactifyDatastructures() {
+        // todo pack elementdb as well?
         geographicalOperator.compactifyDatastructures();
     }
     
     public void swapNodeIds(int id1, int id2) {
-        elementDB.swapNodeIds(id1, id2);
+        elementDB.swapNodeIDs(id1, id2);
         if (logger.isTraceEnabled()) {
             logger.trace("Swapping node " + id1 + " and " + id2);
         }

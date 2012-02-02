@@ -145,7 +145,7 @@ public class Controller {
             state.resetMap();
             new OSMLoader().importMap(osmFile);
             Precalculator.precalculate();
-            state.getLoadedMapInfo().trimm();
+            state.getLoadedMapInfo().compactifyDatastructures();
             renderer.resetRenderCache();
             state.setLoadedMapFile(new File("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral"));
             state.getImportedMaps().add("./sral/" + Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus() + "_" + state.getHighwayMalus() + ".sral");

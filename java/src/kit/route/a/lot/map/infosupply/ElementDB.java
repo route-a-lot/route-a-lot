@@ -69,7 +69,7 @@ public interface ElementDB {
     
     public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius);
     
-    public void swapNodeIds(int id1, int id2);
+    public void swapNodeIDs(int id1, int id2);
     
     public ArrayList<POINode> getFavorites();
 

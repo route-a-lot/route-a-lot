@@ -1,5 +1,7 @@
 package kit.route.a.lot.io;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -35,7 +37,7 @@ public class MapIO {
             throw new IllegalStateException("No map initialized!");
         }
         // Open file stream, abort on failure
-        DataInputStream stream = new DataInputStream(new FileInputStream(file));
+        DataInputStream stream = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
         
         // Read data from stream, abort on error
         if ((stream.readChar() != 'S') || (stream.readChar() != 'R')
@@ -76,7 +78,7 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
+        DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         
         // Write data to stream, abort on error
         stream.writeChars("SRAL");  // magic number

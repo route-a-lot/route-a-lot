@@ -134,7 +134,7 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public void swapNodeIds(int id1, int id2) {  
+    public void swapNodeIDs(int id1, int id2) {  
         nodes.get(id1).setID(id2);
         nodes.get(id2).setID(id1);
         Collections.swap(nodes, id1, id2);

@@ -202,6 +202,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
 
     /**
+     * Returns the view center in geo coordinates.
+     * @return the map center coordinates
+     */
+    public Coordinates getCenter() {
+        return center;
+    }
+    
+    /**
      * Sets the zoom level. Negative values will be treated as 0.
      * @param zoomlevel the desired zoom level
      */
@@ -381,4 +389,5 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         showPoiDescription.setText("<html><div width='80px'>" + favDescription.getDescription() + "</div></html>");
         descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
     }
+
 }

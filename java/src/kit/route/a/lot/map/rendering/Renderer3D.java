@@ -25,7 +25,7 @@ public class Renderer3D extends Renderer {
 
     private float lastFloor = 0, lastCeil = 100;
     
-    private static final float HEIGHT_STEPS = 50;
+    private static final float HEIGHT_STEPS = 80;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
     static {
         logger.setLevel(Level.INFO);

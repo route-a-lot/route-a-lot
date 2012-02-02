@@ -41,6 +41,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.listener.GeneralListener;
 import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
@@ -213,11 +214,15 @@ public class GUI extends JFrame {
         graphics.addActionListener(new ActionListener() {            
             @Override
             public void actionPerformed(ActionEvent event) {
+                Coordinates center = map.getCenter();
+                int zoomlevel = map.getZoomlevel();
                 Listeners.fireEvent(listeners.switchMapMode, new GeneralEvent());
                 mapContents.remove(map);
                 map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
                 mapContents.add(map, BorderLayout.CENTER); 
                 mapContents.validate();
+                setZoomlevel(zoomlevel);
+                setView(center);
             }  
         });
 
@@ -254,7 +259,7 @@ public class GUI extends JFrame {
         listeners.viewChanged.add(new GeneralListener() {
             @Override
             public void handleEvent(GeneralEvent event) {
-                scrolling.setValue(Math.min(map.getZoomlevel(), 9));
+                scrolling.setValue(Util.clip(map.getZoomlevel(), 0, 9));
             }         
         });
 

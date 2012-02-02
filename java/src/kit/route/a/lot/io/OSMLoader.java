@@ -20,6 +20,8 @@ import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -28,6 +30,9 @@ import org.xml.sax.helpers.DefaultHandler;
 public class OSMLoader {
 
     private static Logger logger = Logger.getLogger(OSMLoader.class);
+    static {
+        logger.setLevel(Level.OFF);
+    }
 
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
@@ -741,8 +746,8 @@ public class OSMLoader {
                                 // ignore
                             } else {
                                 ignoredKeys++;
-                                logger.debug("Key ignored: " + key + ", value = " + value + " : "
-                                        + ignoredKeys);
+                                //logger.debug("Key ignored: " + key + ", value = " + value + " : "
+                                //        + ignoredKeys);
                             }
                         } else {
                             logger.debug("Element ignored in polyline: " + qName);
