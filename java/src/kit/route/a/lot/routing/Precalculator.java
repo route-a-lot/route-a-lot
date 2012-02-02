@@ -47,7 +47,7 @@ public class Precalculator {
     }
 
     private static void createFlags(int node) {
-        logger.debug("Calculating ArcFlags for ID " + String.valueOf(node));
+        logger.trace("Calculating ArcFlags for ID " + String.valueOf(node));
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false);
@@ -77,7 +77,7 @@ public class Precalculator {
             }
         }
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
-        logger.debug("Done calculating ArcFlags for ID " + String.valueOf(node));
+        logger.trace("Done calculating ArcFlags for ID " + String.valueOf(node));
     }
 
     private static boolean doAreas() {
@@ -104,7 +104,7 @@ public class Precalculator {
             
             // read the output from the command
             while ((buffer = stdInput.readLine()) != null) {
-                logger.info("Metis: " + buffer);
+                logger.debug("Metis: " + buffer);
             }
             
             // read any errors from the attempted command

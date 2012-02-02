@@ -1014,7 +1014,8 @@ public class OSMLoader {
                 logger.error("Id found that is greater than maxWayNodeId");
             }
             if (weights[i] == 0) {
-                logger.warn("Added edge with 0 weight.");
+                logger.warn("Got edge with 0 weight. Added weight 1.");
+                weights[i] = 1;
             } else if (weights[i] < 0) {
                 logger.error("Added an edge with weight < 0");
             }
