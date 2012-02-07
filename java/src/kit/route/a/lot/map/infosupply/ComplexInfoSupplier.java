@@ -46,7 +46,6 @@ public class ComplexInfoSupplier {
     public static RouteDescription getRouteDescription(List<Integer> list) {
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         RouteDescription rd = new RouteDescription();
-        int i = 0;
         Street currentStreet = null;
         return rd;
     }

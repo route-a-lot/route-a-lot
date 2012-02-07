@@ -86,11 +86,11 @@ public class MapInfoTest {
                         5.0f, 1.0f), new Coordinates(1.0f, 5.0f));
         // System.out.println(a.size());
         for (MapElement ele : a) {
-            // System.out.println(ele.toString());
+            System.out.println(ele);
         }
         Selection sel = info.select(bottomRight);
         if (sel != null) {
-            // System.out.println(sel.toString());
+            // System.out.println(sel);
         } else {
             System.err.println("select funktioniert noch nicht :(");
         }

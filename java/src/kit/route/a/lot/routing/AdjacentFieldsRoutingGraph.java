@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import kit.route.a.lot.common.IntList;
 
 import org.apache.log4j.Logger;
 
@@ -24,7 +23,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
-        IntList lst = new IntList(startID); 
+        //IntList lst = new IntList(startID); TODO: use IntList?
         logger.info("Creating routing graph with " + (maxNodeID + 1) + " ID's and "  + startID.length + " edges");
         // assert same non-null array size
         if (startID.length == 0) {
@@ -336,7 +335,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         result += " ";
         result += String.valueOf(edges.length / 2);
         result += "\n";
-        int k = 0;
         for (int i = 0; i < edgesPos.length - 1; i++) {
             for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {
                 result += String.valueOf(edges[j] + 1); // Metis doesn't like ID 0.

@@ -30,7 +30,6 @@ public class Renderer3D extends Renderer {
     private Projection projection;
     private IHeightmap heightmap;
     
-    
     /**
      * Renders a map viewing rectangle in three dimensional form,
      * using height data and perspective projection in the process.
@@ -42,6 +41,10 @@ public class Renderer3D extends Renderer {
      */
     @Override
     public void render(Context context, int detail) {
+        
+    }
+       
+    public void renderold(Context context, int detail) {
         heightmap = State.getInstance().getLoadedHeightmap();
         projection = ProjectionFactory.getProjectionForCurrentMap();
         int factor = Projection.getZoomFactor(detail);

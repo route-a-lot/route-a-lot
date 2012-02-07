@@ -10,7 +10,6 @@ import java.util.Collection;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
@@ -28,12 +27,10 @@ public class Tile {
     private static Logger logger = Logger.getLogger(Tile.class);
 
     private Coordinates topLeft;
-    private Coordinates bottomRight;
+    private Coordinates bottomRight;   
+    private BufferedImage image;
     private int detail;
-    private BufferedImage data;
-    private int width;
-    private int height;
-//    private static int num = 0;
+    private int tileDim;
 
     /**
      * Creates an new (empty) tile using a calculated resolution
@@ -45,15 +42,15 @@ public class Tile {
      * @param detail
      *            the desired level of detail
      */
-    public Tile(Coordinates topLeft, Coordinates bottomRight, int detail) {
+    public Tile(Coordinates topLeft, float tileDim, int detail) {
         this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
+        bottomRight = topLeft.clone().add(tileDim, tileDim);
         this.detail = detail;
-        width = (int) Math.abs(topLeft.getLongitude() - bottomRight.getLongitude());
-        height = (int) Math.abs(topLeft.getLatitude() - bottomRight.getLatitude());
+        this.tileDim = (int) tileDim;
     }
 
-    public void prerender(State state) {
+    public void prerender() {
+        State state = State.getInstance();
         reset();
 
         // Graphics2D graphics = data.createGraphics();
@@ -69,7 +66,7 @@ public class Tile {
         // graphics.drawChars((new Integer(num)).toString().concat("    ").toCharArray(), 0, 5, 5, 50);
         // num++;
 
-        Graphics2D graphics = data.createGraphics();
+        Graphics2D graphics = image.createGraphics();
 
         //long start = System.nanoTime();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -112,21 +109,18 @@ public class Tile {
         // System.out.println("time for mapElements " + mapElements + "ms; for drawing " + drawing + "ms");
         
         drawPOIs(graphics);
-
         graphics.dispose();
-
     }
 
     /**
      * (Re-)Creates the tile image, filling it with a background color.
      */
     protected void reset() {
-        data =
-                new BufferedImage(width / Projection.getZoomFactor(detail), height
-                        / Projection.getZoomFactor(detail), BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = data.createGraphics();
+        image = new BufferedImage(tileDim / Projection.getZoomFactor(detail),
+                tileDim / Projection.getZoomFactor(detail), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
         graphics.setColor(new Color(210, 230, 190));
-        graphics.fillRect(0, 0, this.width, this.height);
+        graphics.fillRect(0, 0, tileDim, tileDim);
     }
 
     /**
@@ -135,17 +129,20 @@ public class Tile {
      * 
      * @return the tile image
      */
-    protected BufferedImage getData() {
-        if (this.data == null) {
+    protected BufferedImage getImage() {
+        if (this.image == null) {
             reset();
         }
-        return this.data;
+        return this.image;
     }
 
-    protected void draw(MapElement element) {
-        throw new UnsupportedOperationException("Can't draw an element with type "
-                + element.getClass().toString());
-    }
+    protected Coordinates getTopLeft() {
+        return topLeft;
+    } 
+    
+    protected Coordinates getBottomRight() {
+        return bottomRight;
+    } 
 
     /**
      * Draws a regular node on the tile.
@@ -157,13 +154,7 @@ public class Tile {
         graphics.setColor(Color.LIGHT_GRAY);
         drawPoint(node.getPos(), 3, graphics);
     }
-    
-    private void drawPoint(Coordinates globalCoordinates, int size, Graphics2D graphics) {
-        Coordinates localCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(globalCoordinates, topLeft, detail);
-        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
-                (int) localCoordinates.getLatitude() - size / 2, size, size);
-    }
-
+  
     /**
      * Draws an area on the tile.
      * 
@@ -179,7 +170,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = Renderer.getLocalCoordinatesFromGlobalCoordinates(nodes[i].getPos(), topLeft, detail);
+            Coordinates curCoordinates = Renderer.getLocalCoordinates(nodes[i].getPos(), topLeft, detail);
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -280,7 +271,7 @@ public class Tile {
         }
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = getLocalCoordinatesFromGlobalCoordinates(nodes[i].getPos());
+            Coordinates curCoordinates = getLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -289,7 +280,13 @@ public class Tile {
         
         
     }
-    
+  
+    private void drawPoint(Coordinates globalCoordinates, int size, Graphics2D graphics) {
+        Coordinates localCoordinates = Renderer.getLocalCoordinates(globalCoordinates, topLeft, detail);
+        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
+                (int) localCoordinates.getLatitude() - size / 2, size, size);
+    }
+      
     private void drawStreetArrows(Street street, Graphics2D graphics) {
         if (detail > 1 || street.getWayInfo().getOneway() == WayInfo.ONEWAY_NO) {
             return;
@@ -307,68 +304,37 @@ public class Tile {
         graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
         for (int i = 1; i < nPoints; i++) {
-            Coordinates from = getLocalCoordinatesFromGlobalCoordinates(nodes[i-1].getPos());
-            Coordinates to = getLocalCoordinatesFromGlobalCoordinates(nodes[i].getPos());
-            currentDistance += Util.getDistance(from, to);
+            Coordinates from = getLocalCoordinates(nodes[i-1].getPos());
+            Coordinates to = getLocalCoordinates(nodes[i].getPos());
+            currentDistance += Coordinates.getDistance(from, to);
 
             if (currentDistance > arrowDistance) {
                 currentDistance = 0;
+                Coordinates vector = to.clone().subtract(from);
+                Coordinates edgeMiddle = vector.clone().scale(0.5f).add(from);
+                vector.normalize();
+                Coordinates arrowStart = vector.clone().scale(arrowLength).subtract(edgeMiddle).invert();
+                Coordinates arrowEnd = vector.clone().scale(arrowLength).add(edgeMiddle);
+                Coordinates headLeft = vector.clone().rotate(210).normalize().scale(headLength).add(arrowEnd);
+                Coordinates headRight = vector.clone().rotate(150).normalize().scale(headLength).add(arrowEnd);
 
-                Coordinates vector = new Coordinates();
-                vector.setLatitude((to.getLatitude() - from.getLatitude()));
-                vector.setLongitude((to.getLongitude() - from.getLongitude()));
-                Coordinates edgeMiddle = new Coordinates();
-                edgeMiddle.setLatitude(from.getLatitude() + vector.getLatitude() / 2);
-                edgeMiddle.setLongitude(from.getLongitude() + vector.getLongitude() / 2);
-                vector = normalizeVector(vector);
-
-                Coordinates arrowStart = new Coordinates();
-                arrowStart.setLatitude(edgeMiddle.getLatitude() - vector.getLatitude() * arrowLength);
-                arrowStart.setLongitude(edgeMiddle.getLongitude() - vector.getLongitude() * arrowLength);
-                Coordinates arrowEnd = new Coordinates();
-                arrowEnd.setLatitude(edgeMiddle.getLatitude() + vector.getLatitude() * arrowLength);
-                arrowEnd.setLongitude(edgeMiddle.getLongitude() + vector.getLongitude() * arrowLength);
-
-                Coordinates headLeft = new Coordinates();
-                Coordinates rotatedVector = normalizeVector(rotateVector(vector, 210));
-                headLeft.setLatitude(arrowEnd.getLatitude() + rotatedVector.getLatitude() * headLength);
-                headLeft.setLongitude(arrowEnd.getLongitude() + rotatedVector.getLongitude() * headLength);
-                Coordinates headRight = new Coordinates();
-                rotatedVector = normalizeVector(rotateVector(vector, 150));
-                headRight.setLatitude(arrowEnd.getLatitude() + rotatedVector.getLatitude() * headLength);
-                headRight.setLongitude(arrowEnd.getLongitude() + rotatedVector.getLongitude() * headLength);
-
-                graphics.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(), (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
+                graphics.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(),
+                                  (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
                 if (street.getWayInfo().getOneway() == WayInfo.ONEWAY_OPPOSITE) {
                     arrowEnd = arrowStart;
                 }
-                graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(), (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
-                graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(), (int) headRight.getLongitude(), (int) headRight.getLatitude());
+                graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
+                                  (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
+                graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
+                                  (int) headRight.getLongitude(), (int) headRight.getLatitude());
             }
         }
     }
     
-    private Coordinates getLocalCoordinatesFromGlobalCoordinates(Coordinates coordinates) {
-        return Renderer.getLocalCoordinatesFromGlobalCoordinates(coordinates, topLeft, detail);
+    private Coordinates getLocalCoordinates(Coordinates coordinates) {
+        return Renderer.getLocalCoordinates(coordinates, topLeft, detail);
     }
     
-    private Coordinates normalizeVector(Coordinates vector) {
-        Coordinates newVector = new Coordinates();
-        float vectorLength = (float) Math.sqrt(Math.pow(vector.getLatitude(), 2) + Math.pow(vector.getLongitude(), 2));
-        newVector.setLatitude(vector.getLatitude() / vectorLength);
-        newVector.setLongitude(vector.getLongitude() / vectorLength);
-        return newVector;
-    }
-    
-    private Coordinates rotateVector(Coordinates vector, int angle) {
-        Coordinates rotatedVector = new Coordinates();
-        rotatedVector.setLongitude((float) ((Math.cos(angle * Math.PI / 180) * vector.getLongitude() - Math.sin(angle * Math.PI / 180) * vector.getLatitude()) * 180 / Math.PI));
-        rotatedVector.setLatitude((float) ((Math.sin(angle * Math.PI / 180) * vector.getLongitude() + Math.cos(angle * Math.PI / 180) * vector.getLatitude()) * 180 / Math.PI));
-        return rotatedVector;
-    }
-    
-    /**
-     */
     private void drawPOIs(Graphics2D graphics) {
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         Collection<MapElement> elements = mapInfo.getOverlay(detail, topLeft, bottomRight);

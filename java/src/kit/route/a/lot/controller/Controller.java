@@ -69,17 +69,23 @@ public class Controller {
     private Controller() {
         File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         
+        Util.startTimer();
         importHeightmap("./srtm/");
-
+        logger.info("### Loaded heightmaps in " + Util.stopTimer() + " ###");
+        
         loadState();
+        logger.info("### Loaded state in " + Util.stopTimer() + " ###");
+        
         if (state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
-              loadMap(state.getLoadedMapFile());
+            loadMap(state.getLoadedMapFile());
+            logger.info("### Loaded map in " + Util.stopTimer() + " ###");
         } else if (defaultMap.exists()) {
-              logger.info("import default map...");
-              importMap(defaultMap);
-              setViewToMapCenter();
+            logger.info("import default map...");
+            importMap(defaultMap);
+            setViewToMapCenter();
+            logger.info("### Imported default map in " + Util.stopTimer() + " ###");
         } else {
-              logger.warn("no map loaded."); //TODO not loading map 
+            logger.warn("no map loaded."); //TODO not loading map 
         }                        
         
         guiHandler.addAddNavNodeListener(new SelectNavNodeListener(this));
@@ -462,9 +468,7 @@ public class Controller {
     }
     
     public void switchMapMode() {
-        Renderer oldRenderer = renderer;
         renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
-        renderer.inheritCache(oldRenderer);
     }
     
     public void prepareForShutDown() {

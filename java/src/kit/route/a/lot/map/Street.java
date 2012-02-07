@@ -13,13 +13,12 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import java.lang.Comparable;
 
-public class Street extends MapElement implements Comparable<Street>{
+public class Street extends MapElement implements Comparable<Street> {
 
     private Node[] nodes;
 
@@ -126,18 +125,18 @@ public class Street extends MapElement implements Comparable<Street>{
      * start - and endNode in the array nodes
      */
     private static float getDistanceFromNodeToEdge(Node[] nodes, int start, int end, Coordinates pos) {
-        double b = Util.getDistance(nodes[start].getPos(), pos);
-        double a = Util.getDistance(nodes[end].getPos(), pos);
-        double c = Util.getDistance(nodes[start].getPos(), nodes[end].getPos());
+        double b = Coordinates.getDistance(nodes[start].getPos(), pos);
+        double a = Coordinates.getDistance(nodes[end].getPos(), pos);
+        double c = Coordinates.getDistance(nodes[start].getPos(), nodes[end].getPos());
         if (c == 0) {
-            return (float) Util.getDistance(nodes[start].getPos(), pos);
+            return (float) Coordinates.getDistance(nodes[start].getPos(), pos);
         }
         float distance = (float) getTriangleCHeight(a, b, c);
         if (!(distance < 0)) {
             return distance;
         }
-        return (float) Math.min(Util.getDistance(nodes[start].getPos(), pos),
-                Util.getDistance(nodes[end].getPos(), pos));
+        return (float) Math.min(Coordinates.getDistance(nodes[start].getPos(), pos),
+                Coordinates.getDistance(nodes[end].getPos(), pos));
     }
 
     // a= side between end and pos, b = s. between pos and start, c = s. between start and end
@@ -163,29 +162,28 @@ public class Street extends MapElement implements Comparable<Street>{
         Projection projection = ProjectionFactory.getProjectionForCurrentMap();
         Coordinates geoPos1 = projection.localCoordinatesToGeoCoordinates(pos1);
         Coordinates geoPos2 = projection.localCoordinatesToGeoCoordinates(pos2);
-        double pos1LongRad = Math.abs(geoPos1.getLongitude()) / 180 * Math.PI; // coordinates in deg
-        double pos1LalRad = Math.abs(geoPos1.getLatitude()) / 180 * Math.PI;
-        double pos2LongRad = Math.abs(geoPos2.getLongitude()) / 180 * Math.PI;
-        double pos2LalRad = Math.abs(geoPos2.getLatitude()) / 180 * Math.PI;
+        double pos1LongRad = Math.toRadians(Math.abs(geoPos1.getLongitude())); // coordinates in deg
+        double pos1LalRad = Math.toRadians(Math.abs(geoPos1.getLatitude()));
+        double pos2LongRad = Math.toRadians(Math.abs(geoPos2.getLongitude()));
+        double pos2LalRad = Math.toRadians(Math.abs(geoPos2.getLatitude()));
         
         double distanceRad =
                 Math.acos(Math.sin(pos1LalRad) * Math.sin(pos2LalRad) + Math.cos(pos1LalRad)
                         * Math.cos(pos2LalRad) * Math.cos(pos1LongRad - pos2LongRad)); // distance in deg
         
         return distanceRad * 6371001; // 6371001 is the mean earth radius in meter
-
     }
 
     private float getRatio(int startNode, int endNode, Coordinates pos) {
-        double b = Util.getDistance(nodes[startNode].getPos(), pos);
-        double a = Util.getDistance(nodes[endNode].getPos(), pos);
-        double c = Util.getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
+        double b = Coordinates.getDistance(nodes[startNode].getPos(), pos);
+        double a = Coordinates.getDistance(nodes[endNode].getPos(), pos);
+        double c = Coordinates.getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
         // float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b * b + c * c - a * a) / (2 * b * c));
         double angleAC = Math.acos((a * a + c * c - b * b) / (2 * a * c));
         if (angleBC > Math.PI / 2 || angleAC > Math.PI / 2) {
-            if (Util.getDistance(nodes[startNode].getPos(), pos) < Util.getDistance(nodes[endNode].getPos(),
-                    pos)) {
+            if (Coordinates.getDistance(nodes[startNode].getPos(), pos)
+                    < Coordinates.getDistance(nodes[endNode].getPos(), pos)) {
                 return 0.0f;
             } else {
                 return 1.0f;
@@ -264,7 +262,7 @@ public class Street extends MapElement implements Comparable<Street>{
     private static float getLengthOfStreet(Street street) {
         float length = 0;
         for (int i = 1; i < street.nodes.length; i++) {
-            length += Util.getDistance(street.nodes[i - 1].getPos(), street.nodes[i].getPos());
+            length += Coordinates.getDistance(street.nodes[i - 1].getPos(), street.nodes[i].getPos());
         }
         return length;
     }

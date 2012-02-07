@@ -74,6 +74,7 @@ public class StringTrie {
    
     
     public void kSort(){
+        @SuppressWarnings("unchecked")
         ArrayList<MapElement> [] buckets = new ArrayList[26];
         for(int i =0; i<26; i++){
             buckets[i] = new ArrayList<MapElement>();
@@ -82,7 +83,7 @@ public class StringTrie {
         while(iterator.hasNext()){
             MapElement element = iterator.next();
             System.out.println(element.getID());
-            ArrayList<MapElement> list = buckets[element.getID()];
+            //ArrayList<MapElement> list = buckets[element.getID()];
             buckets[element.getID()].add(element);
         }
         tree = buckets[0];

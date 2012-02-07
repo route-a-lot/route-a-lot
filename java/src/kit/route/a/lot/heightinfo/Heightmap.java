@@ -64,4 +64,10 @@ public class Heightmap implements IHeightmap {
         	    map.add(tile);
         	}
     }
+
+    @Override
+    public void reduceSection(Coordinates topLeft, Coordinates bottomRight, float[][] heightdata) {
+        // TODO YVONNE: implement this method as described in the JavaDoc        
+    }
+    
 }//end class

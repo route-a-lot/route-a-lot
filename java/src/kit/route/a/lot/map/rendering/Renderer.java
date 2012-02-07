@@ -27,12 +27,14 @@ import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.RenderCache;
 
 public class Renderer {
-
+    
+    private static Logger logger = Logger.getLogger(Renderer.class);
+    protected static int BASE_TILEDIM = 200;
+    
     /**
      * A cache storing tiles that were previously drawn.
      */
     private RenderCache cache;
-    private static Logger logger = Logger.getLogger(Renderer.class);
     protected State state = State.getInstance();
     
     private BufferedImage routeImage = null;
@@ -59,20 +61,19 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context, int detail) {
-        int tileDim = (int) (200 * Projection.getZoomFactor(detail));
+        int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");
         }
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
         int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim);
-        int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim) - 1;
-        int minLat = (int) Math.floor(context.getTopLeft().getLatitude() / tileDim) - 1;
+        int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
+        int minLat = (int) Math.floor(context.getTopLeft().getLatitude() / tileDim);
         for (int i = minLon; i <= maxLon; i++) {
             for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates(k * tileDim, i * tileDim);
-                Coordinates bottomRight = new Coordinates((k + 1) * tileDim, (i + 1) * tileDim);
-                Tile currentTile = prerenderTile(topLeft, bottomRight, detail);
-                context.drawImage(topLeft, currentTile.getData(), detail);
+                Tile currentTile = prerenderTile(topLeft, tileDim, detail);
+                context.drawImage(topLeft, currentTile.getImage(), detail);
             }
         }
         drawRoute(context, detail);
@@ -86,11 +87,11 @@ public class Renderer {
      * 
      * @return the rendered tile
      */
-    private Tile prerenderTile(Coordinates topLeft, Coordinates bottomRight, int detail) {
-        Tile tile = cache.queryCache(Tile.getSpecifier(topLeft, detail));
+    private Tile prerenderTile(Coordinates topLeft, float tileDim, int detail) {
+        Tile tile = cache.queryCache(topLeft, detail);
         if (tile == null) {
-            tile = new Tile(topLeft, bottomRight, detail);
-            tile.prerender(state);
+            tile = new Tile(topLeft, tileDim, detail);
+            tile.prerender();
             cache.addToCache(tile);
         }
         return tile;
@@ -140,7 +141,7 @@ public class Renderer {
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());
-                    Coordinates nodeOnEdge = getSelectedNodeOnEdge(from, to, navSelection.getRatio());
+                    Coordinates nodeOnEdge = getCoordinatesOnEdge(from, to, navSelection.getRatio());
                     adjustBorderCoordinates(routeTopLeft, routeBottomRight, nodeOnEdge, detail);
                     adjustBorderCoordinates(routeTopLeft, routeBottomRight, navSelection.getPosition(), detail);
                 }
@@ -218,7 +219,7 @@ public class Renderer {
             Selection navSelection = navPoints.get(i);
             Node from = mapInfo.getNode(navSelection.getFrom());
             Node to = mapInfo.getNode(navSelection.getTo());
-            Coordinates nodeOnEdge = getSelectedNodeOnEdge(from, to, navSelection.getRatio());
+            Coordinates nodeOnEdge = getCoordinatesOnEdge(from, to, navSelection.getRatio());
             boolean drawedFrom = false;
             boolean drawedTo = false;
             if (idIsInRoute(from.getID(), drawnRoute)) {
@@ -264,8 +265,8 @@ public class Renderer {
     }
 
     private void drawLineBetweenCoordinates(Coordinates from, Coordinates to, int detail, Graphics2D graphics) {
-        Coordinates start = getLocalCoordinatesFromGlobalCoordinates(from, routeTopLeft, detail);
-        Coordinates end = getLocalCoordinatesFromGlobalCoordinates(to, routeTopLeft, detail);
+        Coordinates start = getLocalCoordinates(from, routeTopLeft, detail);
+        Coordinates end = getLocalCoordinates(to, routeTopLeft, detail);
         graphics.drawLine((int) start.getLongitude(), (int) start.getLatitude(), (int) end.getLongitude(), (int) end.getLatitude());
     }
     
@@ -281,26 +282,32 @@ public class Renderer {
         return true;
     }
     
-    protected static Coordinates getLocalCoordinatesFromGlobalCoordinates(Coordinates global, Coordinates topLeft, int detail) {
-        Coordinates localCoordinates = new Coordinates();
-        localCoordinates.setLatitude((float) ((global.getLatitude() - topLeft.getLatitude()) / Projection
-                .getZoomFactor(detail)));
-        localCoordinates.setLongitude((float) ((global.getLongitude() - topLeft.getLongitude()) / Projection
-                .getZoomFactor(detail)));
-        return localCoordinates;
-    }
-    
-    private Coordinates getSelectedNodeOnEdge(Node from, Node to, float ratio) {
-        Coordinates node = new Coordinates();
-        Coordinates vector = new Coordinates();
-        vector.setLatitude((to.getPos().getLatitude() - from.getPos().getLatitude()) * ratio);
-        vector.setLongitude((to.getPos().getLongitude() - from.getPos().getLongitude()) * ratio);
-        node.setLatitude(from.getPos().getLatitude() + vector.getLatitude());
-        node.setLongitude(from.getPos().getLongitude() + vector.getLongitude());
-        return node;
+    /**
+     * Accepts global coordinates (reference system origin: map origin) and converts then into
+     * local coordinates (reference system origin: topLeft).
+     * Additionally scales the coordinates to fir the current zoom factor.
+     * @param global set of global coordinates
+     * @param topLeft origin of local coordinates
+     * @param detail level of detail / zoomlevel
+     * @return corresponding set of local coordinates
+     */
+    protected static Coordinates getLocalCoordinates(Coordinates global, Coordinates topLeft, int detail) {
+        return global.clone().subtract(topLeft).scale(1f / Projection.getZoomFactor(detail));
     }
     
     /**
+     * Interpolates between the given nodes' positions using the given ratio.
+     * @param from base node
+     * @param to target node
+     * @param ratio value that is typically between 0 and 1
+     * @return position on the edge between from and to
+     */
+    private Coordinates getCoordinatesOnEdge(Node from, Node to, float ratio) {
+        return from.getPos().add(to.getPos().subtract(from.getPos()).scale(ratio)); //TODO? clone einfügen?
+    }
+    
+    /**
+     * Draws the map overlay for the current context.
      */
     private void drawOverlay(Context context, int detail) {
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
@@ -323,10 +330,8 @@ public class Renderer {
                         || ((POINode) element).getInfo().getCategory() != OSMType.FAVOURITE)){
                     continue;
                 }
-                Node node = (Node) element;
-                Coordinates drawPosition = new Coordinates(node.getPos().getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
-                        node.getPos().getLongitude() - (size/2 * Projection.getZoomFactor(detail)));
-                context.drawImage(drawPosition, image, detail);
+                float offset = -size/2 * Projection.getZoomFactor(detail);
+                context.drawImage(((Node) element).getPos().add(offset, offset), image, detail);
             }
             if (element instanceof Area) {
                 continue;
@@ -361,19 +366,9 @@ public class Renderer {
 //            graphics.fillOval(0, 0, 5, 5);
 //            context.drawImage(selectedNodeOnEdge, image, detail);
 
-            Coordinates drawPosition = new Coordinates(point.getPosition().getLatitude() - (size/2 * Projection.getZoomFactor(detail)),
-                    point.getPosition().getLongitude() - (size/2 * Projection.getZoomFactor(detail)));
-            context.drawImage(drawPosition, image, detail);
+            float offset = - size/2 * Projection.getZoomFactor(detail);
+            context.drawImage(point.getPosition().clone().add(offset, offset), image, detail);
         }
-    }
-
-    /**
-     * Adopts the cache from another renderer.
-     * 
-     * @param source
-     */
-    public void inheritCache(Renderer source) {
-        this.cache = source.cache;
     }
 
     public void resetCache() {

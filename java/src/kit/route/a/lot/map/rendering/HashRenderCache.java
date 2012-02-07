@@ -3,6 +3,7 @@ package kit.route.a.lot.map.rendering;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.rendering.RenderCache;
 
 public class HashRenderCache implements RenderCache {
@@ -27,21 +28,24 @@ public class HashRenderCache implements RenderCache {
     }
 
     @Override
-    public Tile queryCache(long tileSpecifier) {
-        if (leastRecentlyUsed.remove(tileSpecifier)) {
-            leastRecentlyUsed.addLast(tileSpecifier);
+    public Tile queryCache(Coordinates topLeft, int detail) {
+        long specifier = Tile.getSpecifier(topLeft, detail);
+        if (leastRecentlyUsed.remove(specifier)) {
+            leastRecentlyUsed.addLast(specifier);
         }
-        return map.get(tileSpecifier);
+        return map.get(specifier);
     }
     
     @Override
-    public void addToCache(Tile tile) {
+    public Tile addToCache(Tile tile) {
         long specifier = tile.getSpecifier();
+        Tile removedTile = null;
         map.put(specifier, tile);
         if (leastRecentlyUsed.size() > CACHE_SIZE) {
-            map.remove(leastRecentlyUsed.removeFirst());   
+            removedTile = map.remove(leastRecentlyUsed.removeFirst());   
         }
         leastRecentlyUsed.addLast(specifier);
+        return removedTile;
     }
 
     @Override

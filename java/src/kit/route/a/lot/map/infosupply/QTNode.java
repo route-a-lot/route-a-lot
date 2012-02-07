@@ -23,28 +23,15 @@ public class QTNode extends QuadTree {
 
     public QTNode(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
-        Coordinates upMiddle = new Coordinates();
-        Coordinates middleLeft = new Coordinates();
-        Coordinates middleMiddle = new Coordinates();
-        Coordinates middleRight = new Coordinates();
-        Coordinates bottomMiddle = new Coordinates();
-        
-        upMiddle.setLatitude(upLeft.getLatitude());
-        upMiddle.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-        middleLeft.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-        middleLeft.setLongitude(upLeft.getLongitude());
-        middleMiddle.setLatitude(middleLeft.getLatitude());
-        middleMiddle.setLongitude(upMiddle.getLongitude());
-        middleRight.setLatitude(middleLeft.getLatitude());
-        middleRight.setLongitude(bottomRight.getLongitude());
-        bottomMiddle.setLatitude(bottomRight.getLatitude());
-        bottomMiddle.setLongitude(upMiddle.getLongitude());
-        
+        float widthHalf = (bottomRight.getLongitude() - upLeft.getLongitude()) / 2;
+        float heightHalf = (bottomRight.getLatitude() - upLeft.getLatitude()) / 2;
+        Coordinates middleMiddle = upLeft.clone().add(heightHalf, widthHalf);
         children[0] = new QTLeaf(upLeft, middleMiddle);
-        children[1] = new QTLeaf(upMiddle, middleRight);
-        children[2] = new QTLeaf(middleLeft, bottomMiddle);
-        children[3] = new QTLeaf(middleMiddle, bottomRight);
-        
+        children[1] = new QTLeaf(upLeft.clone().add(0, widthHalf),
+                                 bottomRight.clone().add(-heightHalf, 0));
+        children[2] = new QTLeaf(upLeft.clone().add(heightHalf, 0),
+                                 bottomRight.clone().add(0, -widthHalf));
+        children[3] = new QTLeaf(middleMiddle, bottomRight);        
     }
 
     @Override

@@ -138,9 +138,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
        
     @Override
     public Collection<MapElement> getBaseLayer(Coordinates pos, float radius) {
-        Coordinates UL = new Coordinates(pos.getLatitude() - radius, pos.getLongitude() - radius);
-        Coordinates BR = new Coordinates(pos.getLatitude() + radius, pos.getLongitude() + radius);
-        return getBaseLayer(0, UL, BR);
+        return getBaseLayer(0, pos.clone().add(-radius, -radius), pos.clone().add(radius, radius));
     }    
     
     /*private Collection<MapElement> getOverlay(Coordinates pos, float radius) {
@@ -203,12 +201,12 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         POINode closestElement = null;
         float closestDistance = (Projection.getZoomFactor(detailLevel) + 1) *  radius;
-        Coordinates UL = new Coordinates(pos.getLatitude() - closestDistance, pos.getLongitude() - closestDistance);
-        Coordinates BR = new Coordinates(pos.getLatitude() + closestDistance, pos.getLongitude() + closestDistance);
+        Coordinates UL = pos.clone().add(-closestDistance, -closestDistance);
+        Coordinates BR = pos.clone().add(closestDistance, closestDistance);
         Collection<MapElement> elements = getOverlay(0, UL, BR);
         for (MapElement element : elements) {
             if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
-                float newDistance = (float) Util.getDistance(pos, ((POINode) element).getPos());
+                float newDistance = (float) Coordinates.getDistance(pos, ((POINode) element).getPos());
                 if (newDistance < closestDistance) {
                     closestElement = (POINode) element;
                     closestDistance = newDistance;

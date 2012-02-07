@@ -6,10 +6,13 @@ import javax.media.opengl.*;
 public class Context3D extends Context {
     
     private GLAutoDrawable output;
+    
+    private Frustum frustum;
  
     public Context3D(Coordinates topLeft, Coordinates bottomRight, GLAutoDrawable surface) {
         super(topLeft, bottomRight);
         output = surface;
+        frustum = new Frustum(output.getGL());
     }
     
     /*public Context3D(Coordinates topLeft, int width, int height, float scale, GL surface) {
@@ -24,6 +27,10 @@ public class Context3D extends Context {
 
     public GL getGL() {
         return output.getGL();
+    }
+    
+    public Frustum getFrustum() {
+        return frustum;
     }
     
     @Override

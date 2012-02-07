@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 public class Util {
     
     private static Logger logger = Logger.getLogger(Util.class);
+    private static long timer = 0;
     
     /*private static int[][] permutations(int p) {
         // Try not to use this
@@ -114,10 +115,22 @@ public class Util {
         return (value < bottom) ? bottom : (value > top) ? top : value;
     }
     
-    public static double getDistance(Coordinates pos1, Coordinates pos2) {
-        return Math.sqrt(Math.pow(pos1.getLatitude() - pos2.getLatitude(), 2)
-                       + Math.pow(pos1.getLongitude() - pos2.getLongitude(), 2));
+    public static void startTimer() {
+        timer  = System.nanoTime();
     }
-
-
+    
+    public static String stopTimer() {
+        long time = (System.nanoTime() - timer);
+        String result = time + "ns";
+        if (time > 1000000000) {
+            result = String.format("%1$1.2f s", time / 1000000000f);
+        } else if (time > 1000000) {
+            result = String.format("%1$1.2f ms", time / 1000000f);
+        } else if (time > 1000) {
+            result = String.format("%1$1.2f μs", time / 1000f);
+        }        
+        startTimer();
+        return result;
+    }
+    
 }

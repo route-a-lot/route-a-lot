@@ -57,6 +57,66 @@ public class Coordinates {
         }
     }
     
+    public Coordinates add(Coordinates summand) {
+        if (summand != null) {
+            latitude += summand.latitude;
+            longitude += summand.longitude;
+        }
+        return this;
+    }
+    
+    public Coordinates add(float addLat, float addLon) {
+        latitude += addLat;
+        longitude += addLon;
+        return this;
+    }
+    
+    public Coordinates subtract(Coordinates subtrahend) {
+        if (subtrahend != null) {
+            latitude -= subtrahend.latitude;
+            longitude -= subtrahend.longitude;
+        }
+        return this;
+    }
+    
+    public Coordinates scale(float factor) {
+        latitude *= factor;
+        longitude *= factor;
+        return this;
+    }
+    
+    public Coordinates normalize() {
+        float length = (float) Math.sqrt(latitude * latitude + longitude * longitude);
+        latitude /= length;
+        longitude /= length;
+        return this;
+    }
+    
+    public Coordinates invert() {
+        latitude = -latitude;
+        longitude = -longitude;
+        return this;
+    }
+    
+    public Coordinates rotate(int angle) {
+        double cos = Math.cos(Math.toRadians(angle));
+        double sin = Math.sin(Math.toRadians(angle));
+        double oldLatitude = latitude;
+        latitude = (float) Math.toDegrees(sin * longitude + cos * oldLatitude);
+        longitude = (float) Math.toDegrees(cos * longitude - sin * oldLatitude);
+        return this;
+    }
+    
+    public Coordinates clone() {
+        return new Coordinates(latitude, longitude);
+    }
+    
+    public static double getDistance(Coordinates pos1, Coordinates pos2) {
+        return (pos1 == null || pos2 == null) ? null :
+            Math.sqrt(Math.pow(pos1.latitude - pos2.latitude, 2)
+                    + Math.pow(pos1.longitude - pos2.longitude, 2));
+    }
+    
     public static Coordinates loadFromStream(DataInputStream stream) throws IOException {
         Coordinates result = new Coordinates();
         result.latitude = stream.readFloat();
