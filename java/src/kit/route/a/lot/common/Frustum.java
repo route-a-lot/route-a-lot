@@ -7,86 +7,81 @@ import javax.media.opengl.GL;
 
 public class Frustum {
 
-    private final int RIGHT = 0;
-    private final int LEFT = 1;
-    private final int BOTTOM = 2;
-    private final int TOP = 3;
-    private final int BACK = 4;
-    private final int FRONT = 5;
-    private final int A = 0;
-    private final int B = 1;
-    private final int C = 2;
-    private final int D = 3;
+    private final int RIGHT = 0, LEFT = 1, BOTTOM = 2, TOP = 3, BACK = 4, FRONT = 5;
+    private final int A = 0, B = 1, C = 2, D = 3;
 
-    float[][] frustum = new float[6][4];
+    float[][] planes = new float[6][4];
 
     public Frustum(GL gl) {
-        float[] projM = new float[16];
-        float[] modM = new float[16];
-        float[] clip = new float[16];
-        FloatBuffer pm = FloatBuffer.wrap(projM);
-        FloatBuffer mm = FloatBuffer.wrap(projM);
-        gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, pm);
-        gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, mm);
-        // Projektions & Modelviewmatrix multipilizeren um die "clipping-Planes" zu bekommen
-        clip[0] = modM[0] * projM[0] + modM[1] * projM[4] + modM[2] * projM[8] + modM[3] * projM[12];
-        clip[1] = modM[0] * projM[1] + modM[1] * projM[5] + modM[2] * projM[9] + modM[3] * projM[13];
-        clip[2] = modM[0] * projM[2] + modM[1] * projM[6] + modM[2] * projM[10] + modM[3] * projM[14];
-        clip[3] = modM[0] * projM[3] + modM[1] * projM[7] + modM[2] * projM[11] + modM[3] * projM[15];
-        clip[4] = modM[4] * projM[0] + modM[5] * projM[4] + modM[6] * projM[8] + modM[7] * projM[12];
-        clip[5] = modM[4] * projM[1] + modM[5] * projM[5] + modM[6] * projM[9] + modM[7] * projM[13];
-        clip[6] = modM[4] * projM[2] + modM[5] * projM[6] + modM[6] * projM[10] + modM[7] * projM[14];
-        clip[7] = modM[4] * projM[3] + modM[5] * projM[7] + modM[6] * projM[11] + modM[7] * projM[15];
-        clip[8] = modM[8] * projM[0] + modM[9] * projM[4] + modM[10] * projM[8] + modM[11] * projM[12];
-        clip[9] = modM[8] * projM[1] + modM[9] * projM[5] + modM[10] * projM[9] + modM[11] * projM[13];
-        clip[10] = modM[8] * projM[2] + modM[9] * projM[6] + modM[10] * projM[10] + modM[11] * projM[14];
-        clip[11] = modM[8] * projM[3] + modM[9] * projM[7] + modM[10] * projM[11] + modM[11] * projM[15];
-        clip[12] = modM[12] * projM[0] + modM[13] * projM[4] + modM[14] * projM[8] + modM[15] * projM[12];
-        clip[13] = modM[12] * projM[1] + modM[13] * projM[5] + modM[14] * projM[9] + modM[15] * projM[13];
-        clip[14] = modM[12] * projM[2] + modM[13] * projM[6] + modM[14] * projM[10] + modM[15] * projM[14];
-        clip[15] = modM[12] * projM[3] + modM[13] * projM[7] + modM[14] * projM[11] + modM[15] * projM[15];
-        // Die Seiten des frustums aus der oben berechneten clippingmatrix extrahieren
-        frustum[RIGHT][A] = clip[3] - clip[0];
-        frustum[RIGHT][B] = clip[7] - clip[4];
-        frustum[RIGHT][C] = clip[11] - clip[8];
-        frustum[RIGHT][D] = clip[15] - clip[12];
+        float[] proj = new float[16];
+        float[] modelview = new float[16];
+        float[] clips = new float[16];
+        // get projection matrix and modelview matrix from OpenGL
+        FloatBuffer projMatrixBuffer = FloatBuffer.wrap(proj);
+        FloatBuffer modelMatrixBuffer = FloatBuffer.wrap(modelview);
+        gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, projMatrixBuffer);
+        gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, modelMatrixBuffer);
+        // retrieve clipping plane matrix
+        clips[0] = modelview[0] * proj[0] + modelview[1] * proj[4] + modelview[2] * proj[8] + modelview[3] * proj[12];
+        clips[1] = modelview[0] * proj[1] + modelview[1] * proj[5] + modelview[2] * proj[9] + modelview[3] * proj[13];
+        clips[2] = modelview[0] * proj[2] + modelview[1] * proj[6] + modelview[2] * proj[10] + modelview[3] * proj[14];
+        clips[3] = modelview[0] * proj[3] + modelview[1] * proj[7] + modelview[2] * proj[11] + modelview[3] * proj[15];
+        clips[4] = modelview[4] * proj[0] + modelview[5] * proj[4] + modelview[6] * proj[8] + modelview[7] * proj[12];
+        clips[5] = modelview[4] * proj[1] + modelview[5] * proj[5] + modelview[6] * proj[9] + modelview[7] * proj[13];
+        clips[6] = modelview[4] * proj[2] + modelview[5] * proj[6] + modelview[6] * proj[10] + modelview[7] * proj[14];
+        clips[7] = modelview[4] * proj[3] + modelview[5] * proj[7] + modelview[6] * proj[11] + modelview[7] * proj[15];
+        clips[8] = modelview[8] * proj[0] + modelview[9] * proj[4] + modelview[10] * proj[8] + modelview[11] * proj[12];
+        clips[9] = modelview[8] * proj[1] + modelview[9] * proj[5] + modelview[10] * proj[9] + modelview[11] * proj[13];
+        clips[10] = modelview[8] * proj[2] + modelview[9] * proj[6] + modelview[10] * proj[10] + modelview[11] * proj[14];
+        clips[11] = modelview[8] * proj[3] + modelview[9] * proj[7] + modelview[10] * proj[11] + modelview[11] * proj[15];
+        clips[12] = modelview[12] * proj[0] + modelview[13] * proj[4] + modelview[14] * proj[8] + modelview[15] * proj[12];
+        clips[13] = modelview[12] * proj[1] + modelview[13] * proj[5] + modelview[14] * proj[9] + modelview[15] * proj[13];
+        clips[14] = modelview[12] * proj[2] + modelview[13] * proj[6] + modelview[14] * proj[10] + modelview[15] * proj[14];
+        clips[15] = modelview[12] * proj[3] + modelview[13] * proj[7] + modelview[14] * proj[11] + modelview[15] * proj[15];
+        // calculate frustum planes
+        planes[RIGHT][A] = clips[3] - clips[0];
+        planes[RIGHT][B] = clips[7] - clips[4];
+        planes[RIGHT][C] = clips[11] - clips[8];
+        planes[RIGHT][D] = clips[15] - clips[12];
         normalizePlane(RIGHT);
 
-        frustum[LEFT][A] = clip[3] + clip[0];
-        frustum[LEFT][B] = clip[7] + clip[4];
-        frustum[LEFT][C] = clip[11] + clip[8];
-        frustum[LEFT][D] = clip[15] + clip[12];
+        planes[LEFT][A] = clips[3] + clips[0];
+        planes[LEFT][B] = clips[7] + clips[4];
+        planes[LEFT][C] = clips[11] + clips[8];
+        planes[LEFT][D] = clips[15] + clips[12];
         normalizePlane(LEFT);
 
-        frustum[BOTTOM][A] = clip[3] + clip[1];
-        frustum[BOTTOM][B] = clip[7] + clip[5];
-        frustum[BOTTOM][C] = clip[11] + clip[9];
-        frustum[BOTTOM][D] = clip[15] + clip[13];
+        planes[BOTTOM][A] = clips[3] + clips[1];
+        planes[BOTTOM][B] = clips[7] + clips[5];
+        planes[BOTTOM][C] = clips[11] + clips[9];
+        planes[BOTTOM][D] = clips[15] + clips[13];
         normalizePlane(BOTTOM);
 
-        frustum[TOP][A] = clip[3] - clip[1];
-        frustum[TOP][B] = clip[7] - clip[5];
-        frustum[TOP][C] = clip[11] - clip[9];
-        frustum[TOP][D] = clip[15] - clip[13];
+        planes[TOP][A] = clips[3] - clips[1];
+        planes[TOP][B] = clips[7] - clips[5];
+        planes[TOP][C] = clips[11] - clips[9];
+        planes[TOP][D] = clips[15] - clips[13];
         normalizePlane(TOP);
 
-        frustum[BACK][A] = clip[3] - clip[2];
-        frustum[BACK][B] = clip[7] - clip[6];
-        frustum[BACK][C] = clip[11] - clip[10];
-        frustum[BACK][D] = clip[15] - clip[14];
+        planes[BACK][A] = clips[3] - clips[2];
+        planes[BACK][B] = clips[7] - clips[6];
+        planes[BACK][C] = clips[11] - clips[10];
+        planes[BACK][D] = clips[15] - clips[14];
         normalizePlane(BACK);
 
-        frustum[FRONT][A] = clip[3] + clip[2];
-        frustum[FRONT][B] = clip[7] + clip[6];
-        frustum[FRONT][C] = clip[11] + clip[10];
-        frustum[FRONT][D] = clip[15] + clip[14];
+        planes[FRONT][A] = clips[3] + clips[2];
+        planes[FRONT][B] = clips[7] + clips[6];
+        planes[FRONT][C] = clips[11] + clips[10];
+        planes[FRONT][D] = clips[15] + clips[14];
         normalizePlane(FRONT);
     }
     
     public boolean isPointWithin(float[] point) {
         for (int i = 0; i < 6; i++) {
-            if (frustum[i][A] * point[0] + frustum[i][B] * point[1] + frustum[i][C] * point[2]
-                    + frustum[i][D] <= 0) {
+            if (planes[i][A] * point[0]
+              + planes[i][B] * point[1]
+              + planes[i][C] * point[2]
+              + planes[i][D] <= 0) {
                 return false;
             }
         }
@@ -95,8 +90,8 @@ public class Frustum {
 
     public boolean isSphereWithin(float[] center, float radius) {
         for (int i = 0; i < 6; i++) {
-            if (frustum[i][A] * center[0] + frustum[i][B] * center[1] + frustum[i][C] * center[2]
-                    + frustum[i][D] <= -radius) {
+            if (planes[i][A] * center[0] + planes[i][B] * center[1] + planes[i][C] * center[2]
+                    + planes[i][D] <= -radius) {
                 return false;
             }
         }
@@ -105,29 +100,45 @@ public class Frustum {
 
     public boolean isBoxWithin(float[] origin, float[] dimensions) {
         for (int i = 0; i < 6; i++) {
-            if (frustum[i][A] * (origin[0] - dimensions[0]) + frustum[i][B] * (origin[1] - dimensions[1])
-                    + frustum[i][C] * (origin[2] - dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] - dimensions[0])
+              + planes[i][B] * (origin[1] - dimensions[1])
+              + planes[i][C] * (origin[2] - dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] + dimensions[0]) + frustum[i][B] * (origin[1] - dimensions[1])
-                    + frustum[i][C] * (origin[2] - dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] + dimensions[0])
+              + planes[i][B] * (origin[1] - dimensions[1])
+              + planes[i][C] * (origin[2] - dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] - dimensions[0]) + frustum[i][B] * (origin[1] + dimensions[1])
-                    + frustum[i][C] * (origin[2] - dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] - dimensions[0])
+              + planes[i][B] * (origin[1] + dimensions[1])
+              + planes[i][C] * (origin[2] - dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] + dimensions[0]) + frustum[i][B] * (origin[1] + dimensions[1])
-                    + frustum[i][C] * (origin[2] - dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] + dimensions[0])
+              + planes[i][B] * (origin[1] + dimensions[1])
+              + planes[i][C] * (origin[2] - dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] - dimensions[0]) + frustum[i][B] * (origin[1] - dimensions[1])
-                    + frustum[i][C] * (origin[2] + dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] - dimensions[0])
+              + planes[i][B] * (origin[1] - dimensions[1])
+              + planes[i][C] * (origin[2] + dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] + dimensions[0]) + frustum[i][B] * (origin[1] - dimensions[1])
-                    + frustum[i][C] * (origin[2] + dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] + dimensions[0])
+              + planes[i][B] * (origin[1] - dimensions[1])
+              + planes[i][C] * (origin[2] + dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] - dimensions[0]) + frustum[i][B] * (origin[1] + dimensions[1])
-                    + frustum[i][C] * (origin[2] + dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] - dimensions[0])
+              + planes[i][B] * (origin[1] + dimensions[1])
+              + planes[i][C] * (origin[2] + dimensions[2])
+              + planes[i][D] > 0)
                 continue;
-            if (frustum[i][A] * (origin[0] + dimensions[0]) + frustum[i][B] * (origin[1] + dimensions[1])
-                    + frustum[i][C] * (origin[2] + dimensions[2]) + frustum[i][D] > 0)
+            if (planes[i][A] * (origin[0] + dimensions[0])
+              + planes[i][B] * (origin[1] + dimensions[1])
+              + planes[i][C] * (origin[2] + dimensions[2])
+              + planes[i][D] > 0)
                 continue;
             return false;
         }
@@ -136,11 +147,11 @@ public class Frustum {
 
     private void normalizePlane(int planeID) {
         float magnitude =
-                (float) Math.sqrt(frustum[planeID][A] * frustum[planeID][A] + frustum[planeID][B]
-                        * frustum[planeID][B] + frustum[planeID][C] * frustum[planeID][C]);
-        frustum[planeID][A] = frustum[planeID][A] / magnitude;
-        frustum[planeID][B] = frustum[planeID][B] / magnitude;
-        frustum[planeID][C] = frustum[planeID][C] / magnitude;
-        frustum[planeID][D] = frustum[planeID][D] / magnitude;
+                (float) Math.sqrt(planes[planeID][A] * planes[planeID][A] + planes[planeID][B]
+                        * planes[planeID][B] + planes[planeID][C] * planes[planeID][C]);
+        planes[planeID][A] = planes[planeID][A] / magnitude;
+        planes[planeID][B] = planes[planeID][B] / magnitude;
+        planes[planeID][C] = planes[planeID][C] / magnitude;
+        planes[planeID][D] = planes[planeID][D] / magnitude;
     }
 }

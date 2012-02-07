@@ -11,7 +11,7 @@ public class HashRenderCache implements RenderCache {
     /**
      * Maximum number of entries in the cache
      */
-    private static final int CACHE_SIZE = 64;
+    private static final int CACHE_SIZE = 128;
     
     /**
      * Map, mapping tile specifiers to tiles
@@ -45,7 +45,9 @@ public class HashRenderCache implements RenderCache {
             removedTile = map.remove(leastRecentlyUsed.removeFirst());   
         }
         leastRecentlyUsed.addLast(specifier);
-        return removedTile;
+        //if (removedTile != null)
+        //    System.err.println("CACHE REPLACE: " + removedTile.getSpecifier() + " by " + specifier);
+        return removedTile;        
     }
 
     @Override

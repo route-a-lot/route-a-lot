@@ -6,7 +6,6 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GLException;
 import javax.media.opengl.glu.GLU;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Context2D;
@@ -41,7 +40,59 @@ public class Renderer3D extends Renderer {
      */
     @Override
     public void render(Context context, int detail) {
-        
+        int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
+        if (tileDim < 0) {
+            logger.error("tileDim < 0 => seems like an overflow");
+        }
+        Context3D context3D = (Context3D) context;
+        Coordinates center = context.getBottomRight().clone().add(context.getTopLeft()).scale(0.5f);
+        int lat = (int) Math.floor(center.getLatitude() / tileDim);
+        int lon = (int) Math.floor(center.getLongitude() / tileDim);
+          
+        int renderedTiles = 1;
+        renderTile(context3D, lon, lat, tileDim, detail);
+        int radius = 1;
+        boolean found = true;
+        while (found) {
+            found = false;
+            int y1 = lat-radius;
+            int y2 = lat+radius;
+            int x1 = lon-radius;
+            int x2 = lon+radius;
+            for (int x = x1; x <= x2; x++) {
+                if (renderTile(context3D, x, y1, tileDim, detail)) {
+                    found = true;
+                }
+                if (renderTile(context3D, x, y2, tileDim, detail)) {
+                    found = true;
+                }     
+            }
+            for (int y = y1+1; y < y2; y++) {
+                if (renderTile(context3D, x1, y, tileDim, detail)) {
+                    found = true;
+                }
+                if (renderTile(context3D, x2, y, tileDim, detail)) {
+                    found = true;
+                }                   
+            }
+            radius++;
+        }
+              
+    }
+       
+    private boolean renderTile(Context3D context, int x, int y, int tileDim, int detail) {
+        Coordinates topLeft = new Coordinates(y * tileDim, x * tileDim);
+        Tile3D currentTile = (Tile3D) prerenderTile(topLeft, tileDim, detail);
+        if ((currentTile != null) && currentTile.isInFrustum(context.getFrustum())) {
+            currentTile.render(context.getGL());
+            return true;
+        }  
+        return false;
+    }
+    
+    @Override
+    protected Tile createTile(Coordinates topLeft, float tileDim, int detail) {
+        return new Tile3D(topLeft, tileDim, detail);
     }
        
     public void renderold(Context context, int detail) {

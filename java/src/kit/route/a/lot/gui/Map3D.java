@@ -96,14 +96,12 @@ public class Map3D extends Map implements GLEventListener {
         
         float height = (bottomRight.getLatitude() - topLeft.getLatitude());
         
-        gl.glTranslatef(0 , -0.28f, 0); // camera correction // TODO dynamic
         gl.glRotatef(20, 1,0,0); // camera angle
         gl.glScalef(1 / height, 1 / height, 1 / height);
         gl.glTranslated(-0.5*(topLeft.getLongitude() + bottomRight.getLongitude()), // camera position
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         (float) (-0.5 * height / Math.atan(Math.PI/2))); // define unit size = 2D unit size
         
-        //System.out.println("d: " + (-0.5 * height / Math.atan(Math.PI/2) / height));
         Listeners.fireEvent(gui.getListeners().viewChanged,
                 new ChangeViewEvent(new Context3D(topLeft, bottomRight, g), zoomlevel));
     }

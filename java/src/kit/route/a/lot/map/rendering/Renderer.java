@@ -87,14 +87,18 @@ public class Renderer {
      * 
      * @return the rendered tile
      */
-    private Tile prerenderTile(Coordinates topLeft, float tileDim, int detail) {
+    protected Tile prerenderTile(Coordinates topLeft, float tileDim, int detail) {
         Tile tile = cache.queryCache(topLeft, detail);
         if (tile == null) {
-            tile = new Tile(topLeft, tileDim, detail);
+            tile = createTile(topLeft, tileDim, detail);
             tile.prerender();
             cache.addToCache(tile);
         }
         return tile;
+    }
+    
+    protected Tile createTile(Coordinates topLeft, float tileDim, int detail) {
+        return new Tile(topLeft, tileDim, detail);
     }
 
     /**
