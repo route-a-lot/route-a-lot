@@ -6,19 +6,20 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.media.opengl.GL;
+import static javax.media.opengl.GL.*;
+
 import com.sun.opengl.util.BufferUtil;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Frustum;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
-import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 
 
 public class Tile3D extends Tile {
 
-    private static final int HEIGHT_RESOLUTION = 5;
+    private static final int HEIGHT_RESOLUTION = 1;
     private float[][] heightdata;
     private float minHeight = 0;
     private float maxHeight = 0;
@@ -64,14 +65,14 @@ public class Tile3D extends Tile {
             textureID = createTexture(gl, getImage());
         }
         
-        gl.glEnable(GL.GL_TEXTURE_2D);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, textureID);
+        gl.glEnable(GL_TEXTURE_2D);
+        gl.glBindTexture(GL_TEXTURE_2D, textureID);
         
         Coordinates topLeft = getTopLeft();
         float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
         Coordinates pos = new Coordinates();
         for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
-            gl.glBegin(GL.GL_TRIANGLE_STRIP);
+            gl.glBegin(GL_TRIANGLE_STRIP);
             for (int y = 0; y < HEIGHT_RESOLUTION + 1; y++) {
                 pos.setLatitude(Math.round(topLeft.getLatitude() + y * stepSize));
                 pos.setLongitude(topLeft.getLongitude() + x * stepSize);
@@ -93,7 +94,7 @@ public class Tile3D extends Tile {
             }
             gl.glEnd();
         }
-        gl.glDisable(GL.GL_TEXTURE_2D);
+        gl.glDisable(GL_TEXTURE_2D);
     }
 
     public boolean isInFrustum(Frustum frustum) {
@@ -113,17 +114,19 @@ public class Tile3D extends Tile {
         final int[] tmp = new int[1];
         gl.glGenTextures(1, tmp, 0);
         int tex = tmp[0];
-        gl.glBindTexture(GL.GL_TEXTURE_2D, tex);
+        gl.glBindTexture(GL_TEXTURE_2D, tex);
         int[] data = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         ByteBuffer dest = ByteBuffer.allocateDirect(data.length * BufferUtil.SIZEOF_INT);
         dest.order(ByteOrder.nativeOrder());
         dest.asIntBuffer().put(data, 0, data.length);
-        gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGB, image.getWidth(), image.getHeight(), 0, GL.GL_BGRA,
-                GL.GL_UNSIGNED_BYTE, dest);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP);
+        //gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_GENERATE_MIPMAP, 1);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, dest);
+        //(new GLU()).gluBuild2DMipmaps(GL.GL_TEXTURE_2D, GL.GL_RGB, image.getWidth(), image.getHeight(), GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dest);
+        
         // gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
         return tex;
     }

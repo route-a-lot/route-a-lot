@@ -38,6 +38,7 @@ public class Map3D extends Map implements GLEventListener {
         gl.glEnable(GL.GL_BLEND);
         gl.glBlendFunc(GL.GL_SRC_ALPHA,GL.GL_ONE_MINUS_SRC_ALPHA);
         gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL.GL_LEQUAL);
         
         //gl.glEnable(GL.GL_LIGHTING);
         /*gl.glEnable(GL.GL_LIGHT1);
@@ -94,9 +95,16 @@ public class Map3D extends Map implements GLEventListener {
                
         //gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, new float[]{0,-3,-2,1}, 0);
         
+        gl.glEnable(GL.GL_FOG);
+        gl.glFogi(GL.GL_FOG_MODE, GL.GL_LINEAR);
+        //gl.glFogf(GL.GL_FOG_DENSITY, 0.9f);
+        gl.glFogf(GL.GL_FOG_START, 0.3f);
+        gl.glFogf(GL.GL_FOG_END, 1.5f);
+        gl.glFogfv(GL.GL_FOG_COLOR, new float[]{0,0,0,0}, 0);
+        
         float height = (bottomRight.getLatitude() - topLeft.getLatitude());
         
-        gl.glRotatef(20, 1,0,0); // camera angle
+        gl.glRotatef(40f / zoomlevel, 1,0,0); // camera angle
         gl.glScalef(1 / height, 1 / height, 1 / height);
         gl.glTranslated(-0.5*(topLeft.getLongitude() + bottomRight.getLongitude()), // camera position
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
@@ -116,7 +124,7 @@ public class Map3D extends Map implements GLEventListener {
         
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        (new GLU()).gluPerspective(85.0, width/(float)height, 0.001, 500);
+        (new GLU()).gluPerspective(85.0, width/(float)height, 0.01, 1.5f);
         gl.glMatrixMode(GL.GL_MODELVIEW);
     }
     

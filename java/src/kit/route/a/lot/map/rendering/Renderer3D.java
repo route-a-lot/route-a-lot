@@ -49,7 +49,6 @@ public class Renderer3D extends Renderer {
         int lat = (int) Math.floor(center.getLatitude() / tileDim);
         int lon = (int) Math.floor(center.getLongitude() / tileDim);
           
-        int renderedTiles = 1;
         renderTile(context3D, lon, lat, tileDim, detail);
         int radius = 1;
         boolean found = true;
