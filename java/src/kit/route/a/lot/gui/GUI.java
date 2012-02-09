@@ -36,6 +36,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -630,6 +631,11 @@ public class GUI extends JFrame {
      * Opens a dialog for route file selection. Fires a RAL event.
      */
     private void loadRouteFileChooser() {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         loadRoute = new JFileChooser();
         int returnValue = loadRoute.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION) {

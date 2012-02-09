@@ -35,7 +35,7 @@ public class HeightTile implements IHeightTile {
 
     @Override
     public int getHeight(int x, int y) {
-        return data[Util.clip(x, 0, width - 1)][Util.clip(y, 0, height - 1)];
+        return data[Util.clip(y, 0, width - 1)][Util.clip(x, 0, height - 1)];
     }
     
     public Coordinates getOrigin(){
@@ -44,7 +44,7 @@ public class HeightTile implements IHeightTile {
 
     @Override
     public void setHeight(int x, int y, float height) {
-        data[x][y] = (int) height;
+        data[y][x] = (int) height;
     }
 
     @Override
@@ -53,12 +53,12 @@ public class HeightTile implements IHeightTile {
         float latDiff = pos.getLatitude() - origin.getLatitude();
         float lonDiff = pos.getLongitude() - origin.getLongitude();
         /*Intervallänge: 1°/1201*/
-        int x = (int)(latDiff*width);
-        int y = (int)(lonDiff*height);
+        int x = (int)(lonDiff*width);
+        int y = (int)(latDiff*height);
         
-        float ratioX = Math.abs(lonDiff - x / (float) width);
-        float ratioY = Math.abs(latDiff - y / (float) height);        
-
+        float ratioX = Math.abs(lonDiff * (float) width - x);
+        float ratioY = Math.abs(latDiff * (float) height - y);        
+        
         float interpolateX1 = getHeight(x,y)   + (getHeight(x+1,y)   - getHeight(x,y))   * ratioX;
         float interpolateX2 = getHeight(x,y+1) + (getHeight(x+1,y+1) - getHeight(x,y+1)) * ratioX;
         float interpolateY = interpolateX1 + (interpolateX2 - interpolateX1) * ratioY;

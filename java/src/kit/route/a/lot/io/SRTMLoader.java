@@ -71,7 +71,7 @@ public class SRTMLoader implements HeightLoader {
                             oldheight = height;
                         }
                         height = Math.max(oldheight - MAX_DEVIATION, Math.min(oldheight + MAX_DEVIATION, height));
-                        tile.setHeight(i, j, height);
+                        tile.setHeight(j, i, height);
                         oldheight = height;
                     }// for width
                 }// for height

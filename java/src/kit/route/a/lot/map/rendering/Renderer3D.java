@@ -16,7 +16,7 @@ public class Renderer3D extends Renderer {
 
     //private float lastFloor = 0, lastCeil = 100;
 
-    private static final float HEIGHT_SCALE_FACTOR = 3f;
+    private static final float HEIGHT_SCALE_FACTOR = 1f;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
     
     /**
@@ -40,7 +40,7 @@ public class Renderer3D extends Renderer {
         int lon = (int) Math.floor(center.getLongitude() / tileDim);
         
         GL gl = context3D.getGL();
-        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR);
+        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (detail + 1));
         Projection projection = ProjectionFactory.getProjectionForCurrentMap();
         float centerHeight = State.getInstance().getLoadedHeightmap().getHeight(projection.localCoordinatesToGeoCoordinates(center));
         gl.glTranslatef(0, 0, -centerHeight);      

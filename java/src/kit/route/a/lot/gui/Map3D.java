@@ -5,6 +5,8 @@ import java.awt.Component;
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.gui.event.ChangeViewEvent;
 import javax.media.opengl.*;
+import static javax.media.opengl.GL.*;
+
 import javax.media.opengl.glu.GLU;
 
 
@@ -33,18 +35,18 @@ public class Map3D extends Map implements GLEventListener {
     public void init(GLAutoDrawable g) {
         GL gl = g.getGL();
         gl.glClearColor(0,0,0,1f);
-        gl.glShadeModel(GL.GL_SMOOTH);
-        gl.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-        gl.glEnable(GL.GL_BLEND);
-        gl.glBlendFunc(GL.GL_SRC_ALPHA,GL.GL_ONE_MINUS_SRC_ALPHA);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LEQUAL);
+        gl.glShadeModel(GL_SMOOTH);
+        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        gl.glEnable(GL_BLEND);
+        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        gl.glEnable(GL_DEPTH_TEST);
+        gl.glDepthFunc(GL_LEQUAL);
         
-        gl.glEnable(GL.GL_FOG);
-        gl.glFogi(GL.GL_FOG_MODE, GL.GL_LINEAR);
-        gl.glFogf(GL.GL_FOG_START, 0.6f);
-        gl.glFogf(GL.GL_FOG_END, 1f);
-        gl.glFogfv(GL.GL_FOG_COLOR, new float[]{0,0,0,1f}, 0);
+        gl.glEnable(GL_FOG);
+        gl.glFogi(GL_FOG_MODE, GL_LINEAR);
+        gl.glFogf(GL_FOG_START, 0.6f);
+        gl.glFogf(GL_FOG_END, 1f);
+        gl.glFogfv(GL_FOG_COLOR, new float[]{0,0,0,1f}, 0);
         
         /*gl.glEnable(GL.GL_LIGHTING);
         gl.glEnable(GL.GL_LIGHT1);
