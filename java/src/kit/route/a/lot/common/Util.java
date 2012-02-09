@@ -95,7 +95,7 @@ public class Util {
         c[2] = a[0]*b[1] - b[0]*a[1];
     }
     
-    private static void normalize(float[] vec) {
+    public static void normalize(float[] vec) {
         float length = (float) Math.sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
         for (int a = 0; a < 3; a++) {
             vec[a] /= length;

@@ -21,7 +21,7 @@ public class Frustum {
         FloatBuffer modelMatrixBuffer = FloatBuffer.wrap(modelview);
         gl.glGetFloatv(GL.GL_PROJECTION_MATRIX, projMatrixBuffer);
         gl.glGetFloatv(GL.GL_MODELVIEW_MATRIX, modelMatrixBuffer);
-        // retrieve clipping plane matrix
+        // retrieve clipping plane matrix = m * p
         clips[0] = modelview[0] * proj[0] + modelview[1] * proj[4] + modelview[2] * proj[8] + modelview[3] * proj[12];
         clips[1] = modelview[0] * proj[1] + modelview[1] * proj[5] + modelview[2] * proj[9] + modelview[3] * proj[13];
         clips[2] = modelview[0] * proj[2] + modelview[1] * proj[6] + modelview[2] * proj[10] + modelview[3] * proj[14];

@@ -19,11 +19,20 @@ import kit.route.a.lot.controller.State;
 
 public class Tile3D extends Tile {
 
-    private static final int HEIGHT_RESOLUTION = 1;
-    private float[][] heightdata;
+    private static final int HEIGHT_RESOLUTION = 50;
+    private static final float[] COLOR_STAGES = {130, 260, 400, 550, 700, 900, 1100, 1250, 1400, 1750, 1800};
+    private static final float[][] COLORS = {
+            {143, 189, 143}, {151, 253, 153}, 
+            {239, 222, 166}, {227, 187, 138}, {174, 144, 115},
+            {245, 166, 127}, {203, 115, 76}, {126, 69, 40},
+            {200, 200, 200}, {100, 100, 100}, {255, 255, 255}};
+    
+    private float[][] heights;
+    //private float[][][] normals;
     private float minHeight = 0;
     private float maxHeight = 0;
     private int textureID = -1;
+    private int displaylistID = -1;
 
     public Tile3D(Coordinates topLeft, float width, int detail) {
         super(topLeft, width, detail);
@@ -32,84 +41,113 @@ public class Tile3D extends Tile {
     @Override
     protected void reset() {
         super.reset();
-        heightdata = new float[HEIGHT_RESOLUTION + 1][HEIGHT_RESOLUTION + 1];
+        heights = new float[HEIGHT_RESOLUTION + 1][HEIGHT_RESOLUTION + 1];
+        //normals = new float[HEIGHT_RESOLUTION + 1][HEIGHT_RESOLUTION + 1][];
     }
 
+    @Override
     public void prerender() {
         super.prerender();
         Projection projection = ProjectionFactory.getProjectionForCurrentMap();
         State.getInstance().getLoadedHeightmap().reduceSection(
                 projection.localCoordinatesToGeoCoordinates(getTopLeft()),
                 projection.localCoordinatesToGeoCoordinates(getBottomRight()),
-                heightdata);
-        minHeight = heightdata[0][0];
-        maxHeight = heightdata[0][0];
-        for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
-            for (int y = 0; y < HEIGHT_RESOLUTION + 1; y++) {
-                if (heightdata[x][y] < minHeight) {
-                    minHeight = heightdata[x][y];
+                heights);
+        minHeight = heights[0][0];
+        maxHeight = heights[0][0];
+        for (int x = 0; x <= HEIGHT_RESOLUTION; x++) {
+            for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {
+                if (heights[x][y] < minHeight) {
+                    minHeight = heights[x][y];
                 }
-                if (heightdata[x][y] > maxHeight) {
-                    maxHeight = heightdata[x][y];
+                if (heights[x][y] > maxHeight) {
+                    maxHeight = heights[x][y];
                 }
+                /*float sx = heights[(x < HEIGHT_RESOLUTION) ? x+1 : x][y] - heights[(x > 0) ? x - 1 : x][y];
+                if (x == 0 || x == HEIGHT_RESOLUTION) {
+                    sx *= 2;
+                }
+                float sy = heights[x][(y < HEIGHT_RESOLUTION) ? y+1 : y] - heights[x][(y > 0) ? y - 1 : y];
+                if (y == 0 || y == HEIGHT_RESOLUTION) {
+                    sy *= 2;
+                }
+                normals[x][y] = new float[] {-sx, -sy, 20};
+                Util.normalize(normals[x][y]);//*/
+                //Util.getFaceNormal(normals[x][y], pa, pb, pc)
             }
         }
     }
 
-
-    public void render(GL gl) {
-        if (heightdata == null) {
+    public boolean render(GL gl, Frustum frustum) {
+        // BUILD HEIGHTMAP IF NECESSARY
+        if (heights == null) {
             reset();
         }
+        // ABORT IF TILE IS NOT VISIBLE
+        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
+        boolean isInFrustum = (frustum == null) || frustum.isBoxWithin(
+                new float[] {center.getLongitude(), center.getLatitude(), 0.5f * (minHeight + maxHeight) },
+                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
+                        center.getLatitude() - getTopLeft().getLatitude(), 0.5f * (maxHeight - minHeight)});
+        if (!isInFrustum) {
+            return false;
+        }      
+        // BUILD TEXTURE IF NECESSARY
         if (textureID < 0) {
             textureID = createTexture(gl, getImage());
         }
-        
-        gl.glEnable(GL_TEXTURE_2D);
-        gl.glBindTexture(GL_TEXTURE_2D, textureID);
-        
-        Coordinates topLeft = getTopLeft();
-        float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
-        Coordinates pos = new Coordinates();
-        for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
-            gl.glBegin(GL_TRIANGLE_STRIP);
-            for (int y = 0; y < HEIGHT_RESOLUTION + 1; y++) {
-                pos.setLatitude(Math.round(topLeft.getLatitude() + y * stepSize));
-                pos.setLongitude(topLeft.getLongitude() + x * stepSize);
-                
+        // RENDER TILE FROM DISPLAY LIST, OR ELSE BUILD DISPLAY LIST
+        if (displaylistID >= 0) {
+            gl.glCallList(displaylistID);
+        } else {
+            displaylistID = gl.glGenLists(1);
+            gl.glNewList(displaylistID, GL_COMPILE_AND_EXECUTE);
+                gl.glPushMatrix();
+                gl.glEnable(GL_TEXTURE_2D);
+                gl.glBindTexture(GL_TEXTURE_2D, textureID);
+                Coordinates topLeft = getTopLeft();
+                float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
+                Coordinates pos = new Coordinates();
+                float[] color = new float[3];
+                for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
+                    gl.glBegin(GL_TRIANGLE_STRIP);
+                    for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {            
+                        for (int i = 0; i < 2; i++) {
+                            pos.setLatitude(topLeft.getLatitude() + y * stepSize);
+                            pos.setLongitude(topLeft.getLongitude() + (x + i) * stepSize);
+                            float h = heights[x + i][y];
+                            getHeightColor(color, h);
+                            gl.glColor3f(color[0], color[1], color[2]);
+                            //float[] normal = normals[x + i][y];
+                            //gl.glNormal3f(normal[0], normal[1], normal[2]);
+                            gl.glTexCoord2f((x + i) / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
+                            gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h);
+                        }
+                    }
+                    gl.glEnd();
+                }
+                gl.glPopMatrix();
+            gl.glEndList();
+        }   
+        return true;
+    }
 
-                float h = heightdata[x][y];
-                float color =  1f; //Util.mapFloat(h, 0, 127, 0.3f, 1);
-                gl.glColor3f(color, color, color);
-                gl.glTexCoord2f(x / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h);
-
-                pos.setLongitude(pos.getLongitude() + stepSize);
-
-                h = heightdata[x + 1][y];
-                //color = Util.mapFloat(h, 0, 127, 0.3f, 1);
-                gl.glColor3f(color, color, color);
-                gl.glTexCoord2f((x + 1) / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
-                gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h);
+    private static void getHeightColor(float[] color, float height) {
+        int col1 = COLOR_STAGES.length - 1, col2 = col1;
+        for (int i = 1; i < COLOR_STAGES.length; i++) {
+            if (height < COLOR_STAGES[i]) {
+                col1 = i - 1;
+                col2 = i;
+                break;
             }
-            gl.glEnd();
+        }        
+        float ratio = (col1 == col2) ? 0 : (height - COLOR_STAGES[col1]) / (COLOR_STAGES[col2] - COLOR_STAGES[col1]);
+        for (int i = 0; i < 3; i++) {
+            color[i] = (COLORS[col1][i] + (COLORS[col2][i] - COLORS[col1][i]) * ratio) / 255;
         }
-        gl.glDisable(GL_TEXTURE_2D);
+        
     }
-
-    public boolean isInFrustum(Frustum frustum) {
-        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
-        /*return frustum.isPointWithin(new float[] {getTopLeft().getLongitude(), getTopLeft().getLatitude(), 0})
-                || frustum.isPointWithin(new float[] {getTopLeft().getLongitude(), getBottomRight().getLatitude(), 0})
-                || frustum.isPointWithin(new float[] {getBottomRight().getLongitude(), getTopLeft().getLatitude(), 0})
-                || frustum.isPointWithin(new float[] {getBottomRight().getLongitude(), getBottomRight().getLatitude(), 0});//*/
-        return frustum.isBoxWithin(
-                new float[] { center.getLongitude(), center.getLatitude(), minHeight },
-                new float[] { center.getLongitude() - getTopLeft().getLongitude(),
-                        center.getLatitude() - getTopLeft().getLatitude(), maxHeight});//*/
-    }
-
-
+    
     private static int createTexture(GL gl, BufferedImage image) {
         final int[] tmp = new int[1];
         gl.glGenTextures(1, tmp, 0);
@@ -122,17 +160,22 @@ public class Tile3D extends Tile {
         //gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_GENERATE_MIPMAP, 1);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, dest);
         //(new GLU()).gluBuild2DMipmaps(GL.GL_TEXTURE_2D, GL.GL_RGB, image.getWidth(), image.getHeight(), GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dest);
         
         // gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
         return tex;
     }
-
-    private static void deleteTexture(GL gl, int tex) {
-        gl.glDeleteTextures(1, new int[] { tex }, 0);
+    
+    public void freeResources(GL gl) {
+        if (textureID >= 0) {
+            gl.glDeleteTextures(1, new int[] { textureID }, 0);
+        }
+        if (displaylistID >= 0) {
+            gl.glDeleteLists(displaylistID, 1);
+        }
     }
 
 }
