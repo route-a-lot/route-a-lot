@@ -34,13 +34,9 @@ public class Tile {
 
     /**
      * Creates an new (empty) tile using a calculated resolution
-     * 
-     * @param topLeft
-     *            the northwestern corner of the tile
-     * @param bottomRight
-     *            the southeastern corner of the tile
-     * @param detail
-     *            the desired level of detail
+     * @param topLeft the north western corner of the tile
+     * @param bottomRight the south eastern corner of the tile
+     * @param detail the desired level of detail
      */
     public Tile(Coordinates topLeft, float tileDim, int detail) {
         this.topLeft = topLeft;
@@ -146,9 +142,7 @@ public class Tile {
 
     /**
      * Draws a regular node on the tile.
-     * 
-     * @param poi
-     *            the node to be drawn
+     * @param poi the node to be drawn
      */
     private void draw(Node node, Graphics2D graphics) {
         graphics.setColor(Color.LIGHT_GRAY);
@@ -157,9 +151,7 @@ public class Tile {
   
     /**
      * Draws an area on the tile.
-     * 
-     * @param area
-     *            the area to be drawn.
+     * @param area the area to be drawn.
      */
     private void draw(Area area, Graphics2D graphics) {
         int[] xPoints, yPoints;
@@ -205,9 +197,7 @@ public class Tile {
 
     /**
      * Draws a street on the tile, taking the street type into consideration.
-     * 
-     * @param street
-     *            the street to be drawn
+     * @param street the street to be drawn
      */
     private void draw(Street street, boolean top, Graphics2D graphics) {
         Node[] nodes = street.getNodes();

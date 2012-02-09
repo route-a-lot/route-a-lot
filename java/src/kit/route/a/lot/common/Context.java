@@ -1,7 +1,5 @@
 package kit.route.a.lot.common;
 
-import java.awt.Image;
-
 public abstract class Context {
 
     protected Coordinates topLeft;
@@ -11,8 +9,6 @@ public abstract class Context {
         this.topLeft = topLeft;
         this.bottomRight = bottomRight;
     }
-    
-    public abstract void drawImage(Coordinates position, Image image, int detail);
 
     public Coordinates getTopLeft() {
         return topLeft;
@@ -29,4 +25,5 @@ public abstract class Context {
     public float getHeight() {
         return bottomRight.getLatitude() - topLeft.getLatitude();
     }
+
 }

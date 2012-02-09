@@ -4,6 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
+import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
@@ -65,6 +67,9 @@ public class Renderer {
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");
         }
+        //Graphics graphics = ((Context2D) context).getGraphics();
+        //graphics.setColor(new Color(210, 230, 190));
+        //graphics.fillRect(0, 0, (int)context.getWidth(), (int)context.getHeight());
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
         int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim);
         int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
@@ -73,7 +78,7 @@ public class Renderer {
             for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates(k * tileDim, i * tileDim);
                 Tile currentTile = prerenderTile(topLeft, tileDim, detail);
-                context.drawImage(topLeft, currentTile.getImage(), detail);
+                drawImage(context, topLeft, currentTile.getImage(), detail);
             }
         }
         drawRoute(context, detail);
@@ -210,7 +215,7 @@ public class Renderer {
         }
         
         if (routeImage != null) {
-            context.drawImage(routeTopLeft, routeImage, detail);
+            drawImage(context, routeTopLeft, routeImage, detail);
         }
     }
 
@@ -335,7 +340,7 @@ public class Renderer {
                     continue;
                 }
                 float offset = -size/2 * Projection.getZoomFactor(detail);
-                context.drawImage(((Node) element).getPos().add(offset, offset), image, detail);
+                drawImage(context, ((Node) element).getPos().add(offset, offset), image, detail);
             }
             if (element instanceof Area) {
                 continue;
@@ -371,10 +376,18 @@ public class Renderer {
 //            context.drawImage(selectedNodeOnEdge, image, detail);
 
             float offset = - size/2 * Projection.getZoomFactor(detail);
-            context.drawImage(point.getPosition().clone().add(offset, offset), image, detail);
+            drawImage(context, point.getPosition().clone().add(offset, offset), image, detail);
         }
     }
 
+    private void drawImage(Context context, Coordinates topLeft, Image image, int detail) {
+        int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
+                / Projection.getZoomFactor(detail));
+        int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
+                / Projection.getZoomFactor(detail));
+        ((Context2D) context).getGraphics().drawImage(image, x, y, null);
+    }
+    
     public void resetCache() {
         cache.resetCache();
     }

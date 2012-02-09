@@ -22,7 +22,7 @@ public class Tile3D extends Tile {
 
     private static final int HEIGHT_RESOLUTION = 64;
     private static final int GRAIN_RESOLUTION = 128;
-    private static final float GRAIN_INTENSITY = 0.1f;
+    private static final float GRAIN_INTENSITY = 0.05f;
     private static final float[] COLOR_STAGES = {130, 260, 400, 550, 700, 900, 1100, 1250, 1400, 1750, 1800};
     private static final float[][] COLORS = {
             {143, 189, 143}, {151, 253, 153}, 
@@ -116,13 +116,13 @@ public class Tile3D extends Tile {
         } else {
             displaylistID = gl.glGenLists(1);
             gl.glNewList(displaylistID, GL_COMPILE_AND_EXECUTE);
-                gl.glPushMatrix();
                 gl.glActiveTexture(GL_TEXTURE0);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glBindTexture(GL_TEXTURE_2D, textureID);
                 gl.glActiveTexture(GL_TEXTURE1);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glBindTexture(GL_TEXTURE_2D, grainTextureID);
+                gl.glColor3f(1,1,1);
                 Coordinates topLeft = getTopLeft();
                 float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
                 Coordinates pos = new Coordinates();
@@ -145,7 +145,6 @@ public class Tile3D extends Tile {
                     }
                     gl.glEnd();
                 }
-                gl.glPopMatrix();
             gl.glEndList();
         }   
         return true;
@@ -183,7 +182,7 @@ public class Tile3D extends Tile {
         int wrapMode = (repeat) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-        gl.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image.getWidth(), image.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, dest);
+        gl.glTexImage2D(GL_TEXTURE_2D, 0, GL.GL_RGB, image.getWidth(), image.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, dest);
         //(new GLU()).gluBuild2DMipmaps(GL.GL_TEXTURE_2D, GL.GL_RGB, image.getWidth(), image.getHeight(), GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dest);
         
         // gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
