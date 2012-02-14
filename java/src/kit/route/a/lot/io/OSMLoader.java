@@ -28,6 +28,7 @@ import kit.route.a.lot.controller.State;
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class OSMLoader {
@@ -66,6 +67,7 @@ public class OSMLoader {
      */
     public void importMap(File file) {
 
+        logger.info("Importing " + file);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = null;
         try {
@@ -982,6 +984,14 @@ public class OSMLoader {
 
         try {
             parser.parse(inputStream, handler);
+        } catch (SAXParseException e) {
+            // can't -touch- _catch_ this!
+            // not XML 1.0
+            e.printStackTrace();
+        } catch (com.sun.org.apache.xerces.internal.impl.io.MalformedByteSequenceException e) {
+            // same here, can't catch; wtf?
+            // not even utf-8
+            e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {

@@ -7,38 +7,38 @@ import kit.route.a.lot.routing.RoutingGraph;
 
 class StateMock extends State {
     
-    private GraphMock graph;
-    private MapInfoMock mapInfo;
+    private GraphMock loadedGraph;
+    private MapInfoMock loadedMapInfo;
 
     public StateMock() {
-        mapInfo = new MapInfoMock();
-        graph = new GraphMock();
+        loadedMapInfo = new MapInfoMock();
+        loadedGraph = new GraphMock();
     }
     
     @Override
     public RoutingGraph getLoadedGraph() {
-        return graph;
+        return loadedGraph;
     }
     
     @Override
     public MapInfo getLoadedMapInfo() {
-        return mapInfo;
+        return loadedMapInfo;
     }
     
     int getGraphStartIDsSize() {
-        return graph.startIDs.length;
+        return loadedGraph.startIDs.length;
     }
     
     int getGraphEndIDsSize() {
-        return graph.endIDs.length;
+        return loadedGraph.endIDs.length;
     }
     
     int getGraphWeightsSize() {
-        return graph.weights.length;
+        return loadedGraph.weights.length;
     }
     
     long getNodeCount() {
-        return mapInfo.nodeCount;
+        return loadedMapInfo.nodeCount;
     }
 
 }

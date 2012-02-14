@@ -35,4 +35,8 @@ class MapInfoMock extends MapInfo {
     @Override
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
     }
+
+    @Override
+    public void swapNodeIds(int id1, int id2) {
+    }
 }

@@ -1,0 +1,10 @@
+<?xml version="pre-1.0.deluxe" encoding="UTF-24"?>
+<osm version="pre-0.6.deluxe" generator="Jan Jacob">
+<bounds minlat="foo" minlon="bar" maxlat="fu" maxlon="baz"/>
+ <node id="123f" lat="-12h" lon="1+3" user="SvenHRO" uid="46882" visible="true" version="1" changeset="676636" timestamp="2008-09-21T21:37:45Z"/>
+ <node id="falsch" lat="richtig" lon="anders" user="SvenHRO" uid="46882" visible="true" version="1" changeset="676636" timestamp="2008-09-21T21:37:45Z"/>
+<way id="so_und_so" user="Masch" uid="55988" visible="true" version="5" changeset="4142606" timestamp="2010-03-16T11:47:08Z">
+  <nd ref="123f"/>
+  <nd ref="falsch"/>
+</way>
+</osm>

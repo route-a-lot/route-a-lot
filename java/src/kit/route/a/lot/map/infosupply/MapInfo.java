@@ -32,7 +32,6 @@ public class MapInfo {
     private Coordinates geoBottomRight;
 
     public MapInfo() {
-        elementDB = new ArrayElementDB();
         geographicalOperator = new QTGeographicalOperator();
         addressOperator = new TrieAddressOperator();
         geoTopLeft = new Coordinates();
