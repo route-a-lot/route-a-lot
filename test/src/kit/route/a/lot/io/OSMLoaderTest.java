@@ -60,9 +60,7 @@ public class OSMLoaderTest {
     @Test
     public void testPerformanceImportKarlsruheBig() {
         long start = System.currentTimeMillis();
-
         loader.importMap(new File("test/resources/karlsruhe_big.osm"));
-
         long duration = System.currentTimeMillis() - start;
 
         // System.out.println("Duration: " + duration + " ms");

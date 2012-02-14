@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
@@ -11,8 +12,8 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
-
 import kit.route.a.lot.controller.listener.AddFavoriteListener;
+import kit.route.a.lot.controller.listener.ChangeViewListener;
 import kit.route.a.lot.controller.listener.ClickPositionListener;
 import kit.route.a.lot.controller.listener.CloseListener;
 import kit.route.a.lot.controller.listener.DeleteFavoriteListener;
@@ -25,14 +26,13 @@ import kit.route.a.lot.controller.listener.HeightMalusListener;
 import kit.route.a.lot.controller.listener.HighwayMalusListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.LoadMapListener;
+import kit.route.a.lot.controller.listener.LoadRouteListener;
 import kit.route.a.lot.controller.listener.OrderNavNodesListener;
+import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.SearchNameListener;
 import kit.route.a.lot.controller.listener.SelectNavNodeListener;
-import kit.route.a.lot.controller.listener.LoadRouteListener;
 import kit.route.a.lot.controller.listener.ShowFavoriteDescriptionListener;
 import kit.route.a.lot.controller.listener.SpeedListener;
-import kit.route.a.lot.controller.listener.SaveRouteListner;
-import kit.route.a.lot.controller.listener.ChangeViewListener;
 import kit.route.a.lot.controller.listener.SuggestionListener;
 import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.gui.GUIHandler;
@@ -40,14 +40,13 @@ import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
-import kit.route.a.lot.io.Printer;
 import kit.route.a.lot.io.RouteIO;
 import kit.route.a.lot.io.SRTMLoader;
 import kit.route.a.lot.io.StateIO;
+import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
 import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.Renderer3D;
-import kit.route.a.lot.map.Node;
 import kit.route.a.lot.routing.Precalculator;
 import kit.route.a.lot.routing.Router;
 
@@ -250,9 +249,6 @@ public class Controller {
     }
 
     public void printRoute() {
-        if (state.getCurrentRoute().size() != 0) {
-            Printer.printRouteDescription();
-        }
     }
 
       
