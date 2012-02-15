@@ -23,7 +23,7 @@ public class Tile3D extends Tile {
     private static final int HEIGHT_RESOLUTION = 64;
     private static final int GRAIN_RESOLUTION = 128;
     private static final float GRAIN_INTENSITY = 0.05f;
-    private static final float[] COLOR_STAGES = {130, 260, 400, 550, 700, 900, 1100, 1250, 1400, 1750, 1800};
+    private static final float[] COLOR_STAGES = {70, 200, 350, 520, 700, 900, 1100, 1250, 1400, 1750, 1800};
     private static final float[][] COLORS = {
             {143, 189, 143}, {151, 253, 153}, 
             {239, 222, 166}, {227, 187, 138}, {174, 144, 115},
@@ -192,9 +192,6 @@ public class Tile3D extends Tile {
     public void freeResources(GL gl) {
         if (textureID >= 0) {
             gl.glDeleteTextures(1, new int[] { textureID }, 0);
-        }
-        if (grainTextureID >= 0) {
-            gl.glDeleteTextures(1, new int[] { grainTextureID }, 0);
         }
         if (displaylistID >= 0) {
             gl.glDeleteLists(displaylistID, 1);

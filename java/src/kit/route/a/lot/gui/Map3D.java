@@ -1,8 +1,12 @@
 package kit.route.a.lot.gui;
 
 import java.awt.Component;
+import java.awt.event.MouseEvent;
 
 import kit.route.a.lot.common.Context3D;
+import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.ChangeViewEvent;
 import javax.media.opengl.*;
 import static javax.media.opengl.GL.*;
@@ -14,8 +18,9 @@ import javax.media.opengl.glu.GLU;
 public class Map3D extends Map implements GLEventListener {
     
     private static final long serialVersionUID = 1L;
+    private float rotationHorizontal = 0f;
+    private float rotationVertical = 25f;
     
-     
     public Map3D(GUI gui)
     {
         super(gui);
@@ -76,8 +81,11 @@ public class Map3D extends Map implements GLEventListener {
         gl.glLoadIdentity(); 
         gl.glScalef(1f, -1f, 1f);
 
-        float height = (bottomRight.getLatitude() - topLeft.getLatitude());      
-        gl.glRotatef(25f + 5f / (zoomlevel + 1), 1,0,0); // camera angle
+             
+        gl.glRotatef(rotationHorizontal, 0, 0, 1);
+        double rotHRadians = (float) Math.toRadians(rotationHorizontal);
+        gl.glRotated(rotationVertical, Math.cos(rotHRadians), -Math.sin(rotHRadians), 0);
+        float height = (bottomRight.getLatitude() - topLeft.getLatitude()); 
         gl.glScalef(1 / height, 1 / height, 1 / height);
         gl.glTranslated(-0.5*(topLeft.getLongitude() + bottomRight.getLongitude()), // camera position
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
@@ -98,6 +106,28 @@ public class Map3D extends Map implements GLEventListener {
         gl.glLoadIdentity();
         (new GLU()).gluPerspective(85.0, width/(float)height, 0.01, 1f);
         gl.glMatrixMode(GL.GL_MODELVIEW);
+    }
+    
+    /**
+     * Adapts the map position and rotation and schedules a map redraw.
+     */
+    @Override
+    public void mouseDragged(MouseEvent e) { 
+        
+        float diffX = e.getX() - oldMousePosX;
+        float diffY = e.getY() - oldMousePosY;
+        if ((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
+            rotationHorizontal += 0.5f * diffX;
+            rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
+            rotationVertical = Util.clip(rotationVertical + diffY, 0, 60);
+        }    
+        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+            float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));
+            float shareY = (float) Math.cos(Math.toRadians(rotationHorizontal));
+            Coordinates movement = new Coordinates(shareY * diffY + shareX * diffX, shareX * diffY +  shareY * diffX);
+            getCenter().add(movement.scale(-Projection.getZoomFactor(zoomlevel)));                 
+        }      
+        super.mouseDragged(e);
     }
     
 }

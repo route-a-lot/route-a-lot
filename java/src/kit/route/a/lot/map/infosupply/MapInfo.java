@@ -32,6 +32,7 @@ public class MapInfo {
     private Coordinates geoBottomRight;
 
     public MapInfo() {
+        elementDB = new ArrayElementDB();
         geographicalOperator = new QTGeographicalOperator();
         addressOperator = new TrieAddressOperator();
         geoTopLeft = new Coordinates();
@@ -79,6 +80,9 @@ public class MapInfo {
      */
     public void addNode(Coordinates position, int id, Address address) {
         Node newNode = new Node(position);
+        if (elementDB == null) {
+            throw new IllegalStateException();
+        }
         elementDB.addNode(id, newNode);
         // geographicalOperator.addToBaseLayer(newNode);
     }

@@ -102,7 +102,7 @@ public class Util {
         }
     }
     
-    public static float mapFloat(float value, float bottom, float top, float newbottom, float newtop) {
+    public static float map(float value, float bottom, float top, float newbottom, float newtop) {
         value = clip(value, bottom, top);
         return (value - bottom) * (newtop / top) + newbottom;
     }
@@ -113,6 +113,10 @@ public class Util {
     
     public static int clip(int value, int bottom, int top) {
         return (value < bottom) ? bottom : (value > top) ? top : value;
+    }
+    
+    public static float interpolate(float bottom, float top, float ratio) {
+        return bottom + (top - bottom) * ratio;
     }
     
     public static void startTimer() {

@@ -59,9 +59,9 @@ public class HeightTile implements IHeightTile {
         float ratioX = Math.abs(lonDiff * (float) width - x);
         float ratioY = Math.abs(latDiff * (float) height - y);        
         
-        float interpolateX1 = getHeight(x,y)   + (getHeight(x+1,y)   - getHeight(x,y))   * ratioX;
-        float interpolateX2 = getHeight(x,y+1) + (getHeight(x+1,y+1) - getHeight(x,y+1)) * ratioX;
-        float interpolateY = interpolateX1 + (interpolateX2 - interpolateX1) * ratioY;
+        float interpolateX1 = Util.interpolate(getHeight(x,y), getHeight(x+1,y), ratioX);
+        float interpolateX2 = Util.interpolate(getHeight(x,y+1), getHeight(x+1,y+1), ratioX);
+        float interpolateY = Util.interpolate(interpolateX1, interpolateX2, ratioY);
         return interpolateY;        
     }  
 

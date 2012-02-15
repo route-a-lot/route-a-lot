@@ -32,8 +32,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
 
     private static final long serialVersionUID = 1L;   
     
-    private int oldMousePosX;
-    private int oldMousePosY;
+    protected int oldMousePosX;
+    protected int oldMousePosY;
     private int popupXPos;
     private int popupYPos;
     private int oldPopUpXPos;
@@ -42,6 +42,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private int newPopUpYPos;
     private Coordinates center;
     private Coordinates popUpPosition;
+    private boolean popupTrigger = false;
     protected int zoomlevel = 3;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
@@ -267,11 +268,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseDragged(MouseEvent e) {
-        center.setLongitude(center.getLongitude() - (e.getX() - oldMousePosX) * Projection.getZoomFactor(zoomlevel));
-        center.setLatitude(center.getLatitude() - (e.getY() - oldMousePosY) * Projection.getZoomFactor(zoomlevel));
         oldMousePosX = e.getX();
-        oldMousePosY = e.getY();
-        calculateView();
+        oldMousePosY = e.getY();  
+        calculateView();   
     }
    
     /**
@@ -293,9 +292,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseMoved(MouseEvent e) {
-//        Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
-        //Coordinates geoCoordinates = Projection.getProjectionForCurrentMap().localCoordinatesToGeoCoordinates(mousePosCoordinates);
-//        gui.l_position.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
+        // Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
+        // Coordinates geoCoordinates = Projection.getProjectionForCurrentMap().localCoordinatesToGeoCoordinates(mousePosCoordinates);
+        // gui.l_position.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
     }
 
     /**
@@ -316,11 +315,11 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     /**
-     * Converts pixel coordinates into the eqivalent projected geo reference system coordinates. The pixel
+     * Converts pixel coordinates into the equivalent projected geo reference system coordinates. The pixel
      * origin is top left corner of the map.
      * @param x the horizontal pixel coordinate
      * @param y the vertical pixel coordinate
-     * @return eqivalent geo coordinates
+     * @return equivalent geo coordinates
      */
     private Coordinates getCoordinates(int x, int y) {
         Coordinates result = new Coordinates();
@@ -336,6 +335,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         popUpPosition = position;
         descriptionMenu.setVisible(false);
         if (clickEvent.isPopupTrigger()) {
+            popupTrigger = true;
             descriptionMenu.setVisible(false);
             switch(itemType) {
                 case 0: popUpName.setText("");
@@ -354,9 +354,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             deleteFavoriteItem.setVisible(itemType == 2);
             deleteNavPoint.setVisible(itemType == 3);
             navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-            
-        } else if((oldPopUpXPos >= newPopUpXPos - 2 && oldPopUpXPos <= newPopUpXPos + 2)
-                || (oldPopUpYPos == newPopUpYPos - 2 && oldPopUpYPos == newPopUpYPos + 2)){
+        } else if(popupTrigger == false && ((oldPopUpXPos >= newPopUpXPos - 2 && oldPopUpXPos <= newPopUpXPos + 2)
+                || (oldPopUpYPos == newPopUpYPos - 2 && oldPopUpYPos == newPopUpYPos + 2))){
             descriptionMenu.setVisible(false);
             popupXPos = clickEvent.getX();
             popupYPos = clickEvent.getY();
@@ -375,6 +374,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     descriptionMenu.setVisible(false);
                     break;
             }
+        } else {
+            popupTrigger = false;
         }
     }
     

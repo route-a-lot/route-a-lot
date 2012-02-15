@@ -36,7 +36,7 @@ public class Renderer {
     /**
      * A cache storing tiles that were previously drawn.
      */
-    private RenderCache cache;
+    protected RenderCache cache;
     protected State state = State.getInstance();
     
     private BufferedImage routeImage = null;
@@ -92,18 +92,14 @@ public class Renderer {
      * 
      * @return the rendered tile
      */
-    protected Tile prerenderTile(Coordinates topLeft, float tileDim, int detail) {
+    private Tile prerenderTile(Coordinates topLeft, float tileDim, int detail) {
         Tile tile = cache.queryCache(topLeft, detail);
         if (tile == null) {
-            tile = createTile(topLeft, tileDim, detail);
+            tile = new Tile(topLeft, tileDim, detail);
             tile.prerender();
             cache.addToCache(tile);
         }
         return tile;
-    }
-    
-    protected Tile createTile(Coordinates topLeft, float tileDim, int detail) {
-        return new Tile(topLeft, tileDim, detail);
     }
 
     /**

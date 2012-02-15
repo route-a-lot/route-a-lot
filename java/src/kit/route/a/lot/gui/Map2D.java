@@ -5,9 +5,13 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+
 import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context2D;
+import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.gui.event.ChangeViewEvent;
 
 public class Map2D extends Map  {
@@ -36,6 +40,18 @@ public class Map2D extends Map  {
             }
         });
         return result;
+    }
+    
+    /**
+     * Adapts the map position and schedules a map redraw.
+     */
+    @Override
+    public void mouseDragged(MouseEvent e) {         
+        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+            getCenter().add(new Coordinates(oldMousePosY - e.getY(), oldMousePosX - e.getX())
+                .scale(Projection.getZoomFactor(zoomlevel)));                      
+        }      
+        super.mouseDragged(e);
     }
 
 }

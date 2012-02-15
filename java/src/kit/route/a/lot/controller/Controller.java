@@ -361,9 +361,12 @@ public class Controller {
 
     public void passElementType(Coordinates pos) {
         //TODO: better approximation:
-        float adaptedRadius = (state.getDetailLevel() + 1) * 2 * state.getClickRadius();
-        Coordinates topLeft = new Coordinates(pos.getLatitude() - adaptedRadius, pos.getLongitude() - adaptedRadius);       
-        Coordinates bottomRight = new Coordinates(pos.getLatitude() + adaptedRadius, pos.getLongitude() + adaptedRadius);
+        
+        float adaptedRadius = (Projection.getZoomFactor(state.getDetailLevel())) * state.getClickRadius();
+        Coordinates topLeft = new Coordinates(pos.getLatitude() - adaptedRadius,
+                pos.getLongitude() - adaptedRadius);       
+        Coordinates bottomRight = new Coordinates(pos.getLatitude() + adaptedRadius,
+                pos.getLongitude() + adaptedRadius);
         for (Selection navNode: state.getNavigationNodes()) {
             Node node = new Node(navNode.getPosition());
             if (node.isInBounds(topLeft, bottomRight)) {

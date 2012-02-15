@@ -9,23 +9,25 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Frustum;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
-    //private float lastFloor = 0, lastCeil = 100;
-
     private static final float HEIGHT_SCALE_FACTOR = 1f;
+    private static final float VIEW_HEIGHT_ADAPTION = 0.2f;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
+    private float viewHeight = Float.NEGATIVE_INFINITY;
     
     /**
      * Renders a map viewing rectangle in three dimensional form,
      * using height data and perspective projection in the process.
      * 
      * @param detail level of detail of the map view
-     * @param topLeft northwestern corner of the viewing rectangle
-     * @param bottomRight southeastern corner of the viewing rectangle
+     * @param topLeft north western corner of the viewing rectangle
+     * @param bottomRight south eastern corner of the viewing rectangle
      * @param renderingContext an OpenGL rendering context
      */
     @Override
@@ -42,12 +44,15 @@ public class Renderer3D extends Renderer {
         GL gl = context3D.getGL();
         gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (detail + 1));
         Projection projection = ProjectionFactory.getProjectionForCurrentMap();
-        float centerHeight = State.getInstance().getLoadedHeightmap().getHeight(projection.localCoordinatesToGeoCoordinates(center));
-        gl.glTranslatef(0, 0, -centerHeight);      
+        IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
+        float centerHeight = heightmap.getHeight(projection.localCoordinatesToGeoCoordinates(center));
+        viewHeight = (viewHeight == Float.NEGATIVE_INFINITY) ? centerHeight
+                : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
+        gl.glTranslatef(0, 0, -viewHeight);      
         Frustum frustum = new Frustum(gl);
         
         int n = 1;
-        renderTile(context3D, frustum, lon, lat, tileDim, detail);
+        renderTile(gl, frustum, lon, lat, tileDim, detail);
         int radius = 1;
         boolean found = true;
         while (found) {
@@ -57,18 +62,18 @@ public class Renderer3D extends Renderer {
             int x1 = lon-radius;
             int x2 = lon+radius;
             for (int x = x1; x <= x2; x++) {
-                if (renderTile(context3D, frustum, x, y1, tileDim, detail)) {
+                if (renderTile(gl, frustum, x, y1, tileDim, detail)) {
                     found = true; n++;
                 }
-                if (renderTile(context3D, frustum, x, y2, tileDim, detail)) {
+                if (renderTile(gl, frustum, x, y2, tileDim, detail)) {
                     found = true; n++;
                 }     
             }
             for (int y = y1+1; y < y2; y++) {
-                if (renderTile(context3D, frustum, x1, y, tileDim, detail)) {
+                if (renderTile(gl, frustum, x1, y, tileDim, detail)) {
                     found = true; n++;
                 }
-                if (renderTile(context3D, frustum, x2, y, tileDim, detail)) {
+                if (renderTile(gl, frustum, x2, y, tileDim, detail)) {
                     found = true; n++;
                 }       
             }
@@ -79,15 +84,18 @@ public class Renderer3D extends Renderer {
               
     }
        
-    private boolean renderTile(Context3D context, Frustum frustum, int x, int y, int tileDim, int detail) {
+    private boolean renderTile(GL gl, Frustum frustum, int x, int y, int tileDim, int detail) {
         Coordinates topLeft = new Coordinates(y * tileDim, x * tileDim);
-        Tile3D currentTile = (Tile3D) prerenderTile(topLeft, tileDim, detail);
-        return (currentTile != null) && currentTile.render(context.getGL(), frustum);
-    }
-    
-    @Override
-    protected Tile createTile(Coordinates topLeft, float tileDim, int detail) {
-        return new Tile3D(topLeft, tileDim, detail);
+        Tile3D tile = (Tile3D) cache.queryCache(topLeft, detail);
+        if (tile == null) {
+            tile = new Tile3D(topLeft, tileDim, detail);
+            tile.prerender();
+            Tile3D deletedTile = (Tile3D) cache.addToCache(tile);
+            if (deletedTile != null) {
+                deletedTile.freeResources(gl);
+            }
+        }
+        return (tile != null) && tile.render(gl, frustum);
     }
        
 }
