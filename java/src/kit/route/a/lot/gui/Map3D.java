@@ -18,6 +18,7 @@ import javax.media.opengl.glu.GLU;
 public class Map3D extends Map implements GLEventListener {
     
     private static final long serialVersionUID = 1L;
+    private static final float ROTATION_SPEED_FACTOR = 0.5f;
     private float rotationHorizontal = 0f;
     private float rotationVertical = 25f;
     
@@ -117,14 +118,14 @@ public class Map3D extends Map implements GLEventListener {
         float diffX = e.getX() - oldMousePosX;
         float diffY = e.getY() - oldMousePosY;
         if ((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
-            rotationHorizontal += 0.5f * diffX;
+            rotationHorizontal += ROTATION_SPEED_FACTOR * diffX;
             rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
             rotationVertical = Util.clip(rotationVertical + diffY, 0, 60);
         }    
         if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
-            float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));
             float shareY = (float) Math.cos(Math.toRadians(rotationHorizontal));
-            Coordinates movement = new Coordinates(shareY * diffY + shareX * diffX, shareX * diffY +  shareY * diffX);
+            float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));            
+            Coordinates movement = new Coordinates(shareY * diffY - shareX * diffX, shareX * diffY + shareY * diffX);
             getCenter().add(movement.scale(-Projection.getZoomFactor(zoomlevel)));                 
         }      
         super.mouseDragged(e);
