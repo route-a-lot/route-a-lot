@@ -81,5 +81,23 @@ public class GraphMock implements RoutingGraph {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public int[] getStartIDArray() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int[] getEdgesArray() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int[] getWeightsArray() {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 }

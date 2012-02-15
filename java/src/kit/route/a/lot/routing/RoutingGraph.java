@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 
 public interface RoutingGraph {
 
@@ -88,5 +89,11 @@ public interface RoutingGraph {
     public void readAreas(String areas);
 
     public void buildGraphWithUniqueEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId);
+    
+    public int[] getStartIDArray();
+    
+    public int[] getEdgesArray();
+    
+    public int[] getWeightsArray();
 
 }

@@ -1036,4 +1036,9 @@ public class OSMLoader {
         state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
 
     }
+    
+    public void setState(State state) {
+        this.state = state;
+    }
+    
 }

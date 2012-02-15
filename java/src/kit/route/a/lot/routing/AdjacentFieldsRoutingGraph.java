@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -352,5 +353,22 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         for (String area: areas.split("\\s+")) {
             areaID[i++] = (byte) Integer.parseInt(area);
         }
+    }
+
+    @Override
+    public int[] getStartIDArray() {
+        return edgesPos.clone();
+    }
+
+
+    @Override
+    public int[] getEdgesArray() {
+        return edges.clone();
+    }
+
+
+    @Override
+    public int[] getWeightsArray() {
+        return weights.clone();
     }
 }
