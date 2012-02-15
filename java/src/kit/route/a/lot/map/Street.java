@@ -235,6 +235,9 @@ public class Street extends MapElement implements Comparable<Street> {
     }
     
     public static Node[] simplifyNodes(Node[] nodes, float range) {
+        if (nodes.length <= 1) {
+            return nodes;
+        }
         List<Node> newNodes = new ArrayList<Node>();
         newNodes.add(nodes[0]);
         adjustTube(nodes, newNodes, 0, nodes.length - 1, range);

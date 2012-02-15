@@ -1,5 +1,9 @@
 package kit.route.a.lot.map.rendering;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.media.opengl.GL;
 import org.apache.log4j.Logger;
 
@@ -9,15 +13,20 @@ import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Frustum;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
+import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
     private static final float HEIGHT_SCALE_FACTOR = 1f;
     private static final float VIEW_HEIGHT_ADAPTION = 0.2f;
+    private static final float ROUTE_HEIGHT_OFFSET = 10f, ROUTE_WIDTH = 10f;
     private static Logger logger = Logger.getLogger(Renderer3D.class);
     private float viewHeight = Float.NEGATIVE_INFINITY;
     
@@ -77,6 +86,7 @@ public class Renderer3D extends Renderer {
             }
             radius++;
         }      
+        drawRoute(context3D, detail);
     }
        
     private boolean renderTile(GL gl, Frustum frustum, int x, int y, int tileDim, int detail) {
@@ -99,6 +109,90 @@ public class Renderer3D extends Renderer {
             return true;
         }
         return false;
+    }
+    
+    private void drawRoute(Context3D context, int detail) {
+        List<Selection> navPoints = State.getInstance().getNavigationNodes();
+        if (navPoints.size() <= 0) {
+            return;
+        }
+        List<Integer> route = State.getInstance().getCurrentRoute();
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
+        GL gl = context.getGL();
+
+        // Copy route and navPoints into fullRouteList
+        List<Node> fullRouteList = new ArrayList<Node>(route.size());
+        Iterator<Selection> navNodes = navPoints.iterator();
+        Selection selection = navNodes.next();
+        for (int i = 0; i < route.size(); i++) {
+            int currentRouteNode = route.get(i);
+            fullRouteList.add(mapInfo.getNode(currentRouteNode));
+            if (selection != null && (currentRouteNode == selection.getFrom()
+                    || currentRouteNode == selection.getTo())) {
+                Coordinates nodeOnEdge = Coordinates.interpolate(
+                        mapInfo.getNode(selection.getFrom()).getPos(),
+                        mapInfo.getNode(selection.getTo()).getPos(),
+                        selection.getRatio());
+                fullRouteList.add(new Node(nodeOnEdge));
+                fullRouteList.add(new Node(selection.getPosition()));
+                fullRouteList.add(new Node(nodeOnEdge));
+                selection = (navNodes.hasNext()) ? navNodes.next() : null;
+            }         
+        }
+        
+        // Simplify route TODO redo
+        Node[] fullRoute = Street.simplifyNodes(fullRouteList.toArray(new Node[fullRouteList.size()]),
+                Projection.getZoomFactor(detail) * 3);
+        
+        gl.glDisable(GL.GL_TEXTURE_2D);   
+        gl.glDisable(GL.GL_DEPTH_TEST);
+        // LINE SHADOWS
+        gl.glLineWidth(ROUTE_WIDTH);
+        gl.glColor3f(0, 0, 0);
+        gl.glBegin(GL.GL_LINE_STRIP);
+        for (Node node: fullRoute) {    
+            drawVertex(gl, projection, node.getPos());
+        }
+        gl.glEnd();
+        // LINE ROUNDED ENDS SHADOWS
+        gl.glPointSize(ROUTE_WIDTH);
+        gl.glBegin(GL.GL_POINTS);
+        for (Node node: fullRoute) {
+            drawVertex(gl, projection, node.getPos());
+        }
+        gl.glEnd();
+        // LINES
+        gl.glLineWidth(ROUTE_WIDTH - 2);
+        gl.glColor3f(0.315f, 0.05f, 0.478f);
+        gl.glBegin(GL.GL_LINE_STRIP);
+        for (Node node: fullRoute) {    
+            drawVertex(gl, projection, node.getPos());
+        }
+        gl.glEnd();     
+        // LINE ROUNDED ENDS
+        gl.glPointSize(ROUTE_WIDTH - 2);
+        gl.glBegin(GL.GL_POINTS);
+        for (Node node: fullRoute) {
+            drawVertex(gl, projection, node.getPos());
+        }
+        gl.glEnd();    
+        // NAVNODES
+        gl.glColor3f(0.8f, 0, 0);
+        gl.glPointSize(ROUTE_WIDTH);
+        gl.glBegin(GL.GL_POINTS);
+        for (Selection navNode: navPoints) {
+            drawVertex(gl, projection, navNode.getPosition());
+        }
+        gl.glEnd();
+        gl.glEnable(GL.GL_DEPTH_TEST);
+    }
+    
+    private static void drawVertex(GL gl, Projection projection, Coordinates point) {
+        gl.glVertex3f(point.getLongitude(), point.getLatitude(),
+                State.getInstance().getLoadedHeightmap().getHeight(
+                        projection.localCoordinatesToGeoCoordinates(point))
+                + ROUTE_HEIGHT_OFFSET);
     }
        
 }

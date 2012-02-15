@@ -146,7 +146,8 @@ public class Renderer {
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());
-                    Coordinates nodeOnEdge = getCoordinatesOnEdge(from, to, navSelection.getRatio());
+                    Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
+                            to.getPos(), navSelection.getRatio());
                     adjustBorderCoordinates(routeTopLeft, routeBottomRight, nodeOnEdge, detail);
                     adjustBorderCoordinates(routeTopLeft, routeBottomRight, navSelection.getPosition(), detail);
                 }
@@ -224,7 +225,8 @@ public class Renderer {
             Selection navSelection = navPoints.get(i);
             Node from = mapInfo.getNode(navSelection.getFrom());
             Node to = mapInfo.getNode(navSelection.getTo());
-            Coordinates nodeOnEdge = getCoordinatesOnEdge(from, to, navSelection.getRatio());
+            Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
+                    to.getPos(), navSelection.getRatio());
             boolean drawedFrom = false;
             boolean drawedTo = false;
             if (idIsInRoute(from.getID(), drawnRoute)) {
@@ -298,17 +300,6 @@ public class Renderer {
      */
     protected static Coordinates getLocalCoordinates(Coordinates global, Coordinates topLeft, int detail) {
         return global.clone().subtract(topLeft).scale(1f / Projection.getZoomFactor(detail));
-    }
-    
-    /**
-     * Interpolates between the given nodes' positions using the given ratio.
-     * @param from base node
-     * @param to target node
-     * @param ratio value that is typically between 0 and 1
-     * @return position on the edge between from and to
-     */
-    private Coordinates getCoordinatesOnEdge(Node from, Node to, float ratio) {
-        return from.getPos().add(to.getPos().subtract(from.getPos()).scale(ratio)); //TODO? clone einfügen?
     }
     
     /**

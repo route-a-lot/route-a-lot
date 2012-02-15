@@ -47,6 +47,11 @@ public class Map3D extends Map implements GLEventListener {
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
         
+        gl.glEnable(GL_LINE_SMOOTH);
+        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        gl.glEnable(GL_POINT_SMOOTH);
+        gl.glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+        
         gl.glEnable(GL_FOG);
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
         gl.glFogf(GL_FOG_START, 0.6f * MAX_DISTANCE);
@@ -112,8 +117,7 @@ public class Map3D extends Map implements GLEventListener {
      * Adapts the map position and rotation and schedules a map redraw.
      */
     @Override
-    public void mouseDragged(MouseEvent e) { 
-        
+    public void mouseDragged(MouseEvent e) {      
         float diffX = e.getX() - oldMousePosX;
         float diffY = e.getY() - oldMousePosY;
         if ((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
@@ -124,7 +128,8 @@ public class Map3D extends Map implements GLEventListener {
         if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
             float shareY = (float) Math.cos(Math.toRadians(rotationHorizontal));
             float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));            
-            Coordinates movement = new Coordinates(shareY * diffY - shareX * diffX, shareX * diffY + shareY * diffX);
+            Coordinates movement = new Coordinates(shareY * diffY - shareX * diffX,
+                    shareX * diffY + shareY * diffX);
             getCenter().add(movement.scale(-Projection.getZoomFactor(zoomlevel)));                 
         }      
         super.mouseDragged(e);

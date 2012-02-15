@@ -128,6 +128,8 @@ public class Tile3D extends Tile {
                     }
                     gl.glEnd();
                 }
+                gl.glDisable(GL_TEXTURE_2D);
+                gl.glActiveTexture(GL_TEXTURE0);
             gl.glEndList();
         }   
     }

@@ -117,6 +117,11 @@ public class Coordinates {
                     + Math.pow(pos1.longitude - pos2.longitude, 2));
     }
     
+    public static Coordinates interpolate(Coordinates pos1, Coordinates pos2, float ratio) {
+        return pos1.clone().add((pos2.latitude - pos1.latitude) * ratio,
+                (pos2.longitude - pos1.longitude) * ratio);
+    }
+    
     public static Coordinates loadFromStream(DataInputStream stream) throws IOException {
         Coordinates result = new Coordinates();
         result.latitude = stream.readFloat();
