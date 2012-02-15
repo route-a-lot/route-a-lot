@@ -20,8 +20,7 @@ import kit.route.a.lot.controller.State;
 
 public class Tile3D extends Tile {
 
-    private static final int HEIGHT_RESOLUTION = 64;
-    private static final int GRAIN_RESOLUTION = 128;
+    private static final int HEIGHT_RESOLUTION = 64, GRAIN_RESOLUTION = 128;
     private static final float GRAIN_INTENSITY = 0.05f;
     private static final float[] COLOR_STAGES = {70, 200, 350, 520, 700, 900, 1100, 1250, 1400, 1750, 1800};
     private static final float[][] COLORS = {
@@ -32,11 +31,8 @@ public class Tile3D extends Tile {
     
     private float[][] heights;
     //private float[][][] normals;
-    private float minHeight = 0;
-    private float maxHeight = 0;
-    private int textureID = -1;
-    private int displaylistID = -1;
-    private static int grainTextureID = -1;
+    private float minHeight = -500, maxHeight = 8000;
+    private int textureID = -1, displaylistID = -1, grainTextureID = -1;
 
     public Tile3D(Coordinates topLeft, float width, int detail) {
         super(topLeft, width, detail);
@@ -82,20 +78,7 @@ public class Tile3D extends Tile {
         }
     }
 
-    public boolean render(GL gl, Frustum frustum) {
-        // BUILD HEIGHTMAP IF NECESSARY
-        if (heights == null) {
-            reset();
-        }
-        // ABORT IF TILE IS NOT VISIBLE
-        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
-        boolean isInFrustum = (frustum == null) || frustum.isBoxWithin(
-                new float[] {center.getLongitude(), center.getLatitude(), 0.5f * (minHeight + maxHeight) },
-                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
-                        center.getLatitude() - getTopLeft().getLatitude(), 0.5f * (maxHeight - minHeight)});
-        if (!isInFrustum) {
-            return false;
-        }      
+    public void render(GL gl) {
         // BUILD TEXTURES IF NECESSARY
         if (textureID < 0) {
             textureID = createTexture(gl, getImage(), false, true);
@@ -147,7 +130,16 @@ public class Tile3D extends Tile {
                 }
             gl.glEndList();
         }   
-        return true;
+    }
+    
+    boolean isInFrustum(Frustum frustum) {
+        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
+        return (frustum == null) || frustum.isBoxWithin(
+                new float[] {center.getLongitude(), center.getLatitude(),
+                        0.5f * (minHeight + maxHeight) },
+                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
+                        center.getLatitude() - getTopLeft().getLatitude(),
+                        0.5f * (maxHeight - minHeight)});
     }
 
     private static void getHeightColor(float[] color, float height) {

@@ -7,23 +7,9 @@ import kit.route.a.lot.common.Util;
 
 public class HeightTile implements IHeightTile {
 
-
-    /** Attributes */
-    /**
-     * 
-     */
     private Coordinates origin;
-    /**
-     * 
-     */
     private int[][] data;
-    /**
-    *
-    */
     private int width;
-    /**
-    *
-    */
     private int height;
 
     public HeightTile(int width, int height, Coordinates origin) {

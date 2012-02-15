@@ -18,9 +18,8 @@ import javax.media.opengl.glu.GLU;
 public class Map3D extends Map implements GLEventListener {
     
     private static final long serialVersionUID = 1L;
-    private static final float ROTATION_SPEED_FACTOR = 0.5f;
-    private float rotationHorizontal = 0f;
-    private float rotationVertical = 25f;
+    private static final float ROTATION_SPEED = 0.5f, MAX_DISTANCE = 1f, VIEW_ANGLE = 85f;
+    private float rotationHorizontal = 0f, rotationVertical = 25f;
     
     public Map3D(GUI gui)
     {
@@ -50,8 +49,8 @@ public class Map3D extends Map implements GLEventListener {
         
         gl.glEnable(GL_FOG);
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
-        gl.glFogf(GL_FOG_START, 0.6f);
-        gl.glFogf(GL_FOG_END, 1f);
+        gl.glFogf(GL_FOG_START, 0.6f * MAX_DISTANCE);
+        gl.glFogf(GL_FOG_END, MAX_DISTANCE);
         gl.glFogfv(GL_FOG_COLOR, new float[]{0,0,0,1f}, 0);
         
         /*gl.glEnable(GL.GL_LIGHTING);
@@ -105,7 +104,7 @@ public class Map3D extends Map implements GLEventListener {
         
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
-        (new GLU()).gluPerspective(85.0, width/(float)height, 0.01, 1f);
+        (new GLU()).gluPerspective(VIEW_ANGLE, width/(float)height, 0.01, MAX_DISTANCE);
         gl.glMatrixMode(GL.GL_MODELVIEW);
     }
     
@@ -118,7 +117,7 @@ public class Map3D extends Map implements GLEventListener {
         float diffX = e.getX() - oldMousePosX;
         float diffY = e.getY() - oldMousePosY;
         if ((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
-            rotationHorizontal += ROTATION_SPEED_FACTOR * diffX;
+            rotationHorizontal += ROTATION_SPEED * diffX;
             rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
             rotationVertical = Util.clip(rotationVertical + diffY, 0, 60);
         }    

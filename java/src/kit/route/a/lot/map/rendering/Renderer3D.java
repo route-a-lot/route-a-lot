@@ -38,7 +38,7 @@ public class Renderer3D extends Renderer {
         }
         Context3D context3D = (Context3D) context;
         Coordinates center = context.getBottomRight().clone().add(context.getTopLeft()).scale(0.5f);
-        int lat = (int) Math.floor(center.getLatitude() / tileDim);
+        int lat = (int) Math.floor(center.getLatitude() / tileDim) - 1;
         int lon = (int) Math.floor(center.getLongitude() / tileDim);
         
         GL gl = context3D.getGL();
@@ -50,8 +50,6 @@ public class Renderer3D extends Renderer {
                 : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
         gl.glTranslatef(0, 0, -viewHeight);      
         Frustum frustum = new Frustum(gl);
-        
-        int n = 1;
         renderTile(gl, frustum, lon, lat, tileDim, detail);
         int radius = 1;
         boolean found = true;
@@ -63,25 +61,22 @@ public class Renderer3D extends Renderer {
             int x2 = lon+radius;
             for (int x = x1; x <= x2; x++) {
                 if (renderTile(gl, frustum, x, y1, tileDim, detail)) {
-                    found = true; n++;
+                    found = true;
                 }
                 if (renderTile(gl, frustum, x, y2, tileDim, detail)) {
-                    found = true; n++;
+                    found = true;
                 }     
             }
             for (int y = y1+1; y < y2; y++) {
                 if (renderTile(gl, frustum, x1, y, tileDim, detail)) {
-                    found = true; n++;
+                    found = true;
                 }
                 if (renderTile(gl, frustum, x2, y, tileDim, detail)) {
-                    found = true; n++;
+                    found = true;
                 }       
             }
             radius++;
-            if (n > 35) return; // TODO remove this
-        }
-        //logger.info("Render output: " + n + " Tiles.");
-              
+        }      
     }
        
     private boolean renderTile(GL gl, Frustum frustum, int x, int y, int tileDim, int detail) {
@@ -89,13 +84,21 @@ public class Renderer3D extends Renderer {
         Tile3D tile = (Tile3D) cache.queryCache(topLeft, detail);
         if (tile == null) {
             tile = new Tile3D(topLeft, tileDim, detail);
-            tile.prerender();
-            Tile3D deletedTile = (Tile3D) cache.addToCache(tile);
-            if (deletedTile != null) {
-                deletedTile.freeResources(gl);
+            if (tile.isInFrustum(frustum)) {
+                tile.prerender();
+                Tile3D deletedTile = (Tile3D) cache.addToCache(tile);
+                if (deletedTile != null) {
+                    deletedTile.freeResources(gl);
+                }
+            } else {
+                return false;
             }
         }
-        return (tile != null) && tile.render(gl, frustum);
+        if (tile.isInFrustum(frustum)) {
+            tile.render(gl);  
+            return true;
+        }
+        return false;
     }
        
 }

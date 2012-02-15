@@ -40,7 +40,7 @@ public class Tile {
      */
     public Tile(Coordinates topLeft, float tileDim, int detail) {
         this.topLeft = topLeft;
-        bottomRight = topLeft.clone().add(tileDim, tileDim);
+        this.bottomRight = topLeft.clone().add(tileDim, tileDim);
         this.detail = detail;
         this.tileDim = (int) tileDim;
     }
