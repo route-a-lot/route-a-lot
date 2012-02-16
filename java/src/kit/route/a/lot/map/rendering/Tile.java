@@ -2,11 +2,14 @@ package kit.route.a.lot.map.rendering;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 
+import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
@@ -96,6 +99,12 @@ public class Tile {
         for (MapElement element : map) {
             if (element instanceof Street) {
                 drawStreetArrows((Street) element, graphics);
+            }
+        }
+        
+        for (MapElement element : map) {
+            if (element instanceof Street) {
+                drawStreetNames((Street) element, graphics);
             }
         }
 
@@ -305,20 +314,81 @@ public class Tile {
                 vector.normalize();
                 Coordinates arrowStart = vector.clone().scale(arrowLength).subtract(edgeMiddle).invert();
                 Coordinates arrowEnd = vector.clone().scale(arrowLength).add(edgeMiddle);
+                if (street.getWayInfo().getOneway() == WayInfo.ONEWAY_OPPOSITE) {
+                    Coordinates tmp = arrowEnd;
+                    arrowEnd = arrowStart;
+                    arrowStart = tmp;
+                }
                 Coordinates headLeft = vector.clone().rotate(210).normalize().scale(headLength).add(arrowEnd);
                 Coordinates headRight = vector.clone().rotate(150).normalize().scale(headLength).add(arrowEnd);
 
                 graphics.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(),
                                   (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
-                if (street.getWayInfo().getOneway() == WayInfo.ONEWAY_OPPOSITE) {
-                    arrowEnd = arrowStart;
-                }
                 graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
                                   (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
                 graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
                                   (int) headRight.getLongitude(), (int) headRight.getLatitude());
             }
         }
+    }
+    
+    private void drawStreetNames(Street street, Graphics2D graphics) {
+        Address curAddress = street.getWayInfo().getAddress();
+        if (detail > 4 || curAddress == null) {
+            return;
+        }
+        
+        Node[] nodes = street.getNodes();
+        int nPoints = nodes.length;
+        
+        float arrowLength = 24.f / Projection.getZoomFactor(detail);
+        double arrowDistance = 4 * arrowLength;
+        double currentDistance = 0;
+
+        graphics.setColor(Color.DARK_GRAY);
+        graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+
+        for (int i = 1; i < nPoints; i++) {
+            Coordinates from = getLocalCoordinates(nodes[i-1].getPos());
+            Coordinates to = getLocalCoordinates(nodes[i].getPos());
+            currentDistance += Coordinates.getDistance(from, to);
+
+            if (currentDistance > arrowDistance) {
+                currentDistance = 0;
+                Coordinates vector = to.clone().subtract(from);
+                Coordinates edgeMiddle = vector.clone().scale(0.5f).add(from);
+                vector.normalize();
+                Coordinates arrowStart = vector.clone().scale(arrowLength).subtract(edgeMiddle).invert();
+                Coordinates arrowEnd = vector.clone().scale(arrowLength).add(edgeMiddle);
+                if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
+                    Coordinates tmp = arrowStart;
+                    arrowStart = arrowEnd;
+                    arrowEnd = tmp;
+                    vector.invert();
+                }
+                double angle = calculateAngleBetween(vector, new Coordinates(0.f, 1.f));
+                if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
+                    angle = -angle;
+                }
+                
+                Font oldFont = graphics.getFont();
+                Font f = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
+                graphics.setFont(f);
+                graphics.drawString(curAddress.getStreet(), arrowStart.getLongitude(), arrowStart.getLatitude());
+                graphics.setFont(oldFont);
+            }
+        }
+    }
+    
+    private double calculateAngleBetween(Coordinates one, Coordinates another) {
+        double angle;
+        angle = one.getLatitude() * another.getLatitude() + one.getLongitude() * another.getLongitude();
+        angle = angle / (getAbs(one) * getAbs(another));
+        return Math.acos(angle);
+    }
+    
+    private double getAbs(Coordinates vector) {
+        return Math.sqrt(Math.pow(vector.getLatitude(), 2) + Math.pow(vector.getLongitude(), 2));
     }
     
     private Coordinates getLocalCoordinates(Coordinates coordinates) {
