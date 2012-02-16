@@ -342,7 +342,7 @@ public class Tile {
         int nPoints = nodes.length;
         
         float arrowLength = 24.f / Projection.getZoomFactor(detail);
-        double arrowDistance = 4 * arrowLength;
+        double arrowDistance = 7 * arrowLength;
         double currentDistance = 0;
 
         graphics.setColor(Color.DARK_GRAY);
@@ -372,9 +372,11 @@ public class Tile {
                 }
                 
                 Font oldFont = graphics.getFont();
+                Coordinates normal = vector.rotate(90).normalize().scale((oldFont.getSize() - 1) / 2);
+                Coordinates drawStart = arrowStart.add(normal);
                 Font f = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
                 graphics.setFont(f);
-                graphics.drawString(curAddress.getStreet(), arrowStart.getLongitude(), arrowStart.getLatitude());
+                graphics.drawString(curAddress.getStreet(), drawStart.getLongitude(), drawStart.getLatitude());
                 graphics.setFont(oldFont);
             }
         }
