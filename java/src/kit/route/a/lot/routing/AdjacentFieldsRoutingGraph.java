@@ -327,23 +327,23 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     private String getMetis() {
         // returns a representation of the graph suitable for Metis.
-        String result = "";
-        result += String.valueOf(edgesPos.length - 1);  
+        StringBuffer result = new StringBuffer();
+        result.append(String.valueOf(edgesPos.length - 1));  
         /*
          * -1 because the last one is a dummy and 
          * +1 because we increase every ID by 1 for Metis.
          */
-        result += " ";
-        result += String.valueOf(edges.length / 2);
-        result += "\n";
+        result.append(" ");
+        result.append(String.valueOf(edges.length / 2));
+        result.append("\n");
         for (int i = 0; i < edgesPos.length - 1; i++) {
             for (int j = edgesPos[i]; j < edgesPos[i+1]; j++) {
-                result += String.valueOf(edges[j] + 1); // Metis doesn't like ID 0.
-                result += " ";
+                result.append(String.valueOf(edges[j] + 1)); // Metis doesn't like ID 0.
+                result.append(" ");
             }
-            result += "\n";
+            result.append("\n");
         }
-        return result + "\0";
+        return result.toString();
     }
 
     @Override
