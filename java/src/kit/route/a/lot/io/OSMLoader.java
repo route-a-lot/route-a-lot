@@ -990,10 +990,6 @@ public class OSMLoader {
             // can't -touch- _catch_ this!
             // not XML 1.0
             e.printStackTrace();
-        } catch (com.sun.org.apache.xerces.internal.impl.io.MalformedByteSequenceException e) {
-            // same here, can't catch; wtf?
-            // not even utf-8
-            e.printStackTrace();
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
