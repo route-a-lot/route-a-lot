@@ -153,11 +153,24 @@ public class Router {
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false); // Is this necessary?
         // Initialize heap
-        float weight = graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio();
-        if (weight != -1) {
-            heap.add(new Route(a.getFrom(), (int) (weight)));
+        int weight1 = graph.getWeight(a.getFrom(), a.getTo());
+        int weight2 = graph.getWeight(a.getTo(), a.getFrom());
+        if (weight1 != -1 && weight2 != -1) {
+            int weightFrom = (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio());
+            int weightTo = (int) (graph.getWeight(a.getFrom(), a.getTo()) * (1 - a.getRatio()));
+            if (weightFrom == weight1) {
+                weightTo++;
+            } else if (weightTo == weight1){
+                weightFrom++;
+            }
+            heap.add(new Route(a.getFrom(), (int) (weightFrom)));
+            heap.add(new Route(a.getTo(), (int) (weightTo)));
+        } else if (weight1 != -1) {
+            heap.add(new Route(a.getTo(), (int) (weight1 * (1 - a.getRatio()))));
+        } else {
+            heap.add(new Route(a.getFrom(), (int) (weight2 * (1 - a.getRatio()))));
         }
-        heap.add(new Route(a.getTo(), (int) (graph.getWeight(a.getTo(), a.getFrom()) * (1 / a.getRatio()))));
+        
         // start the calculation.
         int currentNode;
         int selectionWeight;
@@ -180,7 +193,7 @@ public class Router {
                 // We can't return now, as there might be a shorter way via b.getFrom().
                 selectionWeight = graph.getWeight(b.getTo(), b.getFrom());
                 if (selectionWeight > 0) {
-                    heap.add(new Route(-1, (int) (1 / b.getRatio()) * selectionWeight, currentPath));
+                    heap.add(new Route(-1, (int) (1 - b.getRatio()) * selectionWeight, currentPath));
                 }
             } else if (currentNode == b.getFrom()) {
                 selectionWeight = graph.getWeight(b.getFrom(), b.getTo());
