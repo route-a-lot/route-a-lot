@@ -2,6 +2,7 @@ package kit.route.a.lot.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -66,6 +67,18 @@ public class Controller {
     }
     
     private Controller() {
+        String arch = System.getProperty("os.arch");
+        try {
+        if (arch.equals("i386")) {
+            addDirectoryToLibraryPath("./lib/lib32");
+        } else {
+            addDirectoryToLibraryPath("./lib/lib64");
+        }
+        } catch (IOException e) {
+            logger.error("Could not load library path for " + arch + ".");
+            return;
+        }
+        
         File defaultMap = new File("./test/resources/karlsruhe_small_current.osm");
         
         Util.startTimer();
@@ -478,5 +491,34 @@ public class Controller {
             logger.fatal("IO exception in StateIO");
         }
     }   
+    
+    /**
+     * Dynamically specifies a Java library path location at runtime,
+     * thus enabling the fitting native libraries to be chosen at startup.
+     * @param s the library path to be added
+     * @throws IOException on any access error
+     */
+    private static void addDirectoryToLibraryPath(String dir) throws IOException {
+        try {
+            Field field = ClassLoader.class.getDeclaredField("usr_paths");
+            field.setAccessible(true);
+            String[] paths = (String[]) field.get(null);
+            for (String path: paths) {
+                if (dir.equals(path)) {
+                    return;
+                }
+            }
+            String[] tmp = new String[paths.length + 1];
+            System.arraycopy(paths, 0, tmp, 0, paths.length);
+            tmp[paths.length] = dir;
+            field.set(null, tmp);
+            System.setProperty("java.library.path", System.getProperty("java.library.path")
+                        + File.pathSeparator + dir);
+        } catch (IllegalAccessException e) {
+                throw new IOException("Failed to get permissions to set library path.");
+        } catch (NoSuchFieldException e) {
+                throw new IOException("Failed to get field handle to set library path.");
+        }
+    }
 
 }

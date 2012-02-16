@@ -2,8 +2,6 @@ package kit.route.a.lot.gui;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
-import java.nio.FloatBuffer;
-
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
