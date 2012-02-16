@@ -9,8 +9,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.heightinfo.HeightTile;
 import kit.route.a.lot.heightinfo.Heightmap;
+import kit.route.a.lot.heightinfo.HeightTile;
+import kit.route.a.lot.heightinfo.RAMHeightTile;
 
 
 public class SRTMLoaderProto {
@@ -66,7 +67,7 @@ public class SRTMLoaderProto {
             // System.out.println("lon: " + lon);
             // System.out.println("lat: " + lat);
             origin = new Coordinates((float)lat, (float)lon);
-            tile = new HeightTile(width, height, origin);
+            tile = new RAMHeightTile(width, height, origin);
             
             try{    
                 in = new FileInputStream(dateien[k]);

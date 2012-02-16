@@ -1,26 +1,25 @@
 package kit.route.a.lot.heightinfo;
 
-import java.util.Iterator;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import kit.route.a.lot.common.Coordinates;
 
 public class Heightmap implements IHeightmap {
 
-    /** Associations */
-    private HashSet<HeightTile> tiles;
-    private HashSet<HeightTile> map;
-    private Iterator<HeightTile> iterator;
+    private List<HeightTile> map;
 
     /* Konstruktor */
     public Heightmap() {
-        this.tiles = new HashSet<HeightTile>();
-        this.map = new HashSet<HeightTile>();
+        this.map = new LinkedList<HeightTile>();
     }
 
     @Override
-    public HashSet<HeightTile> getTiles(Coordinates upLeft, Coordinates bottomRight) {
+    public Set<HeightTile> getTiles(Coordinates upLeft, Coordinates bottomRight) {
 
-        this.tiles = new HashSet<HeightTile>();
+        Set<HeightTile> tiles = new HashSet<HeightTile>();
 
         float maxlat = (float) Math.floor(upLeft.getLatitude());
         float minlon = (float) Math.floor(upLeft.getLongitude());
@@ -30,10 +29,8 @@ public class Heightmap implements IHeightmap {
         for (int i = (int) maxlat; i <= (int) minlat; i++) {
             for (int j = (int) minlon; j <= (int) maxlon; j++) {
                 Coordinates origin = new Coordinates((float) i, (float) j);
-                HeightTile tmpTile = new HeightTile(0, 0, origin);
-                iterator = map.iterator();
-                while (iterator.hasNext()) {
-                    HeightTile tile = iterator.next();
+                HeightTile tmpTile = new RAMHeightTile(0, 0, origin);
+                for (HeightTile tile : map) {
                     if (tile.equals(tmpTile)) {
                         tiles.add(tile);
                     }// end if
@@ -48,11 +45,8 @@ public class Heightmap implements IHeightmap {
         int lat = (int) pos.getLatitude();
         int lon = (int) pos.getLongitude();
         Coordinates origin = new Coordinates((float) lat, (float) lon);
-        HeightTile tmpTile = new HeightTile(0, 0, origin);
-        iterator = map.iterator();
-
-        while (iterator.hasNext()) {
-            HeightTile tile = iterator.next();
+        HeightTile tmpTile = new RAMHeightTile(0, 0, origin);
+        for (HeightTile tile : map) {
             if (tile.equals(tmpTile)) {
                 return tile.getHeight(pos);
             }// end if

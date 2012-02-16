@@ -23,7 +23,7 @@ public class Tile3D extends Tile {
 
     private static final int HEIGHT_BORDER = 1;
     private static final int HEIGHT_RESOLUTION = 64, GRAIN_RESOLUTION = 128;
-    private static final float GRAIN_INTENSITY = 0.05f, SLOPE_SHADE_FACTOR = 1f;
+    private static final float GRAIN_INTENSITY = 0.05f, SLOPE_SHADE_FACTOR = 0.6f;
     private static final float[] COLOR_STAGES =
         {70, 200, 350, 520, 700, 900, 1100, 1250, 1400, 1750, 1800};
     private static final float[][] COLORS = 
@@ -44,7 +44,8 @@ public class Tile3D extends Tile {
     @Override
     protected void reset() {
         super.reset();
-        heights = new float[HEIGHT_RESOLUTION + 2*HEIGHT_BORDER][HEIGHT_RESOLUTION + 2*HEIGHT_BORDER];
+        heights = new float[HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER]
+                           [HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER];
     }
 
     public void freeResources(GL gl) {
@@ -79,8 +80,8 @@ public class Tile3D extends Tile {
                 heights, HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
-        for (int x = 0; x < HEIGHT_RESOLUTION + 0; x++) {
-            for (int y = 0; y < HEIGHT_RESOLUTION + 0; y++) {
+        for (int x = 0; x <= HEIGHT_RESOLUTION; x++) {
+            for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {
                 if (heights[x][y] < minHeight) {
                     minHeight = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
                 }
@@ -147,27 +148,28 @@ public class Tile3D extends Tile {
         BufferedImage heightImage = new BufferedImage(HEIGHT_RESOLUTION, HEIGHT_RESOLUTION,
                 BufferedImage.TYPE_INT_RGB);
         Coordinates topLeft = getTopLeft();
-        float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
+        float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) (HEIGHT_RESOLUTION - 1);
         Coordinates pos = new Coordinates();
         float[] color = new float[3];
         for (int x = 0; x < HEIGHT_RESOLUTION; x++) { 
             for (int y = 0; y < HEIGHT_RESOLUTION; y++) {            
                     pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                     pos.setLongitude(topLeft.getLongitude() + x * stepSize);
-                    float h = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
-                    getHeightColor(color, h);
-                    float min = h, max = h;
+                    float height = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
+                    getHeightColor(color, height);
+                    float min = height, max = height;
                     for (int i = -1; i < 2; i++) {
                         for (int k = -1; k < 2; k++) {
-                            float height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER + k];
+                            height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER + k];
                             min = Math.min(min, height);
                             max = Math.max(max, height);
                         }
                     }
-                    float levelness = 1 - Util.clip(SLOPE_SHADE_FACTOR *(max - min) / stepSize, 0, 1);
-                    color[0] *= levelness;
-                    color[1] *= levelness;
-                    color[2] *= levelness;
+                    
+                    float shade = 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, 1);
+                    color[0] *= shade;
+                    color[1] *= shade;
+                    color[2] *= shade;
                     heightImage.setRGB(x, y, Util.RGBToInt(color));
             }
         }

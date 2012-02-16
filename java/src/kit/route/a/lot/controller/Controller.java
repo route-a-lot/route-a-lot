@@ -42,7 +42,7 @@ import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
 import kit.route.a.lot.io.RouteIO;
-import kit.route.a.lot.io.SRTMLoader;
+import kit.route.a.lot.io.SRTMLoaderRetarded;
 import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
@@ -220,7 +220,7 @@ public class Controller {
        
     public void importHeightmap(String directory) {
         File heightFile = new File(directory);
-        HeightLoader loader = new SRTMLoader();
+        HeightLoader loader = new SRTMLoaderRetarded();
         loader.load(heightFile);
     }
     

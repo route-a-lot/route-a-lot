@@ -47,14 +47,9 @@ public class Coordinates {
         return String.format("(LAT: %1$3.8f / LON: %2$3.8f)", latitude, longitude);
     }
     
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Coordinates) {
-            Coordinates other = (Coordinates) obj;
-            return latitude == other.latitude && longitude == other.longitude;
-        } else {
-            return false;
-        }
+    public boolean equals(Coordinates pos) {
+        return (pos != null) && (Math.abs(latitude - pos.latitude) < 0.005f)
+                && (Math.abs(longitude - pos.longitude) < 0.005f);
     }
     
     public Coordinates add(Coordinates summand) {
