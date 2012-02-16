@@ -255,9 +255,13 @@ public class Tile {
                 break;
             case OSMType.HIGHWAY_TERTIARY:
             case OSMType.HIGHWAY_TERTIARY_LINK:
+                basicSize = 20;
+                break;
             case OSMType.HIGHWAY_RESIDENTIAL:
             case OSMType.HIGHWAY_LIVING_STREET:
+            case OSMType.HIGHWAY_UNCLASSIFIED:
                 basicSize = 18;
+                break;
             case OSMType.HIGHWAY_CYCLEWAY:
                 basicSize = 15;
                 break;
@@ -334,7 +338,28 @@ public class Tile {
     
     private void drawStreetNames(Street street, Graphics2D graphics) {
         Address curAddress = street.getWayInfo().getAddress();
-        if (detail > 4 || curAddress == null) {
+        if (detail > 3 || curAddress == null) {
+            return;
+        }
+        
+        if (detail == 3 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY) {
+            return;
+        }
+        
+        if (detail == 2 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_SECONDARY) {
+            return;
+        }
+        
+        if (detail == 1 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_SECONDARY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_TERTIARY
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_UNCLASSIFIED
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_RESIDENTIAL
+                && street.getWayInfo().getType() != OSMType.HIGHWAY_LIVING_STREET) {
             return;
         }
         
