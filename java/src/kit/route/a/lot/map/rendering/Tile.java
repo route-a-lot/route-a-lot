@@ -342,6 +342,11 @@ public class Tile {
             return;
         }
         
+        String curStreetName = curAddress.getStreet();
+        if (curStreetName == null || curStreetName.equals("")) {
+            return;
+        }
+        
         if (detail == 3 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY) {
             return;
@@ -366,8 +371,10 @@ public class Tile {
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
         
-        float arrowLength = 24.f / Projection.getZoomFactor(detail);
-        double arrowDistance = 7 * arrowLength;
+        
+        
+        float streetNameLength = graphics.getFontMetrics().stringWidth(curAddress.getStreet());
+        double streetNameDistance = 256 / Math.sqrt(Projection.getZoomFactor(detail));
         double currentDistance = 0;
 
         graphics.setColor(Color.DARK_GRAY);
@@ -378,13 +385,13 @@ public class Tile {
             Coordinates to = getLocalCoordinates(nodes[i].getPos());
             currentDistance += Coordinates.getDistance(from, to);
 
-            if (currentDistance > arrowDistance) {
+            if (currentDistance > streetNameDistance) {
                 currentDistance = 0;
                 Coordinates vector = to.clone().subtract(from);
                 Coordinates edgeMiddle = vector.clone().scale(0.5f).add(from);
                 vector.normalize();
-                Coordinates arrowStart = vector.clone().scale(arrowLength).subtract(edgeMiddle).invert();
-                Coordinates arrowEnd = vector.clone().scale(arrowLength).add(edgeMiddle);
+                Coordinates arrowStart = vector.clone().scale(streetNameLength).subtract(edgeMiddle).invert();
+                Coordinates arrowEnd = vector.clone().scale(streetNameLength).add(edgeMiddle);
                 if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
                     Coordinates tmp = arrowStart;
                     arrowStart = arrowEnd;
@@ -397,10 +404,10 @@ public class Tile {
                 }
                 
                 Font oldFont = graphics.getFont();
-                Coordinates normal = vector.rotate(90).normalize().scale((oldFont.getSize() - 1) / 2);
+                Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
+                graphics.setFont(newFont);
+                Coordinates normal = vector.rotate(90).normalize().scale((newFont.getSize2D() - 1) / 2);
                 Coordinates drawStart = arrowStart.add(normal);
-                Font f = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
-                graphics.setFont(f);
                 graphics.drawString(curAddress.getStreet(), drawStart.getLongitude(), drawStart.getLatitude());
                 graphics.setFont(oldFont);
             }
@@ -410,12 +417,8 @@ public class Tile {
     private double calculateAngleBetween(Coordinates one, Coordinates another) {
         double angle;
         angle = one.getLatitude() * another.getLatitude() + one.getLongitude() * another.getLongitude();
-        angle = angle / (getAbs(one) * getAbs(another));
+        angle = angle / (Coordinates.getLength(one) * Coordinates.getLength(another));
         return Math.acos(angle);
-    }
-    
-    private double getAbs(Coordinates vector) {
-        return Math.sqrt(Math.pow(vector.getLatitude(), 2) + Math.pow(vector.getLongitude(), 2));
     }
     
     private Coordinates getLocalCoordinates(Coordinates coordinates) {

@@ -85,8 +85,12 @@ public class Coordinates {
         return this;
     }
     
+    public static double getLength(Coordinates vector) {
+        return Math.sqrt(Math.pow(vector.getLatitude(), 2) + Math.pow(vector.getLongitude(), 2));
+    }
+    
     public Coordinates normalize() {
-        float length = (float) Math.sqrt(latitude * latitude + longitude * longitude);
+        float length = (float) getLength(this);
         latitude /= length;
         longitude /= length;
         return this;
