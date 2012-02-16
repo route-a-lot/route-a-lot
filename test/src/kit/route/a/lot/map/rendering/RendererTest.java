@@ -70,7 +70,7 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent(), 0);
 
     }
 
@@ -123,7 +123,7 @@ public class RendererTest {
         bottomRight.setLatitude(gui.getVisibleRectangleOfContent().height);
         bottomRight.setLongitude(gui.getVisibleRectangleOfContent().width);
         mapInfo.addMapElement(new Node(bottomRight));
-        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent(), 0);
 
     }
 
@@ -154,12 +154,12 @@ public class RendererTest {
 
         TestGUI gui = new TestGUI(this);
         gui.setVisible(true);
-        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent());
+        context = new Context2D(topLeft, bottomRight, gui.getGraphicsForRenderedContent(), 0);
 
     }
 
     public void repaint() {
-        renderer.render(context, 0);
+        renderer.render(context);
     }
 
     public class TestGUI extends JFrame {

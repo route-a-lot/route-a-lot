@@ -110,7 +110,7 @@ public class Controller {
                 switchMapMode();
             }         
         });
-        guiHandler.addAutoCompletitionListener(new SuggestionListener(this));
+        guiHandler.addAutoCompletionListener(new SuggestionListener(this));
         guiHandler.addGetNavNodeDescriptionListener(new SearchNameListener(this));
         guiHandler.addFavDescriptionListener( new ShowFavoriteDescriptionListener(this));
         guiHandler.addDeleteMapListener(new DeleteMapListener(this));
@@ -130,10 +130,10 @@ public class Controller {
                 logger.error("state loading: Read error occurred.");
                 e.printStackTrace();
             }
-            File directoryOfSrl = new File("./sral"); // Directory is just a list of files
+            File directoryOfSral = new File("./sral"); // Directory is just a list of files
 
-            if(directoryOfSrl.isDirectory()) { // check to make sure it is a directory
-                String filenames[] = directoryOfSrl.list();
+            if(directoryOfSral.isDirectory()) { // check to make sure it is a directory
+                String filenames[] = directoryOfSral.list();
                 for(String filename : filenames) {
                     if (filename.endsWith(".sral")) {
                         State.getInstance().getImportedMaps().add("./sral/" + filename);
@@ -370,28 +370,28 @@ public class Controller {
         for (Selection navNode: state.getNavigationNodes()) {
             Node node = new Node(navNode.getPosition());
             if (node.isInBounds(topLeft, bottomRight)) {
-                guiHandler.passElementType(GUI.NAVNODE, pos);
+                guiHandler.passElementType(GUI.NAVNODE);
                 return;
             }
         }    
         if (state.getLoadedMapInfo().getPOIDescription(pos,
                 state.getClickRadius(), state.getDetailLevel()) != null) {
-            guiHandler.passElementType(GUI.POI, pos);
+            guiHandler.passElementType(GUI.POI);
             return;
         } 
         if(state.getLoadedMapInfo().getFavoriteDescription(pos,
                 state.getDetailLevel(), state.getClickRadius()) != null) {
-            guiHandler.passElementType(GUI.FAVORITE, pos);
+            guiHandler.passElementType(GUI.FAVORITE);
             return;
         }
-        guiHandler.passElementType(GUI.FREEMAPSPACE, pos);
+        guiHandler.passElementType(GUI.FREEMAPSPACE);
     }
     
     public void passPOIDescription(Coordinates pos) {   
         POIDescription description = state.getLoadedMapInfo().getPOIDescription(pos, 
                 state.getClickRadius(), state.getDetailLevel());
         if (description != null) {
-            guiHandler.showPOIDescription(description, pos);
+            guiHandler.passDescription(description);
         }
     }
 
@@ -399,7 +399,7 @@ public class Controller {
         POIDescription description = state.getLoadedMapInfo().getFavoriteDescription(pos,
                 state.getDetailLevel(), state.getClickRadius());
         if (description != null) {
-            guiHandler.showFavDescription(description);
+            guiHandler.passDescription(description);
         }
     }
     
@@ -461,9 +461,9 @@ public class Controller {
         }
     }
     
-    public void render(Context context, int zoomLevel) {
-        state.setDetailLevel(zoomLevel);
-        renderer.render(context, zoomLevel); 
+    public void render(Context context) {
+        state.setDetailLevel(context.getZoomlevel());
+        renderer.render(context); 
     }
     
     public void switchMapMode() {

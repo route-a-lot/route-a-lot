@@ -30,7 +30,7 @@ public class Listeners {
     public List<GeneralListener> switchMapMode;
     public List<GeneralListener> poiDescription;
     public List<GeneralListener> getNavNodeDescription;
-    public List<GeneralListener> autoCompletition;
+    public List<GeneralListener> autoCompletion;
     public List<GeneralListener> deleteMap;
     public List<GeneralListener> favDescription;
     
@@ -60,7 +60,7 @@ public class Listeners {
         switchMapMode = new ArrayList<GeneralListener>();
         poiDescription = new ArrayList<GeneralListener>();
         getNavNodeDescription = new ArrayList<GeneralListener>();
-        autoCompletition = new ArrayList<GeneralListener>();
+        autoCompletion = new ArrayList<GeneralListener>();
         deleteMap = new ArrayList<GeneralListener>();
         favDescription = new ArrayList<GeneralListener>();
     }
@@ -131,8 +131,8 @@ public class Listeners {
     public void addGetNavNodeDescriptionListener(GeneralListener getNavNodeDescriptionListener) {
         getNavNodeDescription.add(getNavNodeDescriptionListener);
     }
-    public void addAutoCompletitionListener(GeneralListener autoCompletitionListener) {
-        autoCompletition.add(autoCompletitionListener);
+    public void addAutoCompletionListener(GeneralListener autoCompletionListener) {
+        autoCompletion.add(autoCompletionListener);
     }
     public void addDeleteMapListener(GeneralListener deleteMapListener) {
         deleteMap.add(deleteMapListener);

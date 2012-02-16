@@ -40,7 +40,8 @@ public class Renderer3D extends Renderer {
      * @param renderingContext an OpenGL rendering context
      */
     @Override
-    public void render(Context context, int detail) {
+    public void render(Context context) {
+        int detail = context.getZoomlevel();
         int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");
@@ -124,7 +125,15 @@ public class Renderer3D extends Renderer {
         // Copy route and navPoints into fullRouteList
         List<Node> fullRouteList = new ArrayList<Node>(route.size());
         Iterator<Selection> navNodes = navPoints.iterator();
+        // add starting point
         Selection selection = navNodes.next();
+        fullRouteList.add(new Node(selection.getPosition()));
+        fullRouteList.add(new Node(Coordinates.interpolate(
+                mapInfo.getNode(selection.getFrom()).getPos(),
+                mapInfo.getNode(selection.getTo()).getPos(),
+                selection.getRatio())));
+        selection = (navNodes.hasNext()) ? navNodes.next() : null;
+        // add other navnodes / route nodes
         for (int i = 0; i < route.size(); i++) {
             int currentRouteNode = route.get(i);
             fullRouteList.add(mapInfo.getNode(currentRouteNode));
@@ -186,6 +195,16 @@ public class Renderer3D extends Renderer {
         }
         gl.glEnd();
         gl.glEnable(GL.GL_DEPTH_TEST);
+
+        // FLAGS
+        renderFlag(context, projection, navPoints.get(0).getPosition(), new float[]{0, 0.8f, 0}, 10f);
+        if (navPoints.size() > 1) { 
+            renderFlag(context, projection, navPoints.get(navPoints.size() - 1).getPosition(),
+                    new float[]{0.8f, 0, 0}, 10f);
+        }
+        for (int i = 1; i < navPoints.size() - 1; i++) {
+            renderFlag(context, projection, navPoints.get(i).getPosition(), new float[]{1, 1, 0}, 5f);
+        }
     }
     
     private static void drawVertex(GL gl, Projection projection, Coordinates point) {
@@ -194,5 +213,25 @@ public class Renderer3D extends Renderer {
                         projection.localCoordinatesToGeoCoordinates(point))
                 + ROUTE_HEIGHT_OFFSET);
     }
-       
+    
+    private static void renderFlag(Context3D context, Projection projection, Coordinates position, float[] color, float size) {
+        float height = State.getInstance().getLoadedHeightmap().getHeight(
+                        projection.localCoordinatesToGeoCoordinates(position));
+        GL gl = context.getGL();
+        gl.glPushMatrix();
+        gl.glTranslatef(position.getLongitude(), position.getLatitude(), height);
+        float zoom = context.getZoomlevel() * context.getZoomlevel();
+        gl.glScalef(size * zoom, size * zoom, size * zoom);
+        gl.glBegin(GL.GL_TRIANGLE_FAN);  
+            gl.glColor3f(1, 1, 1);
+            gl.glVertex3f(0, 0, 0);
+            gl.glColor3f(color[0], color[1], color[2]);
+            gl.glVertex3f(-1, -1, 1);
+            gl.glVertex3f(-1, 1, 1);
+            gl.glVertex3f(1, 1, 1);
+            gl.glVertex3f(1, -1, 1);
+            gl.glVertex3f(-1, -1, 1);
+        gl.glEnd();
+        gl.glPopMatrix();
+    }      
 }

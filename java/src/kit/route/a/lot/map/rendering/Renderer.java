@@ -62,7 +62,8 @@ public class Renderer {
      * @param detail
      *            level of detail of the map view
      */
-    public void render(Context context, int detail) {
+    public void render(Context context) {
+        int detail = context.getZoomlevel();
         int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");

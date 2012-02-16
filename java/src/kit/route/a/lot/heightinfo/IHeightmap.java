@@ -43,6 +43,6 @@ public interface IHeightmap {
      * @param bottomRight the south western corner of the section
      * @param heightdata the target array (Dimension: [lon][lat])
      */
-    public void reduceSection(Coordinates topLeft, Coordinates bottomRight, float[][] heightdata);
+    public void reduceSection(Coordinates topLeft, Coordinates bottomRight, float[][] heightdata, int heightBorder);
 
 }

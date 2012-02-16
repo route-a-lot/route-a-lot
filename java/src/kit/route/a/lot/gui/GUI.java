@@ -320,7 +320,7 @@ public class GUI extends JFrame {
                     popUpX = startPoint.getX();
                     popUpY = startPoint.getY() + startPoint.getHeight();
                     popUpFieldPosition = 0;
-                    Listeners.fireEvent(listeners.autoCompletition, new TextEvent(startPoint.getText()));
+                    Listeners.fireEvent(listeners.autoCompletion, new TextEvent(startPoint.getText()));
                 } else {
                     enterPressed = false;
                 }
@@ -344,7 +344,7 @@ public class GUI extends JFrame {
                     popUpX = endPoint.getX();
                     popUpY = endPoint.getY() + endPoint.getHeight();
                     popUpFieldPosition = navPointsList.size() - 1;
-                    Listeners.fireEvent(listeners.autoCompletition, new TextEvent(endPoint.getText()));
+                    Listeners.fireEvent(listeners.autoCompletion, new TextEvent(endPoint.getText()));
                 } else {
                     enterPressed = false;
                 }
@@ -711,7 +711,7 @@ public class GUI extends JFrame {
                             popUpFieldPosition = i + 1;
                         }
                     }
-                    Listeners.fireEvent(listeners.autoCompletition, new TextEvent(navPointField.getText()));
+                    Listeners.fireEvent(listeners.autoCompletion, new TextEvent(navPointField.getText()));
                 } else {
                     enterPressed = false;
                 }
@@ -863,16 +863,12 @@ public class GUI extends JFrame {
         repaint();
     }
     
-    public void popUpTrigger(int itemType, Coordinates position) {
-        map.popUpTriggered(itemType, position);
+    public void popUpTrigger(int itemType) {
+        map.triggerPopup(itemType);
     }
     
-    public void showPOIDescription(POIDescription description) {
-        map.showPOIDescription(description);
-    }
-    
-    public void showFavDescription(POIDescription description) {
-        map.showFavDescription(description);
+    public void passDescription(POIDescription description) {
+        map.passDescription(description);
     }
     
     public void showNavNodeDescription(String description, int navNodeIndex) {

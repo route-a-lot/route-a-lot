@@ -8,22 +8,9 @@ public class ChangeViewEvent extends GeneralEvent {
      * the context which view has changed
      */ 
     private Context context;
-    
-    /*
-     * describes the factor, the zoomlevel was changed:
-     * -1: zoom out
-     * 0: no change
-     * 1: zoom in
-     */
-    private int zoomlevel;
    
-    public ChangeViewEvent(Context context, int zoomlevel) {
+    public ChangeViewEvent(Context context) {
         this.context = context;
-        this.zoomlevel = zoomlevel;
-    }
-    
-    public int getZoomlevel() {
-        return zoomlevel;
     }
 
     public Context getContext() {

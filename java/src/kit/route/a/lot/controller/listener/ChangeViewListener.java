@@ -16,7 +16,7 @@ public class ChangeViewListener implements GeneralListener {
     @Override
     public void handleEvent(GeneralEvent event) {
         if(event instanceof ChangeViewEvent) {
-            ctrl.render(((ChangeViewEvent) event).getContext(), ((ChangeViewEvent) event).getZoomlevel());
+            ctrl.render(((ChangeViewEvent) event).getContext());
         }
     }
 

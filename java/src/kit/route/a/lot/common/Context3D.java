@@ -4,15 +4,15 @@ import javax.media.opengl.*;
 
 public class Context3D extends Context {
     
-    private GLAutoDrawable output;
+    private GL gl;
  
-    public Context3D(Coordinates topLeft, Coordinates bottomRight, GLAutoDrawable surface) {
-        super(topLeft, bottomRight);
-        output = surface;
+    public Context3D(Coordinates topLeft, Coordinates bottomRight, GL gl, int zoomlevel) {
+        super(topLeft, bottomRight, zoomlevel);
+        this.gl = gl;
     }
 
     public GL getGL() {
-        return output.getGL();
+        return this.gl;
     } 
     
 }

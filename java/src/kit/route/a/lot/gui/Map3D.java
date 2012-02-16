@@ -2,6 +2,7 @@ package kit.route.a.lot.gui;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.nio.FloatBuffer;
 
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
@@ -56,27 +57,7 @@ public class Map3D extends Map implements GLEventListener {
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
         gl.glFogf(GL_FOG_START, 0.6f * MAX_DISTANCE);
         gl.glFogf(GL_FOG_END, MAX_DISTANCE);
-        gl.glFogfv(GL_FOG_COLOR, new float[]{0,0,0,1f}, 0);
-        
-        /*gl.glEnable(GL.GL_LIGHTING);
-        gl.glEnable(GL.GL_LIGHT1);
-        
-        float SHINE_ALL_DIRECTIONS = 1;
-        float[] lightPos = {2, 2, 5, SHINE_ALL_DIRECTIONS};
-        float[] lightColorAmbient = {0.5f, 0.5f, 0.5f, 1f};
-        float[] lightColorSpecular = {0.8f, 0.8f, 0.8f, 1f};
-
-        // Set light parameters.
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_POSITION, lightPos, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_AMBIENT, lightColorAmbient, 0);
-        gl.glLightfv(GL.GL_LIGHT1, GL.GL_SPECULAR, lightColorSpecular, 0);
-
-        // Set material properties.
-        float[] rgba = {1f, 1f, 1f};
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_AMBIENT, rgba, 0);
-        gl.glMaterialfv(GL.GL_FRONT, GL.GL_SPECULAR, rgba, 0);
-        gl.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, 0.5f);
-        //*/
+        gl.glFogfv(GL_FOG_COLOR, new float[]{0,0,0,1f}, 0);     
     }
     
     @Override
@@ -85,7 +66,6 @@ public class Map3D extends Map implements GLEventListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity(); 
         gl.glScalef(1f, -1f, 1f);
-
              
         gl.glRotatef(rotationHorizontal, 0, 0, 1);
         double rotHRadians = (float) Math.toRadians(rotationHorizontal);
@@ -96,7 +76,7 @@ public class Map3D extends Map implements GLEventListener {
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
         Listeners.fireEvent(gui.getListeners().viewChanged,
-                new ChangeViewEvent(new Context3D(topLeft, bottomRight, g), zoomlevel));
+                new ChangeViewEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));
     }
 
     @Override
@@ -105,8 +85,7 @@ public class Map3D extends Map implements GLEventListener {
     @Override
     public void reshape(GLAutoDrawable g, int x, int y, int width, int height) {
         calculateView();
-        GL gl = g.getGL();
-        
+        GL gl = g.getGL(); 
         gl.glMatrixMode(GL.GL_PROJECTION);
         gl.glLoadIdentity();
         (new GLU()).gluPerspective(VIEW_ANGLE, width/(float)height, 0.01, MAX_DISTANCE);
@@ -120,12 +99,14 @@ public class Map3D extends Map implements GLEventListener {
     public void mouseDragged(MouseEvent e) {      
         float diffX = e.getX() - oldMousePosX;
         float diffY = e.getY() - oldMousePosY;
-        if ((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0) {
+        if ((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) != 0
+                || ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0 
+                        && e.isControlDown())) {
             rotationHorizontal += ROTATION_SPEED * diffX;
             rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
             rotationVertical = Util.clip(rotationVertical + diffY, 0, 60);
         }    
-        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0 && !e.isControlDown()) {
             float shareY = (float) Math.cos(Math.toRadians(rotationHorizontal));
             float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));            
             Coordinates movement = new Coordinates(shareY * diffY - shareX * diffX,
@@ -133,6 +114,29 @@ public class Map3D extends Map implements GLEventListener {
             getCenter().add(movement.scale(-Projection.getZoomFactor(zoomlevel)));                 
         }      
         super.mouseDragged(e);
+    }
+
+    @Override
+    protected Coordinates getPosition(int x, int y) {
+        Coordinates result = new Coordinates(y - canvas.getHeight() / 2, x - canvas.getWidth() / 2);
+        return result.scale(Projection.getZoomFactor(zoomlevel)).add(getCenter());
+        
+        /*GL gl = ((GLJPanel) canvas).getGL();// TODO doesnt work properly
+           
+        y = canvas.getHeight() - y;
+        double[] model = new double[16];
+        gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
+        double[] proj = new double[16];
+        gl.glGetDoublev(GL_PROJECTION_MATRIX, proj, 0);
+        int[] viewport = new int[4];
+        gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);    
+        float[] z = new float[1];
+        gl.glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, FloatBuffer.wrap(z));
+        System.out.println(x + " / " + y + " / " + z[0]); 
+        double[] result = new double[3];
+        (new GLU()).gluUnProject((double) x, (double) y, (double) z[0],
+                model, 0, proj, 0, viewport, 0, result, 0);
+        return new Coordinates((float) result[0], (float) result[1]);//*/
     }
     
 }

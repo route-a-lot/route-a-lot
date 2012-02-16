@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -22,8 +23,8 @@ import javax.swing.JTextField;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.controller.listener.GeneralListener;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
-import kit.route.a.lot.gui.event.DeleteFavoriteEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
@@ -31,18 +32,26 @@ import kit.route.a.lot.gui.event.PositionEvent;
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {
 
     private static final long serialVersionUID = 1L;   
-    
+   
+    private static final String TEXT_EMPTY = ""; 
+    private static final String TEXT_POI = " POI:"; 
+    private static final String TEXT_FAVORITE = " Favorit:";
+    private static final String TEXT_NAVNODE = " Navigationspunkt:";
+    private static final String TEXT_INSERT_NAME = "Name hier einfügen...";
+    private static final String TEXT_INSERT_DESCRIPTION = "Beschreibung hier einfügen...";
+    private static final String TEXT_NAVNODES = "NavNodes";
+    private static final String TEXT_OK = "OK";
+    private static final String TEXT_AS_START = "als Start";
+    private static final String TEXT_AS_DESTINATION = "als Ziel";
+    private static final String TEXT_AS_WAYPOINT = "als Zwischenhalt";
+    private static final String TEXT_AS_FAVORITE = "als Favorit";
+    private static final String TEXT_DEL_FAVORITE = "lösche Favorit";
+    private static final String TEXT_DEL_NAVNODE = "lösche Navigationspunkt";
+    private static final String TEXT_DESCRIPTION_NAME = "<html><div width='80px'><u>%1$s</u></div></html>";
+    private static final String TEXT_DESCRIPTION_BODY = "<html><div width='80px'>%1$s</div></html>";
     protected int oldMousePosX;
     protected int oldMousePosY;
-    private int popupXPos;
-    private int popupYPos;
-    private int oldPopUpXPos;
-    private int oldPopUpYPos;
-    private int newPopUpXPos;
-    private int newPopUpYPos;
     private Coordinates center;
-    private Coordinates popUpPosition;
-    private boolean popupTrigger = false;
     protected int zoomlevel = 3;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
@@ -58,13 +67,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private JMenuItem deleteNavPoint;
     private JMenuItem deleteFavoriteItem;
     private JLabel popUpName;
-    private JLabel showPoiName;
-    private JLabel showPoiDescription;
+    private JLabel labelPOIName;
+    private JLabel labelPOIDescription;
     private JTextField favoriteNameField;
     private JTextField favoriteDescriptionField;
     private JButton addFavoriteButton;
     private MouseEvent clickEvent;
-    private Component canvas;
+    protected Component canvas;
     
     /**
      * Creates a map canvas, including its context menu.
@@ -85,12 +94,12 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         
         //Context menu:
         popUpName = new JLabel();
-        startItem = new JMenuItem("als Start");
-        endItem = new JMenuItem("als Ziel");
-        stopoverItem = new JMenuItem("als Zwischenhalt");
-        addFavoriteItem = new JMenuItem("als Favorit");  
-        deleteFavoriteItem = new JMenuItem("lösche Favorit");
-        deleteNavPoint = new JMenuItem("lösche Navigationspunkt");
+        startItem = new JMenuItem(TEXT_AS_START);
+        endItem = new JMenuItem(TEXT_AS_DESTINATION);
+        stopoverItem = new JMenuItem(TEXT_AS_WAYPOINT);
+        addFavoriteItem = new JMenuItem(TEXT_AS_FAVORITE);  
+        deleteFavoriteItem = new JMenuItem(TEXT_DEL_FAVORITE);
+        deleteNavPoint = new JMenuItem(TEXT_DEL_NAVNODE);
         startItem.setBackground(Color.WHITE);
         endItem.setBackground(Color.WHITE);
         stopoverItem.setBackground(Color.WHITE);
@@ -105,24 +114,26 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void actionPerformed(ActionEvent e) {
                 favoriteNameField.setText("Name hier einfügen...");
                 favoriteDescriptionField.setText("Beschreibung hier einfügen...");
-                favoriteMenu.show(canvas, popupXPos - canvas.getX(), popupYPos - canvas.getY());
+                favoriteMenu.show(canvas, clickEvent.getX() - canvas.getX(),
+                        clickEvent.getY() - canvas.getY());
             }
         });
         deleteFavoriteItem.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
-                Listeners.fireEvent(gui.getListeners().deleteFavPoint, new DeleteFavoriteEvent(popUpPosition));
+            public void actionPerformed(ActionEvent e) {
+                Listeners.fireEvent(gui.getListeners().deleteFavPoint,
+                        new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
-        deleteNavPoint.addActionListener(new ActionListener() {
-            
+        deleteNavPoint.addActionListener(new ActionListener() {         
             @Override
             public void actionPerformed(ActionEvent e) {
-                Listeners.fireEvent(gui.getListeners().deleteNavPoint, new PositionEvent(popUpPosition));
+                Listeners.fireEvent(gui.getListeners().deleteNavPoint,
+                        new PositionEvent(getPosition(clickEvent.getY(), clickEvent.getX())));
             }
         });
         
-        navNodeMenu = new JPopupMenu("NavNodes");
+        navNodeMenu = new JPopupMenu(TEXT_NAVNODES);
         navNodeMenu.setBackground(Color.WHITE);
         navNodeMenu.add(popUpName);
         navNodeMenu.add(startItem);
@@ -132,26 +143,28 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         navNodeMenu.add(deleteFavoriteItem);
         navNodeMenu.add(deleteNavPoint);
         
-        showPoiDescription = new JLabel();
-        showPoiName = new JLabel();
+        labelPOIDescription = new JLabel();
+        labelPOIName = new JLabel();
         
         descriptionMenu = new JPopupMenu();
         descriptionMenu.setBackground(Color.WHITE);
-        descriptionMenu.add(showPoiName);
-        descriptionMenu.add(showPoiDescription);
+        descriptionMenu.add(labelPOIName);
+        descriptionMenu.add(labelPOIDescription);
         
-        favoriteNameField = new JTextField("Name hier einfügen...");
-        favoriteDescriptionField = new JTextField("Beschreibung hier einfügen...");
-        addFavoriteButton = new JButton("Ok");
+        favoriteNameField = new JTextField(TEXT_INSERT_NAME);
+        favoriteDescriptionField = new JTextField(TEXT_INSERT_DESCRIPTION);
+        addFavoriteButton = new JButton(TEXT_OK);
         addFavoriteButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if(!favoriteNameField.getText().equals("Name hier einfügen...") && !favoriteNameField.getText().equals("")) {
-                    if(favoriteDescriptionField.getText().equals("Beschreibung hier einfügen...") || favoriteDescriptionField.getText().equals("")) {
-                        Listeners.fireEvent(gui.getListeners().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), ""));
-                    } else {
-                        Listeners.fireEvent(gui.getListeners().addFav, new AddFavoriteEvent(popUpPosition, favoriteNameField.getText(), favoriteDescriptionField.getText()));
+            public void actionPerformed(ActionEvent e) {
+                String name = favoriteNameField.getText();
+                if(!name.equals(TEXT_INSERT_NAME) && name.length() != 0) {
+                    String description = favoriteDescriptionField.getText();
+                    if (description.equals(TEXT_INSERT_DESCRIPTION) || description.length() == 0) {
+                        description = TEXT_EMPTY;
                     }
+                    Listeners.fireEvent(gui.getListeners().addFav, new AddFavoriteEvent(
+                            getPosition(clickEvent.getX(), clickEvent.getY()), name, description));
                 }
                 favoriteMenu.setVisible(false);
             }
@@ -164,28 +177,27 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         favoriteMenu.add(addFavoriteButton);
         
         canvas.addMouseListener(new MouseAdapter() {          
-            @Override // used for dragging, relocate?
+            @Override
             public void mousePressed(MouseEvent me) {
-                popupXPos = me.getX();
-                popupYPos = me.getY();
                 oldMousePosX = me.getX(); 
                 oldMousePosY = me.getY();
-                newPopUpXPos = me.getX();
-                newPopUpYPos = me.getY();
                 checkPopup(me);
-                oldPopUpXPos = me.getX();
-                oldPopUpYPos = me.getY();
             }     
             @Override
             public void mouseReleased(MouseEvent me) {
                 mousePressed(me);
             }
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                mousePressed(me);
-            }
         });
     }
+    
+    /**
+     * Converts pixel coordinates into the equivalent projected geo reference system coordinates. The pixel
+     * origin is top left corner of the map.
+     * @param x the horizontal pixel coordinate
+     * @param y the vertical pixel coordinate
+     * @return equivalent geo coordinates
+     */
+    protected abstract Coordinates getPosition(int x, int y);
     
     /**
      * Creates and returns the underlying map drawing surface.
@@ -251,16 +263,27 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     }
         }    
         Listeners.fireEvent(gui.getListeners().targetSelected,
-                new SelectNavNodeEvent(getCoordinates(popupXPos - canvas.getX(), popupYPos - canvas.getY()), pos));
+                new SelectNavNodeEvent(getPosition(clickEvent.getX() - canvas.getX(),
+                        clickEvent.getY() - canvas.getY()), pos));
         canvas.repaint();
     }
     
     /**
      * Opens the map context menu if appropriate. Fires a WhatWasClicked event.
      */
-    private void checkPopup(MouseEvent e) {
-        clickEvent = e;
-        Listeners.fireEvent(gui.getListeners().clickPosition, new PositionEvent(getCoordinates(popupXPos, popupYPos)));
+    private void checkPopup(MouseEvent me) {
+        /*float deltaX = (clickEvent == null) ? 0 : me.getX() - clickEvent.getX();
+        float deltaY = (clickEvent == null) ? 0 : me.getY() - clickEvent.getY();
+        System.out.println(deltaX + ", " + deltaY);
+        if ((deltaX > 0 && deltaY > 0)
+            && ((navNodeMenu.isVisible() && deltaX < navNodeMenu.getWidth() && deltaY < navNodeMenu.getHeight())
+                || (descriptionMenu.isVisible() && deltaX < descriptionMenu.getWidth() && deltaY < navNodeMenu.getHeight()))) {
+            System.out.println("Cannot open!");
+            return;
+        }//*/
+        clickEvent = me;
+        Listeners.fireEvent(gui.getListeners().clickPosition,
+                new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
     }
       
     /**
@@ -278,7 +301,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        Coordinates clickPos = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
+        Coordinates clickPos = getPosition(e.getX() - canvas.getX(), e.getY() - canvas.getY());
         int yDiff = e.getY() - canvas.getY() - canvas.getBounds().height / 2;
         int xDiff = e.getX() - canvas.getX() - canvas.getBounds().width / 2;
         setZoomlevel(zoomlevel + e.getWheelRotation());
@@ -302,93 +325,41 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * updates the context.
      */
     void calculateView() {
-        // jedit getVisibleRect -> getBounds
-        topLeft.setLatitude(center.getLatitude() - canvas.getBounds().height
-                * Projection.getZoomFactor(zoomlevel) / 2.f);
-        topLeft.setLongitude(center.getLongitude() - canvas.getBounds().width
-                * Projection.getZoomFactor(zoomlevel) / 2.f);
-        bottomRight.setLatitude(canvas.getBounds().height * Projection.getZoomFactor(zoomlevel) / 2.f
-                + center.getLatitude());
-        bottomRight.setLongitude(canvas.getBounds().width * Projection.getZoomFactor(zoomlevel) / 2.f
-                + center.getLongitude());
+        bottomRight = new Coordinates(canvas.getHeight(), canvas.getWidth())
+                            .scale(Projection.getZoomFactor(zoomlevel) / 2f);
+        topLeft = bottomRight.clone().scale(-1).add(center);
+        bottomRight.add(center);
         canvas.repaint(); 
     }
-    
-    /**
-     * Converts pixel coordinates into the equivalent projected geo reference system coordinates. The pixel
-     * origin is top left corner of the map.
-     * @param x the horizontal pixel coordinate
-     * @param y the vertical pixel coordinate
-     * @return equivalent geo coordinates
-     */
-    private Coordinates getCoordinates(int x, int y) {
-        Coordinates result = new Coordinates();
-        // jedit getVisibleRect -> getBounds
-        result.setLatitude(center.getLatitude() + (y - canvas.getBounds().height / 2)
-                * Projection.getZoomFactor(zoomlevel));
-        result.setLongitude(center.getLongitude() + (x - canvas.getBounds().width / 2)
-                * Projection.getZoomFactor(zoomlevel));
-        return result;
-    }
-    
-    public void popUpTriggered(int itemType, Coordinates position) {
-        popUpPosition = position;
+        
+    public void triggerPopup(int itemType) {
         descriptionMenu.setVisible(false);
         if (clickEvent.isPopupTrigger()) {
-            popupTrigger = true;
-            descriptionMenu.setVisible(false);
+            String name = TEXT_EMPTY;
             switch(itemType) {
-                case 0: popUpName.setText("");
-                    break;
-                case 1: popUpName.setText(" POI:");
-                    break;
-                case 2: popUpName.setText(" Favorit");
-                    break;
-                case 3: popUpName.setText(" Navigationspunkt:");
-                    break;
+                case GUI.POI: name = TEXT_POI; break;
+                case GUI.FAVORITE: name = TEXT_FAVORITE; break;
+                case GUI.NAVNODE: name = TEXT_NAVNODE; break;
             }
-            startItem.setVisible(itemType == 0 || itemType == 1 || itemType == 2);
-            endItem.setVisible(itemType == 0 || itemType == 1 || itemType == 2);
-            stopoverItem.setVisible(itemType == 0 || itemType == 1 || itemType == 2);
-            addFavoriteItem.setVisible(itemType == 0);
-            deleteFavoriteItem.setVisible(itemType == 2);
-            deleteNavPoint.setVisible(itemType == 3);
-            navNodeMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-        } else if(popupTrigger == false && ((oldPopUpXPos >= newPopUpXPos - 2 && oldPopUpXPos <= newPopUpXPos + 2)
-                || (oldPopUpYPos == newPopUpYPos - 2 && oldPopUpYPos == newPopUpYPos + 2))){
-            descriptionMenu.setVisible(false);
-            popupXPos = clickEvent.getX();
-            popupYPos = clickEvent.getY();
-            switch(itemType) {
-                case 1: 
-//                    showPoiName.setText("POI");
-//                    showPoiDescription.setText("<html><div width='80px'>"+"safwadsw afwadwa swafafad sawd"+"</div></html>");
-//                    descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-                    Listeners.fireEvent(gui.getListeners().poiDescription, new PositionEvent(position));
-                    break;
-                case 2:
-                    Listeners.fireEvent(gui.getListeners().favDescription, new PositionEvent(position));
-                    break;
-                default: showPoiDescription.setText("");
-                    showPoiName.setText("");
-                    descriptionMenu.setVisible(false);
-                    break;
-            }
-        } else {
-            popupTrigger = false;
+            popUpName.setText(name);
+            startItem.setVisible(itemType != GUI.NAVNODE);
+            endItem.setVisible(itemType != GUI.NAVNODE);
+            stopoverItem.setVisible(itemType != GUI.NAVNODE);
+            addFavoriteItem.setVisible(itemType == GUI.FREEMAPSPACE);
+            deleteFavoriteItem.setVisible(itemType == GUI.FAVORITE);
+            deleteNavPoint.setVisible(itemType == GUI.NAVNODE);
+            navNodeMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
+        } else if (itemType == GUI.FAVORITE || itemType == GUI.POI){
+            List<GeneralListener> listeners = (itemType == GUI.POI)
+                ? gui.getListeners().poiDescription : gui.getListeners().favDescription;
+            Listeners.fireEvent(listeners, new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
+            descriptionMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
         }
     }
     
-    public void showPOIDescription(POIDescription poiDescription) {
-        showPoiName.setText("<html><div width='80px'><u>" + poiDescription.getName() + "</u></div></html>");
-        showPoiDescription.setText("<html><div width='80px'>" + poiDescription.getDescription() + "</div></html>");
-        descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
-    }
-    
-    public void showFavDescription(POIDescription favDescription) {
-        showPoiName.setText("<html><div width='160px'><u>" + favDescription.getName() + "</u></div></html>");
-        showPoiDescription.setText("<html><div width='80px'>" + favDescription.getDescription() + "</div></html>");
-        descriptionMenu.show(clickEvent.getComponent(), popupXPos, popupYPos);
+    public void passDescription(POIDescription description) {
+        labelPOIName.setText(String.format(TEXT_DESCRIPTION_NAME, description.getName()));
+        labelPOIDescription.setText(String.format(TEXT_DESCRIPTION_BODY, description.getDescription())); 
     }
 
 }

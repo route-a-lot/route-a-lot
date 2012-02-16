@@ -33,8 +33,8 @@ public class GUIHandler {
         gui.updateNavNodes(navPointsList);
     }
     
-    public void passElementType(int element, Coordinates pos){
-        gui.popUpTrigger(element, pos);
+    public void passElementType(int element){
+        gui.popUpTrigger(element);
     }
     
     
@@ -50,12 +50,8 @@ public class GUIHandler {
         //TODO
     }
     
-    public void showPOIDescription(POIDescription description, Coordinates pos) {
-        gui.showPOIDescription(description);
-    }
-    
-    public void showFavDescription(POIDescription description) {
-        gui.showFavDescription(description);
+    public void passDescription(POIDescription description) {
+        gui.passDescription(description);
     }
     
     public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {
@@ -161,8 +157,8 @@ public class GUIHandler {
         listeners.addGetNavNodeDescriptionListener(listener);
     }
     
-    public void addAutoCompletitionListener(GeneralListener listener) {
-        listeners.addAutoCompletitionListener(listener);
+    public void addAutoCompletionListener(GeneralListener listener) {
+        listeners.addAutoCompletionListener(listener);
     }
     
     public void addDeleteMapListener(GeneralListener listener) {

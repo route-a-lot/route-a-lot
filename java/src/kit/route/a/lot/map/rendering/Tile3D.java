@@ -15,25 +15,28 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Frustum;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 
 
 public class Tile3D extends Tile {
 
+    private static final int HEIGHT_BORDER = 1;
     private static final int HEIGHT_RESOLUTION = 64, GRAIN_RESOLUTION = 128;
-    private static final float GRAIN_INTENSITY = 0.05f;
-    private static final float[] COLOR_STAGES = {70, 200, 350, 520, 700, 900, 1100, 1250, 1400, 1750, 1800};
-    private static final float[][] COLORS = {
-            {143, 189, 143}, {151, 253, 153}, 
-            {239, 222, 166}, {227, 187, 138}, {174, 144, 115},
-            {245, 166, 127}, {203, 115, 76}, {126, 69, 40},
-            {200, 200, 200}, {100, 100, 100}, {255, 255, 255}};
+    private static final float GRAIN_INTENSITY = 0.05f, SLOPE_SHADE_FACTOR = 1f;
+    private static final float[] COLOR_STAGES =
+        {70, 200, 350, 520, 700, 900, 1100, 1250, 1400, 1750, 1800};
+    private static final float[][] COLORS = 
+        {{143, 189, 143}, {151, 253, 153}, 
+         {239, 222, 166}, {227, 187, 138}, {174, 144, 115},
+         {245, 166, 127}, {203, 115, 76}, {126, 69, 40},
+         {200, 200, 200}, {100, 100, 100}, {255, 255, 255}};
     
     private float[][] heights;
-    //private float[][][] normals;
     private float minHeight = -500, maxHeight = 8000;
-    private int textureID = -1, displaylistID = -1, grainTextureID = -1;
-
+    private int textureID = -1, heightTextureID = -1, displaylistID = -1;
+    private static int grainTextureID = -1;
+    
     public Tile3D(Coordinates topLeft, float width, int detail) {
         super(topLeft, width, detail);
     }
@@ -41,10 +44,31 @@ public class Tile3D extends Tile {
     @Override
     protected void reset() {
         super.reset();
-        heights = new float[HEIGHT_RESOLUTION + 1][HEIGHT_RESOLUTION + 1];
-        //normals = new float[HEIGHT_RESOLUTION + 1][HEIGHT_RESOLUTION + 1][];
+        heights = new float[HEIGHT_RESOLUTION + 2*HEIGHT_BORDER][HEIGHT_RESOLUTION + 2*HEIGHT_BORDER];
     }
 
+    public void freeResources(GL gl) {
+        if (textureID >= 0) {
+            gl.glDeleteTextures(1, new int[] { textureID }, 0);
+        }
+        if (heightTextureID >= 0) {
+            gl.glDeleteTextures(1, new int[] { heightTextureID }, 0);
+        }
+        if (displaylistID >= 0) {
+            gl.glDeleteLists(displaylistID, 1);
+        }
+    }
+    
+    boolean isInFrustum(Frustum frustum) {
+        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
+        return (frustum == null) || frustum.isBoxWithin(
+                new float[] {center.getLongitude(), center.getLatitude(),
+                        0.5f * (minHeight + maxHeight) },
+                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
+                        center.getLatitude() - getTopLeft().getLatitude(),
+                        0.5f * (maxHeight - minHeight)});
+    }
+    
     @Override
     public void prerender() {
         super.prerender();
@@ -52,28 +76,17 @@ public class Tile3D extends Tile {
         State.getInstance().getLoadedHeightmap().reduceSection(
                 projection.localCoordinatesToGeoCoordinates(getTopLeft()),
                 projection.localCoordinatesToGeoCoordinates(getBottomRight()),
-                heights);
+                heights, HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
-        for (int x = 0; x <= HEIGHT_RESOLUTION; x++) {
-            for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {
+        for (int x = 0; x < HEIGHT_RESOLUTION + 0; x++) {
+            for (int y = 0; y < HEIGHT_RESOLUTION + 0; y++) {
                 if (heights[x][y] < minHeight) {
-                    minHeight = heights[x][y];
+                    minHeight = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
                 }
                 if (heights[x][y] > maxHeight) {
-                    maxHeight = heights[x][y];
+                    maxHeight = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
                 }
-                /*float sx = heights[(x < HEIGHT_RESOLUTION) ? x+1 : x][y] - heights[(x > 0) ? x - 1 : x][y];
-                if (x == 0 || x == HEIGHT_RESOLUTION) {
-                    sx *= 2;
-                }
-                float sy = heights[x][(y < HEIGHT_RESOLUTION) ? y+1 : y] - heights[x][(y > 0) ? y - 1 : y];
-                if (y == 0 || y == HEIGHT_RESOLUTION) {
-                    sy *= 2;
-                }
-                normals[x][y] = new float[] {-sx, -sy, 20};
-                Util.normalize(normals[x][y]);//*/
-                //Util.getFaceNormal(normals[x][y], pa, pb, pc)
             }
         }
     }
@@ -83,15 +96,11 @@ public class Tile3D extends Tile {
         if (textureID < 0) {
             textureID = createTexture(gl, getImage(), false, true);
         }
+        if (heightTextureID == -1) {
+            createHeightTexture(gl);
+        }      
         if (grainTextureID < 0) {
-            BufferedImage grainImage = new BufferedImage(GRAIN_RESOLUTION, GRAIN_RESOLUTION, BufferedImage.TYPE_INT_RGB);
-            for (int x = 0; x < GRAIN_RESOLUTION; x++) {
-                for (int y = 0; y < GRAIN_RESOLUTION; y++) { 
-                    float random = (float)(Math.random() * GRAIN_INTENSITY) + (1 - GRAIN_INTENSITY);
-                    grainImage.setRGB(x, y, (new Color(random, random, random)).getRGB());
-                }
-            }
-            grainTextureID = createTexture(gl, grainImage, true, true);
+            createGrainTexture(gl);
         }
         // RENDER TILE FROM DISPLAY LIST, OR ELSE BUILD DISPLAY LIST
         if (displaylistID >= 0) {
@@ -105,45 +114,78 @@ public class Tile3D extends Tile {
                 gl.glActiveTexture(GL_TEXTURE1);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glBindTexture(GL_TEXTURE_2D, grainTextureID);
+                gl.glActiveTexture(GL_TEXTURE2);
+                gl.glEnable(GL_TEXTURE_2D);
+                gl.glBindTexture(GL_TEXTURE_2D, heightTextureID);
                 gl.glColor3f(1,1,1);
                 Coordinates topLeft = getTopLeft();
                 float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
                 Coordinates pos = new Coordinates();
-                float[] color = new float[3];
                 for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
                     gl.glBegin(GL_TRIANGLE_STRIP);
                     for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {            
                         for (int i = 0; i < 2; i++) {
                             pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                             pos.setLongitude(topLeft.getLongitude() + (x + i) * stepSize);
-                            float h = heights[x + i][y];
-                            getHeightColor(color, h);
-                            gl.glColor3f(color[0], color[1], color[2]);
-                            //float[] normal = normals[x + i][y];
-                            //gl.glNormal3f(normal[0], normal[1], normal[2]);
                             gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
                             gl.glMultiTexCoord2f(GL_TEXTURE1, (x + i) / (float) GRAIN_RESOLUTION, y / (float) GRAIN_RESOLUTION);
-                            gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), h);
+                            gl.glMultiTexCoord2f(GL_TEXTURE2, (x + i) / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
+                            gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER]);
                         }
                     }
                     gl.glEnd();
                 }
+                gl.glDisable(GL_TEXTURE_2D);
+                gl.glActiveTexture(GL_TEXTURE1);
                 gl.glDisable(GL_TEXTURE_2D);
                 gl.glActiveTexture(GL_TEXTURE0);
             gl.glEndList();
         }   
     }
     
-    boolean isInFrustum(Frustum frustum) {
-        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
-        return (frustum == null) || frustum.isBoxWithin(
-                new float[] {center.getLongitude(), center.getLatitude(),
-                        0.5f * (minHeight + maxHeight) },
-                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
-                        center.getLatitude() - getTopLeft().getLatitude(),
-                        0.5f * (maxHeight - minHeight)});
+    private void createHeightTexture(GL gl) {
+        BufferedImage heightImage = new BufferedImage(HEIGHT_RESOLUTION, HEIGHT_RESOLUTION,
+                BufferedImage.TYPE_INT_RGB);
+        Coordinates topLeft = getTopLeft();
+        float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
+        Coordinates pos = new Coordinates();
+        float[] color = new float[3];
+        for (int x = 0; x < HEIGHT_RESOLUTION; x++) { 
+            for (int y = 0; y < HEIGHT_RESOLUTION; y++) {            
+                    pos.setLatitude(topLeft.getLatitude() + y * stepSize);
+                    pos.setLongitude(topLeft.getLongitude() + x * stepSize);
+                    float h = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
+                    getHeightColor(color, h);
+                    float min = h, max = h;
+                    for (int i = -1; i < 2; i++) {
+                        for (int k = -1; k < 2; k++) {
+                            float height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER + k];
+                            min = Math.min(min, height);
+                            max = Math.max(max, height);
+                        }
+                    }
+                    float levelness = 1 - Util.clip(SLOPE_SHADE_FACTOR *(max - min) / stepSize, 0, 1);
+                    color[0] *= levelness;
+                    color[1] *= levelness;
+                    color[2] *= levelness;
+                    heightImage.setRGB(x, y, Util.RGBToInt(color));
+            }
+        }
+        heightTextureID = createTexture(gl, heightImage, false, true);
+    } 
+    
+    private static void createGrainTexture(GL gl) {
+        BufferedImage grainImage = new BufferedImage(GRAIN_RESOLUTION, GRAIN_RESOLUTION,
+                BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < GRAIN_RESOLUTION; x++) {
+            for (int y = 0; y < GRAIN_RESOLUTION; y++) { 
+                float random = (float)(Math.random() * GRAIN_INTENSITY) + (1 - GRAIN_INTENSITY);
+                grainImage.setRGB(x, y, (new Color(random, random, random)).getRGB());
+            }
+        }
+        grainTextureID = createTexture(gl, grainImage, true, true);
     }
-
+    
     private static void getHeightColor(float[] color, float height) {
         int col1 = COLOR_STAGES.length - 1, col2 = col1;
         for (int i = 1; i < COLOR_STAGES.length; i++) {
@@ -183,13 +225,4 @@ public class Tile3D extends Tile {
         return tex;
     }
     
-    public void freeResources(GL gl) {
-        if (textureID >= 0) {
-            gl.glDeleteTextures(1, new int[] { textureID }, 0);
-        }
-        if (displaylistID >= 0) {
-            gl.glDeleteLists(displaylistID, 1);
-        }
-    }
-
 }

@@ -4,18 +4,18 @@ import java.awt.Graphics;
 
 public class Context2D extends Context {
  
-    private Graphics output;   
+    private Graphics graphics;   
     
-    public Context2D(Coordinates topLeft, Coordinates bottomRight, Graphics surface) {
-        super(topLeft, bottomRight);
-        if (surface == null) {
+    public Context2D(Coordinates topLeft, Coordinates bottomRight, Graphics graphics, int zoomlevel) {
+        super(topLeft, bottomRight, zoomlevel);
+        if (graphics == null) {
             throw new IllegalArgumentException("Graphics not yet initialized.");
         }
-        output = surface;
+        this.graphics = graphics;
     }
 
     public Graphics getGraphics() {
-        return output;
+        return this.graphics;
     }
 
 }

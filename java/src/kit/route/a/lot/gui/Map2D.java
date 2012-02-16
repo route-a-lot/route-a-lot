@@ -30,7 +30,7 @@ public class Map2D extends Map  {
             public void paint(Graphics g) {
                 super.paint(g);           
                 Listeners.fireEvent(gui.getListeners().viewChanged,
-                        new ChangeViewEvent(new Context2D(topLeft, bottomRight, g), zoomlevel));
+                        new ChangeViewEvent(new Context2D(topLeft, bottomRight, g, zoomlevel)));
             }      
         };
         result.addComponentListener(new ComponentAdapter() {
@@ -52,6 +52,12 @@ public class Map2D extends Map  {
                 .scale(Projection.getZoomFactor(zoomlevel)));                      
         }      
         super.mouseDragged(e);
+    }
+
+    @Override
+    protected Coordinates getPosition(int x, int y) {
+        Coordinates result = new Coordinates(y - canvas.getHeight() / 2, x - canvas.getWidth() / 2);
+        return result.scale(Projection.getZoomFactor(zoomlevel)).add(getCenter());
     }
 
 }
