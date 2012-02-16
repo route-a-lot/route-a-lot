@@ -484,6 +484,7 @@ public class OSMLoader {
                             Integer newPolylineNode = idMap.get(osmId);
                             if (newPolylineNode == null) {
                                 logger.error("Node id is not known: id = " + attributes.getValue("ref"));
+                                return;
                             }
                             curPolylineNode = newPolylineNode;
                             curWayIds.add(curPolylineNode);
@@ -770,6 +771,7 @@ public class OSMLoader {
                             curPolylineNode = idMap.get(osmId);
                             if (curPolylineNode == null) {
                                 logger.error("Node id is not known: id = " + attributes.getValue("ref"));
+                                return;
                             }
                             inPolyline = true;
                             curWayIds.add(curPolylineNode);
