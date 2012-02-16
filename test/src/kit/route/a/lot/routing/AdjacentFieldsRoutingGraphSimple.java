@@ -2,6 +2,7 @@ package kit.route.a.lot.routing;
 
 import java.io.DataInputStream;import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -40,7 +41,6 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
                  sorted = false;
               }
          } 
-    
         edgesPos = new int[maxNodeID + 2];
         edgesPos[0] = 0;
         int index;
@@ -54,17 +54,22 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
         }
         edges = endID.clone();
         weights = weight.clone();
-        if(edges == null || weight == null || edgesPos == null) {
-            System.err.println("warum?");
-        }
     }
     
     
     //following functions are tested in another way
     @Override
-    public int getWeight(int first, int last) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int getWeight(int from, int to) {
+        for (int i = edgesPos[from]; i < edgesPos[from+1]; i++) {
+            if (edges[i] == to) {
+                if (weights[i] > 0) {
+                    return weights[i];
+                } else {
+                    return 1;
+                }
+            }
+        }
+        return 1;
     }
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte[] areas) {
@@ -100,8 +105,14 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
     }
     @Override
     public Collection<Integer> getAllNeighbors(int node) {
-        // TODO Auto-generated method stub
-        return null;
+        if (node >= edgesPos.length - 1 || node < 0) {
+            return new ArrayList<Integer>();
+        } 
+        Collection<Integer> relevantEdges = new ArrayList<Integer>();
+        for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
+            relevantEdges.add(edges[i]);
+        }
+        return relevantEdges;
     }
     @Override
     public void setArcFlag(int node, int node2, byte area) {

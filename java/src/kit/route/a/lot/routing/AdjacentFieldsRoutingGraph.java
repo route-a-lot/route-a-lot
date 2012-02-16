@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
+
 import org.apache.log4j.Logger;
 
 
@@ -230,9 +232,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public Collection<Integer> getAllNeighbors(int node) {
         // required for Precalculator.
-        if (node > edgesPos.length) {
+        if (node >= edgesPos.length - 1 || node < 0) {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
-            return null;
+            return new ArrayList<Integer>();
         } 
         Collection<Integer> relevantEdges = new ArrayList<Integer>();
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
@@ -242,7 +244,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
 
     public int getWeight(int from, int to) {
-        if (from < 0 || to < 0) {
+        if (from < 0 || to < 0 || from >= edgesPos.length - 1 || to >= edgesPos.length - 1) {
             logger.error("Can't get weights for negative ID's (" + from + "/" + to + ")");
             return -1;
         }
