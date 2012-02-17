@@ -13,33 +13,22 @@ import org.apache.log4j.Logger;
 
 public class Router {
 
-    // private static WeightCalculatorMock weightCalculator = new WeightCalculatorMock();
-
-    /**
-     * Operation calculateRoute
-     * 
-     * @return List<int>
-     */
-
     private static Logger logger = Logger.getLogger(Router.class);
 
-    public static List<Integer> calculateRoute() {
-            return simpleRoute();
+    public static List<Integer> calculateRoute(List<Selection> navigationNodes) {
+        return (navigationNodes.size() < 2) ? new ArrayList<Integer>(0) : simpleRoute(navigationNodes);
     }
     
-    public static List<Selection> optimizeRoute() {
-        // returns an optimized ordering of NavigationNodes
-        List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
-        Route route;
+    public static void optimizeRoute(List<Selection> navigationNodes) {
         int size = navigationNodes.size();
         if (size < 4) {
-            return navigationNodes;
+            return;
         }
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
                 // Fill the Matrix
-                route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
+                Route route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
                 if (route == null) {
                     logger.warn("Ignoring route ...");
                     routes[j][i] = -1;
@@ -63,7 +52,7 @@ public class Router {
             while(i + 1 < permutation.length) {
                 routeLength = routes[permutation[i]][permutation[++i]];
                 if (routeLength == -1) {
-                    logger.warn("Unroutable permutation: " + toString(permutation));
+                    logger.warn("Unroutable permutation: " + printPermutation(permutation));
                     // permutation is not routable
                     skip = true;
                     break;
@@ -81,15 +70,15 @@ public class Router {
             if (length < shortestLength
                     || shortestLength == -1) {
                 // We got a shorter permutation!
-                logger.debug("Length of shortest permutation (so far) " + toString(permutation) + " :" + length);
+                logger.debug("Length of shortest permutation (so far) " + printPermutation(permutation) + " :" + length);
                 shortest = permutation;
                 shortestLength = length;
             }
         }
-        return setSelection(shortest);
+        setSelection(navigationNodes, shortest);
     }
     
-    private static String toString(int[] permutation) {
+    private static String printPermutation(int[] permutation) {
         String result = "";
         for (int node: permutation) {
             result += node + " ";
@@ -97,30 +86,29 @@ public class Router {
         return result;
     }
 
-    private static List<Selection> setSelection(int[] mapping) {
+    private static void setSelection(List<Selection> navigationNodes, int[] mapping) {
         // Reorders the navigationNodes
-        List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
         if (mapping == null) {
             logger.warn("Got empty mapping, something failed.");
-            return navigationNodes;
+            return;
         }
-        logger.info("remapping NavNodes: " + toString(mapping));
-        List<Selection> newNavigationNodes = new ArrayList<Selection>();
-        newNavigationNodes.add(navigationNodes.get(0));
+        logger.info("remapping NavNodes: " + printPermutation(mapping));
+        Selection[] oldNodes = navigationNodes.toArray(new Selection[navigationNodes.size()]);
+        navigationNodes.clear();
+        navigationNodes.add(oldNodes[0]);
         for (int i = 0; i < mapping.length; i++) {
-            newNavigationNodes.add(navigationNodes.get(mapping[i]));
+            navigationNodes.add(oldNodes[mapping[i]]);
         }
-        newNavigationNodes.add(navigationNodes.get(navigationNodes.size() - 1));
-        logger.debug("Old ordering: " + navigationNodes.toString());
-        logger.debug("New ordering: " + newNavigationNodes.toString());
-        return newNavigationNodes;
+        navigationNodes.add(oldNodes[oldNodes.length - 1]);
+        
+        logger.debug("Old ordering: " + oldNodes.toString());
+        logger.debug("New ordering: " + navigationNodes.toString());
     }
 
-    private static List<Integer> simpleRoute(){
+    private static List<Integer> simpleRoute(List<Selection> navigationNodes){
         // Calculates a route via several navNodes
         List<Integer> result = new ArrayList<Integer>();
         Route route;
-        List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
         Selection prev = navigationNodes.get(0);
         for (Selection navPoint : navigationNodes) {
             if (prev == navPoint) {

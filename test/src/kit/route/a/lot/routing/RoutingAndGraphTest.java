@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,6 @@ public class RoutingAndGraphTest {
     static OSMLoader loaderForSimpleGraph;
     static OSMLoader loader;
     static RoutingStateMock simpleRoutingState;
-    static State state;
     static RoutingGraph graph;
     static final int SIMPLE_ROUTES_NUMBER = 10000;
     static final int SIMPLE_ROUTES_WITH_MORE_S_NUMBER = 5;
@@ -34,14 +32,13 @@ public class RoutingAndGraphTest {
     
     @BeforeClass
     public static void initialize() {
-        state = State.getInstance();
         loader = new OSMLoader();
         loaderForSimpleGraph = new OSMLoader();
         simpleRoutingState = new RoutingStateMock();
         loaderForSimpleGraph.setState(simpleRoutingState);
         loader.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
         loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
-        graph = state.getLoadedGraph();
+        graph = State.getInstance().getLoadedGraph();
     }
     
     @Test
@@ -111,7 +108,7 @@ public class RoutingAndGraphTest {
         DataInputStream stream = new DataInputStream(new FileInputStream(testRoutes));
         ArrayList<Selection> selections;
         List<Integer> route;
-        stream.readInt();   //necessery in moment, will be used later
+        stream.readInt();   //necessary in moment, will be used later
         stream.readInt();
         stream.readInt();
         for (int i = 0; i < SIMPLE_ROUTES_NUMBER; i++) {
@@ -123,9 +120,8 @@ public class RoutingAndGraphTest {
                 float ratio = stream.readFloat();
                 selections.add(new Selection(start, target, ratio, null));
             }
-            State.getInstance().setNavigationNodes(selections);
-            route = Router.calculateRoute();
-            int length = getRouteLenght(route);
+            route = Router.calculateRoute(selections);
+            int length = getRouteLength(route);
             assertEquals(stream.readInt(), length);
             
         }
@@ -157,11 +153,9 @@ public class RoutingAndGraphTest {
             selections.add(start);
             selections.add(target);
             
-            State.getInstance().setNavigationNodes(selections);
+            List<Integer> route = SimpleRouter.calculateRoute(selections);
             
-            List<Integer> route = SimpleRouter.calculateRoute();
-            
-            int length = getRouteLenght(SimpleRouter.calculateRoute());
+            int length = getRouteLength(route);
             
             stream.writeInt(2);
             stream.writeInt(start.getFrom());
@@ -192,12 +186,9 @@ public class RoutingAndGraphTest {
                     
                 }
                 
+                List<Integer> route = SimpleRouter.calculateRoute(selections);
                 
-                State.getInstance().setNavigationNodes(selections);
-                
-                List<Integer> route = SimpleRouter.calculateRoute();
-                
-                int length = getRouteLenght(SimpleRouter.calculateRoute());
+                int length = getRouteLength(route);
                 
                 stream.writeInt(length);
             }
@@ -205,12 +196,12 @@ public class RoutingAndGraphTest {
         
     }
     
-    private int getRouteLenght(List<Integer> route) {
-        int lenght = 0;
+    private int getRouteLength(List<Integer> route) {
+        int length = 0;
         for (int i = 1; i < route.size(); i++) {
-            lenght += State.getInstance().getLoadedGraph().getWeight(route.get(i - 1), route.get(i - 1));
+            length += graph.getWeight(route.get(i - 1), route.get(i - 1));
         }
-        return lenght;
+        return length;
     }
     
 }

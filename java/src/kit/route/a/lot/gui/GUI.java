@@ -41,6 +41,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.log4j.Logger;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
@@ -55,6 +57,8 @@ import kit.route.a.lot.gui.event.TextPositionEvent;
 public class GUI extends JFrame {
     
     private static final long serialVersionUID = 1L;
+    private static Logger logger = Logger.getLogger(GUI.class);
+    private boolean active = false; // indicates whether main thread has finished startup
     
     public static final int FREEMAPSPACE = 0;
     public static final int POI = 1;
@@ -127,7 +131,7 @@ public class GUI extends JFrame {
     private int popUpY;
     private int popUpFieldPosition;
     
-    private boolean enterPressed = false;
+    private boolean enterPressed = false; 
     
     /**
      * Creates the GUI window, using the given view center coordinates.
@@ -208,12 +212,15 @@ public class GUI extends JFrame {
         graphics.addActionListener(new ActionListener() {            
             @Override
             public void actionPerformed(ActionEvent event) {
+                while (!active); // postbone execution until after startup
                 Coordinates center = map.getCenter();
                 int zoomlevel = map.getZoomlevel();
                 Listeners.fireEvent(listeners.switchMapMode, new GeneralEvent());
                 mapContents.remove(map);
+                logger.warn("Switch Map Start");
                 map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
                 mapContents.add(map, BorderLayout.CENTER); 
+                logger.warn("Switch Map Stop");
                 mapContents.validate();
                 map.setZoomlevel(zoomlevel);
                 setView(center);
@@ -324,17 +331,19 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 endPoint.setBackground(Color.red);
                 enterPressed = true;
-                Listeners.fireEvent(listeners.getNavNodeDescription, new TextPositionEvent(endPoint.getText(), navPointsList.size()-1));
+                Listeners.fireEvent(listeners.getNavNodeDescription,
+                        new TextPositionEvent(endPoint.getText(), navPointsList.size()-1));
             }
         });
         endPoint.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if(enterPressed == false) {
+                if(!enterPressed) {
                     popUpX = endPoint.getX();
                     popUpY = endPoint.getY() + endPoint.getHeight();
                     popUpFieldPosition = navPointsList.size() - 1;
-                    Listeners.fireEvent(listeners.autoCompletion, new TextEvent(endPoint.getText()));
+                    Listeners.fireEvent(listeners.autoCompletion,
+                            new TextEvent(endPoint.getText()));
                 } else {
                     enterPressed = false;
                 }
@@ -347,7 +356,7 @@ public class GUI extends JFrame {
         optimizeRoute.addActionListener(new ActionListener() { 
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                Listeners.fireEvent(listeners.optimizeRoute, new TextEvent("optimize"));
+                Listeners.fireEvent(listeners.optimizeRoute, new GeneralEvent());
             }
         });
 
@@ -894,5 +903,9 @@ public class GUI extends JFrame {
             l_position.setText("(" + kilometers + "km, " + seconds + "sek" + ")");
         }
         repaint();
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

@@ -28,7 +28,7 @@ import kit.route.a.lot.controller.listener.HighwayMalusListener;
 import kit.route.a.lot.controller.listener.ImportOsmFileListener;
 import kit.route.a.lot.controller.listener.LoadMapListener;
 import kit.route.a.lot.controller.listener.LoadRouteListener;
-import kit.route.a.lot.controller.listener.OrderNavNodesListener;
+import kit.route.a.lot.controller.listener.OptimizeRouteListener;
 import kit.route.a.lot.controller.listener.SaveRouteListner;
 import kit.route.a.lot.controller.listener.SearchNameListener;
 import kit.route.a.lot.controller.listener.SelectNavNodeListener;
@@ -100,7 +100,7 @@ public class Controller {
         guiHandler.addAddNavNodeListener(new SelectNavNodeListener(this));
         guiHandler.addChangedViewListener(new ChangeViewListener(this));
         guiHandler.addImportMapListener(new ImportOsmFileListener(this));  
-        guiHandler.addOptimizeRouteListener(new OrderNavNodesListener(this));
+        guiHandler.addOptimizeRouteListener(new OptimizeRouteListener(this));
         guiHandler.addDeleteNavNodeListener(new DeleteNavNodeListener(this));
         guiHandler.addLoadMapListener(new LoadMapListener(this));
         guiHandler.addAddFavoriteListener(new AddFavoriteListener(this));
@@ -127,8 +127,8 @@ public class Controller {
         guiHandler.setView(state.getCenterCoordinates());
         guiHandler.updateMapList(state.getImportedMaps()); 
         guiHandler.setSpeed(state.getSpeed());
+        guiHandler.setActive(true);
     }
-        
     
     private static void loadState() {
         File stateFile = new File("./state.state");
@@ -347,9 +347,9 @@ public class Controller {
         }
     }
 
-    public void orderNavNodes() {  
-        state.setNavigationNodes(Router.optimizeRoute());
-        state.setCurrentRoute(Router.calculateRoute());
+    public void optimizeRoute() {  
+        Router.optimizeRoute(state.getNavigationNodes());
+        state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
         guiHandler.updateGUI();
     }
 
@@ -457,7 +457,7 @@ public class Controller {
         State state = State.getInstance();
         if (state.getNavigationNodes().size() >= 2) {
             try {
-                state.setCurrentRoute(Router.calculateRoute());
+                state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
                 int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
                 int length = ComplexInfoSupplier.getLength(state.getCurrentRoute());
                 guiHandler.showRouteValues(duration, length);

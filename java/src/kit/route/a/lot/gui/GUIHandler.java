@@ -21,6 +21,10 @@ public class GUIHandler {
         gui.addContents();
     }
 
+    public void setActive(boolean active) {
+        gui.setActive(true);
+    }
+    
     public void updateGUI() {
         gui.updateGUI();
     }

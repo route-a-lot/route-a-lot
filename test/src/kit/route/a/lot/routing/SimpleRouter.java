@@ -12,10 +12,8 @@ import kit.route.a.lot.controller.State;
 public class SimpleRouter {
     
 
-    public static List<Integer> calculateRoute() {
+    public static List<Integer> calculateRoute(List<Selection> navigationNodes) {
         List<Integer> result = new ArrayList<Integer>();
-        
-        List<Selection> navigationNodes = State.getInstance().getNavigationNodes();
         
         for (int i = 1; i < navigationNodes.size(); i++) {
             result.addAll(fromAToB(navigationNodes.get(i - 1), navigationNodes.get(i)));
