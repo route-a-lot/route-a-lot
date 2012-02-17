@@ -159,15 +159,15 @@ public class Router {
             int weightFrom = (int) (graph.getWeight(a.getFrom(), a.getTo()) * a.getRatio());
             int weightTo = (int) (graph.getWeight(a.getFrom(), a.getTo()) * (1 - a.getRatio()));
             if (weightFrom == weight1) {
-                weightTo++;
+                weightTo++; //to avoid same weights of different routes
             } else if (weightTo == weight1){
                 weightFrom++;
             }
-            heap.add(new Route(a.getFrom(), (int) (weightFrom)));
-            heap.add(new Route(a.getTo(), (int) (weightTo)));
-        } else if (weight1 != -1) {
+            heap.add(new Route(a.getFrom(), weightFrom));
+            heap.add(new Route(a.getTo(), weightTo));
+        } else if (weight1 != -1) { //one way "to two"
             heap.add(new Route(a.getTo(), (int) (weight1 * (1 - a.getRatio()))));
-        } else {
+        } else {    //one way in direction to -> from
             heap.add(new Route(a.getFrom(), (int) (weight2 * (1 - a.getRatio()))));
         }
         
@@ -192,12 +192,12 @@ public class Router {
             if (currentNode == b.getTo()) {
                 // We can't return now, as there might be a shorter way via b.getFrom().
                 selectionWeight = graph.getWeight(b.getTo(), b.getFrom());
-                if (selectionWeight > 0) {
+                if (selectionWeight > 0 || b.getRatio() > 0.99) {   //0.99 cause usually we don't have to go in this direction
                     heap.add(new Route(-1, (int) (1 - b.getRatio()) * selectionWeight, currentPath));
                 }
             } else if (currentNode == b.getFrom()) {
                 selectionWeight = graph.getWeight(b.getFrom(), b.getTo());
-                if (selectionWeight > 0) {
+                if (selectionWeight > 0 || b.getRatio() < 0.01) {
                     heap.add(new Route(-1, ((int) b.getRatio() * selectionWeight), currentPath));
                 }
             } else if (currentNode == -1) {
