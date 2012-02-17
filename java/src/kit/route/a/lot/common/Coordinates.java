@@ -34,12 +34,8 @@ public class Coordinates {
     }
     
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        //TODO DISCUSS: unnecessary min/max?
-        float minLat = (float) Math.min(topLeft.getLatitude(), bottomRight.getLatitude());
-        float maxLat = (float) Math.max(topLeft.getLatitude(), bottomRight.getLatitude());
-        float minLon = (float) Math.min(topLeft.getLongitude(), bottomRight.getLongitude());
-        float maxLon = (float) Math.max(topLeft.getLongitude(), bottomRight.getLongitude());
-        return (latitude <= maxLat && latitude >= minLat && longitude >= minLon && longitude <= maxLon);
+        return (topLeft.latitude < latitude) && (latitude < bottomRight.latitude) 
+            && (topLeft.longitude < longitude) && (longitude < bottomRight.longitude);
     }
     
     @Override

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -49,7 +48,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         edgesPos[edgesPos.length - 1] = endID.length;
         areaID = new byte[maxNodeID + 1];
-        edges = endID.clone(); //TODO DISCUSS: .clone()? 
+        edges = endID.clone();
         weights = weight.clone();
         arcFlags = new long[startID.length];
         Arrays.fill(arcFlags, (long) 0);

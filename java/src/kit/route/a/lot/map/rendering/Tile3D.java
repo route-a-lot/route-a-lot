@@ -21,16 +21,21 @@ import kit.route.a.lot.controller.State;
 
 public class Tile3D extends Tile {
 
-    private static final int HEIGHT_BORDER = 1;
-    private static final int HEIGHT_RESOLUTION = 64, GRAIN_RESOLUTION = 128;
-    private static final float GRAIN_INTENSITY = 0.05f, SLOPE_SHADE_FACTOR = 0.6f;
+    private static final int
+        HEIGHT_BORDER = 1, // should stay 1
+        HEIGHT_RESOLUTION = 64, 
+        GRAIN_RESOLUTION = 128;
+    private static final float
+        GRAIN_INTENSITY = 0.05f,
+        SLOPE_SHADE_FACTOR = 0.6f,
+        MAX_SLOPE_SHADE_VALUE = 0.6f;
     private static final float[] COLOR_STAGES =
-        {70, 200, 350, 520, 700, 900, 1100, 1250, 1400, 1750, 1800};
+        {-500, 0, 5, 70, 200, 350, 520, 700, 900, 1100, 1450, 2300};
     private static final float[][] COLORS = 
-        {{143, 189, 143}, {151, 253, 153}, 
+        {{0, 0, 0}, {0, 0, 100}, {140, 170, 150},
+         {143, 189, 143}, {151, 253, 153}, 
          {239, 222, 166}, {227, 187, 138}, {174, 144, 115},
-         {245, 166, 127}, {203, 115, 76}, {126, 69, 40},
-         {200, 200, 200}, {100, 100, 100}, {255, 255, 255}};
+         {245, 166, 127}, {203, 115, 76}, {126, 69, 40}, {255, 255, 255}};
     
     private float[][] heights;
     private float minHeight = -500, maxHeight = 8000;
@@ -166,7 +171,7 @@ public class Tile3D extends Tile {
                         }
                     }
                     
-                    float shade = 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, 1);
+                    float shade = 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, MAX_SLOPE_SHADE_VALUE);
                     color[0] *= shade;
                     color[1] *= shade;
                     color[2] *= shade;

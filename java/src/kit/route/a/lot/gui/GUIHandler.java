@@ -117,10 +117,6 @@ public class GUIHandler {
         listeners.addExportRouteListener(listener);
     }
     
-    public void printRouteListener(GeneralListener listener) {
-        listeners.addPrintRouteListener(listener); //TODO
-    }
-    
     public void addSetSpeedListener(GeneralListener listener) {
         listeners.addSetSpeedListener(listener);
     }

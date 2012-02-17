@@ -24,7 +24,7 @@ import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
-    private static final float HEIGHT_SCALE_FACTOR = 1f;
+    private static final float HEIGHT_SCALE_FACTOR = 0.5f;
     private static final float VIEW_HEIGHT_ADAPTION = 0.2f;
     private static final float ROUTE_HEIGHT_OFFSET = 10f, ROUTE_WIDTH = 10f;
     private static Logger logger = Logger.getLogger(Renderer3D.class);

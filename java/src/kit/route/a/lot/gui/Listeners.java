@@ -22,7 +22,6 @@ public class Listeners {
     public List<GeneralListener> heightMalus;
     public List<GeneralListener> highwayMalus;
     public List<GeneralListener> importHeightMap;
-    public List<GeneralListener> printRoute;
     public List<GeneralListener> addTextualNavPoint;
     public List<GeneralListener> deleteNavPoint;
     public List<GeneralListener> deleteFavPoint;
@@ -51,7 +50,6 @@ public class Listeners {
         heightMalus = new ArrayList<GeneralListener>();
         highwayMalus = new ArrayList<GeneralListener>();
         importHeightMap = new ArrayList<GeneralListener>();
-        printRoute = new ArrayList<GeneralListener>();
         addTextualNavPoint = new ArrayList<GeneralListener>();
         deleteNavPoint = new ArrayList<GeneralListener>();
         deleteFavPoint = new ArrayList<GeneralListener>();
@@ -107,9 +105,6 @@ public class Listeners {
     public void addImportHeightMapListener(GeneralListener importHeightMapListener) {
         importHeightMap.add(importHeightMapListener);
     }    
-    public void addPrintRouteListener(GeneralListener printRouteListener) {
-        printRoute.add(printRouteListener);
-    }
     public void addDeleteNavNodeListener(GeneralListener deleteNavNodeListener) {
         deleteNavPoint.add(deleteNavNodeListener);
     }

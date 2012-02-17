@@ -67,13 +67,10 @@ public class Controller {
     }
     
     private Controller() {
-        String arch = System.getProperty("os.arch");
+        String arch = System.getProperty("os.arch").toLowerCase();
+        int archbits = (arch.equals("i386") || arch.equals("x86")) ? 32 : 64;
         try {
-        if (arch.equals("i386")) {
-            addDirectoryToLibraryPath("./lib/lib32");
-        } else {
-            addDirectoryToLibraryPath("./lib/lib64");
-        }
+            addDirectoryToLibraryPath("./lib/lib" + archbits);
         } catch (IOException e) {
             logger.error("Could not load library path for " + arch + ".");
             return;
@@ -97,7 +94,7 @@ public class Controller {
             setViewToMapCenter();
             logger.info("### Imported default map in " + Util.stopTimer() + " ###");
         } else {
-            logger.warn("no map loaded."); //TODO not loading map 
+            logger.warn("no map loaded");
         }                        
         
         guiHandler.addAddNavNodeListener(new SelectNavNodeListener(this));
@@ -260,10 +257,6 @@ public class Controller {
             RouteIO.exportCurrentRouteToKML(routeFile);
         }
     }
-
-    public void printRoute() {
-    }
-
       
     public void addNavNode(Coordinates pos, int position) {
         Selection newSel = state.getLoadedMapInfo().select(pos);
@@ -362,7 +355,7 @@ public class Controller {
 
     
     public void addFavorite(Coordinates pos, String name, String description) {  
-        state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, OSMType.FAVOURITE, description));  //TODO category
+        state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, OSMType.FAVOURITE, description));
         guiHandler.updateGUI();
     }
 

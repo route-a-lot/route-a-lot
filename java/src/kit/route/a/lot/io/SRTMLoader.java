@@ -16,7 +16,7 @@ import org.apache.log4j.Logger;
 
 public class SRTMLoader implements HeightLoader {
 
-    protected static final int WIDTH = 1201, HEIGHT = 1201, MAX_DEVIATION = 70;
+    protected static final int WIDTH = 1201, HEIGHT = 1201, MAX_DEVIATION = 50;
     private static final String FILE_EXTENSION = "hgt";
     private static Logger logger = Logger.getLogger(SRTMLoader.class);
 
@@ -52,27 +52,31 @@ public class SRTMLoader implements HeightLoader {
         HeightTile tile = new RAMHeightTile(WIDTH, HEIGHT, position);
         try {
             DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
-            int oldheight = 0;
             for (int i = HEIGHT - 1; i >= 0; i--) {
                 for (int j = 0; j < WIDTH; j++) {
-                    int height = in.readShort();
-                    if (j == 0) {
-                        oldheight = height;
-                    }
-                    if (height < oldheight - MAX_DEVIATION) {
-                        height = oldheight - MAX_DEVIATION / 5;
-                    }
-                    if (height > oldheight + MAX_DEVIATION) {
-                        height = oldheight + MAX_DEVIATION / 5;
-                    }
-                    tile.setHeight(j, i, height);
-                    oldheight = height;
-                }// for width
-            }// for height
+                    tile.setHeight(j, i, in.readShort());
+                }
+            }
             in.close();
         } catch (IOException e) {
             logger.error("Invalid hgt file: '" + file.getName() + "'. Loading aborted.");
+            return null;
         }     
+        for (int x = 0; x < WIDTH; x++) {
+            for (int y = 0; y < HEIGHT; y++) {
+                float exp1 = tile.getHeight(x-1, y);
+                float exp2 = tile.getHeight(x, y-1);
+                float exp3 = tile.getHeight(x-1, y-1);
+                int exp1a = (exp1 > -500) ? 1 : 0;
+                int exp2a = (exp2 > -500) ? 1 : 0;
+                int exp3a = (exp3 > -500) ? 1 : 0;
+                float areaHeight = (exp1a + exp2a + exp3a == 0) ? 100 :
+                        (exp1 * exp1a + exp2 * exp2a + exp3 * exp3a) / (exp1a + exp2a + exp3a);
+                if (tile.getHeight(x, y) < -500) {
+                    tile.setHeight(x,y, areaHeight);
+                }              
+            }
+        }
         return tile;
     }
 }

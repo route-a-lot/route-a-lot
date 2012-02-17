@@ -73,7 +73,6 @@ public class GUI extends JFrame {
     private JButton load;
     private JButton save;
     private JButton kmlExport;
-    private JButton print;
     private JButton graphics;
     private JButton addTextPoints;
     private JButton optimizeRoute;
@@ -205,14 +204,6 @@ public class GUI extends JFrame {
             }
         });
 
-        print = new JButton("Ausdrucken");
-        print.addActionListener(new ActionListener() {            
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                //TODO print button handler
-            }
-        });
-
         graphics = new JButton("2D/3D");
         graphics.addActionListener(new ActionListener() {            
             @Override
@@ -270,7 +261,6 @@ public class GUI extends JFrame {
         mapButtonPanel.add(load);
         mapButtonPanel.add(save);
         mapButtonPanel.add(kmlExport);
-        mapButtonPanel.add(print);
         mapButtonPanel.add(graphics);
         mapButtonPanel.add(scrolling);
         
