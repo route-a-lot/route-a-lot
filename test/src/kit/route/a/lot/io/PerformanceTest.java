@@ -45,7 +45,7 @@ public class PerformanceTest {
         // System.out.println("Fertig");
     }
     
-    @Test
+//    @Test
     public void testMemoryPerformanceWithWays() {
         mapInfo.setBounds(new Coordinates(100, 10), new Coordinates(10, 100));
         Random rnd = new Random();

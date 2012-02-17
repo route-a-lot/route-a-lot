@@ -7,7 +7,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -203,13 +205,32 @@ public class Tile {
         graphics.setColor(Color.BLACK);
         graphics.drawPolygon(xPoints, yPoints, nPoints);
     }
+    
+    protected Node[] getRelevantNodesForStreet(Node[] streetNodes) {
+        List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
+        int start = 0;
+        while (start < streetNodes.length - 1 && !Street.isEdgeInBounds(streetNodes[start].getPos(),
+                streetNodes[start+1].getPos(), topLeft, bottomRight)) {
+            start++;
+        }
+        int end = streetNodes.length - 1;
+        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(),
+                streetNodes[end].getPos(), topLeft, bottomRight)) {
+            end--;
+        }
+        for (int i = start; i <= end; i++) {
+            relevantNodes.add(streetNodes[i]);
+        }
+        
+        return relevantNodes.toArray(new Node[relevantNodes.size()]);
+    }
 
     /**
      * Draws a street on the tile, taking the street type into consideration.
      * @param street the street to be drawn
      */
     private void draw(Street street, boolean top, Graphics2D graphics) {
-        Node[] nodes = street.getNodes();
+        Node[] nodes = getRelevantNodesForStreet(street.getNodes());
         int nPoints = nodes.length;
         int[] xPoints = new int[nPoints];
         int[] yPoints = new int[nPoints];

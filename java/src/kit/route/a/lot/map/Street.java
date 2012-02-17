@@ -72,7 +72,7 @@ public class Street extends MapElement implements Comparable<Street> {
         return inBounds;
     }
 
-    private boolean isEdgeInBounds(Coordinates node1, Coordinates node2, Coordinates topLeft,
+    public static boolean isEdgeInBounds(Coordinates node1, Coordinates node2, Coordinates topLeft,
             Coordinates bottomRight) {
         Line2D.Float edge =
                 new Line2D.Float(node1.getLongitude(), node1.getLatitude(), node2.getLongitude(),
