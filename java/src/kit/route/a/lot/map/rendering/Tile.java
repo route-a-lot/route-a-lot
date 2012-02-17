@@ -371,27 +371,25 @@ public class Tile {
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
         
-        
-        
         float streetNameLength = graphics.getFontMetrics().stringWidth(curAddress.getStreet());
-        double streetNameDistance = 256 / Math.sqrt(Projection.getZoomFactor(detail));
-        double currentDistance = 0;
+        double streetNameDistance = 512 / Math.sqrt(Projection.getZoomFactor(detail));
 
         graphics.setColor(Color.DARK_GRAY);
         graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
-        for (int i = 1; i < nPoints; i++) {
-            Coordinates from = getLocalCoordinates(nodes[i-1].getPos());
-            Coordinates to = getLocalCoordinates(nodes[i].getPos());
-            currentDistance += Coordinates.getDistance(from, to);
-
-            if (currentDistance > streetNameDistance) {
-                currentDistance = 0;
+        int i = 1;
+        double distanceToStart = -streetNameDistance / 2;
+        Coordinates from = getLocalCoordinates(nodes[i-1].getPos());
+        Coordinates to = getLocalCoordinates(nodes[i].getPos());
+        double currentLength = Coordinates.getDistance(from, to);
+        while (i < nPoints) {
+            if (distanceToStart + streetNameDistance <= currentLength) {
+                distanceToStart += streetNameDistance;
                 Coordinates vector = to.clone().subtract(from);
-                Coordinates edgeMiddle = vector.clone().scale(0.5f).add(from);
+                Coordinates edgeMiddle = vector.clone().scale((float) (distanceToStart / currentLength)).add(from);
                 vector.normalize();
-                Coordinates arrowStart = vector.clone().scale(streetNameLength).subtract(edgeMiddle).invert();
-                Coordinates arrowEnd = vector.clone().scale(streetNameLength).add(edgeMiddle);
+                Coordinates arrowStart = vector.clone().scale(streetNameLength / 2).subtract(edgeMiddle).invert();
+                Coordinates arrowEnd = vector.clone().scale(streetNameLength / 2).add(edgeMiddle);
                 if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
                     Coordinates tmp = arrowStart;
                     arrowStart = arrowEnd;
@@ -407,9 +405,19 @@ public class Tile {
                 Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
                 graphics.setFont(newFont);
                 Coordinates normal = vector.rotate(90).normalize().scale((newFont.getSize2D() - 1) / 2);
-                Coordinates drawStart = arrowStart.add(normal);
-                graphics.drawString(curAddress.getStreet(), drawStart.getLongitude(), drawStart.getLatitude());
+                arrowStart.add(normal);
+                graphics.drawString(curStreetName, arrowStart.getLongitude(), arrowStart.getLatitude());
                 graphics.setFont(oldFont);
+            } else {
+                while (distanceToStart + streetNameDistance > currentLength) {
+                    distanceToStart -= currentLength;
+                    i++;
+                    if (i < nPoints) {
+                        from = getLocalCoordinates(nodes[i-1].getPos());
+                        to = getLocalCoordinates(nodes[i].getPos());
+                        currentLength = Coordinates.getDistance(from, to);
+                    }
+                }
             }
         }
     }
