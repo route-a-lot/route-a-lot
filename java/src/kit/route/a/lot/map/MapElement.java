@@ -36,6 +36,18 @@ public abstract class MapElement{
         return this.id;
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof MapElement)) {
+            return false;
+        }
+        MapElement mapElement = (MapElement) other;
+        return id == mapElement.id;
+        
+    }
+    
     /**
      * Sets the MapElement ID if no ID was assigned so far.
      * @param id the new MapElement ID

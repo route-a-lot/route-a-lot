@@ -40,5 +40,9 @@ class StateMock extends State {
     long getNodeCount() {
         return loadedMapInfo.nodeCount;
     }
+    
+    long getWayCount() {
+        return loadedMapInfo.wayCount;
+    }
 
 }

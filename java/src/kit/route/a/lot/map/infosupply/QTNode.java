@@ -34,6 +34,16 @@ public class QTNode extends QuadTree {
         children[3] = new QTLeaf(middleMiddle, bottomRight);        
     }
 
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof QTNode)) {
+            return false;
+        }
+        QTNode comparee = (QTNode) other;
+        return super.equals(other) && java.util.Arrays.equals(children, comparee.children);
+    }
     @Override
     protected boolean addToOverlay(MapElement element) {
         if(element.isInBounds(getUpLeft(), getBottomRight())) {

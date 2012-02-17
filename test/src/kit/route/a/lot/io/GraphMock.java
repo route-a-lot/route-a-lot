@@ -56,11 +56,28 @@ public class GraphMock implements RoutingGraph {
 
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
-      
+        if (stream == null) {
+            throw new IllegalArgumentException();
+        }
+        int nodeCount = stream.readInt();
+        for (int i = 0; i < nodeCount; i++) {
+            startIDs[i] = stream.readInt();         
+            endIDs[i] = stream.readInt(); 
+            weights[i] = stream.readInt(); 
+        }
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {        
+    public void saveToStream(DataOutputStream stream) throws IOException {  
+        if (stream == null) {
+            throw new IllegalArgumentException();
+        }
+        stream.writeInt(startIDs.length);
+        for (int i = 0; i < startIDs.length; i++) {
+            stream.writeInt(startIDs[i]);
+            stream.writeInt(endIDs[i]);
+            stream.writeInt(weights[i]);
+        }
     }
 
     @Override

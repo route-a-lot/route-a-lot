@@ -13,6 +13,17 @@ public class Node extends MapElement {
     private float lat;
     private float lon;
 
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof Node)) {
+            return false;
+        }
+        Node node = (Node) other;
+        return lat == node.lat && lon == node.lon;
+    }
+    
     public Node(Coordinates pos) {
         lat = pos.getLatitude();
         lon = pos.getLongitude();

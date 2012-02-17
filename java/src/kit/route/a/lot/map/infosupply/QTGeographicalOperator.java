@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.awt.color.CMMException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -33,6 +34,19 @@ public class QTGeographicalOperator implements GeographicalOperator {
         setBounds(new Coordinates(), new Coordinates());
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof QTGeographicalOperator)) {
+            return false;
+        }
+        QTGeographicalOperator comparee = (QTGeographicalOperator) other;
+        return baseLayerMultiplier == comparee.baseLayerMultiplier
+                && countZoomlevel == comparee.countZoomlevel
+                && java.util.Arrays.equals(zoomlevels, comparee.zoomlevels);
+        
+    }
     @Override
     public void setBounds(Coordinates topLeft, Coordinates bottomRight) {
         zoomlevels = new QuadTree[countZoomlevel];

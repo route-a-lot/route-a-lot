@@ -23,6 +23,19 @@ public class QTLeaf extends QuadTree {
         overlay = new MapElement[1];
         baseLayer = new MapElement[1];
     }
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof QTLeaf)) {
+            return false;
+        }
+        QTLeaf comparee = (QTLeaf) other;
+        return super.equals(other) 
+                && java.util.Arrays.equals(overlay, comparee.overlay)
+                && java.util.Arrays.equals(baseLayer, comparee.overlay);
+    }
 
     @Override
     protected boolean addToOverlay(MapElement element) {

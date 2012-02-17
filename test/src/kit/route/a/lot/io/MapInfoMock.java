@@ -11,15 +11,17 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 class MapInfoMock extends MapInfo {
     
-    long nodeCount;
+    long nodeCount, wayCount;
     
     
     public MapInfoMock() {
         nodeCount = 0;
+        wayCount = 0;
     }
     
     @Override
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
+        wayCount++;
     }
     
     @Override

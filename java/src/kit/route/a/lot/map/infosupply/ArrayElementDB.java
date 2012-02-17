@@ -26,7 +26,18 @@ public class ArrayElementDB implements ElementDB {
     
     private ArrayList<POINode> favorites = new ArrayList<POINode>();
  
-    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof ArrayElementDB)) {
+            return false;
+        }
+        ArrayElementDB arrayElementDB = (ArrayElementDB) other;
+        return nodes.equals(arrayElementDB.nodes)
+                && mapElements.equals(arrayElementDB.mapElements)
+                && favorites.equals(arrayElementDB.favorites);
+    }
     @Override
     public MapElement getMapElement(int id) throws IllegalArgumentException {
         if (id < 0 || id >= mapElements.size()) { 

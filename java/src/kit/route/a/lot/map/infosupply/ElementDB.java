@@ -72,5 +72,7 @@ public interface ElementDB {
     public void swapNodeIDs(int id1, int id2);
     
     public ArrayList<POINode> getFavorites();
+    
+    public boolean equals (Object o);
 
 }

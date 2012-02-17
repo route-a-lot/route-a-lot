@@ -987,7 +987,6 @@ public class OSMLoader {
         try {
             parser.parse(inputStream, handler);
         } catch (SAXParseException e) {
-            // can't -touch- _catch_ this!
             // not XML 1.0
             e.printStackTrace();
         } catch (SAXException e) {

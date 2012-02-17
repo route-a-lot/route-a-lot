@@ -345,5 +345,22 @@ public class MapInfo {
     public void setGeoBottomRight(Coordinates geoBottomRight) {
         this.geoBottomRight = geoBottomRight;
     }
+    
+    @Override
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof MapInfo)) {
+            return false;
+        }
+        MapInfo mapInfo = (MapInfo) other;
+        return elementDB.equals(mapInfo.elementDB) 
+                && geographicalOperator.equals(mapInfo.geographicalOperator)    //TODO: add compares
+                && addressOperator.equals(mapInfo.addressOperator)
+                && geoTopLeft.equals(mapInfo.geoTopLeft)
+                && geoBottomRight.equals(mapInfo.geoBottomRight);
+    }
+               
 
 }

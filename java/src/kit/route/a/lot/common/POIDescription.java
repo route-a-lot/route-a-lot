@@ -13,6 +13,19 @@ public class POIDescription {
 		setCategory(category);
 		setDescription(description);
 	}
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof POIDescription)) {
+            return false;
+        }
+        POIDescription poiDescription = (POIDescription) other;
+        return name == poiDescription.name
+                && category == poiDescription.category
+                && description == poiDescription.description;
+    }
 	
 	public String getName() {
     	return (name != null) ? name : "";

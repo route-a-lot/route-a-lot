@@ -23,6 +23,17 @@ public abstract class QuadTree {
         this.upLeft = upLeft;
         this.bottomRight = bottomRight;
     }
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof QuadTree)) {
+            return false;
+        }
+        QuadTree comparee = (QuadTree) other;
+        return upLeft.equals(comparee.upLeft) && bottomRight.equals(comparee.bottomRight);
+    }
 
     protected abstract void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements);

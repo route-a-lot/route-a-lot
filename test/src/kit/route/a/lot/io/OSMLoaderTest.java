@@ -50,6 +50,7 @@ public class OSMLoaderTest {
         loader.importMap(new File("test/resources/karlsruhe_small.osm"));
 
         assertEquals(11093, state.getNodeCount());
+        assertTrue(0 < state.getWayCount());
     }
 
     @Test
@@ -89,31 +90,44 @@ public class OSMLoaderTest {
     @Test
     public void testMinimal() {
         loader.importMap(new File("test/resources/testmaps/minimal.osm"));
+        assertEquals(0, state.getNodeCount());
+        assertEquals(0, state.getWayCount());
     }
     
     @Test
     public void testGibberish() {
         loader.importMap(new File("test/resources/testmaps/gibberish.osm"));
+        assertEquals(0, state.getNodeCount());
+        assertEquals(0, state.getWayCount());
     }
     
     @Test
     public void testMissingNode() {
         loader.importMap(new File("test/resources/testmaps/missing-node.osm"));
+        assertEquals(1, state.getNodeCount());
+        assertEquals(0, state.getWayCount());
+        
     }
     
     @Test
     public void testNonContinuous() {
         loader.importMap(new File("test/resources/testmaps/non-continuous.osm"));
+        assertEquals(2, state.getNodeCount());
+        assertEquals(1, state.getWayCount());
     }
     
     @Test
     public void testNot() {
         loader.importMap(new File("test/resources/testmaps/not.osm"));
+        assertEquals(0, state.getNodeCount());
+        assertEquals(0, state.getWayCount());
     }
     
     @Test
     public void testNoNodes() {
         loader.importMap(new File("test/resources/testmaps/no-nodes.osm"));
+        assertEquals(0, state.getNodeCount());
+        assertEquals(0, state.getWayCount());
     }
 
 }

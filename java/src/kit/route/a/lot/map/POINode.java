@@ -20,6 +20,18 @@ public class POINode extends Node {
         super();
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof POINode)) {
+            return false;
+        }
+        POINode poinode = (POINode) other;
+        return super.equals(other) && info.equals(poinode.info);
+    }
+    
     public POIDescription getInfo() {
         if (this.info == null) {
             this.info = new POIDescription(null, -1, null);
