@@ -48,7 +48,7 @@ public class Map2D extends Map  {
     @Override
     public void mouseDragged(MouseEvent e) {         
         if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
-            getCenter().add(new Coordinates(oldMousePosY - e.getY(), oldMousePosX - e.getX())
+            center.add(new Coordinates(oldMousePosY - e.getY(), oldMousePosX - e.getX())
                 .scale(Projection.getZoomFactor(zoomlevel)));                      
         }      
         super.mouseDragged(e);
@@ -57,7 +57,7 @@ public class Map2D extends Map  {
     @Override
     protected Coordinates getPosition(int x, int y) {
         Coordinates result = new Coordinates(y - canvas.getHeight() / 2, x - canvas.getWidth() / 2);
-        return result.scale(Projection.getZoomFactor(zoomlevel)).add(getCenter());
+        return result.scale(Projection.getZoomFactor(zoomlevel)).add(center);
     }
 
 }

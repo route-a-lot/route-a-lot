@@ -14,7 +14,7 @@ public class CloseListener implements GeneralListener {
 
     @Override
     public void handleEvent(GeneralEvent event) {
-        ctrl.prepareForShutDown();
+        ctrl.prepareForShutdown();
     }
 
 }

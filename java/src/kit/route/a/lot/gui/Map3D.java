@@ -109,7 +109,7 @@ public class Map3D extends Map implements GLEventListener {
             float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));            
             Coordinates movement = new Coordinates(shareY * diffY - shareX * diffX,
                     shareX * diffY + shareY * diffX);
-            getCenter().add(movement.scale(-Projection.getZoomFactor(zoomlevel)));                 
+            center.add(movement.scale(-Projection.getZoomFactor(zoomlevel)));                 
         }      
         super.mouseDragged(e);
     }
@@ -117,7 +117,7 @@ public class Map3D extends Map implements GLEventListener {
     @Override
     protected Coordinates getPosition(int x, int y) {
         Coordinates result = new Coordinates(y - canvas.getHeight() / 2, x - canvas.getWidth() / 2);
-        return result.scale(Projection.getZoomFactor(zoomlevel)).add(getCenter());
+        return result.scale(Projection.getZoomFactor(zoomlevel)).add(center);
         
         /*GL gl = ((GLJPanel) canvas).getGL();// TODO doesnt work properly
            

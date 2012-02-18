@@ -14,7 +14,7 @@ public class Listeners {
     public List<GeneralListener> optimizeRoute;
     public List<GeneralListener> exportRoute;
     public List<GeneralListener> clickPosition;
-    public List<GeneralListener> addFav;
+    public List<GeneralListener> addFavorite;
     public List<GeneralListener> loadRoute;
     public List<GeneralListener> saveRoute;
     public List<GeneralListener> speed;
@@ -29,6 +29,7 @@ public class Listeners {
     public List<GeneralListener> switchMapMode;
     public List<GeneralListener> poiDescription;
     public List<GeneralListener> getNavNodeDescription;
+    
     public List<GeneralListener> autoCompletion;
     public List<GeneralListener> deleteMap;
     public List<GeneralListener> favDescription;
@@ -41,7 +42,7 @@ public class Listeners {
         viewChanged = new ArrayList<GeneralListener>();
         importOsmFile = new ArrayList<GeneralListener>();
         clickPosition = new ArrayList<GeneralListener>();
-        addFav = new ArrayList<GeneralListener>();
+        addFavorite = new ArrayList<GeneralListener>();
         loadRoute = new ArrayList<GeneralListener>();
         saveRoute = new ArrayList<GeneralListener>();
         exportRoute = new ArrayList<GeneralListener>();
@@ -88,7 +89,7 @@ public class Listeners {
         clickPosition.add(clickPositionListener);
     }   
     public void addFavoriteListener(GeneralListener addFavListener) {
-        addFav.add(addFavListener);
+        addFavorite.add(addFavListener);
     }    
     public void addSetSpeedListener(GeneralListener setSpeedListener) {
         speed.add(setSpeedListener);

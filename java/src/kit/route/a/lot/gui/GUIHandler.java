@@ -38,7 +38,7 @@ public class GUIHandler {
     }
     
     public void passElementType(int element){
-        gui.popUpTrigger(element);
+        gui.passElementType(element);
     }
     
     
@@ -57,17 +57,13 @@ public class GUIHandler {
     public void passDescription(POIDescription description) {
         gui.passDescription(description);
     }
-    
-    public void showNavNodeDescription(String navNodeDescription, int navNodeIndex) {
-        gui.showNavNodeDescription(navNodeDescription, navNodeIndex);
+      
+    public void showRouteValues(int length, int duration) {
+        gui.showRouteValues(length, duration);
     }
     
-    public void showRouteValues(int duration, int length) {
-        gui.showRouteValues(duration, length);
-    }
-    
-    public void showSearchCompletion(List<String> completition) {
-        gui.showSearchCompletion(completition);
+    public void showSearchCompletion(List<String> completion) {
+        gui.showSearchCompletions(completion);
     }
     
     

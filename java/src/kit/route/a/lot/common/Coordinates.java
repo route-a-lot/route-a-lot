@@ -40,7 +40,7 @@ public class Coordinates {
     
     @Override
     public String toString() {
-        return String.format("(LAT: %1$3.8f / LON: %2$3.8f)", latitude, longitude);
+        return String.format("Lat %1$3.4f / Lon %2$3.4f", latitude, longitude);
     }
     
     public boolean equals(Coordinates pos) {

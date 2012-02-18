@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -48,71 +49,53 @@ import kit.route.a.lot.gui.event.TextPositionEvent;
 
 
 public class GUI extends JFrame {
-
     private static final long serialVersionUID = 1L;
-    private boolean active = false; // indicates whether main thread has finished startup
-
-    public static final int FREEMAPSPACE = 0;
-    public static final int POI = 1;
-    public static final int FAVORITE = 2;
-    public static final int NAVNODE = 3;
-
-    private JFileChooser importFC;
-    private JFileChooser loadRoute;
-    private JFileChooser saveRoute;
-    private JFileChooser exportRoute;
-    // private JFileChooser importHeightMap;
-
-    private JComboBox listChooseMap;
-
-    protected JLabel routeValues;
-
-    // private JList textRoute;
-    // private JScrollPane textRouteScrollPane;
-
-    private JTextField fieldStartNode;
-    private JTextField fieldEndNode;
-
-    private JSlider highwayMalusSlider;
-    private JSlider reliefMalusSlider;
-    private JSlider zoomSlider;
-
-    private JPanel centralArea;
-    private JPanel routingTab;
-    private JPanel routingTabTopArea;
-    private JPanel waypointArea;
-    private JPanel mapTab;
-
-    private JPopupMenu popupTextualCompletion;
-
+    
+    // ROUTING TAB
+    private JPanel routingTab, routingTabTopArea, waypointArea;
+    private JTextField fieldStartNode, fieldEndNode;
     private JSpinner fieldSpeed;
-
-    private List<JMenuItem> textualProposals = new ArrayList<JMenuItem>();
-    private List<String> importedMaps = new ArrayList<String>();
-
+    private JPopupMenu popupSearchCompletions;
+    
+    // MAP TAB
+    private JPanel mapTab;
+    private JSlider highwayMalusSlider, reliefMalusSlider;
+    private JComboBox listChooseMap; 
+    
+    // DESCRIPTION TAB
+    /* private JList textRoute;
+       private JScrollPane textRouteScrollPane; */
+    
+    // CENTRAL AREA (BUTTON BAR and MAP)
+    private JPanel centralArea;
+    private JFileChooser dialogImportOSM, dialogLoadRoute, dialogSaveRoute,
+                dialogExportRoute /*, dialogImportHeightmap*/;
+    private JSlider zoomSlider;
     private Map map;
+    
+    // STATUS BAR
+    private JLabel routeValues, mouseCoordinatesDisplay;
 
-    private List<Selection> navPointsList;
+    private List<String> importedMaps = new ArrayList<String>();
+    private List<Selection> navNodeList;
     private Listeners listeners;
 
-    private int popUpX;
-    private int popUpY;
-    private int popUpFieldPosition;
-
+    // NON-COMPONENT ATTRIBUTES
+    private Point popupPos;
+    private int popupIndex;
     private boolean enterPressed = false;
+    private boolean active = false; // indicates whether main thread has finished startup
 
     /**
      * Creates the GUI window, using the given view center coordinates.
-     * 
      * @param listeners
-     * @param view
-     *            center geo coordinates (possibly mercator projected)
+     * @param view center geo coordinates (possibly mercator projected)
      */
     public GUI(Listeners listeners) {
         super("Route-A-Lot");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-        this.navPointsList = new ArrayList<Selection>();
+        this.navNodeList = new ArrayList<Selection>();
         this.listeners = listeners;
     }
 
@@ -147,7 +130,6 @@ public class GUI extends JFrame {
         });
         JButton buttonSwitchGraphics = new JButton("2D/3D");
         buttonSwitchGraphics.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent event) {
                 while (!active); // postbone execution until after startup
@@ -207,13 +189,16 @@ public class GUI extends JFrame {
         // tabArea.setMnemonicAt(1, KeyEvent.VK_2);
 
         routeValues = new JLabel();
+        mouseCoordinatesDisplay = new JLabel();
         JPanel statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
         statusBar.add(new JLabel("Route:"));
         statusBar.add(Box.createHorizontalGlue());
         statusBar.add(routeValues);
         statusBar.add(Box.createHorizontalGlue());
-
+        statusBar.add(mouseCoordinatesDisplay);
+        statusBar.add(Box.createHorizontalStrut(10));
+        
         // FRAME LAYOUT
         setLayout(new BorderLayout());
         add(tabArea, BorderLayout.WEST);
@@ -234,8 +219,8 @@ public class GUI extends JFrame {
      */
     private void createRoutingTab() {
         // POPUP
-        popupTextualCompletion = new JPopupMenu("Completion");
-        popupTextualCompletion.setBackground(Color.WHITE);
+        popupSearchCompletions = new JPopupMenu("Completion");
+        popupSearchCompletions.setBackground(Color.WHITE);
 
         // COMPONENTS
         JLabel caption = new JLabel("<html><u>Wegpunkte:</u></html>");
@@ -256,9 +241,9 @@ public class GUI extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (enterPressed == false) {
-                    popUpX = fieldStartNode.getX();
-                    popUpY = fieldStartNode.getY() + fieldStartNode.getHeight();
-                    popUpFieldPosition = 0;
+                    popupPos = new Point(fieldStartNode.getX(), 
+                            fieldStartNode.getY() + fieldStartNode.getHeight());
+                    popupIndex = 0;
                     Listeners.fireEvent(listeners.autoCompletion,
                             new TextEvent(fieldStartNode.getText()));
                 } else {
@@ -278,16 +263,16 @@ public class GUI extends JFrame {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
                 Listeners.fireEvent(listeners.getNavNodeDescription,
-                        new TextPositionEvent(fieldEndNode.getText(), navPointsList.size() - 1));
+                        new TextPositionEvent(fieldEndNode.getText(), navNodeList.size() - 1));
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (!enterPressed) {
-                    popUpX = fieldEndNode.getX();
-                    popUpY = fieldEndNode.getY() + fieldEndNode.getHeight();
-                    popUpFieldPosition = navPointsList.size() - 1;
+                    popupPos = new Point(fieldEndNode.getX(), 
+                            fieldEndNode.getY() + fieldEndNode.getHeight());
+                    popupIndex = navNodeList.size() - 1;
                     Listeners.fireEvent(listeners.autoCompletion,
                             new TextEvent(fieldEndNode.getText()));
                 } else {
@@ -373,7 +358,6 @@ public class GUI extends JFrame {
      * Builds the component tab3 and all its sub components, in the process adding all event listeners.
      */
     private void createMapTab() {
-
         // COMPONENTS
         JLabel captionHighwayMalus = new JLabel("Fernstraßenmalus");
         highwayMalusSlider = new JSlider(1, 5, 1);
@@ -474,27 +458,27 @@ public class GUI extends JFrame {
     }
 
     /**
-     * Opens a dialog for map file selection. Fires a RAL event.
+     * Opens a dialog for map file selection. Fires an event.
      */
     private void importMapFileChooser() {
-        importFC = new JFileChooser();
+        dialogImportOSM = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm", "osm");
-        importFC.setFileFilter(filter);
+        dialogImportOSM.setFileFilter(filter);
         File currentDir = null;
         try {
             currentDir = new File(new File(".").getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        importFC.setCurrentDirectory(currentDir);
-        int returnValue = importFC.showOpenDialog(this);
+        dialogImportOSM.setCurrentDirectory(currentDir);
+        int returnValue = dialogImportOSM.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners.fireEvent(listeners.importOsmFile, new TextEvent(importFC.getSelectedFile().getPath()));
+            Listeners.fireEvent(listeners.importOsmFile, new TextEvent(dialogImportOSM.getSelectedFile().getPath()));
         }
     }
 
     /**
-     * Opens a dialog for heightmap file selection. Fires a RAL event.
+     * Opens a dialog for heightmap file selection. Fires an event.
      */
     /*
      * private void importHeightMapFileChooser() { importHeightMap = new JFileChooser();
@@ -505,7 +489,7 @@ public class GUI extends JFrame {
      */
 
     /**
-     * Opens a dialog for route file selection. Fires a RAL event.
+     * Opens a dialog for route file selection. Fires an event.
      */
     private void loadRouteFileChooser() {
         try {
@@ -513,36 +497,40 @@ public class GUI extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        loadRoute = new JFileChooser();
-        int returnValue = loadRoute.showOpenDialog(this);
+        dialogLoadRoute = new JFileChooser();
+        int returnValue = dialogLoadRoute.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners.fireEvent(listeners.loadRoute, new TextEvent(loadRoute.getSelectedFile().getPath()));
+            Listeners.fireEvent(listeners.loadRoute, new TextEvent(dialogLoadRoute.getSelectedFile().getPath()));
         }
     }
 
     /**
-     * Opens a dialog for route output file selection. Fires a RAL event.
+     * Opens a dialog for route output file selection. Fires an event.
      */
     private void saveRouteFileChooser() {
-        saveRoute = new JFileChooser();
-        int returnValue = saveRoute.showSaveDialog(this);
+        dialogSaveRoute = new JFileChooser();
+        int returnValue = dialogSaveRoute.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners.fireEvent(listeners.saveRoute, new TextEvent(saveRoute.getSelectedFile().getPath()));
+            Listeners.fireEvent(listeners.saveRoute, new TextEvent(dialogSaveRoute.getSelectedFile().getPath()));
         }
     }
 
     /**
-     * Opens a dialog for kml output file selection. Fires a RAL event.
+     * Opens a dialog for kml output file selection. Fires an event.
      */
     private void exportRouteKMLFileChooser() {
-        exportRoute = new JFileChooser();
-        int returnValue = exportRoute.showDialog(this, "Exportieren");
+        dialogExportRoute = new JFileChooser();
+        int returnValue = dialogExportRoute.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             Listeners
-                    .fireEvent(listeners.exportRoute, new TextEvent(exportRoute.getSelectedFile().getPath()));
+                    .fireEvent(listeners.exportRoute, new TextEvent(dialogExportRoute.getSelectedFile().getPath()));
         }
     }
 
+    /**
+     * Adds a new field to the navigation node list.
+     * @param text the initial field content
+     */
     private void addWaypointField(String text) {
         final JTextField waypointField = new JTextField(text);
         JButton buttonDeleteWaypoint = new JButton("x");
@@ -569,13 +557,12 @@ public class GUI extends JFrame {
         });
 
         waypointField.addKeyListener(new KeyAdapter() {
-
             @Override
             public void keyReleased(KeyEvent e) {
                 if (!enterPressed) {
-                    popUpX = waypointField.getX();
-                    popUpY = waypointField.getY() + waypointField.getHeight();
-                    popUpFieldPosition = pos + 1;
+                    popupPos = new Point(waypointField.getX(),
+                            waypointField.getY() + waypointField.getHeight());
+                    popupIndex = pos + 1;
                     Listeners.fireEvent(listeners.autoCompletion, new TextEvent(waypointField.getText()));
                 }
                 enterPressed = false;
@@ -587,32 +574,13 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 waypointArea.remove(row);
-                if ((waypointField.getText().length() != 0) && (navPointsList.size() > pos + 1)) {
+                if ((waypointField.getText().length() != 0) && (navNodeList.size() > pos + 1)) {
                     Listeners.fireEvent(listeners.deleteNavPoint, new NumberEvent(pos + 1));
                 }
                 repaint();
             }
         });
     }
-
-    private void addMenuItem(String name) {
-        final JMenuItem item = new JMenuItem(name);
-        textualProposals.add(item);
-        popupTextualCompletion.add(item);
-        item.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < textualProposals.size(); i++) {
-                    if (textualProposals.get(i) == item) {
-                        Listeners.fireEvent(listeners.addTextualNavPoint, new TextPositionEvent(
-                                textualProposals.get(i).getText(), popUpFieldPosition));
-                    }
-                }
-            }
-        });
-    }
-
 
     /**
      * Redraws the complete GUI.
@@ -623,9 +591,7 @@ public class GUI extends JFrame {
 
     /**
      * Sets the entries shown in the imported map selection field.
-     * 
-     * @param maps
-     *            the new entries
+     * @param maps the new entries
      */
     public void updateMapChooser(ArrayList<String> maps) {
         for (int i = 0; i < importedMaps.size(); i++) {
@@ -636,16 +602,11 @@ public class GUI extends JFrame {
             listChooseMap.addItem(map); // TODO keine doppelten NAmen
         }
     }
-
-    public void leftClickPOIFav() {
-
-    }
-
+   
     /**
-     * Changes the geo coordinates view position and subsequently updates the context and redraws the map.
-     * 
-     * @param center
-     *            the new view center
+     * Changes the geo coordinates view position and subsequently
+     * updates the context and redraws the map.
+     * @param center the new view center
      */
     public void setView(Coordinates center) {
         map.setCenter(center);
@@ -653,88 +614,128 @@ public class GUI extends JFrame {
         map.repaint();
     }
 
+    /**
+     * Sets the speed value display.
+     * @param speed the new speed value
+     */
     public void setSpeed(int speed) {
         fieldSpeed.setValue(speed);
     }
 
+    /**
+     * Sets the zoom level display.
+     * @param zoomlevel the new zoom level
+     */
     public void setZoomlevel(int zoomlevel) {
         zoomSlider.setValue(zoomlevel);
     }
 
-
+    /**
+     * Returns the listener collection object.
+     * @return the listener collection object
+     */
     public Listeners getListeners() {
         return listeners;
     }
 
-    public List<Selection> getNavPointsList() {
-        return navPointsList;
+    /**
+     * Returns the list containing the current navnode selection.
+     * @return the navigation node list
+     */
+    public List<Selection> getNavNodeList() {
+        return navNodeList;
     }
 
-
+    /**
+     * Replaces the current navigation node list and updates
+     * the fields display correspondingly.
+     * @param newNavPointsList the new navnode list
+     */
     public void updateNavNodes(List<Selection> newNavPointsList) {
         waypointArea.removeAll();
         fieldStartNode.setText("");
         fieldStartNode.setBackground(Color.WHITE);
         fieldEndNode.setText("");
         fieldEndNode.setBackground(Color.WHITE);
-        navPointsList = new ArrayList<Selection>(newNavPointsList);
-        if (navPointsList.size() > 0) {
-            fieldStartNode.setText(navPointsList.get(0).getName());
+        navNodeList = new ArrayList<Selection>(newNavPointsList);
+        if (navNodeList.size() > 0) {
+            fieldStartNode.setText(navNodeList.get(0).getName());
         }
-        if (navPointsList.size() > 1) {
-            fieldEndNode.setText(navPointsList.get(navPointsList.size() - 1).getName());
+        if (navNodeList.size() > 1) {
+            fieldEndNode.setText(navNodeList.get(navNodeList.size() - 1).getName());
         }
         for (int i = 1; i < newNavPointsList.size() - 1; i++) {
-            addWaypointField(navPointsList.get(i).getName());
+            addWaypointField(navNodeList.get(i).getName());
         }
         repaint();
     }
 
-    public void popUpTrigger(int itemType) {
-        map.triggerPopup(itemType);
+    /**
+     * Called by the Controller after Map has queried a position.
+     * Forwards the element type at the position back to Map.
+     * @param itemType the element type
+     */
+    public void passElementType(int itemType) {
+        map.passElementType(itemType);
     }
 
+    /**
+     * Called by the Controller after Map has queried a POI / favorite
+     * description by position. Forwards the description back to Map.
+     * @param description the description
+     */
     public void passDescription(POIDescription description) {
         map.passDescription(description);
     }
 
-
-    public void showNavNodeDescription(String description, int navNodeIndex) {
-        ((JTextField) waypointArea.getComponent((navNodeIndex - 1) * 2)).setText(description);
-    }
-
-    public void showSearchCompletion(List<String> completion) {
-        while (textualProposals.size() != 0) {
-            int i = textualProposals.size() - 1;
-            popupTextualCompletion.remove(textualProposals.get(i));
-            popupTextualCompletion.remove(textualProposals.get(i));
-            textualProposals.remove(i);
-            textualProposals.remove(i);
-            i--;
+    /**
+     * Opens the search completion popup with the given list of suggestions.
+     * @param completions the completion suggestions
+     */
+    public void showSearchCompletions(List<String> completions) {
+        popupSearchCompletions.removeAll();
+        for (String completion : completions) {
+            final JMenuItem item = new JMenuItem(completion);
+            popupSearchCompletions.add(item);
+            item.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Listeners.fireEvent(listeners.addTextualNavPoint,
+                            new TextPositionEvent(item.getText(), popupIndex));
+                }
+            });
         }
-        for (int i = 0; i < completion.size(); i++) {
-            addMenuItem(completion.get(i));
-        }
-        popupTextualCompletion.show(routingTabTopArea, popUpX, popUpY);
+        popupSearchCompletions.show(routingTabTopArea, popupPos.x, popupPos.y);
         repaint();
     }
 
-    public void showRouteValues(int duration, int length) {
+    /**
+     * Displays the given route attributes in the status bar.
+     * @param length the route length (in meters)
+     * @param duration the route duration using the current average speed (in seconds)
+     */
+    public void showRouteValues(int length, int duration) {
         int hours = duration / 3600;
         int minutes = (duration - hours * 3600) / 60;
         int seconds = duration - (hours * 3600) - (minutes * 60);
-        float kilometers = length / 1000f;
-        if (hours != 0) {
-            routeValues.setText("(" + kilometers + "km, " + hours + "st " + minutes + "min" + ")");
-        } else if (minutes != 0) {
-            routeValues.setText("(" + kilometers + "km, " + minutes + "min" + ")");
-        } else {
-            routeValues.setText("(" + kilometers + "km, " + seconds + "sek" + ")");
-        }
-        repaint();
+        String output = (length / 1000f) + "km, " + ((hours != 0) ? hours + "h " : "");
+        routeValues.setText("(" + output + ((minutes != 0) ? minutes + "min" : seconds + "sek")+ ")");
+    }
+    
+    /**
+     * Displays the given coordinates in the status bar.
+     * @param mousePosition the given mouse coordinates
+     */
+    public void showMouseCoordinates(Coordinates mousePosition) {
+        mouseCoordinatesDisplay.setText(mousePosition.toString());
     }
 
-
+    
+    /**
+     * Called when the main thread has finished operating. Signals the GUI whether it
+     * can now respond to AWT events without danger of malsynchronisation.
+     * @param active (de-)activates some GUI event responds
+     */
     public void setActive(boolean active) {
         this.active = active;
     }

@@ -35,7 +35,6 @@ import kit.route.a.lot.controller.listener.SelectNavNodeListener;
 import kit.route.a.lot.controller.listener.ShowFavoriteDescriptionListener;
 import kit.route.a.lot.controller.listener.SpeedListener;
 import kit.route.a.lot.controller.listener.SuggestionListener;
-import kit.route.a.lot.gui.GUI;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.io.HeightLoader;
@@ -55,7 +54,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
-
+    // Same definition as in Map:
+    public static final int FREEMAPSPACE = 0, POI = 1, FAVORITE = 2, NAVNODE = 3;
+    
     private Renderer renderer = new Renderer();
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
@@ -273,7 +274,6 @@ public class Controller {
         }
         guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
-        guiHandler.updateGUI();
 //        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
 //            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
 //        }
@@ -294,7 +294,6 @@ public class Controller {
         }
         guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
-        guiHandler.updateGUI();
 //        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
 //            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
 //        }
@@ -306,7 +305,6 @@ public class Controller {
             state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, sel);
             guiHandler.updateNavPointsList(state.getNavigationNodes());
             calculateRoute();
-            guiHandler.updateGUI();
         }
     }
     
@@ -316,7 +314,6 @@ public class Controller {
             state.setCurrentRoute(new ArrayList<Integer>());
             guiHandler.updateNavPointsList(state.getNavigationNodes());
             calculateRoute();
-            guiHandler.updateGUI();
         }
     }
     
@@ -329,7 +326,6 @@ public class Controller {
                 state.getCurrentRoute().clear();
                 guiHandler.updateNavPointsList(state.getNavigationNodes());
                 calculateRoute();
-                guiHandler.updateGUI();
             }
         }
     }
@@ -344,8 +340,18 @@ public class Controller {
 
     public void optimizeRoute() {  
         Router.optimizeRoute(state.getNavigationNodes());
-        state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
-        guiHandler.updateGUI();
+        guiHandler.updateNavPointsList(state.getNavigationNodes());
+        calculateRoute();
+    }
+    
+    public void calculateRoute() {
+        if (state.getNavigationNodes().size() >= 2) {
+            state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
+            int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
+            int length = ComplexInfoSupplier.getLength(state.getCurrentRoute());
+            guiHandler.showRouteValues(length, duration);
+            guiHandler.updateGUI();
+        }
     }
 
     
@@ -361,8 +367,6 @@ public class Controller {
 
 
     public void passElementType(Coordinates pos) {
-        //TODO: better approximation:
-        
         float adaptedRadius = (Projection.getZoomFactor(state.getDetailLevel())) * state.getClickRadius();
         Coordinates topLeft = new Coordinates(pos.getLatitude() - adaptedRadius,
                 pos.getLongitude() - adaptedRadius);       
@@ -371,21 +375,21 @@ public class Controller {
         for (Selection navNode: state.getNavigationNodes()) {
             Node node = new Node(navNode.getPosition());
             if (node.isInBounds(topLeft, bottomRight)) {
-                guiHandler.passElementType(GUI.NAVNODE);
+                guiHandler.passElementType(NAVNODE);
                 return;
             }
         }    
         if (state.getLoadedMapInfo().getPOIDescription(pos,
                 state.getClickRadius(), state.getDetailLevel()) != null) {
-            guiHandler.passElementType(GUI.POI);
+            guiHandler.passElementType(POI);
             return;
         } 
         if(state.getLoadedMapInfo().getFavoriteDescription(pos,
                 state.getDetailLevel(), state.getClickRadius()) != null) {
-            guiHandler.passElementType(GUI.FAVORITE);
+            guiHandler.passElementType(FAVORITE);
             return;
         }
-        guiHandler.passElementType(GUI.FREEMAPSPACE);
+        guiHandler.passElementType(FREEMAPSPACE);
     }
     
     public void passPOIDescription(Coordinates pos) {   
@@ -418,8 +422,8 @@ public class Controller {
     public void setSpeed(int speed) {
         if(speed >= 0) {
             state.setSpeed(speed);
-            guiHandler.showRouteValues(ComplexInfoSupplier.getDuration(state.getCurrentRoute(), speed),
-                    ComplexInfoSupplier.getLength(state.getCurrentRoute()));
+            guiHandler.showRouteValues(ComplexInfoSupplier.getLength(state.getCurrentRoute()),
+                    ComplexInfoSupplier.getDuration(state.getCurrentRoute(), speed));
         }
     }
     
@@ -448,20 +452,6 @@ public class Controller {
         state.setCenterCoordinates(center);
     }
     
-    public void calculateRoute() {
-        State state = State.getInstance();
-        if (state.getNavigationNodes().size() >= 2) {
-            try {
-                state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
-                int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
-                int length = ComplexInfoSupplier.getLength(state.getCurrentRoute());
-                guiHandler.showRouteValues(duration, length);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    
     public void render(Context context) {
         state.setDetailLevel(context.getZoomlevel());
         renderer.render(context); 
@@ -471,7 +461,7 @@ public class Controller {
         renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
     }
     
-    public void prepareForShutDown() {
+    public void prepareForShutdown() {
         File stateFile = new File("./state.state");
         try {
             StateIO.saveState(stateFile);

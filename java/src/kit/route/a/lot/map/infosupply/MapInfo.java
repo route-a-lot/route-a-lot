@@ -283,11 +283,8 @@ public class MapInfo {
     public void loadFromStream(DataInputStream stream) throws IOException {
         geoTopLeft = Coordinates.loadFromStream(stream);
         geoBottomRight = Coordinates.loadFromStream(stream);
-        logger.info("load element db...");
         elementDB.loadFromStream(stream);
-        logger.info("load geo operator...");
         geographicalOperator.loadFromStream(stream);
-        //TODO: load address operator
         addressOperator.loadFromStream(stream);
     }
 
@@ -300,11 +297,8 @@ public class MapInfo {
     public void saveToStream(DataOutputStream stream) throws IOException {
         geoTopLeft.saveToStream(stream);
         geoBottomRight.saveToStream(stream);
-        logger.info("save element db...");
         elementDB.saveToStream(stream);
-        logger.info("save geo operator...");
         geographicalOperator.saveToStream(stream);
-        //TODO: save address operator
         addressOperator.saveToStream(stream);
     }
 
