@@ -201,8 +201,8 @@ public class GUI extends JFrame {
         tabArea.setBackground(Color.LIGHT_GRAY);
         createRoutingTab();
         createMapTab();
-        tabArea.addTab("Planen", null, routingTab, "1");
-        tabArea.addTab("Karten", null, mapTab, "3");
+        tabArea.addTab("Planen", null, routingTab, "Start-, Ziel-, Zwischenhalts- und Geschwindigkeitseinstellungen.");
+        tabArea.addTab("Karten", null, mapTab, "Import von Höhen- und OSM-Karten, Laden von Karten, Einstellung der Maluse.");
         // tabArea.setMnemonicAt(1, KeyEvent.VK_1);
         // tabArea.setMnemonicAt(1, KeyEvent.VK_2);
 

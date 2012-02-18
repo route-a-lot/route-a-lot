@@ -52,6 +52,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     protected int oldMousePosX;
     protected int oldMousePosY;
     private Coordinates center;
+    private boolean popUpTrigger;
     protected int zoomlevel = 3;
     protected Coordinates topLeft = new Coordinates();
     protected Coordinates bottomRight = new Coordinates();
@@ -352,6 +353,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                 ? gui.getListeners().poiDescription : gui.getListeners().favDescription;
             Listeners.fireEvent(listeners, new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             descriptionMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
+        } else {
+            popUpTrigger = false;
         }
     }
     
