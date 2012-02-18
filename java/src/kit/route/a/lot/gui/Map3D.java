@@ -18,8 +18,14 @@ import static javax.media.opengl.GL.*;
 public class Map3D extends Map implements GLEventListener {
     
     private static final long serialVersionUID = 1L;
-    private static final float ROTATION_SPEED = 0.5f, MAX_DISTANCE = 1, VIEW_ANGLE = 85;
-    private float rotationHorizontal = 0f, rotationVertical = 25f;
+    private static final float ROTATION_SPEED = 0.5f, VIEW_ANGLE = 85, FOG_START_DISTANCE = 1.3f;
+    
+    private static final float[] LOD_STAGES = {0.01f, 1, 2}; 
+    private static final int[] LOD_STAGE_LEVELS = {0, 1}; 
+    
+    
+    private float rotationHorizontal = 0f, rotationVertical = 60f;
+    private float displayRatio = 1;
    
     public Map3D(GUI gui)
     {
@@ -50,8 +56,8 @@ public class Map3D extends Map implements GLEventListener {
         // define fog
         gl.glEnable(GL_FOG);
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
-        gl.glFogf(GL_FOG_START, 0.6f * MAX_DISTANCE);
-        gl.glFogf(GL_FOG_END, MAX_DISTANCE);
+        gl.glFogf(GL_FOG_START, FOG_START_DISTANCE);
+        gl.glFogf(GL_FOG_END, LOD_STAGES[LOD_STAGES.length - 1]);
         gl.glFogfv(GL_FOG_COLOR, new float[]{0, 0, 0, 1}, 0);     
     }
     
@@ -71,9 +77,16 @@ public class Map3D extends Map implements GLEventListener {
         gl.glTranslated(-0.5*(topLeft.getLongitude() + bottomRight.getLongitude()), // camera position
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
-        // create render event
-        gui.getListeners().fireEvent(VIEW_CHANGED,
-                new RenderEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));      
+        
+        // create render events
+        for (int i = LOD_STAGES.length - 1; i > 0; i--) {
+            gl.glClear(GL_DEPTH_BUFFER_BIT);
+            setProjection(gl, LOD_STAGES[i - 1] * 0.9f, LOD_STAGES[i]);
+            gl.glPushMatrix();
+            gui.getListeners().fireEvent(VIEW_CHANGED,
+                    new RenderEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel + LOD_STAGE_LEVELS[i - 1]))); 
+            gl.glPopMatrix();     
+        }
     }
 
     @Override
@@ -82,12 +95,9 @@ public class Map3D extends Map implements GLEventListener {
     @Override
     public void reshape(GLAutoDrawable g, int x, int y, int width, int height) {   
         calculateView();
-        GL gl = g.getGL(); 
         // recreate the projection matrix
-        gl.glMatrixMode(GL.GL_PROJECTION);
-        gl.glLoadIdentity();
-        (new GLU()).gluPerspective(VIEW_ANGLE, width/(float)height, 0.01, MAX_DISTANCE);
-        gl.glMatrixMode(GL.GL_MODELVIEW);
+        displayRatio = width/(float)height;
+        setProjection(g.getGL(), LOD_STAGES[0], LOD_STAGES[1]);
     }
     
     /**
@@ -136,5 +146,12 @@ public class Map3D extends Map implements GLEventListener {
         (new GLU()).gluUnProject((double) x, (double) y, (double) z[0],
                 model, 0, proj, 0, viewport, 0, result, 0);
         return new Coordinates((float) result[1], (float) result[0]);    
+    }
+    
+    private void setProjection(GL gl, float nearPlane, float farPlane) {
+        gl.glMatrixMode(GL_PROJECTION);
+        gl.glLoadIdentity();
+        (new GLU()).gluPerspective(VIEW_ANGLE, displayRatio, nearPlane, farPlane);
+        gl.glMatrixMode(GL_MODELVIEW);
     }
 }
