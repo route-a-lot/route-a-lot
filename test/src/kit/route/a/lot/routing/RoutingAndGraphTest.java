@@ -25,10 +25,11 @@ public class RoutingAndGraphTest {
     static RoutingStateMock simpleRoutingState;
     static RoutingGraph graph;
     static final int SIMPLE_ROUTES_NUMBER = 10000;
-    static final int SIMPLE_ROUTES_WITH_MORE_S_NUMBER = 5;
-    static final int SIMPLE_ROUTES_Till_THIS_NUMBER = 10;
-    static final int OPTIMIZED_ROUTES_NUMBER = 10;
+    static final int PER_ADVANCED = 5;  //nuber of tests for each optimized number
+    static final int ADVANCED_ROUTES_TILL = 10;  //targets without optimizing
+    static final int OPTIMIZED_ROUTES_NUMBER = 10;  
     static final int OPTIMIZED_ROUTES_Till_THIS_NUMBER = 10;
+    
     
     @BeforeClass
     public static void initialize() {
@@ -104,14 +105,14 @@ public class RoutingAndGraphTest {
         if (!testRoutes.exists()) {
             createTestFile(testRoutes);
         }
-        
+        int failure = 0;
         DataInputStream stream = new DataInputStream(new FileInputStream(testRoutes));
         ArrayList<Selection> selections;
         List<Integer> route;
         stream.readInt();   //necessary in moment, will be used later
         stream.readInt();
         stream.readInt();
-        for (int i = 0; i < SIMPLE_ROUTES_NUMBER; i++) {
+        for (int i = 0; i < SIMPLE_ROUTES_NUMBER + (ADVANCED_ROUTES_TILL - 2) * PER_ADVANCED; i++) {
             selections = new ArrayList<Selection>();
             int size = stream.readInt();
             for (int j = 0; j < size; j++) {
@@ -125,8 +126,9 @@ public class RoutingAndGraphTest {
             assertEquals(stream.readInt(), length);
             
         }
-        
     }
+    
+   
     
     private void createTestFile(File file) throws Exception {
         if (file == null) {
@@ -136,8 +138,8 @@ public class RoutingAndGraphTest {
         DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
         
         stream.writeInt(SIMPLE_ROUTES_NUMBER);
-        stream.writeInt(SIMPLE_ROUTES_WITH_MORE_S_NUMBER);
-        stream.writeInt(SIMPLE_ROUTES_Till_THIS_NUMBER);
+        stream.writeInt(ADVANCED_ROUTES_TILL);
+        stream.writeInt(PER_ADVANCED);
         
         Selection start;
         Selection target;
@@ -171,8 +173,8 @@ public class RoutingAndGraphTest {
         
         
         
-        for (int i= 3; i < SIMPLE_ROUTES_Till_THIS_NUMBER; i++) {
-            for (int j = 0; j < SIMPLE_ROUTES_WITH_MORE_S_NUMBER; j++) {
+        for (int i= 2; i <= ADVANCED_ROUTES_TILL; i++) {
+            for (int j = 0; j < PER_ADVANCED; j++) {
                 
                 stream.writeInt(i);
                 selections = new ArrayList<Selection>();
@@ -199,7 +201,7 @@ public class RoutingAndGraphTest {
     private int getRouteLength(List<Integer> route) {
         int length = 0;
         for (int i = 1; i < route.size(); i++) {
-            length += graph.getWeight(route.get(i - 1), route.get(i - 1));
+            length += graph.getWeight(route.get(i - 1), route.get(i));
         }
         return length;
     }

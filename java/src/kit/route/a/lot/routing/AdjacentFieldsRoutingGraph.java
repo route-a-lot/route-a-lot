@@ -219,9 +219,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 relevantEdges.add(edges[i]);
             }
         }
-        for (int neighbor: relevantEdges) {
-            logger.debug("Neighbor to " + node + ": " + neighbor);
-        }
         if (relevantEdges.size() == 0) {
             logger.debug("No Neighbors found for " + node);
         }
