@@ -13,6 +13,7 @@ import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.gui.event.ChangeViewEvent;
+import static kit.route.a.lot.common.Listener.*;
 
 public class Map2D extends Map  {
     
@@ -29,7 +30,7 @@ public class Map2D extends Map  {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);           
-                gui.getListeners().fireEvent(Listeners.VIEW_CHANGED,
+                gui.getListeners().fireEvent(VIEW_CHANGED,
                         new ChangeViewEvent(new Context2D(topLeft, bottomRight, g, zoomlevel)));
             }      
         };

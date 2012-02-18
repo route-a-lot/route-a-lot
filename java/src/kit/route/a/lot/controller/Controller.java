@@ -9,6 +9,7 @@ import java.util.List;
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
@@ -35,6 +36,7 @@ import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.map.rendering.Renderer3D;
 import kit.route.a.lot.routing.Precalculator;
 import kit.route.a.lot.routing.Router;
+import static kit.route.a.lot.common.Listener.*;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -42,18 +44,7 @@ import org.apache.log4j.PropertyConfigurator;
 public class Controller {
     // Same definition as in Map / Listeners (please synchronize when changing):
     private static final int FREEMAPSPACE = 0, POI = 1, FAVORITE = 2, NAVNODE = 3;
-    private static final int
-        IMPORT_OSM = 0, IMPORT_HEIGHTMAP = 1,
-        LOAD_MAP = 2, LOAD_ROUTE = 3, SAVE_ROUTE = 4, EXPORT_ROUTE = 5,  
-        POSITION_CLICKED = 6, OPTIMIZE_ROUTE = 7,
-        SHOW_POI_DESCRIPTION = 8, SHOW_NAVNODE_DESCRIPTION = 9,            
-        ADD_FAVORITE = 10, DELETE_FAVORITE = 11, ADD_NAVNODE = 12, DELETE_NAVNODE = 13,
-        LIST_SEARCH_COMPLETIONS = 14, SET_SPEED = 15,      
-        VIEW_CHANGED = 16, SWITCH_MAP_MODE = 17,
-        SET_HIGHWAY_MALUS = 18, SET_HEIGHT_MALUS = 19,
-        LIST_IMPORTED_MAPS = 20, DELETE_IMPORTED_MAP = 21,
-        CLOSE_APPLICATION = 22;
-    
+
     private static final File
         SRAL_DIRECTORY = new File("./sral"),
         SRTM_DIRECTORY = new File("./srtm/"),

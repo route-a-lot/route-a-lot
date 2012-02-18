@@ -26,6 +26,7 @@ import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.SelectNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
+import static kit.route.a.lot.common.Listener.*;
 
 
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {
@@ -111,14 +112,14 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         deleteFavoriteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gui.getListeners().fireEvent(Listeners.DELETE_FAVORITE,
+                gui.getListeners().fireEvent(DELETE_FAVORITE,
                         new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
         deleteNavPoint.addActionListener(new ActionListener() {         
             @Override
             public void actionPerformed(ActionEvent e) {
-                gui.getListeners().fireEvent(Listeners.DELETE_NAVNODE,
+                gui.getListeners().fireEvent(DELETE_NAVNODE,
                         new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
@@ -153,7 +154,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     if (description.equals(TEXT_INSERT_DESCRIPTION) || description.length() == 0) {
                         description = TEXT_EMPTY;
                     }
-                    gui.getListeners().fireEvent(Listeners.ADD_FAVORITE, new AddFavoriteEvent(
+                    gui.getListeners().fireEvent(ADD_FAVORITE, new AddFavoriteEvent(
                             getPosition(clickEvent.getX(), clickEvent.getY()), name, description));
                 }
                 favoriteMenu.setVisible(false);
@@ -252,7 +253,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                         break;
                     }
         }    
-        gui.getListeners().fireEvent(Listeners.ADD_NAVNODE,
+        gui.getListeners().fireEvent(ADD_NAVNODE,
                 new SelectNavNodeEvent(getPosition(clickEvent.getX(), clickEvent.getY()), pos));
         canvas.repaint();
     }
@@ -271,7 +272,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             return;
         }//*/
         clickEvent = me;
-        gui.getListeners().fireEvent(Listeners.POSITION_CLICKED,
+        gui.getListeners().fireEvent(POSITION_CLICKED,
                 new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
     }
       
@@ -339,7 +340,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             deleteNavPoint.setVisible(itemType == NAVNODE);
             navNodeMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
         } else if (itemType == FAVORITE || itemType == POI){
-            gui.getListeners().fireEvent(Listeners.SHOW_POI_DESCRIPTION,
+            gui.getListeners().fireEvent(SHOW_POI_DESCRIPTION,
                     new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             descriptionMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
         }

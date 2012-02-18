@@ -40,15 +40,15 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
-import kit.route.a.lot.controller.Listener;
 import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 import kit.route.a.lot.gui.event.TextPositionEvent;
-
+import static kit.route.a.lot.common.Listener.*;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -137,7 +137,7 @@ public class GUI extends JFrame {
                 while (!active); // postbone execution until after startup
                 Coordinates center = map.getCenter();
                 int zoomlevel = map.getZoomlevel();
-                listeners.fireEvent(Listeners.SWITCH_MAP_MODE, null);
+                listeners.fireEvent(SWITCH_MAP_MODE, null);
                 centralArea.remove(map);
                 map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
                 centralArea.add(map, BorderLayout.CENTER);
@@ -159,7 +159,7 @@ public class GUI extends JFrame {
                 map.calculateView();
             }
         });
-        listeners.addListener(Listeners.VIEW_CHANGED, new Listener() {
+        listeners.addListener(VIEW_CHANGED, new Listener() {
             @Override
             public void handleEvent(GeneralEvent event) {
                 zoomSlider.setValue(Util.clip(map.getZoomlevel(), 0, 9));
@@ -211,7 +211,7 @@ public class GUI extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                listeners.fireEvent(Listeners.CLOSE_APPLICATION, null);
+                listeners.fireEvent(CLOSE_APPLICATION, null);
             }
         });
     }
@@ -235,7 +235,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
-                listeners.fireEvent(Listeners.SHOW_NAVNODE_DESCRIPTION,
+                listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
                         new TextPositionEvent(fieldStartNode.getText(), 0));
             }
         });
@@ -246,7 +246,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     popupIndex = 0;
-                    listeners.fireEvent(Listeners.LIST_SEARCH_COMPLETIONS,
+                    listeners.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldStartNode.getText()));
                 } else {
                     enterPressed = false;
@@ -264,7 +264,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
-                listeners.fireEvent(Listeners.SHOW_NAVNODE_DESCRIPTION,
+                listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
                         new TextPositionEvent(fieldEndNode.getText(), navNodeList.size() - 1));
             }
         });
@@ -275,7 +275,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
                     popupIndex = navNodeList.size() - 1;
-                    listeners.fireEvent(Listeners.LIST_SEARCH_COMPLETIONS,
+                    listeners.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldEndNode.getText()));
                 } else {
                     enterPressed = false;
@@ -300,7 +300,7 @@ public class GUI extends JFrame {
         buttonOptimizeRoute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                listeners.fireEvent(Listeners.OPTIMIZE_ROUTE, null);
+                listeners.fireEvent(OPTIMIZE_ROUTE, null);
             }
         });
 
@@ -312,7 +312,7 @@ public class GUI extends JFrame {
         fieldSpeed.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent ce) {
-                listeners.fireEvent(Listeners.SET_SPEED,
+                listeners.fireEvent(SET_SPEED,
                         new NumberEvent(Integer.parseInt(fieldSpeed.getValue().toString())));
             }
         });
@@ -370,7 +370,7 @@ public class GUI extends JFrame {
         highwayMalusSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                listeners.fireEvent(Listeners.SET_HIGHWAY_MALUS,
+                listeners.fireEvent(SET_HIGHWAY_MALUS,
                         new NumberEvent(highwayMalusSlider.getValue()));
             }
         });
@@ -384,7 +384,7 @@ public class GUI extends JFrame {
         reliefMalusSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent arg0) {
-                listeners.fireEvent(Listeners.SET_HEIGHT_MALUS,
+                listeners.fireEvent(SET_HEIGHT_MALUS,
                         new NumberEvent(reliefMalusSlider.getValue()));
             }
         });
@@ -405,7 +405,7 @@ public class GUI extends JFrame {
         buttonDeleteMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listeners.fireEvent(Listeners.DELETE_IMPORTED_MAP,
+                listeners.fireEvent(DELETE_IMPORTED_MAP,
                         new TextEvent(listChooseMap.getSelectedItem().toString()));
             }
         });
@@ -416,7 +416,7 @@ public class GUI extends JFrame {
         buttonActivateMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listeners.fireEvent(Listeners.LOAD_MAP,
+                listeners.fireEvent(LOAD_MAP,
                         new TextEvent(listChooseMap.getSelectedItem().toString()));
             }
         });
@@ -426,7 +426,7 @@ public class GUI extends JFrame {
         listChooseMap.addAncestorListener(new AncestorListener() {
             @Override
             public void ancestorAdded(AncestorEvent e) {
-                listeners.fireEvent(Listeners.LIST_IMPORTED_MAPS, null);
+                listeners.fireEvent(LIST_IMPORTED_MAPS, null);
             }
             public void ancestorMoved(AncestorEvent e) {}
             public void ancestorRemoved(AncestorEvent e) {}           
@@ -483,7 +483,7 @@ public class GUI extends JFrame {
         dialogImportOSM.setCurrentDirectory(currentDir);
         int returnValue = dialogImportOSM.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            listeners.fireEvent(Listeners.IMPORT_OSM,
+            listeners.fireEvent(IMPORT_OSM,
                     new TextEvent(dialogImportOSM.getSelectedFile().getPath()));
         }
     }
@@ -511,7 +511,7 @@ public class GUI extends JFrame {
         dialogLoadRoute = new JFileChooser();
         int returnValue = dialogLoadRoute.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            listeners.fireEvent(Listeners.LOAD_ROUTE,
+            listeners.fireEvent(LOAD_ROUTE,
                     new TextEvent(dialogLoadRoute.getSelectedFile().getPath()));
         }
     }
@@ -523,7 +523,7 @@ public class GUI extends JFrame {
         dialogSaveRoute = new JFileChooser();
         int returnValue = dialogSaveRoute.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            listeners.fireEvent(Listeners.SAVE_ROUTE,
+            listeners.fireEvent(SAVE_ROUTE,
                     new TextEvent(dialogSaveRoute.getSelectedFile().getPath()));
         }
     }
@@ -535,7 +535,7 @@ public class GUI extends JFrame {
         dialogExportRoute = new JFileChooser();
         int returnValue = dialogExportRoute.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            listeners.fireEvent(Listeners.EXPORT_ROUTE,
+            listeners.fireEvent(EXPORT_ROUTE,
                             new TextEvent(dialogExportRoute.getSelectedFile().getPath()));
         }
     }
@@ -562,7 +562,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
-                listeners.fireEvent(Listeners.SHOW_NAVNODE_DESCRIPTION,
+                listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
                         new TextPositionEvent(waypointField.getText(), pos + 1));
                 repaint();
             }
@@ -575,7 +575,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
                     popupIndex = pos + 1;
-                    listeners.fireEvent(Listeners.LIST_SEARCH_COMPLETIONS,
+                    listeners.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(waypointField.getText()));
                 }
                 enterPressed = false;
@@ -587,7 +587,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 waypointArea.remove(row);
                 if ((waypointField.getText().length() != 0) && (navNodeList.size() > pos + 1)) {
-                    listeners.fireEvent(Listeners.DELETE_NAVNODE, new NumberEvent(pos + 1));
+                    listeners.fireEvent(DELETE_NAVNODE, new NumberEvent(pos + 1));
                 }
                 repaint();
             }
@@ -712,7 +712,7 @@ public class GUI extends JFrame {
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    listeners.fireEvent(Listeners.ADD_NAVNODE,
+                    listeners.fireEvent(ADD_NAVNODE,
                             new TextPositionEvent(item.getText(), popupIndex));
                 }
             });

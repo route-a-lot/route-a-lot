@@ -3,16 +3,16 @@ package kit.route.a.lot.gui;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.controller.Listener;
 
 
 public class GUIHandler {
 
     private GUI gui;
-    private Listeners listeners = new Listeners();
+    private Listeners listeners = new Listeners(Listener.TYPE_COUNT);
     
     public GUIHandler() {
         gui = new GUI(listeners);
