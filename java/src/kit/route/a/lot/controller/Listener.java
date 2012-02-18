@@ -1,4 +1,4 @@
-package kit.route.a.lot.controller.listener;
+package kit.route.a.lot.controller;
 
 import kit.route.a.lot.gui.event.GeneralEvent;
 
@@ -7,7 +7,7 @@ import kit.route.a.lot.gui.event.GeneralEvent;
  * @author krauss
  *
  */
-public interface GeneralListener {
+public interface Listener {
     
     public void handleEvent(GeneralEvent event);
     

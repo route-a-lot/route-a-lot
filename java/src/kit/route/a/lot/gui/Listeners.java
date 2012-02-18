@@ -3,7 +3,7 @@ package kit.route.a.lot.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import kit.route.a.lot.controller.listener.GeneralListener;
+import kit.route.a.lot.controller.Listener;
 import kit.route.a.lot.gui.event.GeneralEvent;
 
 public class Listeners {
@@ -20,25 +20,25 @@ public class Listeners {
         LIST_IMPORTED_MAPS = 20, DELETE_IMPORTED_MAP = 21,
         CLOSE_APPLICATION = 22;
        
-    private List<GeneralListener>[] lists;
+    private List<Listener>[] lists;
     
     /**
      * Initializes all listener collections that are used to communicate with the controller.
      */
     @SuppressWarnings("unchecked")
     public Listeners() {  
-        lists = (List<GeneralListener>[]) new ArrayList[25];
+        lists = (List<Listener>[]) new ArrayList[25];
         for (int i = 0; i < lists.length; i++) {
-            lists[i] = new ArrayList<GeneralListener>();
+            lists[i] = new ArrayList<Listener>();
         }
     }
     
-    public void addListener(int eventType, GeneralListener listener) {
+    public void addListener(int eventType, Listener listener) {
         lists[eventType].add(listener);
     }
     
     public void fireEvent(int eventType, GeneralEvent event) {
-        for (GeneralListener listener: lists[eventType]) {
+        for (Listener listener: lists[eventType]) {
             listener.handleEvent(event);
         }  
     }

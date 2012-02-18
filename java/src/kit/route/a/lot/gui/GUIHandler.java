@@ -6,7 +6,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.controller.listener.GeneralListener;
+import kit.route.a.lot.controller.Listener;
 
 
 public class GUIHandler {
@@ -65,7 +65,7 @@ public class GUIHandler {
         gui.showSearchCompletions(completion);
     }
     
-    public void addListener(int eventType, GeneralListener listener) {
+    public void addListener(int eventType, Listener listener) {
         listeners.addListener(eventType, listener);
     }
 }

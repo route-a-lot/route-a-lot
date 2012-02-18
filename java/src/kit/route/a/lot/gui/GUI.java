@@ -43,7 +43,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
-import kit.route.a.lot.controller.listener.GeneralListener;
+import kit.route.a.lot.controller.Listener;
 import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
@@ -159,7 +159,7 @@ public class GUI extends JFrame {
                 map.calculateView();
             }
         });
-        listeners.addListener(Listeners.VIEW_CHANGED, new GeneralListener() {
+        listeners.addListener(Listeners.VIEW_CHANGED, new Listener() {
             @Override
             public void handleEvent(GeneralEvent event) {
                 zoomSlider.setValue(Util.clip(map.getZoomlevel(), 0, 9));
