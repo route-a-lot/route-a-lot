@@ -1,6 +1,5 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.awt.color.CMMException;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -25,8 +24,8 @@ import org.apache.log4j.Logger;
 public class QTGeographicalOperator implements GeographicalOperator {
 
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
-    private static float baseLayerMultiplier = 3;
-    private static int countZoomlevel = 9;
+    private float baseLayerMultiplier = 3;
+    private int countZoomlevel = 9;
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     private QuadTree zoomlevels[] = new QuadTree[countZoomlevel];
     

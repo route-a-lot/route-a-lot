@@ -93,7 +93,7 @@ public class Street extends MapElement implements Comparable<Street> {
         int start = getClosestEdgeStartPosition(pos);
         Selection newSel = new Selection(nodes[start].getID(), nodes[start + 1].getID(), getRatio(start, start + 1, pos),
                 pos);
-        newSel.setName(name);
+        newSel.setName((name != null) ? name : pos.toString());
         return newSel;
     }
 

@@ -12,15 +12,6 @@ import kit.route.a.lot.map.Street;
 
 public class ComplexInfoSupplier {
 
-    /**
-     * Operation getDuration
-     * 
-     * @param route
-     *            -
-     * @param speed
-     *            -
-     * @return int
-     */
     public static int getDuration(List<Integer> route, int speed) {
         return (int) (getLength(route) / (speed / 3.6));
     }
@@ -34,23 +25,15 @@ public class ComplexInfoSupplier {
         return length;
     }
 
-    
-    
-    /**
-     * Operation getRouteDescription
-     * 
-     * @param list
-     *            -
-     * @return RouteDescription
-     */
     public static RouteDescription getRouteDescription(List<Integer> list) {
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        //MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         RouteDescription rd = new RouteDescription();
-        Street currentStreet = null;
+        //Street currentStreet = null;
         return rd;
     }
     
     //returns the street which the point in this route relies to
+    @SuppressWarnings("unused")
     private static Street giveMeCurrentStreet(int index, ArrayList<Integer> route) {
         boolean found = false;
         int i = index;

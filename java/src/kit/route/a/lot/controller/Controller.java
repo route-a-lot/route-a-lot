@@ -321,17 +321,12 @@ public class Controller {
     }
     
     public void deleteNavNode(Coordinates pos) {
+        int radius = Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius();
         for (int i = 0; i < state.getNavigationNodes().size(); i++) {
-            Node node = new Node(state.getNavigationNodes().get(i).getPosition());
-            Coordinates topLeft = new Coordinates();
-            Coordinates bottomRight = new Coordinates();
-            topLeft.setLatitude(pos.getLatitude() - Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
-            topLeft.setLongitude(pos.getLongitude() - Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
-            bottomRight.setLatitude(pos.getLatitude() + Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
-            bottomRight.setLongitude(pos.getLongitude() + Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius());
-            if (node.isInBounds(topLeft, bottomRight)) {
+            Coordinates navNodePos = state.getNavigationNodes().get(i).getPosition();
+            if (Coordinates.getDistance(navNodePos, pos) < radius) {
                 state.getNavigationNodes().remove(i);
-                state.setCurrentRoute(new ArrayList<Integer>());
+                state.getCurrentRoute().clear();
                 guiHandler.updateNavPointsList(state.getNavigationNodes());
                 calculateRoute();
                 guiHandler.updateGUI();

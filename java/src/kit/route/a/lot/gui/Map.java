@@ -114,8 +114,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             public void actionPerformed(ActionEvent e) {
                 favoriteNameField.setText("Name hier einfügen...");
                 favoriteDescriptionField.setText("Beschreibung hier einfügen...");
-                favoriteMenu.show(canvas, clickEvent.getX() - canvas.getX(),
-                        clickEvent.getY() - canvas.getY());
+                favoriteMenu.show(canvas, clickEvent.getX(), clickEvent.getY());
             }
         });
         deleteFavoriteItem.addActionListener(new ActionListener() {
@@ -129,7 +128,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             @Override
             public void actionPerformed(ActionEvent e) {
                 Listeners.fireEvent(gui.getListeners().deleteNavPoint,
-                        new PositionEvent(getPosition(clickEvent.getY(), clickEvent.getX())));
+                        new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
         
@@ -263,8 +262,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     }
         }    
         Listeners.fireEvent(gui.getListeners().targetSelected,
-                new SelectNavNodeEvent(getPosition(clickEvent.getX() - canvas.getX(),
-                        clickEvent.getY() - canvas.getY()), pos));
+                new SelectNavNodeEvent(getPosition(clickEvent.getX(), clickEvent.getY()), pos));
         canvas.repaint();
     }
     
@@ -301,9 +299,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        Coordinates clickPos = getPosition(e.getX() - canvas.getX(), e.getY() - canvas.getY());
-        int yDiff = e.getY() - canvas.getY() - canvas.getBounds().height / 2;
-        int xDiff = e.getX() - canvas.getX() - canvas.getBounds().width / 2;
+        Coordinates clickPos = getPosition(e.getX(), e.getY());
+        int yDiff = e.getY() - canvas.getBounds().height / 2;
+        int xDiff = e.getX() - canvas.getBounds().width / 2;
         setZoomlevel(zoomlevel + e.getWheelRotation());
         center.setLatitude(clickPos.getLatitude() - yDiff * Projection.getZoomFactor(zoomlevel));
         center.setLongitude(clickPos.getLongitude() - xDiff * Projection.getZoomFactor(zoomlevel));
@@ -315,9 +313,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseMoved(MouseEvent e) {
-        // Coordinates mousePosCoordinates = getCoordinates(e.getX() - canvas.getX(), e.getY() - canvas.getY());
+        Coordinates mousePosCoordinates = getPosition(e.getX(), e.getY());
         // Coordinates geoCoordinates = Projection.getProjectionForCurrentMap().localCoordinatesToGeoCoordinates(mousePosCoordinates);
-        // gui.l_position.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
+        gui.routeValues.setText(mousePosCoordinates.toString() /*+ " /// " + geoCoordinates.toString()*/);
     }
 
     /**

@@ -3,12 +3,8 @@ package kit.route.a.lot.io;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.RouteDescription;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.routing.RoutingGraph;
@@ -17,7 +13,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class StateIOTest extends StateIO {
