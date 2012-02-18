@@ -17,13 +17,13 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
-import kit.route.a.lot.gui.event.ChangeViewEvent;
-import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.RenderEvent;
+import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
-import kit.route.a.lot.gui.event.SelectNavNodeEvent;
+import kit.route.a.lot.gui.event.AddNavNodeEvent;
 import kit.route.a.lot.gui.event.TextEvent;
-import kit.route.a.lot.gui.event.TextPositionEvent;
+import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 public class Controller {
-    // Same definition as in Map / Listeners (please synchronize when changing):
+    // Same definition as in Map:
     private static final int FREEMAPSPACE = 0, POI = 1, FAVORITE = 2, NAVNODE = 3;
 
     private static final File
@@ -102,123 +102,123 @@ public class Controller {
     
     private void addGUIListeners() {
         guiHandler.addListener(ADD_NAVNODE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
-                if (e instanceof SelectNavNodeEvent) {
-                    SelectNavNodeEvent event = (SelectNavNodeEvent) e;
+            public void handleEvent(Event e) {
+                if (e instanceof AddNavNodeEvent) {
+                    AddNavNodeEvent event = (AddNavNodeEvent) e;
                     addNavNode(event.getPosition(), event.getIndex());
                 } else {  
-                    TextPositionEvent event = (TextPositionEvent) e;
-                    addNavNode(event.getText(), event.getPosition());
+                    NavNodeNameEvent event = (NavNodeNameEvent) e;
+                    addNavNode(event.getName(), event.getIndex());
                 }
             }            
         });
         guiHandler.addListener(VIEW_CHANGED, new Listener() {
-            public void handleEvent(GeneralEvent e) {
-                render(((ChangeViewEvent) e).getContext());
+            public void handleEvent(Event e) {
+                render(((RenderEvent) e).getContext());
             }   
         });
         guiHandler.addListener(IMPORT_OSM, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 importMap(new File(((TextEvent) e).getText()));  
             } 
         });  
         guiHandler.addListener(OPTIMIZE_ROUTE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 optimizeRoute();
             } 
         });
         guiHandler.addListener(DELETE_NAVNODE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 if (e instanceof PositionEvent) {
-                    deleteNavNode(((PositionEvent) e).getCoordinates());
+                    deleteNavNode(((PositionEvent) e).getPosition());
                 } else {
                     deleteNavNode(((NumberEvent) e).getNumber());
                 }
             }    
         });
         guiHandler.addListener(LOAD_MAP, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 loadMap(new File(SRAL_DIRECTORY + "/" + ((TextEvent) e).getText() + ".sral"));
             }    
         });
         guiHandler.addListener(ADD_FAVORITE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 AddFavoriteEvent event = (AddFavoriteEvent) e;
                 addFavorite(event.getPosition(), event.getName(), event.getDescription());
             }  
         });
         guiHandler.addListener(SAVE_ROUTE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 saveRoute(((TextEvent) e).getText());
             }    
         });
         guiHandler.addListener(LOAD_ROUTE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 loadRoute(((TextEvent) e).getText());
             }           
         });
         guiHandler.addListener(EXPORT_ROUTE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 exportRoute(((TextEvent) e).getText());
             }          
         });
         guiHandler.addListener(DELETE_FAVORITE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
-                deleteFavorite(((PositionEvent) e).getCoordinates());
+            public void handleEvent(Event e) {
+                deleteFavorite(((PositionEvent) e).getPosition());
             }           
         });
         guiHandler.addListener(SET_SPEED, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 setSpeed(((NumberEvent) e).getNumber());
             }
         });
         guiHandler.addListener(POSITION_CLICKED, new Listener() {
-            public void handleEvent(GeneralEvent e) {
-                passElementType(((PositionEvent) e).getCoordinates());
+            public void handleEvent(Event e) {
+                passElementType(((PositionEvent) e).getPosition());
             }       
         });
         guiHandler.addListener(SET_HEIGHT_MALUS, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 setHeightMalus(((NumberEvent) e).getNumber());
             }           
         });
         guiHandler.addListener(SET_HIGHWAY_MALUS, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 setHighwayMalus(((NumberEvent) e).getNumber());
             }        
         });
         guiHandler.addListener(CLOSE_APPLICATION, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 prepareForShutdown();
             } 
         });
         guiHandler.addListener(SHOW_POI_DESCRIPTION, new Listener() {
-            public void handleEvent(GeneralEvent e) {
-                passDescription(((PositionEvent) e).getCoordinates());
+            public void handleEvent(Event e) {
+                passDescription(((PositionEvent) e).getPosition());
             } 
         });
         guiHandler.addListener(SWITCH_MAP_MODE, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 switchMapMode();
             }         
         });
         guiHandler.addListener(LIST_SEARCH_COMPLETIONS, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 passSearchCompletion(((TextEvent) e).getText());
             }      
         });
         guiHandler.addListener(SHOW_NAVNODE_DESCRIPTION, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 getNavNodeFromText(((TextEvent) e).getText());
             }  
         });
         guiHandler.addListener(DELETE_IMPORTED_MAP, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 deleteMap(((TextEvent) e).getText());
             }         
         });
         guiHandler.addListener(LIST_IMPORTED_MAPS, new Listener() {
-            public void handleEvent(GeneralEvent e) {
+            public void handleEvent(Event e) {
                 updateImportedMapsList();
             }      
         });

@@ -2,7 +2,7 @@ package kit.route.a.lot.gui.event;
 
 import kit.route.a.lot.common.Coordinates;
 
-public class PositionEvent extends GeneralEvent {
+public class PositionEvent extends Event {
     
     private Coordinates position;
 
@@ -10,7 +10,7 @@ public class PositionEvent extends GeneralEvent {
         this.position = position;
     }
     
-    public Coordinates getCoordinates() {
+    public Coordinates getPosition() {
         return position;
     }
 }

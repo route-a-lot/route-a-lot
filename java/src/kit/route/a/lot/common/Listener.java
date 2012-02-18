@@ -1,6 +1,6 @@
 package kit.route.a.lot.common;
 
-import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.Event;
 
 /**
  * Interface for our own listener
@@ -18,5 +18,5 @@ public interface Listener {
         LIST_IMPORTED_MAPS = 20, DELETE_IMPORTED_MAP = 21,
         CLOSE_APPLICATION = 22;
     public static final int TYPE_COUNT = 23;
-    public void handleEvent(GeneralEvent event);   
+    public void handleEvent(Event event);   
 }

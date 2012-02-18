@@ -101,7 +101,7 @@ public class Router {
         }
         navigationNodes.add(oldNodes[oldNodes.length - 1]);
         
-        logger.debug("Old ordering: " + oldNodes.toString());
+        logger.debug("Old ordering: " + Arrays.toString(oldNodes));
         logger.debug("New ordering: " + navigationNodes.toString());
     }
 

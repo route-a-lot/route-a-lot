@@ -16,27 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.UIManager;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.*;
+import javax.swing.event.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
@@ -44,10 +25,10 @@ import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
-import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
-import kit.route.a.lot.gui.event.TextPositionEvent;
+import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import static kit.route.a.lot.common.Listener.*;
 
 public class GUI extends JFrame {
@@ -161,7 +142,7 @@ public class GUI extends JFrame {
         });
         listeners.addListener(VIEW_CHANGED, new Listener() {
             @Override
-            public void handleEvent(GeneralEvent event) {
+            public void handleEvent(Event event) {
                 zoomSlider.setValue(Util.clip(map.getZoomlevel(), 0, 9));
             }
         });
@@ -236,7 +217,7 @@ public class GUI extends JFrame {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
                 listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new TextPositionEvent(fieldStartNode.getText(), 0));
+                        new NavNodeNameEvent(fieldStartNode.getText(), 0));
             }
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
@@ -265,7 +246,7 @@ public class GUI extends JFrame {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
                 listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new TextPositionEvent(fieldEndNode.getText(), navNodeList.size() - 1));
+                        new NavNodeNameEvent(fieldEndNode.getText(), navNodeList.size() - 1));
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
@@ -563,7 +544,7 @@ public class GUI extends JFrame {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
                 listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new TextPositionEvent(waypointField.getText(), pos + 1));
+                        new NavNodeNameEvent(waypointField.getText(), pos + 1));
                 repaint();
             }
         });
@@ -713,7 +694,7 @@ public class GUI extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     listeners.fireEvent(ADD_NAVNODE,
-                            new TextPositionEvent(item.getText(), popupIndex));
+                            new NavNodeNameEvent(item.getText(), popupIndex));
                 }
             });
         }

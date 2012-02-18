@@ -1,6 +1,6 @@
 package kit.route.a.lot.gui.event;
 
-public class NumberEvent extends GeneralEvent {
+public class NumberEvent extends Event {
        
     private int number;
     

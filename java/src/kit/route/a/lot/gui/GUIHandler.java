@@ -45,7 +45,7 @@ public class GUIHandler {
         gui.setView(center);
     }
     
-    public void setSpeed(int speed) {   //TODO change ist with duration
+    public void setSpeed(int speed) {   
         gui.setSpeed(speed);
     }
     

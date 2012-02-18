@@ -6,7 +6,7 @@ import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Util;
-import kit.route.a.lot.gui.event.ChangeViewEvent;
+import kit.route.a.lot.gui.event.RenderEvent;
 import static kit.route.a.lot.common.Listener.*;
 
 import javax.media.opengl.*;
@@ -73,7 +73,7 @@ public class Map3D extends Map implements GLEventListener {
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
         gui.getListeners().fireEvent(VIEW_CHANGED,
-                new ChangeViewEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));
+                new RenderEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));
     }
 
     @Override

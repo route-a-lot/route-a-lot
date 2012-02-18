@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.gui.event.GeneralEvent;
+import kit.route.a.lot.gui.event.Event;
 
 public class Listeners {
           
@@ -25,7 +25,7 @@ public class Listeners {
         lists[eventType].add(listener);
     }
     
-    public void fireEvent(int eventType, GeneralEvent event) {
+    public void fireEvent(int eventType, Event event) {
         for (Listener listener: lists[eventType]) {
             listener.handleEvent(event);
         }  

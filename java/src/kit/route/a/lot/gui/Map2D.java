@@ -3,16 +3,14 @@ package kit.route.a.lot.gui;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.gui.event.ChangeViewEvent;
+import kit.route.a.lot.gui.event.RenderEvent;
 import static kit.route.a.lot.common.Listener.*;
 
 public class Map2D extends Map  {
@@ -31,7 +29,7 @@ public class Map2D extends Map  {
             public void paint(Graphics g) {
                 super.paint(g);           
                 gui.getListeners().fireEvent(VIEW_CHANGED,
-                        new ChangeViewEvent(new Context2D(topLeft, bottomRight, g, zoomlevel)));
+                        new RenderEvent(new Context2D(topLeft, bottomRight, g, zoomlevel)));
             }      
         };
         result.addComponentListener(new ComponentAdapter() {

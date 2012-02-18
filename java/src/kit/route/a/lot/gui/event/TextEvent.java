@@ -1,6 +1,6 @@
 package kit.route.a.lot.gui.event;
 
-public class TextEvent extends GeneralEvent {
+public class TextEvent extends Event {
 
     private String text;
 
