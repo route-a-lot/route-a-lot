@@ -2,6 +2,8 @@ package kit.route.a.lot.gui;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.nio.FloatBuffer;
+
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
@@ -18,7 +20,7 @@ public class Map3D extends Map implements GLEventListener {
     private static final long serialVersionUID = 1L;
     private static final float ROTATION_SPEED = 0.5f, MAX_DISTANCE = 1f, VIEW_ANGLE = 85f;
     private float rotationHorizontal = 0f, rotationVertical = 25f;
-    
+   
     public Map3D(GUI gui)
     {
         super(gui);
@@ -73,7 +75,7 @@ public class Map3D extends Map implements GLEventListener {
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
         gui.getListeners().fireEvent(VIEW_CHANGED,
-                new RenderEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));
+                new RenderEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));      
     }
 
     @Override
@@ -115,12 +117,10 @@ public class Map3D extends Map implements GLEventListener {
 
     @Override
     protected Coordinates getPosition(int x, int y) {
-        Coordinates result = new Coordinates(y - canvas.getHeight() / 2, x - canvas.getWidth() / 2);
-        return result.scale(Projection.getZoomFactor(zoomlevel)).add(center);
-        
-        /*GL gl = ((GLJPanel) canvas).getGL();// TODO doesnt work properly
-           
+        ((GLJPanel) canvas).getContext().makeCurrent();
+        GL gl = ((GLJPanel) canvas).getGL();
         y = canvas.getHeight() - y;
+        
         double[] model = new double[16];
         gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
         double[] proj = new double[16];
@@ -129,11 +129,9 @@ public class Map3D extends Map implements GLEventListener {
         gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);    
         float[] z = new float[1];
         gl.glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, FloatBuffer.wrap(z));
-        System.out.println(x + " / " + y + " / " + z[0]); 
         double[] result = new double[3];
         (new GLU()).gluUnProject((double) x, (double) y, (double) z[0],
                 model, 0, proj, 0, viewport, 0, result, 0);
-        return new Coordinates((float) result[0], (float) result[1]);//*/
+        return new Coordinates((float) result[1], (float) result[0]);    
     }
-    
 }
