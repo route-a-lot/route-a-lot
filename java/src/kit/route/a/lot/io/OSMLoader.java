@@ -135,8 +135,8 @@ public class OSMLoader {
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
         projection = ProjectionFactory.getNewProjection(topLeft, bottomRight);
-        state.getLoadedMapInfo().setBounds(projection.geoCoordinatesToLocalCoordinates(topLeft),
-                projection.geoCoordinatesToLocalCoordinates(bottomRight));
+        state.getLoadedMapInfo().setBounds(projection.getLocalCoordinates(topLeft),
+                projection.getLocalCoordinates(bottomRight));
         state.getLoadedMapInfo().setGeoTopLeft(topLeft);
         logger.debug("Finished calculating bounds: topLeft=" + topLeft + ", bottomRight=" + bottomRight);
 
@@ -838,7 +838,7 @@ public class OSMLoader {
                     geoCoordinates.setLatitude(Float.parseFloat(attributes.getValue("lat")));
                     geoCoordinates.setLongitude(Float.parseFloat(attributes.getValue("lon")));
 
-                    curNodeCoordinates = projection.geoCoordinatesToLocalCoordinates(geoCoordinates);
+                    curNodeCoordinates = projection.getLocalCoordinates(geoCoordinates);
                     // // System.out.println("coordinates " + curNodeCoordinates);
                     curNodeId = idMap.size();
                     if (curNodeId >= Integer.MAX_VALUE) {

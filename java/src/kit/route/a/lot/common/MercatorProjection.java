@@ -20,7 +20,7 @@ public class MercatorProjection extends Projection {
     }
 
     @Override
-    public Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
+    public Coordinates getLocalCoordinates(Coordinates geoCoordinates) {
         mTopLeft = mercatorCoordinates(topLeft);
         Coordinates mercatorCoordinates = mercatorCoordinates(geoCoordinates);
         Coordinates localCoordinates = new Coordinates();
@@ -30,7 +30,7 @@ public class MercatorProjection extends Projection {
     }
 
     @Override
-    public Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates) {
+    public Coordinates getGeoCoordinates(Coordinates localCoordinates) {
         mTopLeft = mercatorCoordinates(topLeft);
         Coordinates newLocalCoordinates = new Coordinates();
         newLocalCoordinates.setLatitude(mTopLeft.getLatitude() - (scale * localCoordinates.getLatitude()));

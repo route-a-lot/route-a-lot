@@ -142,11 +142,11 @@ public class RouteIO {
             lineStringElement.appendChild(coordinatesElement);
             
             StringBuilder coordinatesSB = new StringBuilder();
-            Projection projection = ProjectionFactory.getProjectionForCurrentMap();
+            Projection projection = ProjectionFactory.getCurrentProjection();
             MapInfo mapInfo = state.getLoadedMapInfo();
             for (int i = 0; i < route.size(); i++) {
                 Coordinates localCoordinates = mapInfo.getNode(route.get(i)).getPos();
-                Coordinates geoCoordinates = projection.localCoordinatesToGeoCoordinates(localCoordinates);
+                Coordinates geoCoordinates = projection.getGeoCoordinates(localCoordinates);
                 
                 coordinatesSB.append(geoCoordinates.getLongitude() + "," + geoCoordinates.getLatitude());
                 if (i % 3 == 2) {
@@ -180,7 +180,7 @@ public class RouteIO {
                 placemarkElement.appendChild(pointElement);
                 coordinatesElement = document.createElement("coordinates");
                 pointElement.appendChild(coordinatesElement);
-                Coordinates nodePosition = projection.localCoordinatesToGeoCoordinates(navNodes.get(i).getPosition());
+                Coordinates nodePosition = projection.getGeoCoordinates(navNodes.get(i).getPosition());
                 String coordinates = nodePosition.getLongitude() + "," + nodePosition.getLatitude();
                 coordinatesElement.appendChild(document.createTextNode(coordinates));
             }

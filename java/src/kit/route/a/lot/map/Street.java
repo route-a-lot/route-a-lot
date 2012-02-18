@@ -93,8 +93,8 @@ public class Street extends MapElement implements Comparable<Street> {
         int start = getClosestEdgeStartPosition(pos);
         Selection result = new Selection(nodes[start].getID(), nodes[start + 1].getID(),
                 getRatio(start, start + 1, pos), pos);
-        Coordinates geoPos = ProjectionFactory.getProjectionForCurrentMap()
-                                .localCoordinatesToGeoCoordinates(pos);
+        Coordinates geoPos = ProjectionFactory.getCurrentProjection()
+                                .getGeoCoordinates(pos);
         result.setName((name != null) ? name : geoPos.toString());
         return result;
     }
@@ -161,9 +161,9 @@ public class Street extends MapElement implements Comparable<Street> {
      * params are projected coordinates on the current map
      */
     public static double getDistanceInMeter(Coordinates pos1, Coordinates pos2) {
-        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
-        Coordinates geoPos1 = projection.localCoordinatesToGeoCoordinates(pos1);
-        Coordinates geoPos2 = projection.localCoordinatesToGeoCoordinates(pos2);
+        Projection projection = ProjectionFactory.getCurrentProjection();
+        Coordinates geoPos1 = projection.getGeoCoordinates(pos1);
+        Coordinates geoPos2 = projection.getGeoCoordinates(pos2);
         double pos1LongRad = Math.toRadians(Math.abs(geoPos1.getLongitude())); // coordinates in deg
         double pos1LalRad = Math.toRadians(Math.abs(geoPos1.getLatitude()));
         double pos2LongRad = Math.toRadians(Math.abs(geoPos2.getLongitude()));

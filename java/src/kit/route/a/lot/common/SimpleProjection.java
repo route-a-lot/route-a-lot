@@ -17,7 +17,7 @@ public class SimpleProjection extends Projection {
     }
 
     @Override
-    public Coordinates geoCoordinatesToLocalCoordinates(Coordinates geoCoordinates) {
+    public Coordinates getLocalCoordinates(Coordinates geoCoordinates) {
         Coordinates localCoordinates = new Coordinates();
         localCoordinates.setLatitude((geoCoordinates.getLatitude() - topLeft.getLatitude()) * width
                 / (bottomRight.getLatitude() - topLeft.getLatitude()));
@@ -27,7 +27,7 @@ public class SimpleProjection extends Projection {
     }
 
     @Override
-    public Coordinates localCoordinatesToGeoCoordinates(Coordinates localCoordinates) {
+    public Coordinates getGeoCoordinates(Coordinates localCoordinates) {
         Coordinates geoCoordinates = new Coordinates();
         geoCoordinates.setLatitude((localCoordinates.getLatitude()
                 * (bottomRight.getLatitude() - topLeft.getLatitude())) / width + topLeft.getLatitude());

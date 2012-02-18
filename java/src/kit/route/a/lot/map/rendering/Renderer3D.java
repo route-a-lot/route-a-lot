@@ -53,9 +53,9 @@ public class Renderer3D extends Renderer {
         
         GL gl = context3D.getGL();
         gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (detail + 1));
-        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
+        Projection projection = ProjectionFactory.getCurrentProjection();
         IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
-        float centerHeight = heightmap.getHeight(projection.localCoordinatesToGeoCoordinates(center));
+        float centerHeight = heightmap.getHeight(projection.getGeoCoordinates(center));
         viewHeight = (viewHeight == Float.NEGATIVE_INFINITY) ? centerHeight
                 : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
         gl.glTranslatef(0, 0, -viewHeight);      
@@ -119,7 +119,7 @@ public class Renderer3D extends Renderer {
         }
         List<Integer> route = State.getInstance().getCurrentRoute();
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
-        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
+        Projection projection = ProjectionFactory.getCurrentProjection();
         GL gl = context.getGL();
 
         // Copy route and navPoints into fullRouteList
@@ -210,13 +210,13 @@ public class Renderer3D extends Renderer {
     private static void drawVertex(GL gl, Projection projection, Coordinates point) {
         gl.glVertex3f(point.getLongitude(), point.getLatitude(),
                 State.getInstance().getLoadedHeightmap().getHeight(
-                        projection.localCoordinatesToGeoCoordinates(point))
+                        projection.getGeoCoordinates(point))
                 + ROUTE_HEIGHT_OFFSET);
     }
     
     private static void renderFlag(Context3D context, Projection projection, Coordinates position, float[] color, float size) {
         float height = State.getInstance().getLoadedHeightmap().getHeight(
-                        projection.localCoordinatesToGeoCoordinates(position));
+                        projection.getGeoCoordinates(position));
         GL gl = context.getGL();
         gl.glPushMatrix();
         gl.glTranslatef(position.getLongitude(), position.getLatitude(), height);

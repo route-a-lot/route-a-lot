@@ -78,10 +78,10 @@ public class Tile3D extends Tile {
     @Override
     public void prerender() {
         super.prerender();
-        Projection projection = ProjectionFactory.getProjectionForCurrentMap();
+        Projection projection = ProjectionFactory.getCurrentProjection();
         State.getInstance().getLoadedHeightmap().reduceSection(
-                projection.localCoordinatesToGeoCoordinates(getTopLeft()),
-                projection.localCoordinatesToGeoCoordinates(getBottomRight()),
+                projection.getGeoCoordinates(getTopLeft()),
+                projection.getGeoCoordinates(getBottomRight()),
                 heights, HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];

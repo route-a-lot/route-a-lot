@@ -279,13 +279,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        Coordinates clickPos = getPosition(e.getX(), e.getY());
-        int yDiff = e.getY() - canvas.getBounds().height / 2;
-        int xDiff = e.getX() - canvas.getBounds().width / 2;
+        Coordinates clickDiff = getPosition(e.getX(), e.getY()).subtract(center);
+        int oldZoom = zoomlevel;
         setZoomlevel(zoomlevel + e.getWheelRotation());
-        center.setLatitude(clickPos.getLatitude() - yDiff * Projection.getZoomFactor(zoomlevel));
-        center.setLongitude(clickPos.getLongitude() - xDiff * Projection.getZoomFactor(zoomlevel));
-        calculateView();
+        if (zoomlevel != oldZoom) {
+            center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
+            calculateView();
+        }     
     }
     
     /**
@@ -294,7 +294,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     @Override
     public void mouseMoved(MouseEvent e) {
         Coordinates coordinates = getPosition(e.getX(), e.getY());
-        coordinates = ProjectionFactory.getProjectionForCurrentMap().localCoordinatesToGeoCoordinates(coordinates);
+        coordinates = ProjectionFactory.getCurrentProjection().getGeoCoordinates(coordinates);
         gui.showMouseCoordinates(coordinates);
     }
 

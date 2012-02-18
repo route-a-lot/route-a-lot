@@ -24,8 +24,8 @@ public class ProjectionTest {
     
     private void testProjection(Projection projection) {
         Coordinates testCoordinates = new Coordinates(49.2f, 8.3f);
-        Coordinates local = projection.geoCoordinatesToLocalCoordinates(testCoordinates);
-        Coordinates geo = projection.localCoordinatesToGeoCoordinates(local);
+        Coordinates local = projection.getLocalCoordinates(testCoordinates);
+        Coordinates geo = projection.getGeoCoordinates(local);
         assertEquals(testCoordinates, geo);
     }
 }

@@ -81,7 +81,7 @@ public class RendererTest {
         bottomRight = new Coordinates(49.008375f, 8.414061f);
         bottomRight = new Coordinates(-0.012f, 0.012f);
         Projection projection = ProjectionFactory.getNewProjection(topLeft, bottomRight); //2.9E-5f
-        topLeft = projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.019887f, 8.394492f));
+        topLeft = projection.getLocalCoordinates(new Coordinates(49.019887f, 8.394492f));
         bottomRight = new Coordinates(550, 550);
 
         StateMock state = new StateMock();
@@ -114,7 +114,7 @@ public class RendererTest {
         Street street = new Street("", wayInfo);
         street.setNodes(nodes);
 //        mapInfo.addMapElement(street);
-        mapInfo.addMapElement(new Node(projection.geoCoordinatesToLocalCoordinates(new Coordinates(49.017945f, 8.404362f))));
+        mapInfo.addMapElement(new Node(projection.getLocalCoordinates(new Coordinates(49.017945f, 8.404362f))));
         mapInfo.addMapElement(new Node(topLeft));
         
         TestGUI gui = new TestGUI(this);
