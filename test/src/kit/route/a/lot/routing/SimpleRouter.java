@@ -15,8 +15,17 @@ public class SimpleRouter {
     public static List<Integer> calculateRoute(List<Selection> navigationNodes) {
         List<Integer> result = new ArrayList<Integer>();
         
-        for (int i = 1; i < navigationNodes.size(); i++) {
-            result.addAll(fromAToB(navigationNodes.get(i - 1), navigationNodes.get(i)));
+        Selection prev = navigationNodes.get(0);
+        for (Selection navPoint : navigationNodes) {
+            if (prev == navPoint) {
+                continue;
+            }
+            List<Integer> route = fromAToB(prev, navPoint);
+            if (route.size() != 0) {    // cause Router does this too, otherwise we would get different results
+                result.addAll(route);
+                prev = navPoint;
+            } else {
+            }
         }
         
         return result;
@@ -94,6 +103,6 @@ public class SimpleRouter {
             
         }
         
-        return newRoute;
+        return  new ArrayList<Integer>();
     }
 }

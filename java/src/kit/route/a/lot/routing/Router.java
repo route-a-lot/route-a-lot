@@ -116,7 +116,7 @@ public class Router {
             }
             logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
             route = fromAToB(prev, navPoint);
-            if (route != null) {
+            if (route != null) {    //TODO is this the best way to handle this situation (I dont think so)
                 result.addAll(route.toList());
                 prev = navPoint;
             } else {

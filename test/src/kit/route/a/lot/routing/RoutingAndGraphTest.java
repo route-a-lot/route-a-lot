@@ -112,7 +112,7 @@ public class RoutingAndGraphTest {
         stream.readInt();   //necessary in moment, will be used later
         stream.readInt();
         stream.readInt();
-        for (int i = 0; i < SIMPLE_ROUTES_NUMBER; i++) {
+        for (int i = 0; i < SIMPLE_ROUTES_NUMBER + (ADVANCED_ROUTES_TILL - 2) * PER_ADVANCED; i++) {
             selections = new ArrayList<Selection>();
             int size = stream.readInt();
             for (int j = 0; j < size; j++) {
@@ -123,6 +123,7 @@ public class RoutingAndGraphTest {
             }
             route = Router.calculateRoute(selections);
             int length = getRouteLength(route);
+            
             assertEquals(stream.readInt(), length);
             
         }
@@ -174,7 +175,7 @@ public class RoutingAndGraphTest {
         
         
         for (int i= 3; i <= ADVANCED_ROUTES_TILL; i++) {
-            for (int j = 0; j < PER_ADVANCED * 10; j++) {
+            for (int j = 0; j < PER_ADVANCED; j++) {
                 
                 stream.writeInt(i);
                 selections = new ArrayList<Selection>();
