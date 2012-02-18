@@ -25,10 +25,11 @@ public class RoutingAndGraphTest {
     static RoutingStateMock simpleRoutingState;
     static RoutingGraph graph;
     static final int SIMPLE_ROUTES_NUMBER = 10000;
-    static final int PER_ADVANCED = 5;  //nuber of tests for each optimized number
+    static final int PER_ADVANCED = 5;  //number of tests for each optimized number
     static final int ADVANCED_ROUTES_TILL = 10;  //targets without optimizing
-    static final int OPTIMIZED_ROUTES_NUMBER = 10;  
-    static final int OPTIMIZED_ROUTES_Till_THIS_NUMBER = 10;
+    
+    static final int OPTIMIZED_ROUTES_NUMBER = 5;   //max. nummber of targets  
+    static final int TARGETS_PER_OPT = 10;          //test per target
     
     
     @BeforeClass
