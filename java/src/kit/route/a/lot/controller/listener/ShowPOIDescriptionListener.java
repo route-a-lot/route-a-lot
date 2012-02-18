@@ -5,24 +5,17 @@ import kit.route.a.lot.gui.event.GeneralEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
 
-public class ShowFavoriteDescriptionListener implements GeneralListener {
+public class ShowPOIDescriptionListener implements GeneralListener {
 
     private Controller ctrl;
-    
-    
-    
-    public ShowFavoriteDescriptionListener(Controller ctrl) {
+        
+    public ShowPOIDescriptionListener(Controller ctrl) {
         this.ctrl = ctrl;
     }
 
-
-
     @Override
     public void handleEvent(GeneralEvent event) {
-        if (event instanceof PositionEvent) {
-            ctrl.passFavDescription(((PositionEvent) event).getCoordinates());
-        }
-
+        ctrl.passDescription(((PositionEvent) event).getCoordinates());
     }
 
 }

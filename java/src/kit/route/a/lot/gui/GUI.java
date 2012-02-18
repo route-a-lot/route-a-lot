@@ -33,6 +33,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -135,7 +137,7 @@ public class GUI extends JFrame {
                 while (!active); // postbone execution until after startup
                 Coordinates center = map.getCenter();
                 int zoomlevel = map.getZoomlevel();
-                Listeners.fireEvent(listeners.switchMapMode, new GeneralEvent());
+                listeners.fireEvent(Listeners.SWITCH_MAP_MODE, null);
                 centralArea.remove(map);
                 map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
                 centralArea.add(map, BorderLayout.CENTER);
@@ -157,7 +159,7 @@ public class GUI extends JFrame {
                 map.calculateView();
             }
         });
-        listeners.viewChanged.add(new GeneralListener() {
+        listeners.addListener(Listeners.VIEW_CHANGED, new GeneralListener() {
             @Override
             public void handleEvent(GeneralEvent event) {
                 zoomSlider.setValue(Util.clip(map.getZoomlevel(), 0, 9));
@@ -209,7 +211,7 @@ public class GUI extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                Listeners.fireEvent(listeners.close, new GeneralEvent());
+                listeners.fireEvent(Listeners.CLOSE_APPLICATION, null);
             }
         });
     }
@@ -218,7 +220,7 @@ public class GUI extends JFrame {
      * Builds the routing tab component and all its sub components, in the process adding all event listeners.
      */
     private void createRoutingTab() {
-        // POPUP
+        // POPUP        
         popupSearchCompletions = new JPopupMenu("Completion");
         popupSearchCompletions.setBackground(Color.WHITE);
 
@@ -233,7 +235,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
-                Listeners.fireEvent(listeners.getNavNodeDescription,
+                listeners.fireEvent(Listeners.SHOW_NAVNODE_DESCRIPTION,
                         new TextPositionEvent(fieldStartNode.getText(), 0));
             }
         });
@@ -244,7 +246,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     popupIndex = 0;
-                    Listeners.fireEvent(listeners.autoCompletion,
+                    listeners.fireEvent(Listeners.LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldStartNode.getText()));
                 } else {
                     enterPressed = false;
@@ -262,7 +264,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
-                Listeners.fireEvent(listeners.getNavNodeDescription,
+                listeners.fireEvent(Listeners.SHOW_NAVNODE_DESCRIPTION,
                         new TextPositionEvent(fieldEndNode.getText(), navNodeList.size() - 1));
             }
         });
@@ -273,7 +275,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
                     popupIndex = navNodeList.size() - 1;
-                    Listeners.fireEvent(listeners.autoCompletion,
+                    listeners.fireEvent(Listeners.LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldEndNode.getText()));
                 } else {
                     enterPressed = false;
@@ -298,7 +300,7 @@ public class GUI extends JFrame {
         buttonOptimizeRoute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                Listeners.fireEvent(listeners.optimizeRoute, new GeneralEvent());
+                listeners.fireEvent(Listeners.OPTIMIZE_ROUTE, null);
             }
         });
 
@@ -310,7 +312,7 @@ public class GUI extends JFrame {
         fieldSpeed.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent ce) {
-                Listeners.fireEvent(listeners.speed,
+                listeners.fireEvent(Listeners.SET_SPEED,
                         new NumberEvent(Integer.parseInt(fieldSpeed.getValue().toString())));
             }
         });
@@ -368,7 +370,7 @@ public class GUI extends JFrame {
         highwayMalusSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                Listeners.fireEvent(listeners.highwayMalus,
+                listeners.fireEvent(Listeners.SET_HIGHWAY_MALUS,
                         new NumberEvent(highwayMalusSlider.getValue()));
             }
         });
@@ -382,7 +384,7 @@ public class GUI extends JFrame {
         reliefMalusSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent arg0) {
-                Listeners.fireEvent(listeners.heightMalus,
+                listeners.fireEvent(Listeners.SET_HEIGHT_MALUS,
                         new NumberEvent(reliefMalusSlider.getValue()));
             }
         });
@@ -403,7 +405,7 @@ public class GUI extends JFrame {
         buttonDeleteMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Listeners.fireEvent(listeners.deleteMap,
+                listeners.fireEvent(Listeners.DELETE_IMPORTED_MAP,
                         new TextEvent(listChooseMap.getSelectedItem().toString()));
             }
         });
@@ -414,13 +416,21 @@ public class GUI extends JFrame {
         buttonActivateMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Listeners.fireEvent(listeners.loadMap,
+                listeners.fireEvent(Listeners.LOAD_MAP,
                         new TextEvent(listChooseMap.getSelectedItem().toString()));
             }
         });
 
         listChooseMap = new JComboBox();
         listChooseMap.setAlignmentX(JButton.CENTER_ALIGNMENT);
+        listChooseMap.addAncestorListener(new AncestorListener() {
+            @Override
+            public void ancestorAdded(AncestorEvent e) {
+                listeners.fireEvent(Listeners.LIST_IMPORTED_MAPS, null);
+            }
+            public void ancestorMoved(AncestorEvent e) {}
+            public void ancestorRemoved(AncestorEvent e) {}           
+        });
 
         // heightMapManagement = new JButton("Höhendaten - Verwaltung");
         // heightMapManagement.addActionListener(new ActionListener() {
@@ -473,7 +483,8 @@ public class GUI extends JFrame {
         dialogImportOSM.setCurrentDirectory(currentDir);
         int returnValue = dialogImportOSM.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners.fireEvent(listeners.importOsmFile, new TextEvent(dialogImportOSM.getSelectedFile().getPath()));
+            listeners.fireEvent(Listeners.IMPORT_OSM,
+                    new TextEvent(dialogImportOSM.getSelectedFile().getPath()));
         }
     }
 
@@ -500,7 +511,8 @@ public class GUI extends JFrame {
         dialogLoadRoute = new JFileChooser();
         int returnValue = dialogLoadRoute.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners.fireEvent(listeners.loadRoute, new TextEvent(dialogLoadRoute.getSelectedFile().getPath()));
+            listeners.fireEvent(Listeners.LOAD_ROUTE,
+                    new TextEvent(dialogLoadRoute.getSelectedFile().getPath()));
         }
     }
 
@@ -511,7 +523,8 @@ public class GUI extends JFrame {
         dialogSaveRoute = new JFileChooser();
         int returnValue = dialogSaveRoute.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners.fireEvent(listeners.saveRoute, new TextEvent(dialogSaveRoute.getSelectedFile().getPath()));
+            listeners.fireEvent(Listeners.SAVE_ROUTE,
+                    new TextEvent(dialogSaveRoute.getSelectedFile().getPath()));
         }
     }
 
@@ -522,8 +535,8 @@ public class GUI extends JFrame {
         dialogExportRoute = new JFileChooser();
         int returnValue = dialogExportRoute.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listeners
-                    .fireEvent(listeners.exportRoute, new TextEvent(dialogExportRoute.getSelectedFile().getPath()));
+            listeners.fireEvent(Listeners.EXPORT_ROUTE,
+                            new TextEvent(dialogExportRoute.getSelectedFile().getPath()));
         }
     }
 
@@ -545,12 +558,11 @@ public class GUI extends JFrame {
         final int pos = waypointArea.getComponentCount() / 2;
 
         waypointField.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
-                Listeners.fireEvent(listeners.getNavNodeDescription,
+                listeners.fireEvent(Listeners.SHOW_NAVNODE_DESCRIPTION,
                         new TextPositionEvent(waypointField.getText(), pos + 1));
                 repaint();
             }
@@ -563,19 +575,19 @@ public class GUI extends JFrame {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
                     popupIndex = pos + 1;
-                    Listeners.fireEvent(listeners.autoCompletion, new TextEvent(waypointField.getText()));
+                    listeners.fireEvent(Listeners.LIST_SEARCH_COMPLETIONS,
+                            new TextEvent(waypointField.getText()));
                 }
                 enterPressed = false;
             }
         });
 
         buttonDeleteWaypoint.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 waypointArea.remove(row);
                 if ((waypointField.getText().length() != 0) && (navNodeList.size() > pos + 1)) {
-                    Listeners.fireEvent(listeners.deleteNavPoint, new NumberEvent(pos + 1));
+                    listeners.fireEvent(Listeners.DELETE_NAVNODE, new NumberEvent(pos + 1));
                 }
                 repaint();
             }
@@ -593,7 +605,7 @@ public class GUI extends JFrame {
      * Sets the entries shown in the imported map selection field.
      * @param maps the new entries
      */
-    public void updateMapChooser(ArrayList<String> maps) {
+    public void updateMapChooser(List<String> maps) {
         for (int i = 0; i < importedMaps.size(); i++) {
             listChooseMap.removeItem(listChooseMap.getItemAt(i));
         }
@@ -700,7 +712,7 @@ public class GUI extends JFrame {
             item.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Listeners.fireEvent(listeners.addTextualNavPoint,
+                    listeners.fireEvent(Listeners.ADD_NAVNODE,
                             new TextPositionEvent(item.getText(), popupIndex));
                 }
             });

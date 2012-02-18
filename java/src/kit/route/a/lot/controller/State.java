@@ -30,12 +30,6 @@ public class State {
     private int duration;
     private int heightMalus;
     private int highwayMalus;
-    private ArrayList<String> importedMaps = new ArrayList<String>(); /*
-                                                                       * we need this list for the to know
-                                                                       * which maps can be loaded, I would
-                                                                       * save patch, names will be saved
-                                                                       * implicit
-                                                                       */
 
     public State() {
         resetMap();
@@ -45,7 +39,6 @@ public class State {
         duration = 0;
         heightMalus = 0;
         highwayMalus = 0;
-        importedMaps = new ArrayList<String>();
         loadedHeightmap = new Heightmap();
     }
     
@@ -62,15 +55,6 @@ public class State {
     public static State getInstance() {
         return singleton;
     }
-
-    public ArrayList<String> getImportedMaps() {
-        return importedMaps;
-    }
-
-    public void setImportedMaps(ArrayList<String> importedMaps) {
-        this.importedMaps = importedMaps;
-    }
-
 
     public File getLoadedMapFile() {
         return this.loadedMapFile;

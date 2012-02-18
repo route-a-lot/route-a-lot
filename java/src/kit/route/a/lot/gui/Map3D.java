@@ -73,7 +73,7 @@ public class Map3D extends Map implements GLEventListener {
         gl.glTranslated(-0.5*(topLeft.getLongitude() + bottomRight.getLongitude()), // camera position
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
-        Listeners.fireEvent(gui.getListeners().viewChanged,
+        gui.getListeners().fireEvent(Listeners.VIEW_CHANGED,
                 new ChangeViewEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel)));
     }
 

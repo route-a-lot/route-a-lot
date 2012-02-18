@@ -29,7 +29,7 @@ public class Map2D extends Map  {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);           
-                Listeners.fireEvent(gui.getListeners().viewChanged,
+                gui.getListeners().fireEvent(Listeners.VIEW_CHANGED,
                         new ChangeViewEvent(new Context2D(topLeft, bottomRight, g, zoomlevel)));
             }      
         };
