@@ -28,8 +28,7 @@ public class RoutingAndGraphTest {
     static final int PER_ADVANCED = 5;  //number of tests for each optimized number
     static final int ADVANCED_ROUTES_TILL = 10;  //targets without optimizing
     
-    static final int OPTIMIZED_ROUTES_NUMBER = 5;   //max. nummber of targets  
-    static final int TARGETS_PER_OPT = 10;          //test per target
+    static final int TARGETS_OPT = 10;          //test per target
     
     
     @BeforeClass
@@ -103,14 +102,24 @@ public class RoutingAndGraphTest {
     public void simpleRoutingTest() throws Exception{
         File testRoutes = new File("SimpleRoutingTestFile.bin");
         if (!testRoutes.exists()) {
-            createTestFile(testRoutes);
+            createSimpleRouteTestFile(testRoutes);
         }
+        
         DataInputStream stream = new DataInputStream(new FileInputStream(testRoutes));
+        
+        if(stream.readInt() != SIMPLE_ROUTES_NUMBER || stream.readInt() != ADVANCED_ROUTES_TILL //test conditions changed
+                || stream.readInt() != PER_ADVANCED) {
+          stream.close();
+          testRoutes.delete();
+          createSimpleRouteTestFile(testRoutes);
+          stream = new DataInputStream(new FileInputStream(testRoutes));
+          stream.readInt();
+          stream.readInt();
+          stream.readInt();
+}
+        
         ArrayList<Selection> selections;
         List<Integer> route;
-        stream.readInt();   //necessary in moment, will be used later
-        stream.readInt();
-        stream.readInt();
         for (int i = 0; i < SIMPLE_ROUTES_NUMBER + (ADVANCED_ROUTES_TILL - 2) * PER_ADVANCED; i++) {
             selections = new ArrayList<Selection>();
             int size = stream.readInt();
@@ -130,7 +139,7 @@ public class RoutingAndGraphTest {
     
    
     
-    private void createTestFile(File file) throws Exception {
+    private void createSimpleRouteTestFile(File file) throws Exception {
         if (file == null) {
             return;
         }

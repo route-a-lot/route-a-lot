@@ -1,5 +1,6 @@
 package kit.route.a.lot.routing;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -104,5 +105,24 @@ public class SimpleRouter {
         }
         
         return  new ArrayList<Integer>();
+    }
+    
+    public static List<Selection> optimizeRouteWith4Targets(List<Selection> navigationNodes) {
+        int weight1 = getRouteLength(calculateRoute(navigationNodes));
+        List<Selection> secSol = new ArrayList<Selection>();
+        secSol.add(navigationNodes.get(0));
+        secSol.add(navigationNodes.get(2));
+        secSol.add(navigationNodes.get(1));
+        secSol.add(navigationNodes.get(3));
+        int weight2 = getRouteLength(calculateRoute(secSol));
+        return (weight2 != 0 && weight2 < weight1) ? secSol : navigationNodes;
+    }
+    
+    private static int getRouteLength(List<Integer> route) {
+        int length = 0;
+        for (int i = 1; i < route.size(); i++) {
+            length += State.getInstance().getLoadedGraph().getWeight(route.get(i - 1), route.get(i));
+        }
+        return length;
     }
 }
