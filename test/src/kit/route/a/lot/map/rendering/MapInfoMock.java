@@ -17,6 +17,8 @@ public class MapInfoMock extends MapInfo {
     }
     
     public void addMapElement(MapElement element) {
-        elements.add(element);
+        System.out.println("vor addElement");
+        System.out.println(elements.add(element));
+        System.out.println("size: "+ elements.size());
     }
 }

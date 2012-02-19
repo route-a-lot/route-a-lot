@@ -8,7 +8,7 @@ public class StateMock extends State {
     
     private MapInfoMock mapInfo = new MapInfoMock();
     
-    public MapInfo getLoadedMapInfo() {
+    public MapInfoMock getLoadedMapInfo() {
         return mapInfo;
     }
 
