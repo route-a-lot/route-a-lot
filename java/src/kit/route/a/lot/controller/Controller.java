@@ -242,7 +242,7 @@ public class Controller {
             logger.error("osm File doesn't exist");
         } else {
             state.resetMap();
-            new OSMLoader().importMap(osmFile);
+            new OSMLoader(State.getInstance()).importMap(osmFile);
             Precalculator.precalculate();
             state.getLoadedMapInfo().compactifyDatastructures();
             renderer.resetCache();

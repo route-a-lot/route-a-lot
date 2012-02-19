@@ -50,8 +50,8 @@ public class OSMLoader {
     int nodeCount;
     private long[] osmIds;
 
-    public OSMLoader() {
-        state = State.getInstance();
+    public OSMLoader(State state) {
+        this.state = state;
         weightCalculator = WeightCalculator.getInstance();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
@@ -1032,10 +1032,6 @@ public class OSMLoader {
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
         state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
 
-    }
-    
-    public void setState(State state) {
-        this.state = state;
     }
     
 }

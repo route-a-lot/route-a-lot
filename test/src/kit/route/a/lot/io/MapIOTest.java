@@ -23,7 +23,7 @@ public class MapIOTest {
         if (!sralMap.exists()) {
             logger.info("TEST: Import OSM map.");
             File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
-            OSMLoader osmLoader = new OSMLoader();
+            OSMLoader osmLoader = new OSMLoader(State.getInstance());
             osmLoader.importMap(karlsruheMap);
             State state = State.getInstance();
             

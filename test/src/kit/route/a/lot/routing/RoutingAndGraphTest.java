@@ -34,10 +34,9 @@ public class RoutingAndGraphTest {
     
     @BeforeClass
     public static void initialize() {
-        loader = new OSMLoader();
-        loaderForSimpleGraph = new OSMLoader();
+        loader = new OSMLoader(State.getInstance());
         simpleRoutingState = new RoutingStateMock();
-        loaderForSimpleGraph.setState(simpleRoutingState);
+        loaderForSimpleGraph = new OSMLoader(simpleRoutingState);
         loader.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
         loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
         graph = State.getInstance().getLoadedGraph();
