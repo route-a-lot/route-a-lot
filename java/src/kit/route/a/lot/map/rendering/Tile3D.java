@@ -100,7 +100,7 @@ public class Tile3D extends Tile {
     public void render(GL gl) {
         // BUILD TEXTURES IF NECESSARY
         if (textureID < 0) {
-            textureID = createTexture(gl, getImage(), false, true);
+            textureID = createTexture(gl, getImage(), false);
         }
         if (heightTextureID == -1) {
             createHeightTexture(gl);
@@ -116,13 +116,15 @@ public class Tile3D extends Tile {
             gl.glNewList(displaylistID, GL_COMPILE_AND_EXECUTE);
                 gl.glActiveTexture(GL_TEXTURE0);
                 gl.glEnable(GL_TEXTURE_2D);
-                gl.glBindTexture(GL_TEXTURE_2D, textureID);
+                gl.glBindTexture(GL_TEXTURE_2D, heightTextureID);
                 gl.glActiveTexture(GL_TEXTURE1);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glBindTexture(GL_TEXTURE_2D, grainTextureID);
                 gl.glActiveTexture(GL_TEXTURE2);
                 gl.glEnable(GL_TEXTURE_2D);
-                gl.glBindTexture(GL_TEXTURE_2D, heightTextureID);
+                gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+                gl.glBindTexture(GL_TEXTURE_2D, textureID);
+                
                 gl.glColor3f(1,1,1);
                 Coordinates topLeft = getTopLeft();
                 float stepSize = (getBottomRight().getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
@@ -178,7 +180,7 @@ public class Tile3D extends Tile {
                     heightImage.setRGB(x, y, Util.RGBToInt(color));
             }
         }
-        heightTextureID = createTexture(gl, heightImage, false, true);
+        heightTextureID = createTexture(gl, heightImage, false);
     } 
     
     private static void createGrainTexture(GL gl) {
@@ -190,7 +192,7 @@ public class Tile3D extends Tile {
                 grainImage.setRGB(x, y, (new Color(random, random, random)).getRGB());
             }
         }
-        grainTextureID = createTexture(gl, grainImage, true, true);
+        grainTextureID = createTexture(gl, grainImage, true);
     }
     
     private static void getHeightColor(float[] color, float height) {
@@ -209,7 +211,7 @@ public class Tile3D extends Tile {
         
     }
     
-    private static int createTexture(GL gl, BufferedImage image, boolean repeat, boolean linear) {
+    private static int createTexture(GL gl, BufferedImage image, boolean repeat) {
         final int[] tmp = new int[1];
         gl.glGenTextures(1, tmp, 0);
         int tex = tmp[0];
@@ -219,16 +221,19 @@ public class Tile3D extends Tile {
         dest.order(ByteOrder.nativeOrder());
         dest.asIntBuffer().put(data, 0, data.length);
         //gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_GENERATE_MIPMAP, 1);
-        int filter = (linear) ? GL_LINEAR : GL_NEAREST;
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         int wrapMode = (repeat) ? GL_REPEAT : GL_CLAMP_TO_EDGE;
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-        gl.glTexImage2D(GL_TEXTURE_2D, 0, GL.GL_RGB, image.getWidth(), image.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE, dest);
+        //int texEnvMode = (image.getType() == BufferedImage.TYPE_INT_ARGB) ? GL_BLEND : GL_MODULATE;
+        //gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, texEnvMode);
+        int oglFormat = (image.getType() == BufferedImage.TYPE_INT_ARGB) ? GL_RGBA : GL_RGB;
+        gl.glTexImage2D(GL_TEXTURE_2D, 0, oglFormat, image.getWidth(), image.getHeight(),
+                0, GL_BGRA, GL_UNSIGNED_BYTE, dest);
         //(new GLU()).gluBuild2DMipmaps(GL.GL_TEXTURE_2D, GL.GL_RGB, image.getWidth(), image.getHeight(), GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dest);
         
-        // gl.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
+        
         return tex;
     }
     

@@ -125,10 +125,10 @@ public class Tile {
      */
     protected void reset() {
         image = new BufferedImage(tileDim / Projection.getZoomFactor(detail),
-                tileDim / Projection.getZoomFactor(detail), BufferedImage.TYPE_INT_RGB);
+                tileDim / Projection.getZoomFactor(detail), BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
         graphics.setColor(new Color(210, 230, 190));
-        graphics.fillRect(0, 0, tileDim, tileDim);
+        //graphics.fillRect(0, 0, tileDim, tileDim);
     }
 
     /**

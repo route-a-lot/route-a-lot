@@ -9,6 +9,7 @@ import kit.route.a.lot.common.Coordinates;
 
 public class Heightmap implements IHeightmap {
 
+    private static final float UNDEFINED_HEIGHT = 0;
     private List<HeightTile> map;
 
     /* Konstruktor */
@@ -51,7 +52,7 @@ public class Heightmap implements IHeightmap {
                 return tile.getHeight(pos);
             }// end if
         }// end while
-        return 0f;
+        return UNDEFINED_HEIGHT;
     }// end getHeight
 
     @Override

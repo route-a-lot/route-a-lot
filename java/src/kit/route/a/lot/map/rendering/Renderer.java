@@ -3,6 +3,7 @@ package kit.route.a.lot.map.rendering;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
@@ -69,9 +70,11 @@ public class Renderer {
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");
         }
-        //Graphics graphics = ((Context2D) context).getGraphics();
-        //graphics.setColor(new Color(210, 230, 190));
-        //graphics.fillRect(0, 0, (int)context.getWidth(), (int)context.getHeight());
+        // FILL BACKGROUND
+        Graphics graphics = ((Context2D) context).getGraphics();
+        graphics.setColor(new Color(210, 230, 190));
+        graphics.fillRect(0, 0, (int)context.getWidth(), (int)context.getHeight());      
+        // DRAW TILES
         int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
         int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim);
         int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
@@ -83,6 +86,7 @@ public class Renderer {
                 drawImage(context, topLeft, currentTile.getImage(), detail);
             }
         }
+        // DRAW OVERLAY
         drawRoute(context, detail);
         drawNavPoints(context, detail);
         drawOverlay(context, detail);

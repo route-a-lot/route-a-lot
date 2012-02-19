@@ -27,7 +27,7 @@ import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
 import kit.route.a.lot.io.RouteIO;
-import kit.route.a.lot.io.SRTMLoaderRetarded;
+import kit.route.a.lot.io.SRTMLoaderDeferred;
 import kit.route.a.lot.io.StateIO;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.infosupply.ComplexInfoSupplier;
@@ -282,7 +282,7 @@ public class Controller {
     }
            
     private void importHeightmaps(File directory) {
-        HeightLoader loader = new SRTMLoaderRetarded();
+        HeightLoader loader = new SRTMLoaderDeferred();
         loader.load(directory);
     }
     

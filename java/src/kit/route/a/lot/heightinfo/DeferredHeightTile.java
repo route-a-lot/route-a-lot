@@ -5,12 +5,12 @@ import java.io.File;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.io.SRTMLoader;
 
-public class RetardedHeightTile extends RAMHeightTile {
+public class DeferredHeightTile extends RAMHeightTile {
 
     File source;
     boolean initialized = false;
     
-    public RetardedHeightTile(File file, Coordinates origin) {
+    public DeferredHeightTile(File file, Coordinates origin) {
         super(1201, 1201, origin);
         source = file;
     }

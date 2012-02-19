@@ -169,15 +169,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     @Override
     public Selection select(Coordinates pos) {
-        logger.debug("ClickPositionCoordinates(long/lal): " + pos.getLongitude() + " / " + pos.getLatitude());
-        float radius = 1f;
+        float radius = 1;
         Selection sel = null;
         while(sel == null && radius < 1000000000) {  //limit for avoiding errors on maps without edges
             sel = select(pos, radius);
             radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
         }
-        logger.debug("StartNodeId: " + sel.getFrom());
-        logger.debug("EndNodeId: " + sel.getTo());
+        if(sel != null) {
+            logger.debug("StartNodeId: " + sel.getFrom());
+            logger.debug("EndNodeId: " + sel.getTo());
+        }
         return sel;
     }
     
