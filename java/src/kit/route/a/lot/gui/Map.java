@@ -250,15 +250,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * Opens the map context menu if appropriate. Fires a WhatWasClicked event.
      */
     private void checkPopup(MouseEvent me) {
-        /*float deltaX = (clickEvent == null) ? 0 : me.getX() - clickEvent.getX();
-        float deltaY = (clickEvent == null) ? 0 : me.getY() - clickEvent.getY();
-        System.out.println(deltaX + ", " + deltaY);
-        if ((deltaX > 0 && deltaY > 0)
-            && ((navNodeMenu.isVisible() && deltaX < navNodeMenu.getWidth() && deltaY < navNodeMenu.getHeight())
-                || (descriptionMenu.isVisible() && deltaX < descriptionMenu.getWidth() && deltaY < navNodeMenu.getHeight()))) {
-            System.out.println("Cannot open!");
-            return;
-        }//*/
         clickEvent = me;
         gui.getListeners().fireEvent(POSITION_CLICKED,
                 new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
@@ -311,8 +302,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
         
     public void passElementType(int itemType) {
-        descriptionMenu.setVisible(false);
-        if (clickEvent.isPopupTrigger()) {
+        if (isMouseButtonPressed(clickEvent, 3)) {
             String name = TEXT_EMPTY;
             switch(itemType) {
                 case POI: name = TEXT_POI; break;
@@ -327,7 +317,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             deleteFavoriteItem.setVisible(itemType == FAVORITE);
             deleteNavPoint.setVisible(itemType == NAVNODE);
             navNodeMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
-        } else if (itemType == FAVORITE || itemType == POI){
+        } else if (isMouseButtonPressed(clickEvent, 1)
+                && (itemType == FAVORITE || itemType == POI)){
             gui.getListeners().fireEvent(SHOW_POI_DESCRIPTION,
                     new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             descriptionMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
@@ -339,4 +330,20 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         labelPOIDescription.setText(String.format(TEXT_DESCRIPTION_BODY, description.getDescription())); 
     }
 
+    /**
+     * Checks whether the given mouse button was pressed when the event was created.
+     * @param e the created event
+     * @param buttonID the ID of the button to be queried (1..3)
+     * @return whether the mouse button was clicked
+     */
+    protected static boolean isMouseButtonPressed(MouseEvent e, int buttonID) {
+        int buttonMask;
+        switch (buttonID) {
+            case 1: buttonMask = MouseEvent.BUTTON1_DOWN_MASK; break;
+            case 2: buttonMask = MouseEvent.BUTTON2_DOWN_MASK; break;
+            case 3: buttonMask = MouseEvent.BUTTON3_DOWN_MASK; break;
+            default: return false;
+        }
+        return (e.getModifiersEx() & buttonMask) != 0;
+    }
 }
