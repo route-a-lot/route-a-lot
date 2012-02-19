@@ -49,6 +49,8 @@ public class Controller {
         SRTM_DIRECTORY = new File("./srtm"),
         DEFAULT_OSM_MAP = new File("./test/resources/karlsruhe_small_current.osm");
     
+    private static final String SRAL_EXT = ".sral";
+    
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
     private static Logger logger = Logger.getLogger(Controller.class);
@@ -136,7 +138,9 @@ public class Controller {
         });
         guiHandler.addListener(LOAD_MAP, new Listener() {
             public void handleEvent(Event e) {
-                loadMap(new File(SRAL_DIRECTORY + "/" + ((TextEvent) e).getText() + ".sral"));
+                String text = ((TextEvent) e).getText();
+                loadMap((text.length() == 0) ? null
+                        : new File(SRAL_DIRECTORY + "/" + text + SRAL_EXT));
             }    
         });
         guiHandler.addListener(ADD_FAVORITE, new Listener() {
@@ -157,7 +161,7 @@ public class Controller {
         });
         guiHandler.addListener(EXPORT_ROUTE, new Listener() {
             public void handleEvent(Event e) {
-                exportRoute(((TextEvent) e).getText());
+                exportRoute(new File(((TextEvent) e).getText()));
             }          
         });
         guiHandler.addListener(DELETE_FAVORITE, new Listener() {
@@ -212,7 +216,7 @@ public class Controller {
         });
         guiHandler.addListener(DELETE_IMPORTED_MAP, new Listener() {
             public void handleEvent(Event e) {
-                deleteMap(((TextEvent) e).getText());
+                deleteMap(new File(SRAL_DIRECTORY + "/" + ((TextEvent) e).getText() + SRAL_EXT));
             }         
         });
         guiHandler.addListener(LIST_IMPORTED_MAPS, new Listener() {
@@ -257,24 +261,25 @@ public class Controller {
     }
   
     private void loadMap(File file) {
-        File mapFile = file;
-        if(!mapFile.exists()) {
-            logger.error("map File doesn't exist");
+        if (file == null) {
+            state.resetMap();
+            guiHandler.updateGUI();
+        } else if (!file.exists()) {
+            logger.error("Map file doesn't exist.");
         } else {
             state.resetMap();
             try {
-                MapIO.loadMap(mapFile);
-                state.setLoadedMapFile(mapFile);
+                MapIO.loadMap(file);
+                state.setLoadedMapFile(file);
             } catch (IOException e) {
-                logger.fatal("loadMap: IO Exception in MapIO");
+                logger.error("Map could not be loaded.");
             }
             setViewToMapCenter(); 
             guiHandler.setView(state.getCenterCoordinates());
         }
     }
 
-    private void deleteMap(String path){
-        File file = new File(path);
+    private void deleteMap(File file){
         if(file.exists()) {
             file.delete();
         }
@@ -312,14 +317,9 @@ public class Controller {
         calculateRoute();
     }
 
-    private void exportRoute(String path) {
-        String kmlPath = path;
-        if (!kmlPath.endsWith(".kml")) {
-            kmlPath += ".kml";
-        }
-        File routeFile = new File(kmlPath);
+    private void exportRoute(File file) {
         if (state.getCurrentRoute().size() != 0) {
-            RouteIO.exportCurrentRouteToKML(routeFile);
+            RouteIO.exportCurrentRouteToKML(file);
         }
     }
       
@@ -472,15 +472,21 @@ public class Controller {
   
     private void updateImportedMapsList() {
         List<String> maps = new ArrayList<String>();
+        int activeMapIndex = -1;
         if(SRAL_DIRECTORY.isDirectory()) {
-            String files[] = SRAL_DIRECTORY.list();
-            for(String file : files) {
-                if (file.endsWith(".sral")) {
-                    maps.add(Util.removeExtension(file));
-                }
+            File[] files = SRAL_DIRECTORY.listFiles();
+            int count = 0;
+            for(File file : files) {
+                if (file.getName().endsWith(".sral")) {
+                    maps.add(Util.removeExtension(file.getName()));
+                    if(file.equals(state.getLoadedMapFile())) {
+                        activeMapIndex = count;
+                    }
+                    count++;
+                }                
             }
         }
-        guiHandler.updateMapList(maps);
+        guiHandler.updateMapList(maps, activeMapIndex);
     }
     
     private void setSpeed(int speed) {

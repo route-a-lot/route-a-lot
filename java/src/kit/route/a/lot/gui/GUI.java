@@ -24,6 +24,8 @@ import static kit.route.a.lot.common.Listener.*;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
+
+    private static final int OPTIMIZE_WARN_LIMIT = 10;
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea;
@@ -50,7 +52,6 @@ public class GUI extends JFrame {
     // STATUS BAR
     private JLabel routeValues, mouseCoordinatesDisplay;
 
-    private List<String> importedMaps = new ArrayList<String>();
     private List<Selection> navNodeList;
     private Listeners listeners;
 
@@ -146,11 +147,12 @@ public class GUI extends JFrame {
 
         JTabbedPane tabArea = new JTabbedPane();
         tabArea.setPreferredSize(new Dimension(this.getWidth() * 2 / 5, this.getHeight()));
-        tabArea.setBackground(Color.LIGHT_GRAY);
         createRoutingTab();
         createMapTab();
-        tabArea.addTab("Planen", null, routingTab, "Start-, Ziel-, Zwischenhalts- und Geschwindigkeitseinstellungen.");
-        tabArea.addTab("Karten", null, mapTab, "Import von Höhen- und OSM-Karten, Laden von Karten, Einstellung der Maluse.");
+        tabArea.addTab("Planen", null, routingTab,
+                "Start-, Ziel-, Zwischenhalts- und Geschwindigkeitseinstellungen.");
+        tabArea.addTab("Karten", null, mapTab,
+                "Import von Höhen- und OSM-Karten, Laden von Karten, Einstellung der Maluse.");
         // tabArea.setMnemonicAt(1, KeyEvent.VK_1);
         // tabArea.setMnemonicAt(1, KeyEvent.VK_2);
 
@@ -252,7 +254,7 @@ public class GUI extends JFrame {
         buttonAddNavNode.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonAddNavNode.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent e) {
                 addWaypointField("");
                 repaint();
             }
@@ -263,8 +265,10 @@ public class GUI extends JFrame {
         buttonOptimizeRoute.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonOptimizeRoute.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
-                listeners.fireEvent(OPTIMIZE_ROUTE, null);
+            public void actionPerformed(ActionEvent e) {
+                if ((countNavNodes() < OPTIMIZE_WARN_LIMIT) /*|| TODO ask confirmation*/) {
+                    listeners.fireEvent(OPTIMIZE_ROUTE, null);
+                }               
             }
         });
 
@@ -369,8 +373,10 @@ public class GUI extends JFrame {
         buttonDeleteMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                listeners.fireEvent(DELETE_IMPORTED_MAP,
-                        new TextEvent(listChooseMap.getSelectedItem().toString()));
+                if (listChooseMap.getSelectedItem() != null) {
+                    listeners.fireEvent(DELETE_IMPORTED_MAP, 
+                            new TextEvent(listChooseMap.getSelectedItem().toString()));
+                }
             }
         });
 
@@ -380,8 +386,9 @@ public class GUI extends JFrame {
         buttonActivateMap.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Object item = listChooseMap.getSelectedItem();
                 listeners.fireEvent(LOAD_MAP,
-                        new TextEvent(listChooseMap.getSelectedItem().toString()));
+                        new TextEvent((item != null) ? item.toString() : ""));
             }
         });
 
@@ -569,14 +576,12 @@ public class GUI extends JFrame {
      * Sets the entries shown in the imported map selection field.
      * @param maps the new entries
      */
-    public void updateMapChooser(List<String> maps) {
-        for (int i = 0; i < importedMaps.size(); i++) {
-            listChooseMap.removeItem(listChooseMap.getItemAt(i));
-        }
-        importedMaps = new ArrayList<String>(maps);
+    public void setImportedMapsList(List<String> maps, int activeMapIndex) {
+        listChooseMap.removeAllItems();
         for (String map : maps) {
-            listChooseMap.addItem(map); // TODO keine doppelten NAmen
+            listChooseMap.addItem(map); // TODO keine doppelten Namen
         }
+        listChooseMap.setSelectedIndex(activeMapIndex);
     }
    
     /**
@@ -615,11 +620,11 @@ public class GUI extends JFrame {
     }
 
     /**
-     * Returns the list containing the current navnode selection.
-     * @return the navigation node list
+     * Returns the number of current navnodes.
+     * @return the navigation node list size
      */
-    public List<Selection> getNavNodeList() {
-        return navNodeList;
+    public int countNavNodes() {
+        return navNodeList.size();
     }
 
     /**
@@ -694,8 +699,8 @@ public class GUI extends JFrame {
         int hours = duration / 3600;
         int minutes = (duration - hours * 3600) / 60;
         int seconds = duration - (hours * 3600) - (minutes * 60);
-        String output = (length / 1000f) + "km, " + ((hours != 0) ? hours + "h " : "");
-        routeValues.setText("(" + output + ((minutes != 0) ? minutes + "min" : seconds + "sek")+ ")");
+        String output = String.format("%1$3.1f km / ", length / 1000f) + ((hours != 0) ? hours + " h " : "");
+        routeValues.setText("(" + output + ((minutes != 0) ? minutes + " min" : seconds + " sek")+ ")");
     }
     
     /**

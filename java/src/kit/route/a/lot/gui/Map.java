@@ -226,7 +226,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         int type = label.equals(startItem.getText()) ? 0 : label.equals(endItem.getText()) ? 2 : 1;
         int pos = 0;
         
-        switch (gui.getNavNodeList().size()) {
+        switch (gui.countNavNodes()) {
             case 0: pos = 0;
                     break;
             case 1: switch (type) {
@@ -236,8 +236,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     break;
             default: switch (type) {
                         case 0 : pos = 0; break;
-                        case 1 : pos = gui.getNavNodeList().size() - 1; break;
-                        case 2 : pos = gui.getNavNodeList().size();
+                        case 1 : pos = gui.countNavNodes() - 1; break;
+                        case 2 : pos = gui.countNavNodes();
                         break;
                     }
         }    

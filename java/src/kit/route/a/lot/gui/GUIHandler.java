@@ -28,8 +28,8 @@ public class GUIHandler {
         gui.updateGUI();
     }
 
-    public void updateMapList(List<String> maps) {
-        gui.updateMapChooser(maps);
+    public void updateMapList(List<String> maps, int activeMapIndex) {
+        gui.setImportedMapsList(maps, activeMapIndex);
     }
     
     public void updateNavPointsList(List<Selection> navPointsList) {
