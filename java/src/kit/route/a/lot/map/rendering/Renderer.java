@@ -37,7 +37,7 @@ public class Renderer {
      * A cache storing tiles that were previously drawn.
      */
     protected RenderCache cache;
-    protected State state = State.getInstance();
+    protected State state;
     
     private BufferedImage routeImage = null;
     private Coordinates routeTopLeft = new Coordinates();
@@ -63,6 +63,7 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context) {
+        state = State.getInstance();
         int detail = context.getZoomlevel();
         int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
         if (tileDim < 0) {

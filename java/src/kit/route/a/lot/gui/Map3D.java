@@ -24,7 +24,7 @@ public class Map3D extends Map implements GLEventListener {
     private static final int[] LOD_STAGE_LEVELS = {0, 1}; 
     
     
-    private float rotationHorizontal = 0f, rotationVertical = 60f;
+    private float rotationHorizontal = 0f, rotationVertical = 25f;
     private float displayRatio = 1;
    
     public Map3D(GUI gui)
@@ -64,7 +64,7 @@ public class Map3D extends Map implements GLEventListener {
     @Override
     public void display(GLAutoDrawable g) {
         GL gl = g.getGL();
-        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        gl.glClear(GL_COLOR_BUFFER_BIT);
         gl.glLoadIdentity(); 
         gl.glScalef(1, -1, 1);
         // apply camera rotation
@@ -78,7 +78,7 @@ public class Map3D extends Map implements GLEventListener {
                         -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
                         -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
         
-        // create render events
+        // create render events (one for each level of detail)
         for (int i = LOD_STAGES.length - 1; i > 0; i--) {
             gl.glClear(GL_DEPTH_BUFFER_BIT);
             setProjection(gl, LOD_STAGES[i - 1] * 0.9f, LOD_STAGES[i]);

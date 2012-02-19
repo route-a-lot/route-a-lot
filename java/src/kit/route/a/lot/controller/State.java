@@ -10,6 +10,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.map.rendering.Renderer;
 import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
 import kit.route.a.lot.routing.RoutingGraph;
 
@@ -20,6 +21,7 @@ public class State {
     private MapInfo loadedMapInfo;
     private RoutingGraph loadedGraph;
     private IHeightmap loadedHeightmap;
+    private Renderer activeRenderer;
     private List<Selection> navigationNodes;
     private List<Integer> currentRoute;
     private Coordinates centerCoordinates;
@@ -32,7 +34,6 @@ public class State {
     private int highwayMalus;
 
     public State() {
-        resetMap();
         detailLevel = 2;
         clickRadius = 10;
         speed = 15;
@@ -40,6 +41,8 @@ public class State {
         heightMalus = 0;
         highwayMalus = 0;
         loadedHeightmap = new Heightmap();
+        activeRenderer = new Renderer();
+        resetMap();
     }
     
     public void resetMap() {
@@ -49,7 +52,8 @@ public class State {
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
         centerCoordinates = new Coordinates(0, 0);
-        routeDescription = new RouteDescription();        
+        routeDescription = new RouteDescription();    
+        activeRenderer.resetCache();
     }
     
     public static State getInstance() {
@@ -89,6 +93,14 @@ public class State {
 
     public void setLoadedHeightmap(IHeightmap loadedHeightmap) {
         this.loadedHeightmap = loadedHeightmap;
+    }
+    
+    public Renderer getActiveRenderer() {
+        return activeRenderer;
+    }
+
+    public void setActiveRenderer(Renderer renderer) {
+        this.activeRenderer = renderer;
     }
 
 

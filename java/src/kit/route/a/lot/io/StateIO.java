@@ -38,7 +38,7 @@ public class StateIO {
         String path = stream.readUTF();
         state.setLoadedMapFile((path == null) ? null : new File(path));
         state.setCenterCoordinates(Coordinates.loadFromStream(stream));
-        state.setDetailLevel(stream.readInt());
+        state.setDetailLevel(stream.readInt()); 
         
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
@@ -48,31 +48,12 @@ public class StateIO {
         }
         state.setNavigationNodes(navNodes);
         
-        // miscellaneous data
+        // miscellaneous data  
         state.setClickRadius(stream.readInt());
         state.setHeightMalus(stream.readInt());
         state.setHighwayMalus(stream.readInt());
         state.setSpeed(stream.readInt());
-        
-        // deductive data => actually no need to save
-        /*
-        state.setDuration(stream.readInt());
-        
-        len = stream.readInt();
-        List<Integer> currentRoute = new ArrayList<Integer>(len);
-        for (int i = 0; i < len; i++) {
-            currentRoute.add(stream.readInt());
-        }
-        state.setCurrentRoute(currentRoute);
-        
-        len = stream.readInt();
-        ArrayList<String> importedMaps = new ArrayList<String>(len);  
-        for (int i = 0; i < len; i++) {
-            importedMaps.add(stream.readUTF());
-        }
-        state.setImportedMaps(importedMaps);        
-        */
-        
+              
         stream.close();
     }
 

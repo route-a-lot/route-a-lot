@@ -68,4 +68,8 @@ public class GUIHandler {
     public void addListener(int eventType, Listener listener) {
         listeners.addListener(eventType, listener);
     }
+    
+    public void setMapMode(boolean render3D) {
+        gui.setMapMode(render3D);
+    }
 }

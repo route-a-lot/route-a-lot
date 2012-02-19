@@ -84,80 +84,60 @@ public class Precalculator {
     }
 
     private static boolean doAreas() {
-        String AREAS = "63";
-        String FILE = "graph.txt";
+        final int AREAS = 63;
+        final String FILE = "graph.txt";
         String BINARY = "gpmetis";
-        logger.info("Creating " + AREAS + " Areas with Metis...");
+        logger.info("Creating areas with Metis...");
         // Write graph file
         try {
             BufferedWriter out = new BufferedWriter(new FileWriter(FILE));
             out.write(graph.getMetisRepresentation());
             out.close();
         } catch (IOException e) {
-            logger.error("Couldn't create graph-file, got r/w rights?");
+            logger.error("Couldn't create graph-file, got rights?");
             return false;
         }
         
         //calculate areas with Metis
-        String buffer = "";
-        try {
-            Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-            
-            // read the output from the command
-            while ((buffer = stdInput.readLine()) != null) {
-                logger.debug("Metis: " + buffer);
-            }
-            
-            // read any errors from the attempted command
-            while ((buffer = stdError.readLine()) != null) {
-                logger.error("Metis: " + buffer);
-            }
-        } catch (IOException e) {
-            BINARY = "./gpmetis";
+        boolean tryAgain = false;
+        do {
             try {
+                String buffer;
                 Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
                 BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-                
+                BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));               
                 // read the output from the command
                 while ((buffer = stdInput.readLine()) != null) {
                     logger.debug("Metis: " + buffer);
-                }
-                
+                }              
                 // read any errors from the attempted command
                 while ((buffer = stdError.readLine()) != null) {
                     logger.error("Metis: " + buffer);
                 }
-            } catch (IOException e1) {
-                logger.error(BINARY + " failed to execute");
-                return false;
+            } catch (IOException e) {
+                tryAgain = (BINARY.equals("gpmetis"));
+                if (!tryAgain) {
+                    logger.error(BINARY + " failed to execute");
+                    return false;  
+                }
+                BINARY = "./gpmetis";   
             }
-        }
+        } while (tryAgain);
         
         // read resulting file
         String filePath = FILE + ".part." + AREAS;
         byte[] areas = new byte[(int) new File(filePath).length()];
-        BufferedInputStream file = null;
+        BufferedInputStream file;
         try {
             file = new BufferedInputStream(new FileInputStream(filePath));
             file.read(areas);
+            file.close();
         } catch (IOException e) {
-            logger.error("Couldn't read area file, got r/w rights?");
+            logger.error("Couldn't read area file, got rights?");
             return false;
-        } finally {
-            if (file != null) {
-                try {
-                    file.close(); 
-                } catch (IOException e) {
-                    logger.error("Couldn't close file, prepare for mem-leak");
-                    return false;
-                }
-            }
         }
         graph.readAreas(new String(areas));
-        logger.info("Areas succesfully created");
+        logger.info("Areas successfully created");
         return true;
     }
 }

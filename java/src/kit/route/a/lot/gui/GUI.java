@@ -1,16 +1,7 @@
 package kit.route.a.lot.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,20 +102,12 @@ public class GUI extends JFrame {
                 GUI.this.exportRouteKMLFileChooser();
             }
         });
-        JButton buttonSwitchGraphics = new JButton("2D/3D");
-        buttonSwitchGraphics.addActionListener(new ActionListener() {
+        JButton buttonSwitchMapMode = new JButton("2D/3D");
+        buttonSwitchMapMode.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
                 while (!active); // postbone execution until after startup
-                Coordinates center = map.getCenter();
-                int zoomlevel = map.getZoomlevel();
-                listeners.fireEvent(SWITCH_MAP_MODE, null);
-                centralArea.remove(map);
-                map = (map instanceof Map2D) ? new Map3D(map.gui) : new Map2D(map.gui);
-                centralArea.add(map, BorderLayout.CENTER);
-                centralArea.validate();
-                map.setZoomlevel(zoomlevel);
-                setView(center);
+                listeners.fireEvent(SWITCH_MAP_MODE, null);   
             }
         });
 
@@ -153,7 +136,7 @@ public class GUI extends JFrame {
         buttonPanel.add(buttonLoadRoute);
         buttonPanel.add(buttonSaveRoute);
         buttonPanel.add(buttonExportKML);
-        buttonPanel.add(buttonSwitchGraphics);
+        buttonPanel.add(buttonSwitchMapMode);
         buttonPanel.add(zoomSlider);
 
         // AREAS
@@ -536,7 +519,7 @@ public class GUI extends JFrame {
         waypointArea.add(row);
         routingTab.validate();
 
-        final int pos = waypointArea.getComponentCount() / 2;
+        final int pos = waypointArea.getComponentCount();
 
         waypointField.addActionListener(new ActionListener() {
             @Override
@@ -544,7 +527,7 @@ public class GUI extends JFrame {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
                 listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new NavNodeNameEvent(waypointField.getText(), pos + 1));
+                        new NavNodeNameEvent(waypointField.getText(), pos));
                 repaint();
             }
         });
@@ -555,7 +538,7 @@ public class GUI extends JFrame {
                 if (!enterPressed) {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
-                    popupIndex = pos + 1;
+                    popupIndex = pos;
                     listeners.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(waypointField.getText()));
                 }
@@ -565,10 +548,10 @@ public class GUI extends JFrame {
 
         buttonDeleteWaypoint.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent e) {
                 waypointArea.remove(row);
-                if ((waypointField.getText().length() != 0) && (navNodeList.size() > pos + 1)) {
-                    listeners.fireEvent(DELETE_NAVNODE, new NumberEvent(pos + 1));
+                if ((waypointField.getText().length() != 0) && (navNodeList.size() > pos)) {
+                    listeners.fireEvent(DELETE_NAVNODE, new NumberEvent(pos));
                 }
                 repaint();
             }
@@ -730,6 +713,17 @@ public class GUI extends JFrame {
      * @param active (de-)activates some GUI event responds
      */
     public void setActive(boolean active) {
-        this.active = active;
+        this.active = active;   
+    }
+
+    public void setMapMode(boolean render3D) {
+        Coordinates center = map.getCenter();
+        int zoomlevel = map.getZoomlevel();       
+        centralArea.remove(map);
+        map = (render3D) ? new Map3D(this) : new Map2D(this);
+        centralArea.add(map, BorderLayout.CENTER);
+        centralArea.validate();
+        map.setZoomlevel(zoomlevel);
+        setView(center);
     }
 }

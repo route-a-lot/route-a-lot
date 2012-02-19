@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import kit.route.a.lot.common.Context;
@@ -47,10 +46,9 @@ public class Controller {
 
     private static final File
         SRAL_DIRECTORY = new File("./sral"),
-        SRTM_DIRECTORY = new File("./srtm/"),
+        SRTM_DIRECTORY = new File("./srtm"),
         DEFAULT_OSM_MAP = new File("./test/resources/karlsruhe_small_current.osm");
     
-    private Renderer renderer = new Renderer();
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
     private static Logger logger = Logger.getLogger(Controller.class);
@@ -199,7 +197,7 @@ public class Controller {
         });
         guiHandler.addListener(SWITCH_MAP_MODE, new Listener() {
             public void handleEvent(Event e) {
-                switchMapMode();
+                setMapMode(!(state.getActiveRenderer() instanceof Renderer3D));
             }         
         });
         guiHandler.addListener(LIST_SEARCH_COMPLETIONS, new Listener() {
@@ -237,7 +235,7 @@ public class Controller {
         }
     }
     
-    public void importMap(File osmFile) {
+    private void importMap(File osmFile) {
         if(!osmFile.exists()) {
             logger.error("osm File doesn't exist");
         } else {
@@ -245,10 +243,8 @@ public class Controller {
             new OSMLoader(State.getInstance()).importMap(osmFile);
             Precalculator.precalculate();
             state.getLoadedMapInfo().compactifyDatastructures();
-            renderer.resetCache();
-            state.setLoadedMapFile(new File("./sral/" +
-                    Util.removeExtension(osmFile.getName()) + "_" + state.getHeightMalus()
-                    + "_" + state.getHighwayMalus() + ".sral"));    
+            state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
+                    + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ").sral"));    
             try {
                 MapIO.saveMap(state.getLoadedMapFile());
             } catch (IOException e) {
@@ -259,17 +255,8 @@ public class Controller {
             updateImportedMapsList();
         }    
     }
-    
-    public void saveMap(String mapPath) {
-        File mapFile = new File(mapPath);
-        try {
-            MapIO.saveMap(mapFile);
-        } catch (IOException e) {
-            logger.fatal("saveMap: IO Exception in MapIO");
-        }
-    }
-    
-    public void loadMap(File file) {
+  
+    private void loadMap(File file) {
         File mapFile = file;
         if(!mapFile.exists()) {
             logger.error("map File doesn't exist");
@@ -283,11 +270,10 @@ public class Controller {
             }
             setViewToMapCenter(); 
             guiHandler.setView(state.getCenterCoordinates());
-            renderer.resetCache();
         }
     }
 
-    public void deleteMap(String path){
+    private void deleteMap(String path){
         File file = new File(path);
         if(file.exists()) {
             file.delete();
@@ -295,13 +281,13 @@ public class Controller {
         updateImportedMapsList();
     }
            
-    public void importHeightmaps(File directory) {
+    private void importHeightmaps(File directory) {
         HeightLoader loader = new SRTMLoaderRetarded();
         loader.load(directory);
     }
     
     
-    public void saveRoute(String path) {
+    private void saveRoute(String path) {
         File routeFile = new File(path);
         if (state.getCurrentRoute().size() != 0) {
             try {
@@ -312,7 +298,7 @@ public class Controller {
         }
     }
 
-    public void loadRoute(String path) {
+    private void loadRoute(String path) {
         File routeFile = new File(path);
         if (!routeFile.exists()) {
             logger.error("RouteFile existiert nicht");
@@ -326,7 +312,7 @@ public class Controller {
         calculateRoute();
     }
 
-    public void exportRoute(String path) {
+    private void exportRoute(String path) {
         String kmlPath = path;
         if (!kmlPath.endsWith(".kml")) {
             kmlPath += ".kml";
@@ -337,7 +323,7 @@ public class Controller {
         }
     }
       
-    public void addNavNode(Coordinates pos, int position) {
+    private void addNavNode(Coordinates pos, int position) {
         Selection newSel = state.getLoadedMapInfo().select(pos);
         if (newSel != null) {
             if (position == 0 && state.getNavigationNodes().size() > 1) {
@@ -352,12 +338,12 @@ public class Controller {
         }
         guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
-//        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
-//            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
-//        }
+        // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
+        //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
+        // }
     }
     
-    public void addNavNode(String name, int position) {
+    private void addNavNode(String name, int position) {
         Selection newSel = state.getLoadedMapInfo().select(name);
         if (newSel != null) {
             if (position == 0 && state.getNavigationNodes().size() > 1) {
@@ -372,12 +358,12 @@ public class Controller {
         }
         guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
-//        for (int i = 0; i < state.getNavigationNodes().size(); i++) {
-//            guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
-//        }
+        // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
+        //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
+        // }
     }
 
-    public void getNavNodeFromText(String str) {
+    private void getNavNodeFromText(String str) {
         Selection sel = state.getLoadedMapInfo().select(str);
         if (sel != null) {
             state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, sel);
@@ -386,7 +372,7 @@ public class Controller {
         }
     }
     
-    public void deleteNavNode(int pos) {
+    private void deleteNavNode(int pos) {
         if (pos < state.getNavigationNodes().size()) {
             state.getNavigationNodes().remove(pos);
             state.setCurrentRoute(new ArrayList<Integer>());
@@ -395,7 +381,7 @@ public class Controller {
         }
     }
     
-    public void deleteNavNode(Coordinates pos) {
+    private void deleteNavNode(Coordinates pos) {
         int radius = Projection.getZoomFactor(state.getDetailLevel()) * state.getClickRadius();
         for (int i = 0; i < state.getNavigationNodes().size(); i++) {
             Coordinates navNodePos = state.getNavigationNodes().get(i).getPosition();
@@ -408,21 +394,13 @@ public class Controller {
         }
     }
 
-    public void switchNavNodes(int index1, int index2) {
-        if (index1 < state.getNavigationNodes().size()
-            && index2 < state.getNavigationNodes().size()) {
-            Collections.swap(state.getNavigationNodes(), index1, index2);
-            calculateRoute();
-        }
-    }
-
-    public void optimizeRoute() {  
+    private void optimizeRoute() {  
         Router.optimizeRoute(state.getNavigationNodes());
         guiHandler.updateNavPointsList(state.getNavigationNodes());
         calculateRoute();
     }
     
-    public void calculateRoute() {
+    private void calculateRoute() {
         if (state.getNavigationNodes().size() >= 2) {
             state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
             int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
@@ -433,18 +411,18 @@ public class Controller {
     }
 
     
-    public void addFavorite(Coordinates pos, String name, String description) {  
+    private void addFavorite(Coordinates pos, String name, String description) {  
         state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, OSMType.FAVOURITE, description));
         guiHandler.updateGUI();
     }
 
-    public void deleteFavorite(Coordinates pos) {
+    private void deleteFavorite(Coordinates pos) {
         state.getLoadedMapInfo().deleteFavorite(pos, state.getDetailLevel(), state.getClickRadius());
         guiHandler.updateGUI();
     }
 
 
-    public void passElementType(Coordinates pos) {
+    private void passElementType(Coordinates pos) {
         float adaptedRadius = (Projection.getZoomFactor(state.getDetailLevel())) * state.getClickRadius();
         Coordinates topLeft = new Coordinates(pos.getLatitude() - adaptedRadius,
                 pos.getLongitude() - adaptedRadius);       
@@ -470,7 +448,7 @@ public class Controller {
         guiHandler.passElementType(FREEMAPSPACE);
     }
     
-    public void passDescription(Coordinates pos) {   
+    private void passDescription(Coordinates pos) {   
         POIDescription description = state.getLoadedMapInfo()
             .getFavoriteDescription(pos, state.getDetailLevel(), state.getClickRadius());
         if (description == null) {
@@ -482,17 +460,17 @@ public class Controller {
         }
     }
 
-    public void passSearchCompletion(String str) {
+    private void passSearchCompletion(String str) {
         guiHandler.showSearchCompletion(state.getLoadedMapInfo().suggestCompletions(str));
     }
     
-    public void passTextRoute() {   //TODO
+    private void passTextRoute() {   //TODO
         if (state.getCurrentRoute().size() != 0) {
             ComplexInfoSupplier.getRouteDescription(state.getCurrentRoute());
         }
     }
   
-    public void updateImportedMapsList() {
+    private void updateImportedMapsList() {
         List<String> maps = new ArrayList<String>();
         if(SRAL_DIRECTORY.isDirectory()) {
             String files[] = SRAL_DIRECTORY.list();
@@ -505,7 +483,7 @@ public class Controller {
         guiHandler.updateMapList(maps);
     }
     
-    public void setSpeed(int speed) {
+    private void setSpeed(int speed) {
         if(speed >= 0) {
             state.setSpeed(speed);
             guiHandler.showRouteValues(ComplexInfoSupplier.getLength(state.getCurrentRoute()),
@@ -513,19 +491,19 @@ public class Controller {
         }
     }
     
-    public void setHeightMalus(int newMalus) {
+    private void setHeightMalus(int newMalus) {
         if (newMalus >= 0) {
             state.setHeightMalus(newMalus);
         }
     }
 
-    public void setHighwayMalus(int newMalus) {
+    private void setHighwayMalus(int newMalus) {
         if (newMalus >= 0) {
             state.setHighwayMalus(newMalus);
         }
     }
     
-    public void setViewToMapCenter() {
+    private void setViewToMapCenter() {
         if (state.getLoadedMapInfo() == null) {
             return;
         }
@@ -538,16 +516,17 @@ public class Controller {
         state.setCenterCoordinates(center);
     }
     
-    public void render(Context context) {
+    private void render(Context context) {
         state.setDetailLevel(context.getZoomlevel());
-        renderer.render(context); 
+        state.getActiveRenderer().render(context); 
     }
     
-    public void switchMapMode() {
-        renderer = (renderer instanceof Renderer3D) ? new Renderer() : new Renderer3D();
+    private void setMapMode(boolean render3D) {
+        state.setActiveRenderer((render3D) ? new Renderer3D() : new Renderer());
+        guiHandler.setMapMode(render3D);
     }
     
-    public void prepareForShutdown() {
+    private void prepareForShutdown() {
         File stateFile = new File("./state.state");
         try {
             StateIO.saveState(stateFile);
