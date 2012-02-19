@@ -116,6 +116,7 @@ public class SimpleRouter {
         secSol.add(navigationNodes.get(3));
         int weight2 = getRouteLength(calculateRoute(secSol));
         return (weight2 != 0 && weight2 < weight1) ? secSol : navigationNodes;
+//        return navigationNodes;
     }
     
     private static int getRouteLength(List<Integer> route) {
