@@ -3,6 +3,7 @@ package kit.route.a.lot.map.rendering;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -289,7 +290,7 @@ public class Tile {
         }
         int size = basicSize / Projection.getZoomFactor(detail);
         if (!top) {
-            graphics.setStroke(new BasicStroke(size + 2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics.setStroke(new BasicStroke(size + 2/(float)Math.pow(detail + 1, 0.8), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         } else {
             graphics.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         }
@@ -425,7 +426,10 @@ public class Tile {
                 Font oldFont = graphics.getFont();
                 Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
                 graphics.setFont(newFont);
-                Coordinates normal = vector.rotate(90).normalize().scale((newFont.getSize2D() - 1) / 2);
+                FontMetrics fontMetrics = graphics.getFontMetrics();
+                float descent = fontMetrics.getDescent();
+                float ascent = fontMetrics.getAscent();
+                Coordinates normal = vector.rotate(90).normalize().scale((descent + ascent) / descent);
                 arrowStart.add(normal);
                 graphics.drawString(curStreetName, arrowStart.getLongitude(), arrowStart.getLatitude());
                 graphics.setFont(oldFont);
