@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import kit.route.a.lot.map.infosupply.MapInfo;
+
 import org.apache.log4j.Logger;
 
 
@@ -52,6 +54,21 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         weights = weight.clone();
         arcFlags = new long[startID.length];
         Arrays.fill(arcFlags, (long) 0);
+    }
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof AdjacentFieldsRoutingGraph)) {
+            return false;
+        }
+        AdjacentFieldsRoutingGraph comparee = (AdjacentFieldsRoutingGraph) other;
+        return java.util.Arrays.equals(edgesPos, comparee.edgesPos)
+                && java.util.Arrays.equals(areaID, comparee.areaID)
+                && java.util.Arrays.equals(edges, comparee.edges)
+                && java.util.Arrays.equals(weights, comparee.weights)
+                && java.util.Arrays.equals(arcFlags, comparee.arcFlags);
     }
         
     public void buildGraphWithUniqueEdges(int[] startID, int[] endID, int maxNodeID) {

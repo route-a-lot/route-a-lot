@@ -40,51 +40,19 @@ public class StateIOTest extends StateIO {
     public void saveAndLoad() throws Exception {
         File file = new File("mock.state");
         loader.importMap(new File("test/resources/karlsruhe_small.osm"));
-        File loadedMapFile = state.getLoadedMapFile();
-        MapInfo loadedMapInfo = state.getLoadedMapInfo();
-        RoutingGraph loadedGraph = state.getLoadedGraph();
-        IHeightmap loadedHeightmap = state.getLoadedHeightmap();
-        Coordinates centerCoordinates = state.getCenterCoordinates();
-        int detailLevel = state.getDetailLevel();
-        int clickRadius = state.getClickRadius();
-        RouteDescription routeDescription = state.getRouteDescription();
-        int speed = state.getSpeed();
-        int duration = state.getDuration();
-        int heightMalus = state.getHeightMalus();
-        int highwayMalus = state.getHighwayMalus();
+        StateMock original = state;
         
         // test deterministic importing
         setUp();
         loader.importMap(new File("test/resources/karlsruhe_small.osm"));
-        assertEquals(loadedMapFile, state.getLoadedMapFile());
-        assertTrue(loadedMapInfo.equals(state.getLoadedMapInfo()));
-        assertTrue(loadedGraph.equals(state.getLoadedGraph()));
-        assertTrue(loadedHeightmap.equals(state.getLoadedHeightmap()));
-        assertTrue(centerCoordinates.equals(state.getCenterCoordinates()));
-        assertEquals(detailLevel, state.getDetailLevel());
-        assertEquals(clickRadius, state.getClickRadius());
-        assertTrue(routeDescription.equals(state.getRouteDescription()));
-        assertEquals(speed, state.getSpeed());
-        assertEquals(duration, state.getDuration());
-        assertEquals(heightMalus, state.getHeightMalus());
-        assertEquals(highwayMalus, state.getHighwayMalus());
+        assertTrue(original.equals(state));
         
         // Test proper saving/loading
         saveState(file);
         setUp();
         loadState(file);
-        assertEquals(loadedMapFile, state.getLoadedMapFile());
-        assertEquals(loadedMapInfo, state.getLoadedMapInfo());
-        assertEquals(loadedGraph, state.getLoadedGraph());
-        assertEquals(loadedHeightmap, state.getLoadedHeightmap());
-        assertEquals(centerCoordinates, state.getCenterCoordinates());
-        assertEquals(detailLevel, state.getDetailLevel());
-        assertEquals(clickRadius, state.getClickRadius());
-        assertEquals(routeDescription, state.getRouteDescription());
-        assertEquals(speed, state.getSpeed());
-        assertEquals(duration, state.getDuration());
-        assertEquals(heightMalus, state.getHeightMalus());
-        assertEquals(highwayMalus, state.getHighwayMalus());
+        assertTrue(original.equals(state));
+        
         
     }
 }

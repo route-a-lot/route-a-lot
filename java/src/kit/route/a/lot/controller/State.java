@@ -45,6 +45,27 @@ public class State {
         resetMap();
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof State)) {
+            return false;
+        }
+        State comparee = (State) other;
+        return loadedMapInfo.equals(comparee.getLoadedMapInfo())
+                && loadedGraph.equals(comparee.getLoadedGraph())
+                && loadedHeightmap.equals(comparee.getLoadedHeightmap())
+                && centerCoordinates.equals(comparee.getCenterCoordinates())
+                && detailLevel == comparee.getDetailLevel()
+                && clickRadius == comparee.getClickRadius()
+                && routeDescription.equals(comparee.getRouteDescription())
+                && speed == comparee.getSpeed()
+                && duration == comparee.getDuration()
+                && heightMalus == comparee.getHeightMalus()
+                && highwayMalus == comparee.getHighwayMalus();
+    }
+    
     public void resetMap() {
         loadedMapFile = null;
         loadedMapInfo = new MapInfo();

@@ -16,6 +16,17 @@ public class Heightmap implements IHeightmap {
     public Heightmap() {
         this.map = new LinkedList<HeightTile>();
     }
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof Heightmap)) {
+            return false;
+        }
+        Heightmap comparee = (Heightmap) other;
+        return map.equals(comparee.map);
+    }
 
     @Override
     public Set<HeightTile> getTiles(Coordinates upLeft, Coordinates bottomRight) {

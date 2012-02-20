@@ -1,5 +1,6 @@
 package kit.route.a.lot.io;
 
+import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.routing.RoutingGraph;
@@ -13,6 +14,19 @@ class StateMock extends State {
     public StateMock() {
         loadedMapInfo = new MapInfoMock();
         loadedGraph = new GraphMock();
+    }
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof StateMock)) {
+            return false;
+        }
+        StateMock comparee = (StateMock) other;
+        return loadedMapInfo.equals(comparee.getLoadedMapInfo())
+                && loadedGraph.equals(comparee.getLoadedGraph())
+                && super.equals(other);
     }
     
     @Override

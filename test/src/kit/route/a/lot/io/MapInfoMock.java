@@ -19,6 +19,18 @@ class MapInfoMock extends MapInfo {
         wayCount = 0;
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof MapInfoMock)) {
+            return false;
+        }
+        MapInfoMock comparee = (MapInfoMock) other;
+        return nodeCount == comparee.nodeCount
+                && wayCount == comparee.wayCount;
+    }
+    
     @Override
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
         wayCount++;

@@ -19,7 +19,20 @@ public class GraphMock implements RoutingGraph {
         endIDs = endID;
         weights = weight;
     }
-
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof GraphMock)) {
+            return false;
+        }
+        GraphMock comparee = (GraphMock) other;
+        return java.util.Arrays.equals(startIDs, comparee.startIDs)
+                && java.util.Arrays.equals(endIDs, comparee.endIDs)
+                && java.util.Arrays.equals(weights, comparee.weights);
+    }
+    
     @Override
     public byte getAreaID(int node) {
         return 0;

@@ -64,4 +64,9 @@ public class TrieAddressOperator implements AddressOperator {
     public void saveToStream(DataOutputStream stream) throws IOException {
         mapElements.saveToStream(stream);
     }
+    
+    public boolean equals(Object other) {
+        // TODO: dummy
+        return true;
+    }
 }

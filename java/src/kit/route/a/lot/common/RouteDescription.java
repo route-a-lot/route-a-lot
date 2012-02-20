@@ -14,6 +14,19 @@ public class RouteDescription {
         positionIDs = new ArrayList<Integer>();
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof RouteDescription)) {
+            return false;
+        }
+        RouteDescription comparee = (RouteDescription) other;
+        return captions.equals(comparee.captions)
+                && descriptions.equals(comparee.descriptions)
+                && positionIDs.equals(comparee.positionIDs);
+    }
+    
     public ArrayList<String> getCaptions() {
         return captions;
     }

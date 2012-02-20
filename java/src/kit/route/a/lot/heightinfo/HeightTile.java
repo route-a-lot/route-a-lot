@@ -14,6 +14,19 @@ public abstract class HeightTile {
         this.origin = origin;
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof HeightTile)) {
+            return false;
+        }
+        HeightTile comparee = (HeightTile) other;
+        return tileWidth == comparee.tileWidth
+                && tileHeight== comparee.tileHeight
+                && origin.equals(comparee.origin);
+    }
+    
     public abstract int getHeight(int x, int y);
 
     public abstract void setHeight(int x, int y, float height);
