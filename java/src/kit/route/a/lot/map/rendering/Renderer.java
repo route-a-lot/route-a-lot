@@ -103,6 +103,7 @@ public class Renderer {
         if (tile == null) {
             tile = new Tile(topLeft, tileDim, detail);
             tile.prerender();
+            tile.drawPOIs();
             cache.addToCache(tile);
         }
         return tile;

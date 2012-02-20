@@ -11,6 +11,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.AddNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
@@ -32,47 +33,80 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         TEXT_DELETE_NAVNODE = "lösche Navigationspunkt",
         TEXT_DESCRIPTION_NAME = "<html><div width='80px'><u>%1$s</u></div></html>",
         TEXT_DESCRIPTION_BODY = "<html><div width='80px'>%1$s</div></html>";
+    private static final int MAX_ZOOMLEVEL = 20;
     
     protected int oldMousePosX, oldMousePosY, zoomlevel = 3;
-    protected Coordinates center, topLeft = new Coordinates(), bottomRight = new Coordinates();
+    protected Coordinates center = new Coordinates(),
+                          topLeft = new Coordinates(),
+                          bottomRight = new Coordinates();
     
     protected GUI gui;
-    private JPopupMenu navNodeMenu;
-    private JPopupMenu descriptionMenu;
-    private JPopupMenu favoriteMenu;
-    private JMenuItem startItem;
-    private JMenuItem endItem;
-    private JMenuItem stopoverItem;
-    private JMenuItem addFavoriteItem;
-    private JMenuItem deleteNavPoint;
-    private JMenuItem deleteFavoriteItem;
-    private JLabel popUpName;
-    private JLabel labelPOIName;
-    private JLabel labelPOIDescription;
-    private JTextField favoriteNameField;
-    private JTextField favoriteDescriptionField;
-    private JButton addFavoriteButton;
-    private MouseEvent clickEvent;
     protected Component canvas;
     
+    private JPopupMenu navNodeMenu, descriptionMenu, favoriteMenu;
+    private JMenuItem startItem, endItem, stopoverItem;
+    private JMenuItem addFavoriteItem, deleteFavoriteItem, deleteNavPoint;
+    private JLabel popUpName, labelPOIName, labelPOIDescription;
+    private MouseEvent clickEvent;
+    
+    
     /**
-     * Creates a map canvas, including its context menu.
-     * @param gui.getListener()s the collection of gui.getListener() lists from the gui
-     * @param navPointsList the list of navigation nodes from the gui
+     * Creates a map canvas, including its context menus.
+     * @param parentGUI the parent GUI object
      */
     public Map(GUI parentGUI) {
+        gui = parentGUI;
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
         setBackground(Color.BLACK);
-        gui = parentGUI;
-        center = new Coordinates(0, 0);
-        
-        canvas = createCanvas();
+        add(canvas = createCanvas(), BorderLayout.CENTER);
         canvas.addMouseMotionListener(this);
         canvas.addMouseWheelListener(this);
-        add(canvas, BorderLayout.CENTER);
+        canvas.addMouseListener(new MouseAdapter() {          
+            public void mousePressed(MouseEvent me) {
+                oldMousePosX = me.getX(); 
+                oldMousePosY = me.getY();
+                checkPopup(me);
+            }     
+            public void mouseReleased(MouseEvent me) {
+                mousePressed(me);
+            }
+        });
+               
+        // ADD FAVORITE POPUP
+        final JTextField favoriteNameField = new JTextField(TEXT_INSERT_NAME);
+        final JTextField favoriteDescriptionField = new JTextField(TEXT_INSERT_DESCRIPTION);
+        JButton addFavoriteButton = new JButton(TEXT_OK);
+        addFavoriteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = favoriteNameField.getText();
+                if(!name.equals(TEXT_INSERT_NAME) && name.length() != 0) {
+                    String description = favoriteDescriptionField.getText();
+                    if (description.equals(TEXT_INSERT_DESCRIPTION) || description.length() == 0) {
+                        description = TEXT_EMPTY;
+                    }
+                    gui.getListeners().fireEvent(ADD_FAVORITE, new AddFavoriteEvent(
+                            getPosition(clickEvent.getX(), clickEvent.getY()), name, description));
+                }
+                favoriteMenu.setVisible(false);
+            }
+        });        
+        favoriteMenu = new JPopupMenu();
+        favoriteMenu.setBackground(Color.WHITE);
+        favoriteMenu.add(favoriteNameField);
+        favoriteMenu.add(favoriteDescriptionField);
+        favoriteMenu.add(addFavoriteButton);
         
-        //Context menu:
+        // POI / FAVORITE DESCRIPTION POPUP
+        labelPOIDescription = new JLabel();
+        labelPOIName = new JLabel();
+        descriptionMenu = new JPopupMenu();
+        descriptionMenu.setBackground(Color.WHITE);
+        descriptionMenu.add(labelPOIName);
+        descriptionMenu.add(labelPOIDescription);
+        
+        // CONTEXT MENU
         popUpName = new JLabel();
         startItem = new JMenuItem(TEXT_AS_START);
         endItem = new JMenuItem(TEXT_AS_DESTINATION);
@@ -90,7 +124,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         endItem.addActionListener(this);       
         stopoverItem.addActionListener(this); 
         addFavoriteItem.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 favoriteNameField.setText("Name hier einfügen...");
                 favoriteDescriptionField.setText("Beschreibung hier einfügen...");
@@ -98,14 +131,12 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             }
         });
         deleteFavoriteItem.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 gui.getListeners().fireEvent(DELETE_FAVORITE,
                         new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
-        deleteNavPoint.addActionListener(new ActionListener() {         
-            @Override
+        deleteNavPoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 gui.getListeners().fireEvent(DELETE_NAVNODE,
                         new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
@@ -120,53 +151,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         navNodeMenu.add(stopoverItem);
         navNodeMenu.add(addFavoriteItem);
         navNodeMenu.add(deleteFavoriteItem);
-        navNodeMenu.add(deleteNavPoint);
-        
-        labelPOIDescription = new JLabel();
-        labelPOIName = new JLabel();
-        
-        descriptionMenu = new JPopupMenu();
-        descriptionMenu.setBackground(Color.WHITE);
-        descriptionMenu.add(labelPOIName);
-        descriptionMenu.add(labelPOIDescription);
-        
-        favoriteNameField = new JTextField(TEXT_INSERT_NAME);
-        favoriteDescriptionField = new JTextField(TEXT_INSERT_DESCRIPTION);
-        addFavoriteButton = new JButton(TEXT_OK);
-        addFavoriteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = favoriteNameField.getText();
-                if(!name.equals(TEXT_INSERT_NAME) && name.length() != 0) {
-                    String description = favoriteDescriptionField.getText();
-                    if (description.equals(TEXT_INSERT_DESCRIPTION) || description.length() == 0) {
-                        description = TEXT_EMPTY;
-                    }
-                    gui.getListeners().fireEvent(ADD_FAVORITE, new AddFavoriteEvent(
-                            getPosition(clickEvent.getX(), clickEvent.getY()), name, description));
-                }
-                favoriteMenu.setVisible(false);
-            }
-        });
-        
-        favoriteMenu = new JPopupMenu();
-        favoriteMenu.setBackground(Color.WHITE);
-        favoriteMenu.add(favoriteNameField);
-        favoriteMenu.add(favoriteDescriptionField);
-        favoriteMenu.add(addFavoriteButton);
-        
-        canvas.addMouseListener(new MouseAdapter() {          
-            @Override
-            public void mousePressed(MouseEvent me) {
-                oldMousePosX = me.getX(); 
-                oldMousePosY = me.getY();
-                checkPopup(me);
-            }     
-            @Override
-            public void mouseReleased(MouseEvent me) {
-                mousePressed(me);
-            }
-        });
+        navNodeMenu.add(deleteNavPoint);            
     }
     
     /**
@@ -206,7 +191,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * @param zoomlevel the desired zoom level
      */
     public void setZoomlevel(int zoomlevel) {
-        this.zoomlevel = Math.max(zoomlevel, 0);
+        this.zoomlevel = Util.clip(zoomlevel, 0, MAX_ZOOMLEVEL);
     }
     
     /**

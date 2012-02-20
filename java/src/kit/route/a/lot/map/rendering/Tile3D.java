@@ -46,33 +46,12 @@ public class Tile3D extends Tile {
         super(topLeft, width, detail);
     }
 
-    @Override
-    protected void reset() {
-        super.reset();
-        heights = new float[HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER]
-                           [HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER];
-    }
-
-    public void freeResources(GL gl) {
-        if (textureID >= 0) {
-            gl.glDeleteTextures(1, new int[] { textureID }, 0);
+    private float[][] getHeights() {
+        if (heights == null) {
+            heights = new float[HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER]
+                               [HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER];
         }
-        if (heightTextureID >= 0) {
-            gl.glDeleteTextures(1, new int[] { heightTextureID }, 0);
-        }
-        if (displaylistID >= 0) {
-            gl.glDeleteLists(displaylistID, 1);
-        }
-    }
-    
-    boolean isInFrustum(Frustum frustum) {
-        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
-        return (frustum == null) || frustum.isBoxWithin(
-                new float[] {center.getLongitude(), center.getLatitude(),
-                        0.5f * (minHeight + maxHeight) },
-                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
-                        center.getLatitude() - getTopLeft().getLatitude(),
-                        0.5f * (maxHeight - minHeight)});
+        return heights;
     }
     
     @Override
@@ -82,7 +61,7 @@ public class Tile3D extends Tile {
         State.getInstance().getLoadedHeightmap().reduceSection(
                 projection.getGeoCoordinates(getTopLeft()),
                 projection.getGeoCoordinates(getBottomRight()),
-                heights, HEIGHT_BORDER);
+                getHeights(), HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
         for (int x = 0; x <= HEIGHT_RESOLUTION; x++) {
@@ -236,5 +215,26 @@ public class Tile3D extends Tile {
         
         return tex;
     }
-    
+        
+    boolean isInFrustum(Frustum frustum) {
+        Coordinates center = getTopLeft().clone().add(getBottomRight()).scale(0.5f);
+        return (frustum == null) || frustum.isBoxWithin(
+                new float[] {center.getLongitude(), center.getLatitude(),
+                        0.5f * (minHeight + maxHeight) },
+                new float[] {center.getLongitude() - getTopLeft().getLongitude(), 
+                        center.getLatitude() - getTopLeft().getLatitude(),
+                        0.5f * (maxHeight - minHeight)});
+    }
+
+    public void freeResources(GL gl) {
+        if (textureID >= 0) {
+            gl.glDeleteTextures(1, new int[] { textureID }, 0);
+        }
+        if (heightTextureID >= 0) {
+            gl.glDeleteTextures(1, new int[] { heightTextureID }, 0);
+        }
+        if (displaylistID >= 0) {
+            gl.glDeleteLists(displaylistID, 1);
+        }
+    }
 }
