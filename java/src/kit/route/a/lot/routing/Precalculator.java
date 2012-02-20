@@ -99,8 +99,9 @@ public class Precalculator {
         }
         
         //calculate areas with Metis
-        boolean tryAgain = false;
+        boolean tryAgain;
         do {
+            tryAgain = false;
             try {
                 String buffer;
                 Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
