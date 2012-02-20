@@ -11,7 +11,8 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 public class MapInfoMock extends MapInfo {
     
     private Collection<MapElement> elements = new ArrayList<MapElement>();
-
+    private Collection<MapElement> overlay = new ArrayList<MapElement>();
+    
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
         return elements;
     }
@@ -20,5 +21,9 @@ public class MapInfoMock extends MapInfo {
         System.out.println("vor addElement");
         System.out.println(elements.add(element));
         System.out.println("size: "+ elements.size());
+    }
+    
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {  
+        return overlay;
     }
 }
