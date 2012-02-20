@@ -75,13 +75,9 @@ public class Coordinates {
         longitude *= factor;
         return this;
     }
-    
-    public static double getLength(Coordinates vector) {
-        return Math.sqrt(Math.pow(vector.getLatitude(), 2) + Math.pow(vector.getLongitude(), 2));
-    }
-    
+       
     public Coordinates normalize() {
-        float length = (float) getLength(this);
+        double length = getLength();
         latitude /= length;
         longitude /= length;
         return this;
@@ -101,21 +97,30 @@ public class Coordinates {
         longitude = (float) Math.toDegrees(cos * longitude - sin * oldLatitude);
         return this;
     }
-    
+     
     public Coordinates clone() {
         return new Coordinates(latitude, longitude);
     }
     
-    public static double getDistance(Coordinates pos1, Coordinates pos2) {
-        return (pos1 == null || pos2 == null) ? null :
-            Math.sqrt(Math.pow(pos1.latitude - pos2.latitude, 2)
-                    + Math.pow(pos1.longitude - pos2.longitude, 2));
+
+    public double getLength() {
+        return Math.sqrt(latitude * latitude + longitude * longitude);
     }
     
+    public static double getDistance(Coordinates pos1, Coordinates pos2) {
+        return pos1.clone().subtract(pos2).getLength();
+    }
+    
+    public static double getAngle(Coordinates pos1, Coordinates pos2) {
+        return Math.acos((pos1.latitude * pos2.latitude + pos1.longitude * pos2.longitude)
+                          / (pos1.getLength() * pos2.getLength()));
+    }
+ 
     public static Coordinates interpolate(Coordinates pos1, Coordinates pos2, float ratio) {
         return pos1.clone().add((pos2.latitude - pos1.latitude) * ratio,
                 (pos2.longitude - pos1.longitude) * ratio);
     }
+    
     
     public static Coordinates loadFromStream(DataInputStream stream) throws IOException {
         Coordinates result = new Coordinates();

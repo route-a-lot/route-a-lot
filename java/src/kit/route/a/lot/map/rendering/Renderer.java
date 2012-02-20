@@ -8,10 +8,9 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
@@ -20,19 +19,11 @@ import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.POINode;
-import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.*;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.map.rendering.Renderer;
-import kit.route.a.lot.map.rendering.RenderCache;
 
 public class Renderer {
-    
-    private static Logger logger = Logger.getLogger(Renderer.class);
-    protected static int BASE_TILEDIM = 200;
+    protected static final int BASE_TILEDIM = 200;
     
     /**
      * A cache storing tiles that were previously drawn.
@@ -66,10 +57,7 @@ public class Renderer {
     public void render(Context context) {
         state = State.getInstance();
         int detail = context.getZoomlevel();
-        int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
-        if (tileDim < 0) {
-            logger.error("tileDim < 0 => seems like an overflow");
-        }
+        int tileDim = BASE_TILEDIM * Projection.getZoomFactor(detail);
         // FILL BACKGROUND
         Graphics graphics = ((Context2D) context).getGraphics();
         graphics.setColor(new Color(210, 230, 190));
@@ -122,25 +110,25 @@ public class Renderer {
 
     /**
      * Draws the given route on the given rendering context.
-     * 
      */
     private void drawRoute(Context context, int detail) {
-        List<Integer> route = state.getCurrentRoute();
+        MapInfo mapInfo = state.getLoadedMapInfo();
+        Integer[] route = state.getCurrentRoute().toArray(new Integer[state.getCurrentRoute().size()]);
         List<Selection> navPoints = state.getNavigationNodes();
-        
-        boolean mustDrawRoute = route != null && !routeIsEqual(route.toArray(new Integer[route.size()]), drawnRoute);
-        mustDrawRoute = mustDrawRoute || drawnRouteDetail != detail;
-        mustDrawRoute = mustDrawRoute || routeTopLeft.getLatitude() >= context.getTopLeft().getLatitude()
-                || routeTopLeft.getLongitude() >= context.getTopLeft().getLongitude();
-        mustDrawRoute = mustDrawRoute || routeBottomRight.getLatitude() <= context.getBottomRight().getLatitude()
-                || routeBottomRight.getLongitude() <= context.getBottomRight().getLongitude();
+               
+        boolean mustDrawRoute = (!Arrays.equals(route, drawnRoute))
+                    || (drawnRouteDetail != detail)
+                    || (routeTopLeft.getLatitude() >= context.getTopLeft().getLatitude())
+                    || (routeTopLeft.getLongitude() >= context.getTopLeft().getLongitude())
+                    || (routeBottomRight.getLatitude() <= context.getBottomRight().getLatitude())
+                    || (routeBottomRight.getLongitude() <= context.getBottomRight().getLongitude());
         
         if (mustDrawRoute) {
-            drawnRoute = route.toArray(new Integer[route.size()]);
+            drawnRoute = route;
             drawnRouteDetail = detail;
-            
-            if (drawnRoute.length > 0) {
-                MapInfo mapInfo = state.getLoadedMapInfo();
+            if (drawnRoute.length == 0) { 
+                routeImage = null;
+            } else {
                 Node[] routeNodes = new Node[drawnRoute.length];
                 routeTopLeft = new Coordinates(Float.MAX_VALUE, Float.MAX_VALUE);
                 routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
@@ -153,8 +141,8 @@ public class Renderer {
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());
-                    Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
-                            to.getPos(), navSelection.getRatio());
+                    Coordinates nodeOnEdge = Coordinates.interpolate(
+                            from.getPos(), to.getPos(), navSelection.getRatio());
                     adjustBorderCoordinates(routeTopLeft, routeBottomRight, nodeOnEdge, detail);
                     adjustBorderCoordinates(routeTopLeft, routeBottomRight, navSelection.getPosition(), detail);
                 }
@@ -173,9 +161,10 @@ public class Renderer {
                     routeBottomRight.setLongitude(context.getBottomRight().getLongitude() + drawBuffer);
                 }
 
-                int width = (int) Math.abs(routeTopLeft.getLongitude() - routeBottomRight.getLongitude()) / Projection.getZoomFactor(detail);
-                int height = (int) Math.abs(routeTopLeft.getLatitude() - routeBottomRight.getLatitude()) / Projection.getZoomFactor(detail);
-                if (width == 0 || height == 0) {
+                Coordinates dimensions = routeBottomRight.clone().subtract(routeTopLeft);
+                int width = (int) dimensions.getLongitude() / Projection.getZoomFactor(detail);
+                int height = (int) dimensions.getLatitude() / Projection.getZoomFactor(detail);
+                if (width <= 0 || height <= 0) {
                     routeImage = null;
                     return;
                 }
@@ -213,8 +202,6 @@ public class Renderer {
 //                }
                 
                 graphics.dispose();
-            } else {
-                routeImage = null;
             }
         }
         
@@ -299,19 +286,7 @@ public class Renderer {
         Coordinates end = getLocalCoordinates(to, routeTopLeft, detail);
         graphics.drawLine((int) start.getLongitude(), (int) start.getLatitude(), (int) end.getLongitude(), (int) end.getLatitude());
     }
-    
-    private boolean routeIsEqual(Integer[] route1, Integer[] route2) {
-        if (route1.length != route2.length) {
-            return false;
-        }
-        for (int i = 0; i < route1.length; i++) {
-            if (!route1[i].equals(route2[i])) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
+        
     /**
      * Accepts global coordinates (reference system origin: map origin) and converts then into
      * local coordinates (reference system origin: topLeft).

@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.media.opengl.GL;
-import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
@@ -27,7 +26,6 @@ public class Renderer3D extends Renderer {
     private static final float HEIGHT_SCALE_FACTOR = 0.5f;
     private static final float VIEW_HEIGHT_ADAPTION = 0.2f;
     private static final float ROUTE_HEIGHT_OFFSET = 10f, ROUTE_WIDTH = 10f;
-    private static Logger logger = Logger.getLogger(Renderer3D.class);
     private float viewHeight = Float.NEGATIVE_INFINITY;
     
     /**
@@ -42,10 +40,7 @@ public class Renderer3D extends Renderer {
     @Override
     public void render(Context context) {
         int detail = context.getZoomlevel();
-        int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
-        if (tileDim < 0) {
-            logger.error("tileDim < 0 => seems like an overflow");
-        }
+        int tileDim = BASE_TILEDIM * Projection.getZoomFactor(detail);
         Context3D context3D = (Context3D) context;
         Coordinates center = context.getBottomRight().clone().add(context.getTopLeft()).scale(0.5f);
         int lat = (int) Math.floor(center.getLatitude() / tileDim) - 1;

@@ -1,11 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -19,11 +14,7 @@ import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.POINode;
-import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.*;
 
 import org.apache.log4j.Logger;
 
@@ -33,11 +24,12 @@ public class Tile {
     private static Logger logger = Logger.getLogger(Tile.class);
     private static final int POI_SIZE = 8;
     
-    private Coordinates topLeft;
-    private Coordinates bottomRight;   
+    private Coordinates topLeft, bottomRight;   
     private BufferedImage image = null;
-    private int detail;
-    private int tileDim;
+    private int detail, tileDim;
+    
+    // the image's graphics object (only valid during prerendering / POI drawing)
+    private Graphics2D graphics;
 
     /**
      * Creates an new (empty) tile using a calculated resolution
@@ -75,7 +67,6 @@ public class Tile {
     } 
  
     
-
     public void prerender() {
         //QUERY QUADTREE ELEMENTS
         Collection<MapElement> map = State.getInstance().getLoadedMapInfo()
@@ -86,7 +77,7 @@ public class Tile {
            
         //PREPARE IMAGE
         image = null;
-        Graphics2D graphics = getImage().createGraphics();
+        graphics = getImage().createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
@@ -95,29 +86,29 @@ public class Tile {
         //DRAW BASE LAYER ELEMENTS
         for (MapElement element : map) {
             if (element instanceof Area) {
-                draw((Area) element, graphics);
+                draw((Area) element);
             }
         }
         for (MapElement element : map) {
             if (element instanceof Node) {
-                draw((Node) element, graphics);
+                draw((Node) element);
             } else if (element instanceof Street) {
-                draw((Street) element, false, graphics);
+                draw((Street) element, false);
             }
         }
         for (MapElement element : map) {
             if (element instanceof Street) {
-                draw((Street) element, true, graphics);
+                draw((Street) element, true);
             }
         }        
         for (MapElement element : map) {
             if (element instanceof Street) {
-                drawStreetArrows((Street) element, graphics);
+                drawStreetArrows((Street) element);
             }
         }        
         for (MapElement element : map) {
             if (element instanceof Street) {
-                drawStreetNames((Street) element, graphics);
+                drawStreetNames((Street) element);
             }
         }
        
@@ -130,7 +121,7 @@ public class Tile {
         if (elements.size() == 0) {
             return;
         }
-        Graphics2D graphics = getImage().createGraphics();
+        graphics = getImage().createGraphics();
         graphics.setColor(Color.ORANGE);
 
         for (MapElement element : elements) {
@@ -141,14 +132,14 @@ public class Tile {
                      || (poi.getInfo().getCategory() == OSMType.FAVOURITE)){
                     continue;
                 }
-                drawPoint(poi.getPos(), POI_SIZE, graphics);
+                drawPoint(poi.getPos(), POI_SIZE);
             }
             if (element instanceof Area) {
                 Selection selection = ((Area) element).getSelection();
                 if (selection != null) {
-                    drawPoint(selection.getPosition(), POI_SIZE, graphics);
+                    drawPoint(selection.getPosition(), POI_SIZE);
                 } else {
-                    logger.warn("POI-Area returned null as selection");
+                    logger.warn("POI area returned null as selection");
                 }
             }
         }
@@ -160,16 +151,16 @@ public class Tile {
      * Draws a regular node on the tile.
      * @param poi the node to be drawn
      */
-    private void draw(Node node, Graphics2D graphics) {
+    private void draw(Node node) {
         graphics.setColor(Color.LIGHT_GRAY);
-        drawPoint(node.getPos(), 3, graphics);
+        drawPoint(node.getPos(), 3);
     }
   
     /**
      * Draws an area on the tile.
      * @param area the area to be drawn.
      */
-    private void draw(Area area, Graphics2D graphics) {
+    private void draw(Area area) {
         int[] xPoints, yPoints;
         int nPoints;
         Node[] nodes = area.getNodes();
@@ -215,7 +206,7 @@ public class Tile {
      * Draws a street on the tile, taking the street type into consideration.
      * @param street the street to be drawn
      */
-    private void draw(Street street, boolean top, Graphics2D graphics) {
+    private void draw(Street street, boolean top) {
         Node[] nodes = getRelevantNodesForStreet(street.getNodes());
         int nPoints = nodes.length;
         int[] xPoints = new int[nPoints];
@@ -287,17 +278,16 @@ public class Tile {
         }
         
         graphics.drawPolyline(xPoints, yPoints, nPoints);
-        
-        
+               
     }
   
-    private void drawPoint(Coordinates globalCoordinates, int size, Graphics2D graphics) {
+    private void drawPoint(Coordinates globalCoordinates, int size) {
         Coordinates localCoordinates = Renderer.getLocalCoordinates(globalCoordinates, topLeft, detail);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
     }
       
-    private void drawStreetArrows(Street street, Graphics2D graphics) {
+    private void drawStreetArrows(Street street) {
         if (detail > 1 || street.getWayInfo().getOneway() == WayInfo.ONEWAY_NO) {
             return;
         }
@@ -343,7 +333,7 @@ public class Tile {
         }
     }
     
-    private void drawStreetNames(Street street, Graphics2D graphics) {
+    private void drawStreetNames(Street street) {
         Address curAddress = street.getWayInfo().getAddress();
         if (detail > 3 || curAddress == null) {
             return;
@@ -403,7 +393,7 @@ public class Tile {
                     arrowEnd = tmp;
                     vector.invert();
                 }
-                double angle = calculateAngleBetween(vector, new Coordinates(0.f, 1.f));
+                double angle = Coordinates.getAngle(vector, new Coordinates(0.f, 1.f));
                 if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
                     angle = -angle;
                 }
@@ -431,14 +421,7 @@ public class Tile {
             }
         }
     }
-    
-    private double calculateAngleBetween(Coordinates one, Coordinates another) {
-        double angle;
-        angle = one.getLatitude() * another.getLatitude() + one.getLongitude() * another.getLongitude();
-        angle = angle / (Coordinates.getLength(one) * Coordinates.getLength(another));
-        return Math.acos(angle);
-    }
-    
+        
     protected Node[] getRelevantNodesForStreet(Node[] streetNodes) {
         List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
         int start = 0;
