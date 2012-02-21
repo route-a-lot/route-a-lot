@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
@@ -136,6 +138,9 @@ public class QTNode extends QuadTree {
     protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements) {
         if (isInBounds(upLeft, bottomRight)) {
+            if (QTGeographicalOperator.anfrage) {
+                State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.black);
+            }
             for(QuadTree qt : children) {
                 qt.queryBaseLayer(upLeft, bottomRight, elements);
           
@@ -149,7 +154,6 @@ public class QTNode extends QuadTree {
         if (isInBounds(upLeft, bottomRight)) {
             for(QuadTree qt : children) {
                 qt.queryOverlay(upLeft, bottomRight, elememts);
-          
             }    
         }
         

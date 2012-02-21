@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.POINode;
@@ -125,7 +127,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
             }
         }
     }
-      
+    
     @Override
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
         /*if (logger.isTraceEnabled()) {
@@ -137,6 +139,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
             logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
             logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         }*/    
+        if (QTGeographicalOperator.anfrage) {
+            State.getInstance().getActiveRenderer().addFrameToDraw(upLeft, bottomRight, Color.red);
+        }
         HashSet<MapElement> elements = new HashSet<MapElement>();
         zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryBaseLayer(upLeft, bottomRight, elements);
         return elements;
@@ -182,6 +187,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
         return sel;
     }
     
+    public static boolean anfrage = false;
+    
     /**
      * Selects the map element nearest to the given position, taking all map elements
      * within a search radius into consideration.
@@ -191,6 +198,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * @return a {@link Selection} derived from the nearest map element
      */
     private Selection select(Coordinates pos, float radius) {
+        anfrage = true;
         Collection<MapElement> elements = getBaseLayer(pos, radius);
         
         // find element nearest to pos
@@ -199,12 +207,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
         for (MapElement element: elements) {
             if(element instanceof Street && ((Street) element).getWayInfo().isRoutable()) {  //TODO only routeable
                 float distance = ((Street) element).getDistanceTo(pos);
+                System.out.print("\nDistance of " + ((Street) element).getWayInfo().getAddress().getStreet());
+                System.out.print(" is " + distance + ".");
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     closestElement = element; 
                 } 
             }
         }
+        anfrage = false;
+        State.getInstance().getActiveRenderer().redraw();
         return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
     }
        

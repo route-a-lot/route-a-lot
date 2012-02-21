@@ -10,6 +10,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
@@ -39,6 +40,8 @@ public class Renderer {
     private static final int drawBuffer = 200;
     private static final float routeSize = 20;
     
+    public Context myContext;
+    
     /**
      * Creates a new renderer.
      */
@@ -55,6 +58,7 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context) {
+        myContext = context;
         state = State.getInstance();
         int detail = context.getZoomlevel();
         int tileDim = BASE_TILEDIM * Projection.getZoomFactor(detail);
@@ -78,6 +82,9 @@ public class Renderer {
         drawRoute(context, detail);
         drawNavPoints(context, detail);
         drawOverlay(context, detail);
+        for (Object[] frame : framesToDraw) {
+            drawFrame((Coordinates) frame[0], (Coordinates) frame[1], detail, (Color) frame[2]);
+        }
     }
 
 
@@ -221,8 +228,8 @@ public class Renderer {
             Node to = mapInfo.getNode(navSelection.getTo());
             Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
                     to.getPos(), navSelection.getRatio());
-//            boolean drawedFrom = false;
-//            boolean drawedTo = false;
+            boolean drawedFrom = false;
+            boolean drawedTo = false;
             if (idIsInRoute(from.getID(), drawnRoute) && idIsInRoute(to.getID(), drawnRoute)) {
                 if (navSelection.getRatio() < 0.5) {
                     drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
@@ -232,24 +239,16 @@ public class Renderer {
             } else {
                 if (idIsInRoute(from.getID(), drawnRoute)) {
                     drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-                    //drawedFrom = true;
+                    drawedFrom = true;
                 }
                 if (idIsInRoute(to.getID(), drawnRoute)) {
                     drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-                    //drawedTo = true;
+                    drawedTo = true;
                 }
             }
-//            if (idIsInRoute(from.getID(), drawnRoute)) {
-//                drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-//                //drawedFrom = true;
-//            }
-//            if (idIsInRoute(to.getID(), drawnRoute)) {
-//                drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-//                //drawedTo = true;
-//            }
-//            if (drawedFrom && drawedTo && (i == 0 || i == navPoints.size() - 1)) {
-//                logger.error("Drawed whole selection a the end of the route.");
-//            }
+            if (drawedFrom && drawedTo && (i == 0 || i == navPoints.size() - 1)) {
+                System.out.println("ERROR: Drawed whole selection a the end of the route.");
+            }
             drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
         }
     }
@@ -371,6 +370,42 @@ public class Renderer {
         int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
                 / Projection.getZoomFactor(detail));
         ((Context2D) context).getGraphics().drawImage(image, x, y, null);
+    }
+    
+    private void drawRect(Context context, Coordinates topLeft, int width, int height, int detail, Color c) {
+        int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
+                / Projection.getZoomFactor(detail));
+        int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
+                / Projection.getZoomFactor(detail));
+        Graphics2D graphics = (Graphics2D) ((Context2D) context).getGraphics();
+        graphics.setStroke(new BasicStroke(10 / Projection.getZoomFactor(detail)));
+        graphics.setColor(c);
+        graphics.drawRect(x, y, width/ Projection.getZoomFactor(detail), height/ Projection.getZoomFactor(detail));
+    }
+    
+    private Collection<Object[]> framesToDraw = new HashSet<Object[]>();
+    
+    public void addFrameToDraw(Coordinates topLeft, Coordinates bottomRight, Color c) {
+        Object[] frame = new Object[3];
+        frame[0] = topLeft;
+        frame[1] = bottomRight;
+        frame[2] = c;
+        framesToDraw.add(frame);
+        System.out.println("Added " + topLeft + "  " + bottomRight);
+        System.out.println("Size: " + framesToDraw.size());
+    }
+    
+    private void drawFrame(Coordinates topLeft, Coordinates bottomRight,int detail, Color c) {
+        int width = (int) (bottomRight.getLongitude() - topLeft.getLongitude());
+        int height = (int) (bottomRight.getLatitude() - topLeft.getLatitude());
+        if (width < 0 || height < 0) {
+            return;
+        }
+        drawRect(myContext, topLeft, width, height, detail, c);
+    }
+    
+    public void redraw() {
+        render(myContext);
     }
     
     public void resetCache() {
