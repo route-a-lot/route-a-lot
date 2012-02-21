@@ -1,21 +1,33 @@
 package kit.route.a.lot.gui;
 
+import static kit.route.a.lot.common.Listener.*;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.AddNavNodeEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
-import static kit.route.a.lot.common.Listener.*;
 
 
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {
@@ -36,9 +48,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     private static final int MAX_ZOOMLEVEL = 20;
     
     protected int oldMousePosX, oldMousePosY, zoomlevel = 3;
-    protected Coordinates center = new Coordinates(),
-                          topLeft = new Coordinates(),
-                          bottomRight = new Coordinates();
+    protected Coordinates center = new Coordinates();
     
     protected GUI gui;
     protected Component canvas;
@@ -279,10 +289,6 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * updates the context.
      */
     void calculateView() {
-        bottomRight = new Coordinates(canvas.getHeight(), canvas.getWidth())
-                            .scale(Projection.getZoomFactor(zoomlevel) / 2f);
-        topLeft = bottomRight.clone().scale(-1).add(center);
-        bottomRight.add(center);
         canvas.repaint(); 
     }
         

@@ -1,10 +1,15 @@
 package kit.route.a.lot.map.rendering;
 
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.media.opengl.GL;
+
+import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
@@ -23,98 +28,129 @@ import kit.route.a.lot.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 
-    private static final float HEIGHT_SCALE_FACTOR = 0.5f;
-    private static final float VIEW_HEIGHT_ADAPTION = 0.2f;
-    private static final float ROUTE_HEIGHT_OFFSET = 10f, ROUTE_WIDTH = 10f;
+    private static final Logger logger = Logger.getLogger(Renderer3D.class);
+    
+    private static final float
+        HEIGHT_SCALE_FACTOR = 0.5f, VIEW_HEIGHT_ADAPTION = 0.2f, 
+        ROUTE_HEIGHT_OFFSET = 10f, ROUTE_WIDTH = 10f;
     private float viewHeight = Float.NEGATIVE_INFINITY;
     
+    // Temporary variables (only guaranteed to be valid when rendering):
+    private Context3D context;
+    private Frustum frustum;
+    private Projection projection;
+    private IHeightmap heightmap;
+    private int tilesRendered;
+    
     /**
-     * Renders a map viewing rectangle in three dimensional form,
+     * Renders a map view in three dimensional form,
      * using height data and perspective projection in the process.
-     * 
-     * @param detail level of detail of the map view
-     * @param topLeft north western corner of the viewing rectangle
-     * @param bottomRight south eastern corner of the viewing rectangle
      * @param renderingContext an OpenGL rendering context
      */
     @Override
-    public void render(Context context) {
-        int detail = context.getZoomlevel();
-        int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
-        Context3D context3D = (Context3D) context;
-        Coordinates center = context.getBottomRight().clone().add(context.getTopLeft()).scale(0.5f);
-        int lat = (int) Math.floor(center.getLatitude() / tileSize);
-        int lon = (int) Math.floor(center.getLongitude() / tileSize);
+    public void render(Context renderContext) {
+        // RETRIEVE VARIABLES TO WORK WITH
+        context = (Context3D) renderContext;
+        projection = ProjectionFactory.getCurrentProjection();
+        heightmap = State.getInstance().getLoadedHeightmap();
+        GL gl = context.getGL();
+        Coordinates center = context.getCenter();
+        int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(context.getDetailLevel());
         
-        GL gl = context3D.getGL();
-        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (detail + 1));
-        Projection projection = ProjectionFactory.getCurrentProjection();
-        IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
+        // FINAL CAMERA TRANSFORMATIONS
+        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (context.getDetailLevel() + 1));
         float centerHeight = heightmap.getHeight(projection.getGeoCoordinates(center));
         viewHeight = (viewHeight == Float.NEGATIVE_INFINITY) ? centerHeight
                 : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
-        gl.glTranslatef(0, 0, -viewHeight);      
-        Frustum frustum = new Frustum(gl);
-        renderTile(gl, frustum, lon, lat, tileSize, detail);
-        int radius = 1;
-        boolean found = true;
-        while (found) {
-            found = false;
-            int y1 = lat-radius;
-            int y2 = lat+radius;
-            int x1 = lon-radius;
-            int x2 = lon+radius;
-            for (int x = x1; x <= x2; x++) {
-                if (renderTile(gl, frustum, x, y1, tileSize, detail)) {
-                    found = true;
-                }
-                if (renderTile(gl, frustum, x, y2, tileSize, detail)) {
-                    found = true;
-                }     
-            }
-            for (int y = y1+1; y < y2; y++) {
-                if (renderTile(gl, frustum, x1, y, tileSize, detail)) {
-                    found = true;
-                }
-                if (renderTile(gl, frustum, x2, y, tileSize, detail)) {
-                    found = true;
-                }       
-            }
-            radius++;
-        }      
-        drawRoute(context3D, detail);
+        gl.glTranslatef(0, 0, -viewHeight);     
+        
+        // TEST AND RENDER TILES, STARTING AT THE CENTRAL TILE
+        frustum = new Frustum(gl);
+        tilesRendered = 0;
+        Set<Point> testedTiles = new HashSet<Point>();
+        testTile(testedTiles,
+                (int) (center.getLongitude() / tileSize),
+                (int) (center.getLatitude() / tileSize), tileSize);
+        logger.debug("Tiles rendered/tested: " + tilesRendered + " / " + testedTiles.size());
+        drawRoute();
     }
-       
-    private boolean renderTile(GL gl, Frustum frustum, int x, int y, int tileSize, int detail) {
+    
+    /**
+     * Tests whether the tile at the coordinates x*tileSize, y*tileSize is in the view frustum.
+     * If true renders the tile and forward the test to its so far untested neighbors in the tile grid.
+     * @param testedTiles list of all tiles that have been tested so far
+     * @param x the tile's x offset in the tile grid
+     * @param y the tile's y offset in the tile grid
+     * @param tileSize the tile grid unit size
+     */
+    private void testTile(Set<Point> testedTiles, int x, int y, int tileSize) {
+        // ABORT IF TILE HAS ALREADY BEEN TESTED
+        Point pos = new Point(x, y);
+        if (testedTiles.contains(pos)) {
+            return;
+        }
+        testedTiles.add(pos);
+        // TEST (AND IF POSITIVE RENDER) TILE
+        boolean rendered = renderTile(x, y, tileSize);
+        // TEST NEIGHBORING 8 TILES
+        if (rendered) {
+            tilesRendered++;
+            testTile(testedTiles, x+1, y-1, tileSize);
+            testTile(testedTiles, x+1, y,   tileSize);
+            testTile(testedTiles, x+1, y+1, tileSize);
+            testTile(testedTiles, x,   y+1, tileSize);
+            testTile(testedTiles, x-1, y+1, tileSize);
+            testTile(testedTiles, x-1, y,   tileSize);
+            testTile(testedTiles, x-1, y-1, tileSize);
+            testTile(testedTiles, x,   y-1, tileSize);
+        }
+    }
+    
+    /**
+     * Renders the tile at the coordinates x*tileSize, y*tileSize.
+     * Tries to fetch the tile from cache, on miss creates and prerenders the tile.
+     * The tile will not be rendered if it's not in the view frustum.
+     * @param x the tile's x offset in the tile grid
+     * @param y the tile's y offset in the tile grid
+     * @param tileSize the tile grid unit size
+     * @return
+     */
+    private boolean renderTile(int x, int y, int tileSize) {
+        // CHECK WHETHER TILE IS IN CACHE
         Coordinates topLeft = new Coordinates(y * tileSize, x * tileSize);
-        Tile3D tile = (Tile3D) cache.queryCache(topLeft, tileSize, detail);
+        Tile3D tile = (Tile3D) cache.queryCache(topLeft, tileSize, context.getDetailLevel());
+        // IF NOT, CREATE (EMPTY) TILE
         if (tile == null) {
-            tile = new Tile3D(topLeft, tileSize, detail);
+            tile = new Tile3D(topLeft, tileSize, context.getDetailLevel());
+            // PRERENDER AND CACHE TILE IF THERE'S A CHANCE THAT TILE IS IN FRUSTUM
             if (tile.isInFrustum(frustum)) {
                 tile.prerender();
                 Tile3D deletedTile = (Tile3D) cache.addToCache(tile);
                 if (deletedTile != null) {
-                    deletedTile.freeResources(gl);
+                    deletedTile.freeResources(context.getGL());
                 }
             } else {
                 return false;
             }
         }
+        // RENDER TILE IF IT'S IN THE FRUSTUM
         if (tile.isInFrustum(frustum)) {
-            tile.render(gl);  
+            tile.render(context.getGL());  
             return true;
         }
         return false;
     }
     
-    private void drawRoute(Context3D context, int detail) {
+    /**
+     * Draws the current route (retrieved from state).
+     */
+    private void drawRoute() {
         List<Selection> navPoints = State.getInstance().getNavigationNodes();
         if (navPoints.size() <= 0) {
             return;
         }
         List<Integer> route = State.getInstance().getCurrentRoute();
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
-        Projection projection = ProjectionFactory.getCurrentProjection();
         GL gl = context.getGL();
 
         // Copy route and navPoints into fullRouteList
@@ -147,7 +183,7 @@ public class Renderer3D extends Renderer {
         
         // Simplify route TODO redo
         Node[] fullRoute = Street.simplifyNodes(fullRouteList.toArray(new Node[fullRouteList.size()]),
-                Projection.getZoomFactor(detail) * 3);
+                Projection.getZoomFactor(context.getDetailLevel()) * 3);
         
         gl.glDisable(GL.GL_TEXTURE_2D);   
         gl.glDisable(GL.GL_DEPTH_TEST);
@@ -156,14 +192,14 @@ public class Renderer3D extends Renderer {
         gl.glColor3f(0, 0, 0);
         gl.glBegin(GL.GL_LINE_STRIP);
         for (Node node: fullRoute) {    
-            drawVertex(gl, projection, node.getPos());
+            drawVertex(gl, node.getPos());
         }
         gl.glEnd();
         // LINE ROUNDED ENDS SHADOWS
         gl.glPointSize(ROUTE_WIDTH);
         gl.glBegin(GL.GL_POINTS);
         for (Node node: fullRoute) {
-            drawVertex(gl, projection, node.getPos());
+            drawVertex(gl, node.getPos());
         }
         gl.glEnd();
         // LINES
@@ -171,14 +207,14 @@ public class Renderer3D extends Renderer {
         gl.glColor3f(0.315f, 0.05f, 0.478f);
         gl.glBegin(GL.GL_LINE_STRIP);
         for (Node node: fullRoute) {    
-            drawVertex(gl, projection, node.getPos());
+            drawVertex(gl, node.getPos());
         }
         gl.glEnd();     
         // LINE ROUNDED ENDS
         gl.glPointSize(ROUTE_WIDTH - 2);
         gl.glBegin(GL.GL_POINTS);
         for (Node node: fullRoute) {
-            drawVertex(gl, projection, node.getPos());
+            drawVertex(gl, node.getPos());
         }
         gl.glEnd();    
         // NAVNODES
@@ -186,36 +222,44 @@ public class Renderer3D extends Renderer {
         gl.glPointSize(ROUTE_WIDTH);
         gl.glBegin(GL.GL_POINTS);
         for (Selection navNode: navPoints) {
-            drawVertex(gl, projection, navNode.getPosition());
+            drawVertex(gl, navNode.getPosition());
         }
         gl.glEnd();
         gl.glEnable(GL.GL_DEPTH_TEST);
 
         // FLAGS
-        renderFlag(context, projection, navPoints.get(0).getPosition(), new float[]{0, 0.8f, 0}, 10f);
+        renderFlag(navPoints.get(0).getPosition(), new float[]{0, 0.8f, 0}, 10f);
         if (navPoints.size() > 1) { 
-            renderFlag(context, projection, navPoints.get(navPoints.size() - 1).getPosition(),
+            renderFlag(navPoints.get(navPoints.size() - 1).getPosition(),
                     new float[]{0.8f, 0, 0}, 10f);
         }
         for (int i = 1; i < navPoints.size() - 1; i++) {
-            renderFlag(context, projection, navPoints.get(i).getPosition(), new float[]{1, 1, 0}, 5f);
+            renderFlag(navPoints.get(i).getPosition(), new float[]{1, 1, 0}, 5f);
         }
     }
     
-    private static void drawVertex(GL gl, Projection projection, Coordinates point) {
+    /**
+     * Sends a single vertex to OpenGL, using the height at <code>point</code> as z coordinate.
+     * @param gl the active OpenGL context
+     * @param point the vertex x and y coordinates
+     */
+    private void drawVertex(GL gl, Coordinates point) {
         gl.glVertex3f(point.getLongitude(), point.getLatitude(),
-                State.getInstance().getLoadedHeightmap().getHeight(
-                        projection.getGeoCoordinates(point))
-                + ROUTE_HEIGHT_OFFSET);
+                heightmap.getHeight(projection.getGeoCoordinates(point)) + ROUTE_HEIGHT_OFFSET);
     }
     
-    private static void renderFlag(Context3D context, Projection projection, Coordinates position, float[] color, float size) {
-        float height = State.getInstance().getLoadedHeightmap().getHeight(
-                        projection.getGeoCoordinates(position));
+    /**
+     * Draws a colored and scaled mark at the given position.
+     * @param position the mark position
+     * @param color the mark's color
+     * @param size the mark's size
+     */
+    private void renderFlag(Coordinates position, float[] color, float size) {
+        float height = heightmap.getHeight(projection.getGeoCoordinates(position));
         GL gl = context.getGL();
         gl.glPushMatrix();
         gl.glTranslatef(position.getLongitude(), position.getLatitude(), height);
-        float zoom = context.getZoomlevel() * context.getZoomlevel();
+        float zoom = context.getDetailLevel() * context.getDetailLevel();
         gl.glScalef(size * zoom, size * zoom, size * zoom);
         gl.glBegin(GL.GL_TRIANGLE_FAN);  
             gl.glColor3f(1, 1, 1);

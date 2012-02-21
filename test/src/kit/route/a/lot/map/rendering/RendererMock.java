@@ -3,8 +3,6 @@ package kit.route.a.lot.map.rendering;
 
 import java.awt.Image;
 
-
-import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
@@ -21,8 +19,8 @@ public class RendererMock {
     protected StateMock state = new StateMock();
     
     
-    public void render(Context context) {
-        int detail = context.getZoomlevel();
+    public void render(Context2D context) {
+        int detail = context.getDetailLevel();
         int tileDim = (int) (BASE_TILEDIM * Projection.getZoomFactor(detail));
         if (tileDim < 0) {
             logger.error("tileDim < 0 => seems like an overflow");
@@ -60,7 +58,7 @@ public class RendererMock {
         return global.clone().subtract(topLeft).scale(1f / Projection.getZoomFactor(detail));
     }
     
-    private void drawImage(Context context, Coordinates topLeft, Image image, int detail) {
+    private void drawImage(Context2D context, Coordinates topLeft, Image image, int detail) {
         int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
                 / Projection.getZoomFactor(detail));
         int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())

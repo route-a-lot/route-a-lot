@@ -66,20 +66,11 @@ public class Tile {
         }
         return image;
     }
-
-    protected Coordinates getTopLeft() {
-        return topLeft;
-    } 
-    
-    protected Coordinates getBottomRight() {
-        return bottomRight;
-    } 
- 
     
     public void prerender() {
         //QUERY QUADTREE ELEMENTS
         Collection<MapElement> map = State.getInstance().getLoadedMapInfo()
-                                        .getBaseLayer(detail, topLeft, bottomRight, false); // TODO test if true is faster
+                  .getBaseLayer(detail, topLeft, bottomRight, false); // TODO test if true is faster
         if (map.size() == 0) {
             return;
         }

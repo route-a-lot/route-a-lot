@@ -528,7 +528,7 @@ public class Controller {
     }
     
     private void render(Context context) {
-        state.setDetailLevel(context.getZoomlevel());
+        state.setDetailLevel(context.getDetailLevel());
         state.getActiveRenderer().render(context); 
     }
     

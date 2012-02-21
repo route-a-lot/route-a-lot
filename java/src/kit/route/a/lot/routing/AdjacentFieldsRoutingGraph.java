@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import kit.route.a.lot.map.infosupply.MapInfo;
-
 import org.apache.log4j.Logger;
 
 

@@ -1,9 +1,11 @@
 package kit.route.a.lot.gui;
 
 
+import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
@@ -11,7 +13,6 @@ import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.gui.event.RenderEvent;
-import static kit.route.a.lot.common.Listener.*;
 
 public class Map2D extends Map  {
     
@@ -27,17 +28,13 @@ public class Map2D extends Map  {
             private static final long serialVersionUID = 1L;
             @Override
             public void paint(Graphics g) {
-                super.paint(g);           
+                super.paint(g);       
+                Coordinates diff = new Coordinates(getHeight(), getWidth())
+                                        .scale(Projection.getZoomFactor(zoomlevel) / 2f);
                 gui.getListeners().fireEvent(VIEW_CHANGED,
-                        new RenderEvent(new Context2D(topLeft, bottomRight, g, zoomlevel)));
+                        new RenderEvent(new Context2D(center.clone().subtract(diff), diff.add(center), zoomlevel, g)));
             }      
         };
-        result.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                calculateView();
-            }
-        });
         return result;
     }
     

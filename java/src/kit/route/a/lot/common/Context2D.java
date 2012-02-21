@@ -5,15 +5,23 @@ import java.awt.Graphics;
 public class Context2D extends Context {
  
     private Graphics graphics;   
+    private Coordinates topLeft, bottomRight;
     
-    public Context2D(Coordinates topLeft, Coordinates bottomRight, Graphics graphics, int zoomlevel) {
-        super(topLeft, bottomRight, zoomlevel);
-        if (graphics == null) {
-            throw new IllegalArgumentException("Graphics not yet initialized.");
-        }
+    public Context2D(Coordinates topLeft, Coordinates bottomRight, int detailLevel, Graphics graphics) {
+        super(detailLevel);
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
         this.graphics = graphics;
     }
 
+    public Coordinates getTopLeft() {
+        return topLeft;
+    }
+    
+    public Coordinates getBottomRight() {
+        return bottomRight;
+    }
+    
     public Graphics getGraphics() {
         return this.graphics;
     }

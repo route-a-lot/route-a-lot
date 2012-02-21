@@ -40,7 +40,7 @@ public class Renderer {
     private static final int drawBuffer = 200;
     private static final float routeSize = 20;
     
-    public Context myContext;
+    public Context2D myContext;
     
     /**
      * Creates a new renderer.
@@ -58,30 +58,32 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context) {
-        myContext = context;
+        Context2D ctx = (Context2D) context;
+        myContext = ctx;
         state = State.getInstance();
-        int detail = context.getZoomlevel();
+        int detail = context.getDetailLevel();
         int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
         // FILL BACKGROUND
         Graphics graphics = ((Context2D) context).getGraphics();
         graphics.setColor(new Color(210, 230, 190));
-        graphics.fillRect(0, 0, (int)context.getWidth(), (int)context.getHeight());      
+        graphics.fillRect(0, 0, (int)(ctx.getBottomRight().getLongitude() - ctx.getTopLeft().getLongitude()),
+                                (int)(ctx.getBottomRight().getLatitude() - ctx.getTopLeft().getLatitude()));      
         // DRAW TILES
-        int maxLon = (int) (context.getBottomRight().getLongitude() / tileSize);
-        int maxLat = (int) (context.getBottomRight().getLatitude() / tileSize);
-        int minLon = (int) (context.getTopLeft().getLongitude() / tileSize);
-        int minLat = (int) (context.getTopLeft().getLatitude() / tileSize);
+        int maxLon = (int) (ctx.getBottomRight().getLongitude() / tileSize);
+        int maxLat = (int) (ctx.getBottomRight().getLatitude() / tileSize);
+        int minLon = (int) (ctx.getTopLeft().getLongitude() / tileSize);
+        int minLat = (int) (ctx.getTopLeft().getLatitude() / tileSize);
         for (int i = minLon; i <= maxLon; i++) {
             for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates(k * tileSize, i * tileSize);
                 Tile currentTile = prerenderTile(topLeft, tileSize, detail);
-                drawImage(context, topLeft, currentTile.getImage(), detail);
+                drawImage(ctx, topLeft, currentTile.getImage(), detail);
             }
         }
         // DRAW OVERLAY
-        drawRoute(context, detail);
-        drawNavPoints(context, detail);
-        drawOverlay(context, detail);
+        drawRoute(ctx, detail);
+        drawNavPoints(ctx, detail);
+        drawOverlay(ctx, detail);
         for (Object[] frame : framesToDraw) {
             drawFrame((Coordinates) frame[0], (Coordinates) frame[1], detail, (Color) frame[2]);
         }
@@ -93,10 +95,10 @@ public class Renderer {
      * 
      * @return the rendered tile
      */
-    private Tile prerenderTile(Coordinates topLeft, int tileDim, int detail) {
-        Tile tile = cache.queryCache(topLeft, tileDim, detail);
+    private Tile prerenderTile(Coordinates topLeft, int tileSize, int detail) {
+        Tile tile = cache.queryCache(topLeft, tileSize, detail);
         if (tile == null) {
-            tile = new Tile(topLeft, tileDim, detail);
+            tile = new Tile(topLeft, tileSize, detail);
             tile.prerender();
             tile.drawPOIs();
             cache.addToCache(tile);
@@ -118,7 +120,7 @@ public class Renderer {
     /**
      * Draws the given route on the given rendering context.
      */
-    private void drawRoute(Context context, int detail) {
+    private void drawRoute(Context2D context, int detail) {
         MapInfo mapInfo = state.getLoadedMapInfo();
         Integer[] route = state.getCurrentRoute().toArray(new Integer[state.getCurrentRoute().size()]);
         List<Selection> navPoints = state.getNavigationNodes();
@@ -302,7 +304,7 @@ public class Renderer {
     /**
      * Draws the map overlay for the current context.
      */
-    private void drawOverlay(Context context, int detail) {
+    private void drawOverlay(Context2D context, int detail) {
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         Collection<MapElement> elements = mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight(), false); // TODO test if true is faster
 
@@ -332,7 +334,7 @@ public class Renderer {
         }
     }
     
-    private void drawNavPoints(Context context, int detail) {
+    private void drawNavPoints(Context2D context, int detail) {
         List<Selection> points = state.getNavigationNodes();
         int size = 7;
 
@@ -364,7 +366,7 @@ public class Renderer {
         }
     }
 
-    private void drawImage(Context context, Coordinates topLeft, Image image, int detail) {
+    private void drawImage(Context2D context, Coordinates topLeft, Image image, int detail) {
         int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
                 / Projection.getZoomFactor(detail));
         int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
@@ -372,7 +374,7 @@ public class Renderer {
         ((Context2D) context).getGraphics().drawImage(image, x, y, null);
     }
     
-    private void drawRect(Context context, Coordinates topLeft, int width, int height, int detail, Color c) {
+    private void drawRect(Context2D context, Coordinates topLeft, int width, int height, int detail, Color c) {
         int size = 10 / Projection.getZoomFactor(detail);
         int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
                 / Projection.getZoomFactor(detail)) - size/2;

@@ -1,30 +1,31 @@
 package kit.route.a.lot.gui;
 
+import static javax.media.opengl.GL.*;
+import static kit.route.a.lot.common.Listener.MAP_RESIZED;
+import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+
 import java.awt.Component;
 import java.awt.event.MouseEvent;
 import java.nio.FloatBuffer;
+
+import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
 
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.RenderEvent;
-import static kit.route.a.lot.common.Listener.*;
-
-import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
-import static javax.media.opengl.GL.*;
 
 public class Map3D extends Map implements GLEventListener {
     
-    private static final long serialVersionUID = 1L;
-    private static final float ROTATION_SPEED = 0.5f, VIEW_ANGLE = 85, FOG_START_DISTANCE = 1.3f;
-    
-    private static final float[] LOD_STAGES = {0.01f, 1, 2}; 
-    private static final int[] LOD_STAGE_LEVELS = {0, 1}; 
-    
-    
-    private float rotationHorizontal = 0f, rotationVertical = 25f;
+    private static final long serialVersionUID = 1;
+    private static final float ROTATION_SPEED = 0.5f,
+            VIEW_ANGLE = 85, UNIT_DISTANCE = 1,
+            VIEW_MIN_DISTANCE = 0.01f, VIEW_MAX_DISTANCE = 2,
+            FOG_START_DISTANCE = 1.3f, FOG_END_DISTANCE = 2;
+        
+    private float rotationHorizontal = 0, rotationVertical = 25;
     private float displayRatio = 1;
    
     public Map3D(GUI gui)
@@ -57,38 +58,31 @@ public class Map3D extends Map implements GLEventListener {
         gl.glEnable(GL_FOG);
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
         gl.glFogf(GL_FOG_START, FOG_START_DISTANCE);
-        gl.glFogf(GL_FOG_END, LOD_STAGES[LOD_STAGES.length - 1]);
+        gl.glFogf(GL_FOG_END, FOG_END_DISTANCE);
         gl.glFogfv(GL_FOG_COLOR, new float[]{0, 0, 0, 1}, 0);     
     }
     
     @Override
     public void display(GLAutoDrawable g) {
         GL gl = g.getGL();
-        gl.glClear(GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity(); 
-        gl.glScalef(1, -1, 1);
-        // apply camera rotation
-        gl.glRotatef(rotationHorizontal, 0, 0, 1);
-        double rotHRadians = (float) Math.toRadians(rotationHorizontal);
-        gl.glRotated(rotationVertical, Math.cos(rotHRadians), -Math.sin(rotHRadians), 0);
-        // apply camera position and unit scale
-        float height = (bottomRight.getLatitude() - topLeft.getLatitude()); 
-        gl.glScalef(1 / height, 1 / height, 1 / height);
-        gl.glTranslated(-0.5*(topLeft.getLongitude() + bottomRight.getLongitude()), // camera position
-                        -0.5*(topLeft.getLatitude() + bottomRight.getLatitude()), // camera position
-                        -0.5 * height / Math.atan(Math.PI/2)); // define unit size = 2D unit size      
         
-        // create render events (one for each level of detail)
-        for (int i = LOD_STAGES.length - 1; i > 0; i--) {
-            if (i == LOD_STAGES.length - 1) continue;
-            gl.glClear(GL_DEPTH_BUFFER_BIT);
-            setProjection(gl, LOD_STAGES[i - 1] * 0.9f, LOD_STAGES[i]);
-            gl.glPushMatrix();
-            gui.getListeners().fireEvent(VIEW_CHANGED,
-                    new RenderEvent(new Context3D(topLeft, bottomRight,
-                            gl, zoomlevel + LOD_STAGE_LEVELS[i - 1]))); 
-            gl.glPopMatrix();     
-        }
+        // DEFINE UNIT SIZE (AND INVERT Y AXIS)
+        gl.glTranslatef(0, 0, -UNIT_DISTANCE);
+        double unitScale = 2*(Math.tan(Math.toRadians(VIEW_ANGLE / 2)) * UNIT_DISTANCE)
+                            / (canvas.getHeight() * Projection.getZoomFactor(zoomlevel));
+        gl.glScaled(unitScale, -unitScale, unitScale);
+        
+        // SET CAMERA ROTATION AND POSITION
+        gl.glRotatef(rotationHorizontal, 0, 0, 1);
+        double rotHRadians = Math.toRadians(rotationHorizontal);
+        gl.glRotated(rotationVertical, Math.cos(rotHRadians), -Math.sin(rotHRadians), 0);
+        gl.glTranslated(-center.getLongitude(), -center.getLatitude(), 0);
+        
+        // CREATE RENDER EVENT
+        gui.getListeners().fireEvent(VIEW_CHANGED, 
+                new RenderEvent(new Context3D(center, zoomlevel, gl)));    
     }
 
     @Override
@@ -98,7 +92,7 @@ public class Map3D extends Map implements GLEventListener {
     public void reshape(GLAutoDrawable g, int x, int y, int width, int height) {   
         // recreate the projection matrix     
         displayRatio = width / (float)height;
-        setProjection(g.getGL(), LOD_STAGES[0], LOD_STAGES[1]);
+        setProjection(g.getGL(), VIEW_MIN_DISTANCE, VIEW_MAX_DISTANCE);
         gui.getListeners().fireEvent(MAP_RESIZED, null); 
         calculateView();
     }

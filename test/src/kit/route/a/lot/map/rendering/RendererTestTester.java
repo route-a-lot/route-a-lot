@@ -53,7 +53,7 @@ public class RendererTestTester {
         topLeft = new Coordinates(0f,0f);
         bottomRight = new Coordinates(40f,40f);
         zoomLevel = 0;
-        context = new Context2D(topLeft, bottomRight,g, zoomLevel);
+        context = new Context2D(topLeft, bottomRight, zoomLevel, g);
         /*--------------------*/
         WayInfo wayInfo = new WayInfo();
         wayInfo.setStreet(true);
