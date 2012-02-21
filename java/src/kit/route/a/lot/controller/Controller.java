@@ -224,6 +224,11 @@ public class Controller {
                 updateImportedMapsList();
             }      
         });
+        guiHandler.addListener(MAP_RESIZED, new Listener() {
+            public void handleEvent(Event e) {
+                state.getActiveRenderer().resetCache();
+            }      
+        });
     }
     
     private static void loadState() {

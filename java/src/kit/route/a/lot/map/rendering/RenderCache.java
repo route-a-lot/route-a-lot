@@ -11,7 +11,7 @@ public interface RenderCache {
      * @param tileSpecifier
      *            an long as specifier for the tile (see Tile.getSpecifier(Coordinates, int))
      */
-    public Tile queryCache(Coordinates topLeft, int detail);
+    public Tile queryCache(Coordinates topLeft, int tileSize, int detail);
 
     /**
      * Adds the given tile to the cache. If a tile was deleted from the cache

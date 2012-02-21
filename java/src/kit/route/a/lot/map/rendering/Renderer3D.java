@@ -40,11 +40,11 @@ public class Renderer3D extends Renderer {
     @Override
     public void render(Context context) {
         int detail = context.getZoomlevel();
-        int tileDim = BASE_TILEDIM * Projection.getZoomFactor(detail);
+        int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
         Context3D context3D = (Context3D) context;
         Coordinates center = context.getBottomRight().clone().add(context.getTopLeft()).scale(0.5f);
-        int lat = (int) Math.floor(center.getLatitude() / tileDim) - 1;
-        int lon = (int) Math.floor(center.getLongitude() / tileDim);
+        int lat = (int) Math.floor(center.getLatitude() / tileSize);
+        int lon = (int) Math.floor(center.getLongitude() / tileSize);
         
         GL gl = context3D.getGL();
         gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (detail + 1));
@@ -55,7 +55,7 @@ public class Renderer3D extends Renderer {
                 : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
         gl.glTranslatef(0, 0, -viewHeight);      
         Frustum frustum = new Frustum(gl);
-        renderTile(gl, frustum, lon, lat, tileDim, detail);
+        renderTile(gl, frustum, lon, lat, tileSize, detail);
         int radius = 1;
         boolean found = true;
         while (found) {
@@ -65,18 +65,18 @@ public class Renderer3D extends Renderer {
             int x1 = lon-radius;
             int x2 = lon+radius;
             for (int x = x1; x <= x2; x++) {
-                if (renderTile(gl, frustum, x, y1, tileDim, detail)) {
+                if (renderTile(gl, frustum, x, y1, tileSize, detail)) {
                     found = true;
                 }
-                if (renderTile(gl, frustum, x, y2, tileDim, detail)) {
+                if (renderTile(gl, frustum, x, y2, tileSize, detail)) {
                     found = true;
                 }     
             }
             for (int y = y1+1; y < y2; y++) {
-                if (renderTile(gl, frustum, x1, y, tileDim, detail)) {
+                if (renderTile(gl, frustum, x1, y, tileSize, detail)) {
                     found = true;
                 }
-                if (renderTile(gl, frustum, x2, y, tileDim, detail)) {
+                if (renderTile(gl, frustum, x2, y, tileSize, detail)) {
                     found = true;
                 }       
             }
@@ -85,11 +85,11 @@ public class Renderer3D extends Renderer {
         drawRoute(context3D, detail);
     }
        
-    private boolean renderTile(GL gl, Frustum frustum, int x, int y, int tileDim, int detail) {
-        Coordinates topLeft = new Coordinates(y * tileDim, x * tileDim);
-        Tile3D tile = (Tile3D) cache.queryCache(topLeft, detail);
+    private boolean renderTile(GL gl, Frustum frustum, int x, int y, int tileSize, int detail) {
+        Coordinates topLeft = new Coordinates(y * tileSize, x * tileSize);
+        Tile3D tile = (Tile3D) cache.queryCache(topLeft, tileSize, detail);
         if (tile == null) {
-            tile = new Tile3D(topLeft, tileDim, detail);
+            tile = new Tile3D(topLeft, tileSize, detail);
             if (tile.isInFrustum(frustum)) {
                 tile.prerender();
                 Tile3D deletedTile = (Tile3D) cache.addToCache(tile);

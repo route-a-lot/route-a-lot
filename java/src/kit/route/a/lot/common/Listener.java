@@ -13,10 +13,10 @@ public interface Listener {
         SHOW_POI_DESCRIPTION = 8, SHOW_NAVNODE_DESCRIPTION = 9,            
         ADD_FAVORITE = 10, DELETE_FAVORITE = 11, ADD_NAVNODE = 12, DELETE_NAVNODE = 13,
         LIST_SEARCH_COMPLETIONS = 14, SET_SPEED = 15,      
-        VIEW_CHANGED = 16, SWITCH_MAP_MODE = 17,
-        SET_HIGHWAY_MALUS = 18, SET_HEIGHT_MALUS = 19,
-        LIST_IMPORTED_MAPS = 20, DELETE_IMPORTED_MAP = 21,
-        CLOSE_APPLICATION = 22;
-    public static final int TYPE_COUNT = 23;
+        VIEW_CHANGED = 16, MAP_RESIZED = 17, SWITCH_MAP_MODE = 18,
+        SET_HIGHWAY_MALUS = 19, SET_HEIGHT_MALUS = 20,
+        LIST_IMPORTED_MAPS = 21, DELETE_IMPORTED_MAP = 22,
+        CLOSE_APPLICATION = 23;
+    public static final int TYPE_COUNT = 24;
     public void handleEvent(Event event);   
 }

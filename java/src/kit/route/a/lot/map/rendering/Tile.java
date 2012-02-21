@@ -1,6 +1,11 @@
 package kit.route.a.lot.map.rendering;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -14,7 +19,11 @@ import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.*;
+import kit.route.a.lot.map.Area;
+import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.POINode;
+import kit.route.a.lot.map.Street;
 
 import org.apache.log4j.Logger;
 
@@ -24,9 +33,9 @@ public class Tile {
     private static Logger logger = Logger.getLogger(Tile.class);
     private static final int POI_SIZE = 8;
     
-    private Coordinates topLeft, bottomRight;   
+    protected Coordinates topLeft, bottomRight;   
     private BufferedImage image = null;
-    private int detail, tileDim;
+    private int detail, tileSize;
     
     // the image's graphics object (only valid during prerendering / POI drawing)
     private Graphics2D graphics;
@@ -37,11 +46,11 @@ public class Tile {
      * @param bottomRight the south eastern corner of the tile
      * @param detail the desired level of detail
      */
-    public Tile(Coordinates topLeft, float tileDim, int detail) {
+    public Tile(Coordinates topLeft, int tileSize, int detail) {
         this.topLeft = topLeft;
-        this.bottomRight = topLeft.clone().add(tileDim, tileDim);
+        this.bottomRight = topLeft.clone().add(tileSize, tileSize);
         this.detail = detail;
-        this.tileDim = (int) tileDim;
+        this.tileSize = tileSize;
     }
 
     /**
@@ -51,8 +60,8 @@ public class Tile {
      */
     protected BufferedImage getImage() {
         if (image == null) {
-            image = new BufferedImage(tileDim / Projection.getZoomFactor(detail),
-                tileDim / Projection.getZoomFactor(detail),
+            image = new BufferedImage(tileSize / Projection.getZoomFactor(detail),
+                tileSize / Projection.getZoomFactor(detail),
                 BufferedImage.TYPE_INT_ARGB);
         }
         return image;
@@ -83,6 +92,13 @@ public class Tile {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
+        /*/COLOR TILE BACKGROUND
+        int c1 = Math.abs(this.hashCode()) % 256;
+        int c2 = Math.abs(getImage().hashCode()) % 256;
+        graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
+        graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detail), tileSize / Projection.getZoomFactor(detail));
+        //*/
+        
         //DRAW BASE LAYER ELEMENTS
         for (MapElement element : map) {
             if (element instanceof Area) {
@@ -169,7 +185,7 @@ public class Tile {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = Renderer.getLocalCoordinates(nodes[i].getPos(), topLeft, detail);
+            Coordinates curCoordinates = getLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -282,7 +298,7 @@ public class Tile {
     }
   
     private void drawPoint(Coordinates globalCoordinates, int size) {
-        Coordinates localCoordinates = Renderer.getLocalCoordinates(globalCoordinates, topLeft, detail);
+        Coordinates localCoordinates = getLocalCoordinates(globalCoordinates);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
     }
@@ -445,12 +461,12 @@ public class Tile {
         return Renderer.getLocalCoordinates(coordinates, topLeft, detail);
     }
     
-    public static long getSpecifier(Coordinates topLeft, int detail) {
-        return (long) Math.floor((topLeft.getLongitude() + topLeft.getLatitude() * 10000) * 100000) + detail;
+    public static long getSpecifier(Coordinates topLeft, int tileSize, int detail) {
+        return (long) Math.floor((topLeft.getLongitude() + topLeft.getLatitude() * 10000) * 100000) + tileSize + detail;
     }
 
     public long getSpecifier() {
-        return getSpecifier(topLeft, detail);
+        return getSpecifier(topLeft, tileSize, detail);
     }
 
 }

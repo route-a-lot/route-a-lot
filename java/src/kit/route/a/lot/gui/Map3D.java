@@ -80,11 +80,13 @@ public class Map3D extends Map implements GLEventListener {
         
         // create render events (one for each level of detail)
         for (int i = LOD_STAGES.length - 1; i > 0; i--) {
+            if (i == LOD_STAGES.length - 1) continue;
             gl.glClear(GL_DEPTH_BUFFER_BIT);
             setProjection(gl, LOD_STAGES[i - 1] * 0.9f, LOD_STAGES[i]);
             gl.glPushMatrix();
             gui.getListeners().fireEvent(VIEW_CHANGED,
-                    new RenderEvent(new Context3D(topLeft, bottomRight, gl, zoomlevel + LOD_STAGE_LEVELS[i - 1]))); 
+                    new RenderEvent(new Context3D(topLeft, bottomRight,
+                            gl, zoomlevel + LOD_STAGE_LEVELS[i - 1]))); 
             gl.glPopMatrix();     
         }
     }
@@ -94,10 +96,11 @@ public class Map3D extends Map implements GLEventListener {
 
     @Override
     public void reshape(GLAutoDrawable g, int x, int y, int width, int height) {   
-        calculateView();
-        // recreate the projection matrix
-        displayRatio = width/(float)height;
+        // recreate the projection matrix     
+        displayRatio = width / (float)height;
         setProjection(g.getGL(), LOD_STAGES[0], LOD_STAGES[1]);
+        gui.getListeners().fireEvent(MAP_RESIZED, null); 
+        calculateView();
     }
     
     /**

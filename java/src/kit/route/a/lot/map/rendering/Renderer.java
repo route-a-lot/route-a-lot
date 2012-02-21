@@ -24,7 +24,7 @@ import kit.route.a.lot.map.*;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class Renderer {
-    protected static final int BASE_TILEDIM = 200;
+    protected static final int BASE_TILE_SIZE = 200;
     
     /**
      * A cache storing tiles that were previously drawn.
@@ -61,20 +61,20 @@ public class Renderer {
         myContext = context;
         state = State.getInstance();
         int detail = context.getZoomlevel();
-        int tileDim = BASE_TILEDIM * Projection.getZoomFactor(detail);
+        int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
         // FILL BACKGROUND
         Graphics graphics = ((Context2D) context).getGraphics();
         graphics.setColor(new Color(210, 230, 190));
         graphics.fillRect(0, 0, (int)context.getWidth(), (int)context.getHeight());      
         // DRAW TILES
-        int maxLon = (int) Math.floor(context.getBottomRight().getLongitude() / tileDim);
-        int maxLat = (int) Math.floor(context.getBottomRight().getLatitude() / tileDim);
-        int minLon = (int) Math.floor(context.getTopLeft().getLongitude() / tileDim);
-        int minLat = (int) Math.floor(context.getTopLeft().getLatitude() / tileDim);
+        int maxLon = (int) (context.getBottomRight().getLongitude() / tileSize);
+        int maxLat = (int) (context.getBottomRight().getLatitude() / tileSize);
+        int minLon = (int) (context.getTopLeft().getLongitude() / tileSize);
+        int minLat = (int) (context.getTopLeft().getLatitude() / tileSize);
         for (int i = minLon; i <= maxLon; i++) {
             for (int k = minLat; k <= maxLat; k++) {
-                Coordinates topLeft = new Coordinates(k * tileDim, i * tileDim);
-                Tile currentTile = prerenderTile(topLeft, tileDim, detail);
+                Coordinates topLeft = new Coordinates(k * tileSize, i * tileSize);
+                Tile currentTile = prerenderTile(topLeft, tileSize, detail);
                 drawImage(context, topLeft, currentTile.getImage(), detail);
             }
         }
@@ -93,8 +93,8 @@ public class Renderer {
      * 
      * @return the rendered tile
      */
-    private Tile prerenderTile(Coordinates topLeft, float tileDim, int detail) {
-        Tile tile = cache.queryCache(topLeft, detail);
+    private Tile prerenderTile(Coordinates topLeft, int tileDim, int detail) {
+        Tile tile = cache.queryCache(topLeft, tileDim, detail);
         if (tile == null) {
             tile = new Tile(topLeft, tileDim, detail);
             tile.prerender();

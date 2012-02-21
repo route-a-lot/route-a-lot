@@ -28,8 +28,8 @@ public class HashRenderCache implements RenderCache {
     }
 
     @Override
-    public Tile queryCache(Coordinates topLeft, int detail) {
-        long specifier = Tile.getSpecifier(topLeft, detail);
+    public Tile queryCache(Coordinates topLeft, int tileSize, int detail) {
+        long specifier = Tile.getSpecifier(topLeft, tileSize, detail);
         if (leastRecentlyUsed.remove(specifier)) {
             leastRecentlyUsed.addLast(specifier);
         }
