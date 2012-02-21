@@ -35,9 +35,19 @@ public class Precalculator {
         inverted = graph.getInverted();
         if (doAreas()) {
             logger.info("Starting calculation of ArcFlags");
+            double start = System.currentTimeMillis();
+            double startPeriod = start;
+            double currentTime;
             for (int i = 0; i < graph.getIDCount(); i++) {
-                if (i % 1000 == 0) {
-                    logger.debug("Calculation of ArcFlags at " + (i * 100 / graph.getIDCount()) + "%");
+                if (i % 10 == 0) {
+                    currentTime = System.currentTimeMillis();
+                    if (currentTime - startPeriod > 5000) {
+                        startPeriod = currentTime;
+                        logger.info("Calculation of ArcFlags at " + (i * 100 / graph.getIDCount()) + "%");
+                        double usedTime = (currentTime - start) / 1000;
+                        logger.info("Time used: " + formatSeconds(usedTime)
+                                + " - estimated time remaining: " + formatSeconds(usedTime / (((double) i) / graph.getIDCount()) - usedTime));
+                    }
                 }
                 // TODO I suppose we could run some parallel.
                 createFlags(i);
@@ -47,6 +57,31 @@ public class Precalculator {
             logger.error("Failed to do precalculation");
         }
         return;
+    }
+    
+    private static String formatSeconds(double dSeconds) {
+        int iSeconds = (int) dSeconds;
+        int seconds = iSeconds % 60;
+        int minutes = iSeconds / 60 % 60;
+        int hours = iSeconds / 3600 % 24;
+        int days = iSeconds / 86400;
+        String sSeconds = seconds + "s";
+        String sMinutes = minutes + "min " + sSeconds;
+        String sHours = hours + "h " + sMinutes;
+        String sDays = days + "d " + sHours;
+        if (days == 0) {
+            if (hours == 0) {
+                if (minutes == 0) {
+                    return sSeconds;
+                } else {
+                    return sMinutes;
+                }
+            } else {
+                return sHours;
+            }
+        } else {
+            return sDays;
+        }
     }
 
     private static void createFlags(int node) {
