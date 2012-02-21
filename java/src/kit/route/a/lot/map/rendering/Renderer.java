@@ -373,14 +373,17 @@ public class Renderer {
     }
     
     private void drawRect(Context context, Coordinates topLeft, int width, int height, int detail, Color c) {
+        int size = 10 / Projection.getZoomFactor(detail);
         int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
-                / Projection.getZoomFactor(detail));
+                / Projection.getZoomFactor(detail)) - size/2;
         int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
-                / Projection.getZoomFactor(detail));
+                / Projection.getZoomFactor(detail)) - size/2;
+        int newWidth = width/ Projection.getZoomFactor(detail) - size;
+        int newHeight = height/ Projection.getZoomFactor(detail) - size;
         Graphics2D graphics = (Graphics2D) ((Context2D) context).getGraphics();
-        graphics.setStroke(new BasicStroke(10 / Projection.getZoomFactor(detail)));
+        graphics.setStroke(new BasicStroke(size));
         graphics.setColor(c);
-        graphics.drawRect(x, y, width/ Projection.getZoomFactor(detail), height/ Projection.getZoomFactor(detail));
+        graphics.drawRect(x, y, newWidth, newHeight);
     }
     
     private Collection<Object[]> framesToDraw = new HashSet<Object[]>();

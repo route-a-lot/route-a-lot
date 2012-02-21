@@ -174,21 +174,20 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     @Override
     public Selection select(Coordinates pos) {
-        drawFrames = true;
+//        drawFrames = true;
         State.getInstance().getActiveRenderer().resetFramesToDraw();
         float radius = 4;
         Selection sel = null;
         while(sel == null && radius < 1000000000) {  //limit for avoiding errors on maps without edges
             sel = select(pos, radius);
             radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
-            State.getInstance().getActiveRenderer().redraw();
         }
         if(sel != null) {
             logger.debug("StartNodeId: " + sel.getFrom());
             logger.debug("EndNodeId: " + sel.getTo());
         }
-        drawFrames = false;
-        State.getInstance().getActiveRenderer().redraw();
+//        drawFrames = false;
+//        State.getInstance().getActiveRenderer().redraw();
         return sel;
     }
     
