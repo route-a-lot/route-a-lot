@@ -210,8 +210,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
         for (MapElement element: elements) {
             if(element instanceof Street && ((Street) element).getWayInfo().isRoutable()) {  //TODO only routeable
                 float distance = ((Street) element).getDistanceTo(pos);
-                System.out.print("\nDistance of " + ((Street) element).getWayInfo().getAddress().getStreet());
-                System.out.print(" is " + distance + ".");
                 if (distance < closestDistance) {
                     closestDistance = distance;
                     closestElement = element; 
