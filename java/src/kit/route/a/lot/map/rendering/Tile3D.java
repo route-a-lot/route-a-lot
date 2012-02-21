@@ -64,8 +64,8 @@ public class Tile3D extends Tile {
                 getHeights(), HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
-        for (int x = 0; x <= HEIGHT_RESOLUTION; x++) {
-            for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {
+        for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
+            for (int y = 0; y < HEIGHT_RESOLUTION; y++) {
                 if (heights[x][y] < minHeight) {
                     minHeight = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
                 }
@@ -105,17 +105,18 @@ public class Tile3D extends Tile {
                 gl.glBindTexture(GL_TEXTURE_2D, textureID);
                 
                 gl.glColor3f(1,1,1);
-                float stepSize = (bottomRight.getLatitude() - topLeft.getLatitude()) / (float) HEIGHT_RESOLUTION;
+                float hRes = HEIGHT_RESOLUTION - 1;
+                float stepSize = (bottomRight.getLatitude() - topLeft.getLatitude()) / hRes;
                 Coordinates pos = new Coordinates();
-                for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
+                for (int x = 0; x < hRes; x++) {
                     gl.glBegin(GL_TRIANGLE_STRIP);
-                    for (int y = 0; y <= HEIGHT_RESOLUTION; y++) {            
+                    for (int y = 0; y <= hRes; y++) {            
                         for (int i = 0; i < 2; i++) {
                             pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                             pos.setLongitude(topLeft.getLongitude() + (x + i) * stepSize);
-                            gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
+                            gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / hRes, y / hRes);
                             gl.glMultiTexCoord2f(GL_TEXTURE1, (x + i) / (float) GRAIN_RESOLUTION, y / (float) GRAIN_RESOLUTION);
-                            gl.glMultiTexCoord2f(GL_TEXTURE2, (x + i) / (float) HEIGHT_RESOLUTION, y / (float) HEIGHT_RESOLUTION);
+                            gl.glMultiTexCoord2f(GL_TEXTURE2, (x + i) / hRes, y / hRes);
                             gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER]);
                         }
                     }
@@ -150,7 +151,8 @@ public class Tile3D extends Tile {
                         }
                     }
                     
-                    float shade = 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, MAX_SLOPE_SHADE_VALUE);
+                    float shade = 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize,
+                                                0, MAX_SLOPE_SHADE_VALUE);
                     color[0] *= shade;
                     color[1] *= shade;
                     color[2] *= shade;

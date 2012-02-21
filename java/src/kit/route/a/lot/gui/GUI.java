@@ -35,6 +35,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;

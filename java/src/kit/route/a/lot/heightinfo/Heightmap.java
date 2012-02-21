@@ -76,8 +76,8 @@ public class Heightmap implements IHeightmap {
     @Override
     public void reduceSection(Coordinates topLeft, Coordinates bottomRight, float[][] heightdata, int heightBorder) {
         Coordinates dimensions = bottomRight.clone().subtract(topLeft);
-        float stepSizeX = dimensions.getLongitude() / (heightdata.length - 2*heightBorder);
-        float stepSizeY = dimensions.getLatitude() / (heightdata[0].length - 2*heightBorder);
+        float stepSizeX = dimensions.getLongitude() / (heightdata.length - 2*heightBorder - 1);
+        float stepSizeY = dimensions.getLatitude() / (heightdata[0].length - 2*heightBorder - 1);
         for (int x = 0; x < heightdata.length; x++) {
             for (int y = 0; y < heightdata[x].length; y++) {
                 dimensions.setLatitude(topLeft.getLatitude() + (y - heightBorder) * stepSizeY);
