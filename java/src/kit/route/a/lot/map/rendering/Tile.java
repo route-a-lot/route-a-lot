@@ -70,7 +70,7 @@ public class Tile {
     public void prerender() {
         //QUERY QUADTREE ELEMENTS
         Collection<MapElement> map = State.getInstance().getLoadedMapInfo()
-                                        .getBaseLayer(detail, topLeft, bottomRight);
+                                        .getBaseLayer(detail, topLeft, bottomRight, false); // TODO test if true is faster
         if (map.size() == 0) {
             return;
         }
@@ -117,7 +117,7 @@ public class Tile {
     
     public void drawPOIs() {
         Collection<MapElement> elements = State.getInstance().getLoadedMapInfo()
-                                            .getOverlay(detail, topLeft, bottomRight);
+                                            .getOverlay(detail, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }

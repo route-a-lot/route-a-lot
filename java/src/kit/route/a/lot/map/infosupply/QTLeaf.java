@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.awt.Color;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
 
@@ -149,22 +151,27 @@ public class QTLeaf extends QuadTree {
 
     @Override
     protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
-        Set<MapElement> elememts) {
+        Set<MapElement> elememts, boolean exact) {
         if(isInBounds(upLeft, bottomRight)) {
+            if (QTGeographicalOperator.drawFrames) {
+                State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.blue);
+            }
             for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {
-               // if (baseLayer[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
+                if (!exact || baseLayer[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
                     elememts.add(baseLayer[i]);
-               // }
+                }
             }
         }
     }
 
     @Override
     protected void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts) {
+            Set<MapElement> elememts, boolean exact) {
         if(isInBounds(upLeft, bottomRight)) {
             for (int i = 0; i < countArrayElementsSize(overlay); i++) {
-                elememts.add(overlay[i]);
+                if (!exact || overlay[i].isInBounds(upLeft, bottomRight)) {
+                    elememts.add(overlay[i]);
+                }
             }
         }
         

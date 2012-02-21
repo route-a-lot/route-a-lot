@@ -64,7 +64,7 @@ public class ComplexInfoSupplier {
     
     //returns the streets, which the point of this position is part of
     private static ArrayList<Street> getStreet(Coordinates position) {
-        Collection<MapElement> elements = State.getInstance().getLoadedMapInfo().getBaseLayerForPositionAndRadius(position, 0);
+        Collection<MapElement> elements = State.getInstance().getLoadedMapInfo().getBaseLayerForPositionAndRadius(position, 1, true);
         ArrayList<Street> streets = new ArrayList<Street>();
         for (MapElement element : elements) {
             if (element instanceof Street) {

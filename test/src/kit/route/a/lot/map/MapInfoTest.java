@@ -81,7 +81,7 @@ public class MapInfoTest {
         info.addWay(aids, "Fußballplatz", new WayInfo());
 
         Collection<MapElement> a =
-                info.getBaseLayer(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f));
+                info.getBaseLayer(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f), false);
         // System.out.println(a.size());
         for (MapElement ele : a) {
             System.out.println(ele);

@@ -252,8 +252,8 @@ public class MapInfo {
      * @param bottomRight the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
-        return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight);
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight, exact);
     }
 
     /**
@@ -264,8 +264,8 @@ public class MapInfo {
      * @param bottomRight the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
-        Collection<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight);
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        Collection<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
         for(MapElement ele : elementDB.getFavorites()) {
             if(ele.isInBounds(upLeft, bottomRight)) {
                 overlay.add(ele);
@@ -320,8 +320,8 @@ public class MapInfo {
         }
     }
     
-    public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius) {
-        return geographicalOperator.getBaseLayer(pos, radius);
+    public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius, boolean exact) {
+        return geographicalOperator.getBaseLayer(pos, radius, exact);
     }
     
     public Coordinates getGeoTopLeft() {

@@ -36,10 +36,10 @@ public abstract class QuadTree {
     }
 
     protected abstract void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elements);
+            Set<MapElement> elements, boolean exact);
     
     protected abstract void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elements);
+            Set<MapElement> elements, boolean exact);
     
 
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {

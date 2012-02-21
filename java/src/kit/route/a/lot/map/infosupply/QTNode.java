@@ -136,13 +136,13 @@ public class QTNode extends QuadTree {
 
     @Override
     protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elements) {
+            Set<MapElement> elements, boolean exact) {
         if (isInBounds(upLeft, bottomRight)) {
-            if (QTGeographicalOperator.anfrage) {
+            if (QTGeographicalOperator.drawFrames) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.black);
             }
             for(QuadTree qt : children) {
-                qt.queryBaseLayer(upLeft, bottomRight, elements);
+                qt.queryBaseLayer(upLeft, bottomRight, elements, exact);
           
             }    
         }
@@ -150,10 +150,10 @@ public class QTNode extends QuadTree {
 
     @Override
     protected void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts) {
+            Set<MapElement> elememts, boolean exact) {
         if (isInBounds(upLeft, bottomRight)) {
             for(QuadTree qt : children) {
-                qt.queryOverlay(upLeft, bottomRight, elememts);
+                qt.queryOverlay(upLeft, bottomRight, elememts, exact);
             }    
         }
         

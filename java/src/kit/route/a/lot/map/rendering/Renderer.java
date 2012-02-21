@@ -304,7 +304,7 @@ public class Renderer {
      */
     private void drawOverlay(Context context, int detail) {
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
-        Collection<MapElement> elements = mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight());
+        Collection<MapElement> elements = mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight(), false); // TODO test if true is faster
 
         int size = 8;
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -384,6 +384,10 @@ public class Renderer {
     }
     
     private Collection<Object[]> framesToDraw = new HashSet<Object[]>();
+    
+    public void resetFramesToDraw() {
+        framesToDraw = new HashSet<Object[]>();
+    }
     
     public void addFrameToDraw(Coordinates topLeft, Coordinates bottomRight, Color c) {
         Object[] frame = new Object[3];

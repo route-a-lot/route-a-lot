@@ -48,7 +48,7 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all base layer MapElements in the queried section
      */
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight);
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
 
     /**
      * Retrieves all MapElements belonging to the overlay of the given
@@ -59,9 +59,9 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all overlay MapElements in the queried section
      */
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight);
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
     
-    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius);
+    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact);
     
     /*/**
      * Returns the overlay corresponding to the last base layer query.

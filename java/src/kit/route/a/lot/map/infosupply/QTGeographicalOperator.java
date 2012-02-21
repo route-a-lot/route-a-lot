@@ -129,7 +129,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         /*if (logger.isTraceEnabled()) {
             logger.trace("called: getBaseLayer()");
             logger.trace(" upLeft: " + upLeft);
@@ -139,24 +139,24 @@ public class QTGeographicalOperator implements GeographicalOperator {
             logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
             logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         }*/    
-        if (QTGeographicalOperator.anfrage) {
+        if (QTGeographicalOperator.drawFrames) {
             State.getInstance().getActiveRenderer().addFrameToDraw(upLeft, bottomRight, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryBaseLayer(upLeft, bottomRight, elements);
+        zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryBaseLayer(upLeft, bottomRight, elements, exact);
         return elements;
     }
     
     @Override
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryOverlay(upLeft, bottomRight, elements);
+        zoomlevels[Util.clip(zoomlevel, 0, countZoomlevel -1)].queryOverlay(upLeft, bottomRight, elements, exact);
         return elements;
     }
        
     @Override
-    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius) {
-        return getBaseLayer(0, pos.clone().add(-radius, -radius), pos.clone().add(radius, radius));
+    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact) {
+        return getBaseLayer(0, pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), exact);
     }    
     
     /*private Collection<MapElement> getOverlay(Coordinates pos, float radius) {
@@ -174,20 +174,25 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     @Override
     public Selection select(Coordinates pos) {
-        float radius = 1;
+        drawFrames = true;
+        State.getInstance().getActiveRenderer().resetFramesToDraw();
+        float radius = 4;
         Selection sel = null;
         while(sel == null && radius < 1000000000) {  //limit for avoiding errors on maps without edges
             sel = select(pos, radius);
             radius *= 2;  // if we found no edge we have to search in a bigger area TODO optimize factors
+            State.getInstance().getActiveRenderer().redraw();
         }
         if(sel != null) {
             logger.debug("StartNodeId: " + sel.getFrom());
             logger.debug("EndNodeId: " + sel.getTo());
         }
+        drawFrames = false;
+        State.getInstance().getActiveRenderer().redraw();
         return sel;
     }
     
-    public static boolean anfrage = false;
+    public static boolean drawFrames = false;
     
     /**
      * Selects the map element nearest to the given position, taking all map elements
@@ -198,8 +203,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * @return a {@link Selection} derived from the nearest map element
      */
     private Selection select(Coordinates pos, float radius) {
-        anfrage = true;
-        Collection<MapElement> elements = getBaseLayer(pos, radius);
+        Collection<MapElement> elements = getBaseLayer(pos, radius, true);
         
         // find element nearest to pos
         MapElement closestElement = null;
@@ -215,8 +219,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
                 } 
             }
         }
-        anfrage = false;
-        State.getInstance().getActiveRenderer().redraw();
         return (closestElement != null) ? ((Street) closestElement).getSelection(pos) : null;
     }
        
@@ -229,7 +231,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         float closestDistance = (Projection.getZoomFactor(detailLevel) + 1) *  radius;
         Coordinates UL = pos.clone().add(-closestDistance, -closestDistance);
         Coordinates BR = pos.clone().add(closestDistance, closestDistance);
-        Collection<MapElement> elements = getOverlay(0, UL, BR);
+        Collection<MapElement> elements = getOverlay(0, UL, BR, true);
         for (MapElement element : elements) {
             if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
                 float newDistance = (float) Coordinates.getDistance(pos, ((POINode) element).getPos());
