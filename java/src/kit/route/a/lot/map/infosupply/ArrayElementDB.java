@@ -98,7 +98,7 @@ public class ArrayElementDB implements ElementDB {
     
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
-        logger.info("load node array...");
+        logger.debug("load node array...");
         int len = stream.readInt();
         nodes = new ArrayList<Node>(len);
         for (int i = 0; i < len; i++) {
@@ -106,7 +106,7 @@ public class ArrayElementDB implements ElementDB {
             nodes.add(node);
             node.assignID(i);
         }
-        logger.info("load map element array...");
+        logger.debug("load map element array...");
         len = stream.readInt();
         mapElements = new ArrayList<MapElement>(len);
         for (int i = 0; i < len; i++) {
@@ -114,7 +114,7 @@ public class ArrayElementDB implements ElementDB {
             mapElements.add(element);
             element.assignID(i);
         }
-        logger.info("load favorite array...");
+        logger.debug("load favorite array...");
         len = stream.readInt();
         favorites = new ArrayList<POINode>(len);
         for (int i = 0; i < len; i++) {

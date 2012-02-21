@@ -142,4 +142,29 @@ public class Util {
         return (argb[0] << 24) + ((argb[1] & 0xFF) << 16) + ((argb[2] & 0xFF) << 8) + (argb[3] & 0xFF);
     }
     
+    public static String formatSeconds(double dSeconds) {
+        int iSeconds = (int) dSeconds;
+        int seconds = iSeconds % 60;
+        int minutes = iSeconds / 60 % 60;
+        int hours = iSeconds / 3600 % 24;
+        int days = iSeconds / 86400;
+        String sSeconds = seconds + "s";
+        String sMinutes = minutes + "min " + sSeconds;
+        String sHours = hours + "h " + sMinutes;
+        String sDays = days + "d " + sHours;
+        if (days == 0) {
+            if (hours == 0) {
+                if (minutes == 0) {
+                    return sSeconds;
+                } else {
+                    return sMinutes;
+                }
+            } else {
+                return sHours;
+            }
+        } else {
+            return sDays;
+        }
+    }
+    
 }

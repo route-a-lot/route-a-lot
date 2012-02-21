@@ -241,8 +241,9 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void loadFromStream(DataInputStream stream) throws IOException {
+        logger.debug("Loading " + zoomlevels.length + " zoomlevels...");
         for(int i = 0; i < zoomlevels.length; i++) {
-            logger.info("load zoom level " + i + "...");
+            logger.trace("load zoom level " + i + "...");
             zoomlevels[i] = QuadTree.loadFromStream(stream);
         }
     }

@@ -26,6 +26,7 @@ public class SRTMLoader implements HeightLoader {
         if (dateien == null) {
             return;
         }
+        logger.info("Loading hgt files...");
         for (File file: dateien) {
             String[] fileNameParts = file.getName().split("\\.");
             if ((fileNameParts.length != 2) || (fileNameParts[0].length() != 7)
@@ -41,7 +42,7 @@ public class SRTMLoader implements HeightLoader {
                 logger.info("Invalid hgt file name: '" + file.getName() + "'.");
                 continue;
             }
-            logger.info("Loading hgt file :'" + file.getName() + "'...");
+            logger.debug("Loading hgt file :'" + file.getName() + "'...");
             HeightTile tile = loadHeightTile(file, new Coordinates(lat, lon));
             /* in HeightMap einfügen */
             State.getInstance().getLoadedHeightmap().addHeightTile(tile);

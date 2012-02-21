@@ -15,6 +15,8 @@ import org.apache.log4j.Logger;
 
 import kit.route.a.lot.controller.State;
 
+import static kit.route.a.lot.common.Util.formatSeconds;
+
 
 public class Precalculator {
 
@@ -35,8 +37,8 @@ public class Precalculator {
         inverted = graph.getInverted();
         if (doAreas()) {
             logger.info("Starting calculation of ArcFlags");
-            double start = System.currentTimeMillis();
-            double startPeriod = start;
+            double startTime = System.currentTimeMillis();
+            double startPeriod = startTime;
             double currentTime;
             for (int i = 0; i < graph.getIDCount(); i++) {
                 if (i % 10 == 0) {
@@ -44,46 +46,21 @@ public class Precalculator {
                     if (currentTime - startPeriod > 5000) {
                         startPeriod = currentTime;
                         logger.info("Calculation of ArcFlags at " + (i * 100 / graph.getIDCount()) + "%");
-                        double usedTime = (currentTime - start) / 1000;
-                        logger.info("Time used: " + formatSeconds(usedTime)
-                                + " - estimated time remaining: " + formatSeconds(usedTime / (((double) i) / graph.getIDCount()) - usedTime));
+                        double elapsedTime = (currentTime - startTime) / 1000;
+                        logger.info("Elapsed time: " + formatSeconds(elapsedTime)
+                                + " - estimated time remaining: " + formatSeconds(elapsedTime / (((double) i) / graph.getIDCount()) - elapsedTime));
                     }
                 }
                 // TODO I suppose we could run some parallel.
                 createFlags(i);
             }
-            logger.info("Succesfully created ArcFlags");
+            logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000));
         } else {
             logger.error("Failed to do precalculation");
         }
         return;
     }
     
-    private static String formatSeconds(double dSeconds) {
-        int iSeconds = (int) dSeconds;
-        int seconds = iSeconds % 60;
-        int minutes = iSeconds / 60 % 60;
-        int hours = iSeconds / 3600 % 24;
-        int days = iSeconds / 86400;
-        String sSeconds = seconds + "s";
-        String sMinutes = minutes + "min " + sSeconds;
-        String sHours = hours + "h " + sMinutes;
-        String sDays = days + "d " + sHours;
-        if (days == 0) {
-            if (hours == 0) {
-                if (minutes == 0) {
-                    return sSeconds;
-                } else {
-                    return sMinutes;
-                }
-            } else {
-                return sHours;
-            }
-        } else {
-            return sDays;
-        }
-    }
-
     private static void createFlags(int node) {
         logger.trace("Calculating ArcFlags for ID " + String.valueOf(node));
         // On further comments, see Router.fromAToB()

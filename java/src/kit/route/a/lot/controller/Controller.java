@@ -406,6 +406,7 @@ public class Controller {
     }
     
     private void calculateRoute() {
+        double startTime = System.currentTimeMillis();
         if (state.getNavigationNodes().size() >= 2) {
             state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
             int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
@@ -413,6 +414,8 @@ public class Controller {
             guiHandler.showRouteValues(length, duration);
             guiHandler.updateGUI();
         }
+        double duration = System.currentTimeMillis() - startTime;
+        logger.info("Calculated route in " + (duration / 1000) + "s");
     }
 
     
@@ -566,8 +569,6 @@ public class Controller {
             System.arraycopy(paths, 0, tmp, 0, paths.length);
             tmp[paths.length] = dir;
             field.set(null, tmp);
-            System.setProperty("java.library.path", System.getProperty("java.library.path")
-                        + File.pathSeparator + dir);
         } catch (IllegalAccessException e) {
                 throw new IOException("Failed to get permissions to set library path.");
         } catch (NoSuchFieldException e) {

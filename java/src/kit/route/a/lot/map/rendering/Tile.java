@@ -406,8 +406,7 @@ public class Tile {
                 }
                 
                 Font oldFont = graphics.getFont();
-                Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
-                graphics.setFont(newFont);
+                graphics.setFont(oldFont.deriveFont(AffineTransform.getRotateInstance(angle)));
                 FontMetrics fontMetrics = graphics.getFontMetrics();
                 float descent = fontMetrics.getDescent();
                 float ascent = fontMetrics.getAscent();

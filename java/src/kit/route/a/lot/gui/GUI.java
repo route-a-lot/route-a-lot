@@ -505,6 +505,7 @@ public class GUI extends JFrame {
     private void loadRouteFileChooser() {
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (UnsupportedLookAndFeelException e) {
         } catch (Exception e) {
             e.printStackTrace();
         }
