@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import kit.route.a.lot.common.Progress;
+import kit.route.a.lot.common.ProgressInputStream;
 import kit.route.a.lot.controller.State;
 
 public class MapIO {
@@ -27,7 +29,7 @@ public class MapIO {
      * @param file the file to be loaded
      * @throws IOException
      */
-    public static void loadMap(File file) throws IOException {
+    public static void loadMap(File file, Progress p) throws IOException {
         // Verify requirements
         if (file == null) {
             throw new IllegalArgumentException();
@@ -37,7 +39,8 @@ public class MapIO {
             throw new IllegalStateException("No map initialized!");
         }
         // Open file stream, abort on failure
-        DataInputStream stream = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
+        DataInputStream stream = new DataInputStream(new BufferedInputStream(
+                new ProgressInputStream(new FileInputStream(file), p, file.length())));
         
         // Read data from stream, abort on error
         if ((stream.readChar() != 'S') || (stream.readChar() != 'R')
@@ -64,7 +67,7 @@ public class MapIO {
      * @param file the file to be loaded
      * @throws IOException
      */
-    public static void saveMap(File file) throws IOException {   
+    public static void saveMap(File file, Progress p) throws IOException {   
         // Verify requirements
         if (file == null) {
             throw new IllegalArgumentException();
@@ -75,18 +78,22 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        DataOutputStream stream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+        DataOutputStream stream = new DataOutputStream(
+                new BufferedOutputStream(new FileOutputStream(file)));
         
         // Write data to stream, abort on error
         stream.writeChars("SRAL");  // magic number
         stream.writeUTF("0.5");     // version number
         // TODO: maybe add date or name
+        p.add(0.05);
         logger.info("save map info...");
         state.getLoadedMapInfo().saveToStream(stream);
+        p.add(0.7);
         logger.info("save graph...");
         state.getLoadedGraph().saveToStream(stream); 
         stream.close();     
         logger.info("map saving finished");
+        p.add(0.25);
     }
     
 }

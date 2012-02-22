@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import static kit.route.a.lot.common.Util.*;
 import kit.route.a.lot.controller.State;
@@ -19,7 +20,7 @@ public class Router {
         return (navigationNodes.size() < 2) ? new ArrayList<Integer>(0) : simpleRoute(navigationNodes);
     }
     
-    public static void optimizeRoute(List<Selection> navigationNodes) {
+    public static void optimizeRoute(List<Selection> navigationNodes, Progress p) {
         int size = navigationNodes.size();
         if (size < 4) {
             return;
@@ -27,6 +28,7 @@ public class Router {
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
+                p.add(0.3 / (size * size));
                 // Fill the Matrix
                 Route route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
                 if (route == null) {
@@ -34,48 +36,44 @@ public class Router {
                     routes[j][i] = -1;
                 } else {
                     routes[j][i] = route.getLength();
-                }
-            }
+                }  
+            }  
         }
-        int[] shortest = null;  // The shortest permutation (so far)
-        int shortestLength = -1;    // The length of the shortest permutation (so far)
-        int length, i, routeLength; // The length of the current permutation / current Route /
-                                    // a counter for the elements of the permutation
-        int count = 0;  // saves at which permutation we are
-        int[] permutation;  // the permutation
-        boolean skip;
-        while (count < fak(size - 1)) {
+        
+        int[] result = null;  // The shortest permutation (so far)
+        int resultLength = -1;  
+        int faculty = fak(size - 1);
+        for (int f = 0; f < faculty; f++) {
+            p.add(0.7 / faculty);
             // Iterate over all permutations
-            skip = false;
-            permutation = permutation(size - 2, count++);
-            length = i = 0;
-            while(i + 1 < permutation.length) {
-                routeLength = routes[permutation[i]][permutation[++i]];
-                if (routeLength == -1) {
-                    logger.warn("Unroutable permutation: " + printPermutation(permutation));
-                    // permutation is not routable
-                    skip = true;
-                    break;
+            boolean isRouteable = true;
+            int[] current = permutation(size - 2, f);
+            int currentLength = 0;
+            for (int i = 0; i < current.length - 1; i++) {
+                int routeLength = routes[current[i]][current[i+1]];
+                if (routeLength >= 0) {
+                    currentLength += routeLength;
                 } else {
-                    length += routeLength;
+                    logger.warn("Unroutable permutation: " + printPermutation(current));
+                    isRouteable = false;
+                    break;
                 }
             }
-            if (skip) {
-                logger.warn("Skipping route");
-                continue;
-            }
-            // We're still missing the length from the start to the permutation as well 
-            // as from the permutation to  the target.
-            length += routes[permutation[i]][size - 1] +  routes[0][permutation[0]];
-            if (length < shortestLength
-                    || shortestLength == -1) {
-                // We got a shorter permutation!
-                logger.debug("Length of shortest permutation (so far) " + printPermutation(permutation) + " :" + length);
-                shortest = permutation;
-                shortestLength = length;
+            if (isRouteable) {
+                // We're still missing the length from the start to the permutation as well 
+                // as from the permutation to  the target.
+                currentLength += routes[0][current[0]] + routes[current[current.length - 1]][size - 1];
+                if ((currentLength < resultLength) || (resultLength == -1)) {
+                    // We got a shorter permutation!
+                    logger.debug("Length of shortest permutation (so far) "
+                            + printPermutation(current) + " :" + currentLength);
+                    result = current;
+                    resultLength = currentLength;
+                }
             }
         }
-        setSelection(navigationNodes, shortest);
+        setSelection(navigationNodes, result);
+        p.finish();
     }
     
     private static String printPermutation(int[] permutation) {

@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.controller.State;
 
 import static kit.route.a.lot.common.Util.formatSeconds;
@@ -42,14 +43,14 @@ public class Precalculator {
     private static double startPeriod;
     private static double currentTime;
     
-    public static void precalculate() {
+    public static void precalculate(final Progress p) {
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
         int procNum = Runtime.getRuntime().availableProcessors();
         logger.info("Starting precalculation with " + procNum + " threads...");
         ExecutorService executorService = Executors.newFixedThreadPool(procNum);
         Collection<Future<?>> futures = new ArrayList<Future<?>>(graph.getIDCount());
-        if (doAreas()) {
+        if (doAreas(p.sub(0.3))) {
             logger.info("Starting calculation of ArcFlags");
             startTime = System.currentTimeMillis();
             startPeriod = startTime;
@@ -58,7 +59,7 @@ public class Precalculator {
                 futures.add(executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        createFlags(currentI);
+                        createFlags(currentI, p.sub(0.6f / graph.getIDCount()));
                     }
                 }));
                 
@@ -74,9 +75,11 @@ public class Precalculator {
                     e.printStackTrace();
                 }
             }
+            p.add(0.1);
             logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000));
         } else {
             logger.error("Failed to do precalculation");
+            p.add(0.7);
         }
         return;
     }
@@ -95,7 +98,7 @@ public class Precalculator {
         }
     }
     
-    private static void createFlags(int node) {
+    private static void createFlags(int node, Progress p) {
         logger.trace("Calculating ArcFlags for ID " + String.valueOf(node));
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
@@ -126,11 +129,12 @@ public class Precalculator {
             }
         }
         incrementFinishedIds();
+        p.add(1);
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
         logger.trace("Done calculating ArcFlags for ID " + String.valueOf(node));
     }
 
-    private static boolean doAreas() {
+    private static boolean doAreas(Progress p) {
         final int AREAS = 63;
         final String FILE = "graph.txt";
         String BINARY = "gpmetis";
@@ -144,6 +148,7 @@ public class Precalculator {
             logger.error("Couldn't create graph-file, got rights?");
             return false;
         }
+        p.add(0.2);
         
         //calculate areas with Metis
         boolean tryAgain;
@@ -171,6 +176,7 @@ public class Precalculator {
                 BINARY = "./gpmetis";   
             }
         } while (tryAgain);
+        p.add(0.7);
         
         // read resulting file
         String filePath = FILE + ".part." + AREAS;
@@ -186,6 +192,7 @@ public class Precalculator {
         }
         graph.readAreas(new String(areas));
         logger.info("Areas successfully created");
-        return true;
+        p.add(0.1);
+        return true;  
     }
 }

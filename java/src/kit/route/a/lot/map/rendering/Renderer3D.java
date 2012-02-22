@@ -56,7 +56,7 @@ public class Renderer3D extends Renderer {
      */
     @Override
     public void render(Context renderContext) {
-        if (!(context instanceof Context3D)) {
+        if (!(renderContext instanceof Context3D)) {
             return;
         }
         // RETRIEVE VARIABLES TO WORK WITH

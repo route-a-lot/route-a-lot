@@ -64,8 +64,7 @@ public class StateIO {
         boolean render3D = stream.readBoolean();
         if (LOAD_MAP_MODE) {
             state.setActiveRenderer((render3D) ? new Renderer3D() : new Renderer());
-        }
-              
+        }              
         stream.close();
     }
 

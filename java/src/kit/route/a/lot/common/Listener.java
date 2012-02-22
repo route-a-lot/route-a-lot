@@ -24,7 +24,7 @@ public abstract class Listener {
         SWITCH_MAP_MODE = 18, RENDER = 19,
         SET_HIGHWAY_MALUS = 20, SET_HEIGHT_MALUS = 21,
         LIST_IMPORTED_MAPS = 22, DELETE_IMPORTED_MAP = 23,
-        PROGRESS_DONE = 24, CLOSE_APPLICATION = 25;
+        PROGRESS = 24, CLOSE_APPLICATION = 25;
     
     private static final int TYPE_COUNT = 26;
     

@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.BeforeClass;
 
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.OSMLoader;
@@ -38,8 +39,8 @@ public class RoutingAndGraphTest {
         loader = new OSMLoader(State.getInstance());
         simpleRoutingState = new RoutingStateMock();
         loaderForSimpleGraph = new OSMLoader(simpleRoutingState);
-        loader.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
-        loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
+        loader.importMap(new File("./test/resources/karlsruhe_small_current.osm"), new Progress());
+        loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"), new Progress());
         graph = State.getInstance().getLoadedGraph();
     }
 
@@ -175,7 +176,7 @@ public class RoutingAndGraphTest {
                 selections.add(new Selection(start, target, ratio, null, ""));
             }
             State.getInstance().setNavigationNodes(selections); // safety
-            Router.optimizeRoute(selections);
+            Router.optimizeRoute(selections, new Progress());
             List<Selection> sol = State.getInstance().getNavigationNodes();
             int y = stream.readInt();
             if (y != getRouteLength(Router.calculateRoute(sol))) {

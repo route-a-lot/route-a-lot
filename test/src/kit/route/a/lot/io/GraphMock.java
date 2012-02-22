@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.routing.RoutingGraph;
 
 

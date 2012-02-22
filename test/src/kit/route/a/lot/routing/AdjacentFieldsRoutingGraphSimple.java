@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import kit.route.a.lot.common.Progress;
+
 
 public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
     

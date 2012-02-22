@@ -3,6 +3,7 @@ package kit.route.a.lot.io;
 import kit.route.a.lot.heightinfo.HeightTile;
 import kit.route.a.lot.heightinfo.RAMHeightTile;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.controller.State;
 
 import java.io.BufferedInputStream;
@@ -21,15 +22,17 @@ public class SRTMLoader implements HeightLoader {
     private static Logger logger = Logger.getLogger(SRTMLoader.class);
 
     @Override
-    public void load(File dataDirectory) { 
-        File[] dateien = dataDirectory.listFiles();
-        if (dateien == null) {
+    public void load(File dataDirectory, Progress p) { 
+        File[] files = dataDirectory.listFiles();
+        if (files == null) {
             return;
         }
-        for (File file: dateien) {
-            String[] fileNameParts = file.getName().split("\\.");
+        int count = files.length;
+        for (int i = 0; i < count; i++) {
+            p.add(1d / count);
+            String[] fileNameParts = files[i].getName().split("\\.");
             if ((fileNameParts.length != 2) || (fileNameParts[0].length() != 7)
-                    || !fileNameParts[1].equals(FILE_EXTENSION)) {
+                    || !fileNameParts[1].equals(FILE_EXTENSION)) {    
                 continue;
             }
             String fileName = fileNameParts[0];  
@@ -38,11 +41,11 @@ public class SRTMLoader implements HeightLoader {
                 lat = Float.parseFloat(fileName.substring(1, 3)) * ((fileName.charAt(0) == 'S') ? -1 : 1);
                 lon = Float.parseFloat(fileName.substring(4, 7)) * ((fileName.charAt(3) == 'W') ? -1 : 1);
             } catch (NumberFormatException e) {
-                logger.info("Invalid hgt file name: '" + file.getName() + "'.");
+                logger.info("Invalid hgt file name: '" + files[i].getName() + "'.");
                 continue;
             }
-            logger.debug("Loading hgt file :'" + file.getName() + "'...");
-            HeightTile tile = loadHeightTile(file, new Coordinates(lat, lon));
+            logger.debug("Loading hgt file :'" + files[i].getName() + "'...");
+            HeightTile tile = loadHeightTile(files[i], new Coordinates(lat, lon));
             /* in HeightMap einfügen */
             State.getInstance().getLoadedHeightmap().addHeightTile(tile);
         }// end for dateien

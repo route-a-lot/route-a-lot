@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 
+import kit.route.a.lot.common.Progress;
+
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +38,7 @@ public class OSMLoaderTest {
     @Ignore
     // another testfile
     public void testImportSimple() {
-        loader.importMap(new File("test/resources/simple.osm"));
+        loader.importMap(new File("test/resources/simple.osm"), new Progress());
 
         assertEquals(3, state.getNodeCount());
         assertEquals(2, state.getGraphStartIDsSize());
@@ -46,7 +48,7 @@ public class OSMLoaderTest {
 
     @Test
     public void testImportKarlsruheSmall() {
-        loader.importMap(new File("test/resources/karlsruhe_small.osm"));
+        loader.importMap(new File("test/resources/karlsruhe_small.osm"), new Progress());
 
         assertEquals(11093, state.getNodeCount());
         assertTrue(0 < state.getWayCount());
@@ -54,7 +56,7 @@ public class OSMLoaderTest {
 
     @Test
     public void testImportKarlsruheBig() {
-        loader.importMap(new File("test/resources/karlsruhe_big.osm"));
+        loader.importMap(new File("test/resources/karlsruhe_big.osm"), new Progress());
 
         assertEquals(36678, state.getNodeCount());
     }
@@ -62,7 +64,7 @@ public class OSMLoaderTest {
     @Test
     public void testPerformanceImportKarlsruheBig() {
         long start = System.currentTimeMillis();
-        loader.importMap(new File("test/resources/karlsruhe_big.osm"));
+        loader.importMap(new File("test/resources/karlsruhe_big.osm"), new Progress());
         long duration = System.currentTimeMillis() - start;
 
         // System.out.println("Duration: " + duration + " ms");
@@ -73,7 +75,7 @@ public class OSMLoaderTest {
     @Ignore
     // test file will not be committed to the repository because it is too big ~19G
     public void testImportGermany() {
-        loader.importMap(new File("test/resources/germany.osm"));
+        loader.importMap(new File("test/resources/germany.osm"), new Progress());
 
         assertEquals(89049038, state.getNodeCount());
     }
@@ -81,28 +83,28 @@ public class OSMLoaderTest {
     @Ignore
     // test file will not be committed to the repository because it is too big ~2.8G
     public void testImportBadenWuerttemberg() {
-        loader.importMap(new File("test/resources/baden-wuerttemberg.osm"));
+        loader.importMap(new File("test/resources/baden-wuerttemberg.osm"), new Progress());
 
         assertEquals(13410554, state.getNodeCount());
     }
     
     @Test
     public void testMinimal() {
-        loader.importMap(new File("test/resources/testmaps/minimal.osm"));
+        loader.importMap(new File("test/resources/testmaps/minimal.osm"), new Progress());
         assertEquals(0, state.getNodeCount());
         assertEquals(0, state.getWayCount());
     }
     
     @Test
     public void testGibberish() {
-        loader.importMap(new File("test/resources/testmaps/gibberish.osm"));
+        loader.importMap(new File("test/resources/testmaps/gibberish.osm"), new Progress());
         assertEquals(0, state.getNodeCount());
         assertEquals(0, state.getWayCount());
     }
     
     @Test
     public void testMissingNode() {
-        loader.importMap(new File("test/resources/testmaps/missing-node.osm"));
+        loader.importMap(new File("test/resources/testmaps/missing-node.osm"), new Progress());
         assertEquals(1, state.getNodeCount());
         assertEquals(0, state.getWayCount());
         
@@ -110,21 +112,21 @@ public class OSMLoaderTest {
     
     @Test
     public void testNonContinuous() {
-        loader.importMap(new File("test/resources/testmaps/non-continuous.osm"));
+        loader.importMap(new File("test/resources/testmaps/non-continuous.osm"), new Progress());
         assertEquals(2, state.getNodeCount());
         assertEquals(1, state.getWayCount());
     }
     
     @Test
     public void testNot() {
-        loader.importMap(new File("test/resources/testmaps/not.osm"));
+        loader.importMap(new File("test/resources/testmaps/not.osm"), new Progress());
         assertEquals(0, state.getNodeCount());
         assertEquals(0, state.getWayCount());
     }
     
     @Test
     public void testNoNodes() {
-        loader.importMap(new File("test/resources/testmaps/no-nodes.osm"));
+        loader.importMap(new File("test/resources/testmaps/no-nodes.osm"), new Progress());
         assertEquals(0, state.getNodeCount());
         assertEquals(0, state.getWayCount());
     }

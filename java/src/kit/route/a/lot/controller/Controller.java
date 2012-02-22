@@ -11,6 +11,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
@@ -72,35 +73,32 @@ public class Controller {
     }
     
     private Controller() {
-        state.setProgress(0);
+        Progress p = new Progress();
         
         // REGISTER LISTENERS
-        addGUIListeners();
-        state.setProgress(30);
+        addGUIListeners(); 
         
-        // IMPORT HEIGHT DATA   
+        // IMPORT HEIGHT DATA    
         Util.startTimer();
-        importHeightmaps(SRTM_DIRECTORY);
+        importHeightmaps(SRTM_DIRECTORY, p.sub(0.4));
         logger.info("Heightmaps loaded: " + Util.stopTimer());
-        state.setProgress(60); 
+        
         
         // LOAD STATE
         Util.startTimer();
-        loadState();
+        loadState(p.sub(0.5));
         logger.info("State loaded: " + Util.stopTimer());
-        state.setProgress(90);  
         
         // IMPORT DEFAULT OSM MAP
         if (state.getLoadedMapFile() == null) {
             if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
-                importMap(DEFAULT_OSM_MAP);
+                importMap(DEFAULT_OSM_MAP, p.sub(0.1));
                 logger.info("Imported default map: " + Util.stopTimer());
             } else {
                 logger.warn("No map loaded");
             }      
-        }
-        
-        state.setProgress(100);
+        }    
+        p.finish();
     }   
     
     private void addGUIListeners() {
@@ -129,12 +127,16 @@ public class Controller {
         });
         Listener.addListener(IMPORT_OSM, new Listener() {
             public void handleEvent(Event e) {
-                importMap(new File(((TextEvent) e).getText()));  
+                Progress p = new Progress();
+                importMap(new File(((TextEvent) e).getText()), new Progress());  
+                p.finish();
             } 
         });  
         Listener.addListener(OPTIMIZE_ROUTE, new Listener() {
             public void handleEvent(Event e) {
-                optimizeRoute();
+                Progress p = new Progress();
+                optimizeRoute(p);
+                p.finish();
             } 
         });
         Listener.addListener(DELETE_NAVNODE, new Listener() {
@@ -149,8 +151,10 @@ public class Controller {
         Listener.addListener(LOAD_MAP, new Listener() {
             public void handleEvent(Event e) {
                 String text = ((TextEvent) e).getText();
-                loadMap((text.length() == 0) ? null
-                        : new File(SRAL_DIRECTORY + "/" + text + SRAL_EXT));
+                Progress p = new Progress();
+                loadMap((text.length() == 0) ? null : new File(
+                        SRAL_DIRECTORY + "/" + text + SRAL_EXT), p);
+                p.finish();
                 setViewToMapCenter();
             }    
         });
@@ -242,47 +246,51 @@ public class Controller {
         });
     }
     
-    private void loadState() {
+    private void loadState(Progress p) {
         State state = State.getInstance(); 
         if (STATE_FILE.exists()) {   
-            try { 
+            try {
                 StateIO.loadState(STATE_FILE); 
                 //guiHandler.setMapMode(state.getActiveRenderer() instanceof Renderer3D);              
             } catch (IOException e) {
                 logger.error("State loading: Read error occurred.");
                 e.printStackTrace();
             } 
+            p.add(0.15);
             // LOAD SRAL MAP FROM STATE
             if ((state.getLoadedMapFile() != null) && state.getLoadedMapFile().exists()) {
                 logger.info("Loading map file from state");
-                loadMap(state.getLoadedMapFile());
-            }  
-        }   
+                loadMap(state.getLoadedMapFile(), p.sub(0.85));
+            } else {
+                p.add(0.85);
+            }
+        }
         guiHandler.setSpeed(state.getSpeed());  
-        guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());       
+        guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());   
     }
     
-    private void importMap(File osmFile) {
+    private void importMap(File osmFile, Progress p) {
         if(!osmFile.exists()) {
-            logger.error("osm File doesn't exist");
+            logger.error("OSM File doesn't exist");
         } else {
             state.resetMap();
-            new OSMLoader(State.getInstance()).importMap(osmFile);
-            Precalculator.precalculate();
+            new OSMLoader(State.getInstance()).importMap(osmFile, p.sub(0.3));
+            Precalculator.precalculate(p.sub(0.6)); // TODO
             state.getLoadedMapInfo().compactifyDatastructures();
             state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
-                    + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ").sral"));    
+                    + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {
-                MapIO.saveMap(state.getLoadedMapFile());
+                MapIO.saveMap(state.getLoadedMapFile(), p.sub(0.1));
             } catch (IOException e) {
                 logger.error("Could not save imported map to file.");
             }
             setViewToMapCenter();
             updateImportedMapsList();
         }    
+        p.finish();
     }
   
-    private void loadMap(File file) {
+    private void loadMap(File file, Progress p) {
         if (file == null) {
             state.resetMap();
             guiHandler.updateGUI();
@@ -291,7 +299,7 @@ public class Controller {
         } else {
             state.resetMap();
             try {
-                MapIO.loadMap(file);
+                MapIO.loadMap(file, p);
                 state.setLoadedMapFile(file);
             } catch (IOException e) {
                 logger.error("Map could not be loaded.");
@@ -306,9 +314,9 @@ public class Controller {
         updateImportedMapsList();
     }
            
-    private void importHeightmaps(File directory) {
+    private void importHeightmaps(File directory, Progress p) {
         HeightLoader loader = new SRTMLoaderDeferred();
-        loader.load(directory);
+        loader.load(directory, p);
     }
     
     
@@ -415,8 +423,8 @@ public class Controller {
         }
     }
 
-    private void optimizeRoute() {  
-        Router.optimizeRoute(state.getNavigationNodes());
+    private void optimizeRoute(Progress p) {
+        Router.optimizeRoute(state.getNavigationNodes(), p);
         guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();
     }

@@ -19,6 +19,8 @@ import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Progress;
+import kit.route.a.lot.common.ProgressInputStream;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.WayInfo;
@@ -64,9 +66,10 @@ public class OSMLoader {
      * 
      * @param file
      *            the osm File to be imported
+     * @param progress 
      */
-    public void importMap(File file) {
-
+    public void importMap(File file, final Progress p) {
+        // TODO handle progress
         logger.info("Importing " + file);
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = null;
@@ -131,6 +134,7 @@ public class OSMLoader {
                 return;
             }
         }
+        p.add(0.05);
 
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
@@ -162,6 +166,7 @@ public class OSMLoader {
             Coordinates curNodeCoordinates;
             int curNodeId;
             POIDescription curNodePOIDescription;
+            
 
             long ignoredKeys = 0;
 
@@ -977,7 +982,8 @@ public class OSMLoader {
 
         try {
             inputStream.close();
-            inputStream = new BufferedInputStream(new FileInputStream(file));
+            inputStream = new BufferedInputStream(new ProgressInputStream(
+                    new FileInputStream(file), p.sub(0.6), file.length()));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         } catch (IOException e) {
@@ -1016,7 +1022,8 @@ public class OSMLoader {
             uniqueEdgeStartIDs[i] = uniqueEdgeStartIds.get(i);
             uniqueEdgeEndIDs[i] = uniqueEdgeEndIds.get(i);
         }
-
+        p.add(0.15);
+        
         for (int i = 0; i < startIDs.length; i++) {
             if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
                 logger.error("Id found that is greater than maxWayNodeId");
@@ -1028,10 +1035,11 @@ public class OSMLoader {
                 logger.error("Added an edge with weight < 0");
             }
         }
+        p.add(0.05);
 
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
         state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
-
+        p.add(0.15);
     }
     
 }

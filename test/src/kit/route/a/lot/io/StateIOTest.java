@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -39,12 +40,12 @@ public class StateIOTest extends StateIO {
     @Test
     public void saveAndLoad() throws Exception {
         File file = new File("mock.state");
-        loader.importMap(new File("test/resources/karlsruhe_small.osm"));
+        loader.importMap(new File("test/resources/karlsruhe_small.osm"), new Progress());
         StateMock original = state;
         
         // test deterministic importing
         setUp();
-        loader.importMap(new File("test/resources/karlsruhe_small.osm"));
+        loader.importMap(new File("test/resources/karlsruhe_small.osm"), new Progress());
         assertTrue(original.equals(state));
         
         // Test proper saving/loading

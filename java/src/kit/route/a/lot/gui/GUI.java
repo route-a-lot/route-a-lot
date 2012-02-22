@@ -180,10 +180,10 @@ public class GUI extends JFrame {
         // tabArea.setMnemonicAt(1, KeyEvent.VK_2);
 
         routeValues = new JLabel();
-        mouseCoordinatesDisplay = new JLabel();
+        mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
-        Listener.addListener(PROGRESS_DONE, new Listener() {
+        Listener.addListener(PROGRESS, new Listener() {
             public void handleEvent(Event e) {
                 int progress = ((NumberEvent) e).getNumber();
                 if (progress < 0 || progress >= 100) {

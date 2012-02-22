@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -22,31 +20,20 @@ public class State {
     private File loadedMapFile;
     private MapInfo loadedMapInfo;
     private RoutingGraph loadedGraph;
-    private IHeightmap loadedHeightmap;
-    private Renderer activeRenderer;
+    private IHeightmap loadedHeightmap = new Heightmap();
+    private Renderer activeRenderer = new Renderer();
     private List<Selection> navigationNodes;
     private List<Integer> currentRoute;
-    private Coordinates centerCoordinates;
-    private int detailLevel;
-    private int clickRadius;
+    private Coordinates centerCoordinates = new Coordinates(0, 0);
+    private int detailLevel = 2;
+    private int clickRadius = 10;
     private RouteDescription routeDescription;
-    private int speed;
-    private int duration;
-    private int heightMalus;
-    private int highwayMalus;
-    private int progress;
+    private int speed = 15;
+    private int duration = 0;
+    private int heightMalus = 0;
+    private int highwayMalus = 0;
 
     public State() {
-        detailLevel = 2;
-        clickRadius = 10;
-        speed = 15;
-        duration = 0;
-        heightMalus = 0;
-        highwayMalus = 0;
-        progress = 0;
-        loadedHeightmap = new Heightmap();
-        activeRenderer = new Renderer();
-        centerCoordinates = new Coordinates(0, 0);
         resetMap();
     }
     
@@ -216,15 +203,6 @@ public class State {
 
     public void setHighwayMalus(int heighwayMalus) {
         this.highwayMalus = heighwayMalus;
-    }
-    
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-        Listener.fireEvent(Listener.PROGRESS_DONE, new NumberEvent(progress));
     }
 
 }
