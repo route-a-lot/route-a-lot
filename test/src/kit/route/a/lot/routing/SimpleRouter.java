@@ -26,6 +26,7 @@ public class SimpleRouter {
                 result.addAll(route);
                 prev = navPoint;
             } else {
+                return new ArrayList<Integer>();
             }
         }
         
@@ -115,8 +116,14 @@ public class SimpleRouter {
         secSol.add(navigationNodes.get(1));
         secSol.add(navigationNodes.get(3));
         int weight2 = getRouteLength(calculateRoute(secSol));
-        return (weight2 != 0 && weight2 < weight1) ? secSol : navigationNodes;
-//        return navigationNodes;
+        if (weight1 <= 0 && weight2 <= 0) {
+            return navigationNodes;
+        } else if (weight1 <= 0){
+            return secSol;
+        } else if (weight2 <= 0){
+            return navigationNodes;
+        }
+        return (weight2 < weight1) ? secSol : navigationNodes;
     }
     
     private static int getRouteLength(List<Integer> route) {

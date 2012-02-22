@@ -121,6 +121,7 @@ public class Router {
                 prev = navPoint;
             } else {
                 logger.warn("Ignoring " + navPoint + " for routing." + " (no path found).");
+                return new ArrayList<Integer>();    //TODO l.a.
             }
         }
         // // System.out.println(route.size());
