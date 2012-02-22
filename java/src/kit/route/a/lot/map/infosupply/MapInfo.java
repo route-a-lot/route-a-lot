@@ -86,6 +86,8 @@ public class MapInfo {
         elementDB.addNode(id, newNode);
         // geographicalOperator.addToBaseLayer(newNode);
     }
+    
+    // TODO Funktion, um Nodes zu finden, die nicht gebraucht werden, und löschen
 
     /**
      * Adds a way the the data structures.

@@ -19,6 +19,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     private int[] edges;
     private int[] weights;
     private long[] arcFlags;
+    private Object[] monitors;
     private AdjacentFieldsRoutingGraph metisGraph;
     
     @Override
@@ -52,6 +53,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         weights = weight.clone();
         arcFlags = new long[startID.length];
         Arrays.fill(arcFlags, (long) 0);
+        monitors = new Object[startID.length];
+        for (int i = 0; i < startID.length; i++) {
+            monitors[i] = new Object();
+        }
     }
     
     public boolean equals(Object other) {
@@ -189,10 +194,12 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         edges = new int[edgeCount];
         weights = new int[edgeCount];
         arcFlags = new long[edgeCount];
+        monitors = new Object[edgeCount];
         for (int i = 0; i < edgeCount; i++) {
             edges[i] = stream.readInt();
             weights[i] = stream.readInt();
             arcFlags[i] = stream.readLong();
+            monitors[i] = new Object();
         }
     }
 
@@ -300,9 +307,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             logger.warn("ID's are not within bounds");
             return;
         }
-        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) {
+        for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) { // TOOD binary search instead of linear possible?
             if (endID == edges[i]) {
-                arcFlags[i] |= 1 << area;
+                synchronized (monitors) {       // TODO bei vielen Threads mit [i] besser?
+                    arcFlags[i] |= 1 << area;
+                }
             }
         }    
     }

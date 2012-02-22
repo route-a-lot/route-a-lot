@@ -8,8 +8,14 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.PriorityQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.apache.log4j.Logger;
 
@@ -31,34 +37,62 @@ public class Precalculator {
     private static RoutingGraph graph, inverted;
     private static Logger logger = Logger.getLogger(Precalculator.class);
     
+    private static int finishedIds = 0;
+    private static double startTime;
+    private static double startPeriod;
+    private static double currentTime;
+    
     public static void precalculate() {
-        logger.info("Starting precalculation...");
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
+        int procNum = Runtime.getRuntime().availableProcessors();
+        logger.info("Starting precalculation with " + procNum + " threads...");
+        ExecutorService executorService = Executors.newFixedThreadPool(procNum);
+        Collection<Future<?>> futures = new ArrayList<Future<?>>(graph.getIDCount());
         if (doAreas()) {
             logger.info("Starting calculation of ArcFlags");
-            double startTime = System.currentTimeMillis();
-            double startPeriod = startTime;
-            double currentTime;
+            startTime = System.currentTimeMillis();
+            startPeriod = startTime;
             for (int i = 0; i < graph.getIDCount(); i++) {
-                if (i % 10 == 0) {
-                    currentTime = System.currentTimeMillis();
-                    if (currentTime - startPeriod > 5000) {
-                        startPeriod = currentTime;
-                        logger.info("Calculation of ArcFlags at " + (i * 100 / graph.getIDCount()) + "%");
-                        double elapsedTime = (currentTime - startTime) / 1000;
-                        logger.info("Elapsed time: " + formatSeconds(elapsedTime)
-                                + " - estimated time remaining: " + formatSeconds(elapsedTime / (((double) i) / graph.getIDCount()) - elapsedTime));
+                final int currentI = i;
+                futures.add(executorService.submit(new Runnable() {
+                    @Override
+                    public void run() {
+                        createFlags(currentI);
                     }
+                }));
+                
+            }
+            logger.info("All tasks added waiting for them to complete...");
+            executorService.shutdown();
+            for (Future<?> future : futures) {
+                try {
+                    future.get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
                 }
-                // TODO I suppose we could run some parallel.
-                createFlags(i);
             }
             logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000));
         } else {
             logger.error("Failed to do precalculation");
         }
         return;
+    }
+    
+    private static synchronized void incrementFinishedIds() {
+        finishedIds++;
+        if (finishedIds % 10 == 0) {
+            currentTime = System.currentTimeMillis();
+            if (currentTime - startPeriod > 5000) {
+                startPeriod = currentTime;
+                logger.info("Calculation of ArcFlags at " + (finishedIds * 100 / graph.getIDCount()) + "%");
+                double elapsedTime = (currentTime - startTime) / 1000;
+                logger.info("Elapsed time: " + formatSeconds(elapsedTime)
+                        + " - estimated time remaining: " + formatSeconds(elapsedTime / (((double) finishedIds) / graph.getIDCount()) - elapsedTime));
+            }
+        }
     }
     
     private static void createFlags(int node) {
@@ -91,6 +125,7 @@ public class Precalculator {
                 }
             }
         }
+        incrementFinishedIds();
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
         logger.trace("Done calculating ArcFlags for ID " + String.valueOf(node));
     }
