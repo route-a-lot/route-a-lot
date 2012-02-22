@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.BeforeClass;
 
 import kit.route.a.lot.common.Selection;
@@ -25,14 +26,15 @@ public class RoutingAndGraphTest {
     static RoutingStateMock simpleRoutingState;
     static RoutingGraph graph;
     static final int SIMPLE_ROUTES_NUMBER = 10000;
-    static final int PER_ADVANCED = 5;  //number of tests for each optimized number
-    static final int ADVANCED_ROUTES_TILL = 10;  //targets without optimizing
-    
-    static final int TARGETS_OPT = 1000;          //test per target
-    
-    
+    static final int PER_ADVANCED = 5; // number of tests for each optimized number
+    static final int ADVANCED_ROUTES_TILL = 10; // targets without optimizing
+
+    static final int TARGETS_OPT = 1000; // test per target
+
+
     @BeforeClass
     public static void initialize() {
+        PropertyConfigurator.configure("config/log4j.conf");
         loader = new OSMLoader(State.getInstance());
         simpleRoutingState = new RoutingStateMock();
         loaderForSimpleGraph = new OSMLoader(simpleRoutingState);
@@ -40,43 +42,47 @@ public class RoutingAndGraphTest {
         loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"));
         graph = State.getInstance().getLoadedGraph();
     }
-    
+
     @Test
-    public void buildGraphTest() {  //tests the graph datastructures
+    public void buildGraphTest() { // tests the graph datastructures
         int[] simpleGraphStartEdges = simpleRoutingState.getLoadedGraph().getStartIDArray();
         int[] normalGraphStartEdges = graph.getStartIDArray();
-        
+
         assertArrayEquals(simpleGraphStartEdges, normalGraphStartEdges);
-        
-        for (int i = - 1; i <  normalGraphStartEdges.length; i++){  //-1 and getstart . . ..length, for error handling test
-            assertTrue(graph.getAllNeighbors(i).containsAll(simpleRoutingState.getLoadedGraph().getAllNeighbors(i)));
+
+        for (int i = -1; i < normalGraphStartEdges.length; i++) { // -1 and getstart . . ..length, for error
+                                                                  // handling test
+            assertTrue(graph.getAllNeighbors(i).containsAll(
+                    simpleRoutingState.getLoadedGraph().getAllNeighbors(i)));
         }
-        
-        for (int i = 0; i <  normalGraphStartEdges.length - 1; i++){
+
+        for (int i = 0; i < normalGraphStartEdges.length - 1; i++) {
             for (Integer inti : graph.getAllNeighbors(i)) {
-                assertEquals(graph.getWeight(i, inti), simpleRoutingState.getLoadedGraph().getWeight(i, inti)); 
+                assertEquals(graph.getWeight(i, inti), simpleRoutingState.getLoadedGraph().getWeight(i, inti));
             }
         }
     }
-    
+
     @Test
-    public void getInverted() { //graphTest
+    public void getInvertedTest() { // graphTest
         RoutingGraph reInvertedGraph = graph.getInverted();
         reInvertedGraph = reInvertedGraph.getInverted();
-        
+
         int[] reInvertedGraphStartEdges = reInvertedGraph.getStartIDArray();
         int[] normalGraphStartEdges = graph.getStartIDArray();
-        
+
         assertArrayEquals(normalGraphStartEdges, reInvertedGraphStartEdges);
-        
-        for (int i = - 1; i <  normalGraphStartEdges.length; i++){  //-1 and getstart . . ..length, for error handling test
+
+        for (int i = -1; i < normalGraphStartEdges.length; i++) { // -1 and getstart . . ..length, for error
+                                                                  // handling test
             assertTrue(graph.getAllNeighbors(i).containsAll(reInvertedGraph.getAllNeighbors(i)));
         }
     }
-    
-    
-    @Test   //graph error handling test
-    public void getRelevantNeighboursTest(){
+
+
+    @Test
+    // graph error handling test
+    public void getRelevantNeighboursTest() {
         int startEdgesNumber = graph.getStartIDArray().length;
         byte[] area = new byte[100];
         for (int i = 0; i < area.length; i++) {
@@ -89,35 +95,37 @@ public class RoutingAndGraphTest {
         graph.getRelevantNeighbors(startEdgesNumber * 2, new byte[1]);
         graph.getRelevantNeighbors(-5, new byte[1]);
     }
-    
+
     @Test
-    public void getWeight() {  //graph error handling test
+    public void getWeightTest() { // graph error handling test
         graph.getWeight(-5, -5);
         graph.getWeight(graph.getStartIDArray().length * 2, graph.getStartIDArray().length * 2);
         graph.getWeight(1, 1);
         graph.getWeight(0, 0);
     }
-    
+
     @Test
-    public void simpleRoutingTest() throws Exception {   //simple routing test
+    public void simpleRoutingTest() throws Exception { // simple routing test
         File testRoutes = new File("SimpleRoutingTestFile.bin");
         if (!testRoutes.exists()) {
             createSimpleRouteTestFile(testRoutes);
         }
-        
+
         DataInputStream stream = new DataInputStream(new FileInputStream(testRoutes));
-        
-        if(stream.readInt() != SIMPLE_ROUTES_NUMBER || stream.readInt() != ADVANCED_ROUTES_TILL //test conditions changed
+
+        if (stream.readInt() != SIMPLE_ROUTES_NUMBER || stream.readInt() != ADVANCED_ROUTES_TILL // test
+                                                                                                 // conditions
+                                                                                                 // changed
                 || stream.readInt() != PER_ADVANCED) {
-          stream.close();
-          testRoutes.delete();
-          createSimpleRouteTestFile(testRoutes);
-          stream = new DataInputStream(new FileInputStream(testRoutes));
-          stream.readInt();
-          stream.readInt();
-          stream.readInt();
+            stream.close();
+            testRoutes.delete();
+            createSimpleRouteTestFile(testRoutes);
+            stream = new DataInputStream(new FileInputStream(testRoutes));
+            stream.readInt();
+            stream.readInt();
+            stream.readInt();
         }
-        
+
         ArrayList<Selection> selections;
         List<Integer> route;
         for (int i = 0; i < SIMPLE_ROUTES_NUMBER + (ADVANCED_ROUTES_TILL - 2) * PER_ADVANCED; i++) {
@@ -131,134 +139,134 @@ public class RoutingAndGraphTest {
             }
             route = Router.calculateRoute(selections);
             int length = getRouteLength(route);
-            
+
             assertEquals(stream.readInt(), length);
-            
+
         }
     }
-    
-  @Test
-  public void optimizedRoutingTest() throws Exception {
-      File testRoutes = new File("OptimizedRoutingTestFile.bin");
-      if (!testRoutes.exists()) {
-          createOptimizedRouteTestFile(testRoutes);
-      }
-      
-      DataInputStream stream = new DataInputStream(new FileInputStream(testRoutes));
-      
-      if(stream.readInt() != TARGETS_OPT) {
-          stream.close();
-          testRoutes.delete();
-          createOptimizedRouteTestFile(testRoutes);
-          stream = new DataInputStream(new FileInputStream(testRoutes));
-          stream.readInt();
-      }
-      
-      int fail = 0;
-      
-      ArrayList<Selection> selections;
-      for (int i = 0; i < TARGETS_OPT; i++) {    //test all saved routes
-          selections = new ArrayList<Selection>();
-          int size = stream.readInt();
-          for (int j = 0; j < size; j++) {
-              int start = stream.readInt();
-              int target = stream.readInt();
-              float ratio = stream.readFloat();
-              selections.add(new Selection(start, target, ratio, null, ""));
-          }
-          State.getInstance().setNavigationNodes(selections);   //safety
-          Router.optimizeRoute(selections);
-          List<Selection> sol = State.getInstance().getNavigationNodes();
-          int y = stream.readInt();
-          if (y != getRouteLength(Router.calculateRoute(sol))) {
-              fail++;
-              System.out.println("failure:");
-              System.out.println("normal routing val: " + getRouteLength(Router.calculateRoute(sol)));
-              System.out.println("simple routing val: " + y);
-          }
-          //assertEquals(stream.readInt(), getRouteLength(Router.calculateRoute(sol)));
-      }
-//          stream.readInt();
-//          if (/*stream.readInt() <= 0 ||*/ getRouteLength(Router.calculateRoute(sol)) == 0); {
-//              fail++;
-//              System.out.println(getRouteLength(Router.calculateRoute(sol)));
-//          }
-//      }
-      System.err.println("failed optimized Routing Tests: " + fail + "/" + TARGETS_OPT);
-      assertTrue(true); //TODO
-  }
-  
-  
-  public void createOptimizedRouteTestFile(File file) throws Exception {
-      DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
-      
-      stream.writeInt(TARGETS_OPT);
-      
-      ArrayList<Selection> selections = new ArrayList<Selection>();
-      
-      for (int i = 0; i < TARGETS_OPT; i++) {
-          stream.writeInt(4);
-          selections = new ArrayList<Selection>();
-          for (int j = 0; j < 4; j++) {
-              Selection temp = SelectMock.getRandomSelection();
-              selections.add(temp);
-              stream.writeInt(temp.getFrom());
-              stream.writeInt(temp.getTo());
-              stream.writeFloat(temp.getRatio());
-          }
-          List<Selection> solution = SimpleRouter.optimizeRouteWith4Targets(selections);
-          stream.writeInt(getRouteLength(Router.calculateRoute(solution)));
-      }
-  }
-   
-    
+
+    @Test
+    public void optimizedRoutingTest() throws Exception {
+        File testRoutes = new File("OptimizedRoutingTestFile.bin");
+        if (!testRoutes.exists()) {
+            createOptimizedRouteTestFile(testRoutes);
+        }
+
+        DataInputStream stream = new DataInputStream(new FileInputStream(testRoutes));
+
+        if (stream.readInt() != TARGETS_OPT) {
+            stream.close();
+            testRoutes.delete();
+            createOptimizedRouteTestFile(testRoutes);
+            stream = new DataInputStream(new FileInputStream(testRoutes));
+            stream.readInt();
+        }
+
+        int fail = 0;
+
+        ArrayList<Selection> selections;
+        for (int i = 0; i < TARGETS_OPT; i++) { // test all saved routes
+            selections = new ArrayList<Selection>();
+            int size = stream.readInt();
+            for (int j = 0; j < size; j++) {
+                int start = stream.readInt();
+                int target = stream.readInt();
+                float ratio = stream.readFloat();
+                selections.add(new Selection(start, target, ratio, null, ""));
+            }
+            State.getInstance().setNavigationNodes(selections); // safety
+            Router.optimizeRoute(selections);
+            List<Selection> sol = State.getInstance().getNavigationNodes();
+            int y = stream.readInt();
+            if (y != getRouteLength(Router.calculateRoute(sol))) {
+                fail++;
+                System.out.println("failure:");
+                System.out.println("normal routing val: " + getRouteLength(Router.calculateRoute(sol)));
+                System.out.println("simple routing val: " + y);
+            }
+            // assertEquals(stream.readInt(), getRouteLength(Router.calculateRoute(sol)));
+        }
+        // stream.readInt();
+        // if (/*stream.readInt() <= 0 ||*/ getRouteLength(Router.calculateRoute(sol)) == 0); {
+        // fail++;
+        // System.out.println(getRouteLength(Router.calculateRoute(sol)));
+        // }
+        // }
+        System.err.println("failed optimized Routing Tests: " + fail + "/" + TARGETS_OPT);
+        assertTrue(true); // TODO
+    }
+
+
+    private void createOptimizedRouteTestFile(File file) throws Exception {
+        DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
+
+        stream.writeInt(TARGETS_OPT);
+
+        ArrayList<Selection> selections = new ArrayList<Selection>();
+
+        for (int i = 0; i < TARGETS_OPT; i++) {
+            stream.writeInt(4);
+            selections = new ArrayList<Selection>();
+            for (int j = 0; j < 4; j++) {
+                Selection temp = SelectMock.getRandomSelection();
+                selections.add(temp);
+                stream.writeInt(temp.getFrom());
+                stream.writeInt(temp.getTo());
+                stream.writeFloat(temp.getRatio());
+            }
+            List<Selection> solution = SimpleRouter.optimizeRouteWith4Targets(selections);
+            stream.writeInt(getRouteLength(Router.calculateRoute(solution)));
+        }
+    }
+
+
     private void createSimpleRouteTestFile(File file) throws Exception {
         if (file == null) {
             return;
         }
-        
+
         DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
-        
+
         stream.writeInt(SIMPLE_ROUTES_NUMBER);
         stream.writeInt(ADVANCED_ROUTES_TILL);
         stream.writeInt(PER_ADVANCED);
-        
+
         Selection start;
         Selection target;
-        
+
         ArrayList<Selection> selections = new ArrayList<Selection>();
-        
+
         for (int i = 0; i < SIMPLE_ROUTES_NUMBER; i++) {
             start = SelectMock.getRandomSelection();
             target = SelectMock.getRandomSelection();
 
             selections = new ArrayList<Selection>();
-            
+
             selections.add(start);
             selections.add(target);
-            
+
             List<Integer> route = SimpleRouter.calculateRoute(selections);
-            
+
             int length = getRouteLength(route);
-            
+
             stream.writeInt(2);
             stream.writeInt(start.getFrom());
             stream.writeInt(start.getTo());
             stream.writeFloat(start.getRatio());
-            
+
             stream.writeInt(target.getFrom());
             stream.writeInt(target.getTo());
             stream.writeFloat(target.getRatio());
-            
+
             stream.writeInt(length);
         }
-        
-        for (int i= 3; i <= ADVANCED_ROUTES_TILL; i++) {
+
+        for (int i = 3; i <= ADVANCED_ROUTES_TILL; i++) {
             for (int j = 0; j < PER_ADVANCED; j++) {
-                
+
                 stream.writeInt(i);
                 selections = new ArrayList<Selection>();
-                
+
                 for (int k = 0; k < i; k++) {
                     Selection temp = SelectMock.getRandomSelection();
                     selections.add(temp);
@@ -266,15 +274,15 @@ public class RoutingAndGraphTest {
                     stream.writeInt(temp.getTo());
                     stream.writeFloat(temp.getRatio());
                 }
-                
+
                 List<Integer> route = SimpleRouter.calculateRoute(selections);
                 int length = getRouteLength(route);
                 stream.writeInt(length);
             }
         }
-        
+
     }
-    
+
     private int getRouteLength(List<Integer> route) {
         int length = 0;
         for (int i = 1; i < route.size(); i++) {
@@ -282,5 +290,5 @@ public class RoutingAndGraphTest {
         }
         return length;
     }
-    
+
 }
