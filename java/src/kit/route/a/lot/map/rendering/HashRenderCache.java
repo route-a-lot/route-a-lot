@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -16,13 +17,19 @@ public class HashRenderCache implements RenderCache {
     /**
      * Map, mapping tile specifiers to tiles
      */
-    private HashMap<Long, Tile> map;
+    private HashMap<Long, Tile> map = new HashMap<Long, Tile>();
     
     /**
      * a FIFO list for the cache replacement
      */
-    private LinkedList<Long> leastRecentlyUsed; // TODO EXTEND: more elaborate aging algorithm
+    // TODO EXTEND: more elaborate aging algorithm
+    private LinkedList<Long> leastRecentlyUsed = new LinkedList<Long>();
+   
 
+    /**
+     * Crates a new tile cache which internally uses a
+     * hash map for storing / retrieving cache entries.
+     */
     public HashRenderCache() {
         resetCache();
     }
@@ -51,9 +58,11 @@ public class HashRenderCache implements RenderCache {
     }
 
     @Override
-    public void resetCache() {
+    public Collection<Tile> resetCache() {
+        Collection<Tile> cache = map.values();
         map = new HashMap<Long, Tile>();
         leastRecentlyUsed = new LinkedList<Long>();
+        return cache;
     }
     
 }

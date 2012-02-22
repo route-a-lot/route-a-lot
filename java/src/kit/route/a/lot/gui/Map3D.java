@@ -20,8 +20,10 @@ import kit.route.a.lot.gui.event.RenderEvent;
 public class Map3D extends Map implements GLEventListener {
     
     private static final long serialVersionUID = 1;
-    private static final float ROTATION_SPEED = 0.5f,
-            VIEW_ANGLE = 85, UNIT_DISTANCE = 1,
+    private static final float
+            ROTATION_SPEED = 0.5f, // factor for the rotation caused by a mouse movement
+            VIEW_ANGLE = 85, // horizontal camera opening angle
+            UNIT_DISTANCE = 1, // (unscaled) average camera - model distance
             VIEW_MIN_DISTANCE = 0.01f, VIEW_MAX_DISTANCE = 2,
             FOG_START_DISTANCE = 1.3f, FOG_END_DISTANCE = 2;
         
@@ -48,13 +50,15 @@ public class Map3D extends Map implements GLEventListener {
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         gl.glEnable(GL_DEPTH_TEST);
-        gl.glDepthFunc(GL_LEQUAL);        
-        // enable antialiasig for the route
+        gl.glDepthFunc(GL_LEQUAL);       
+        
+        // ENABLE ROUTE ANTIALIASING
         gl.glEnable(GL_LINE_SMOOTH);
         gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
         gl.glEnable(GL_POINT_SMOOTH);
-        gl.glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);       
-        // define fog
+        gl.glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);     
+        
+        // DEFINE FOG
         gl.glEnable(GL_FOG);
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
         gl.glFogf(GL_FOG_START, FOG_START_DISTANCE);
@@ -68,7 +72,7 @@ public class Map3D extends Map implements GLEventListener {
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         gl.glLoadIdentity(); 
         
-        // DEFINE UNIT SIZE (AND INVERT Y AXIS)
+        // DEFINE UNIT SIZE (and invert Y axis)
         gl.glTranslatef(0, 0, -UNIT_DISTANCE);
         double unitScale = 2*(Math.tan(Math.toRadians(VIEW_ANGLE / 2)) * UNIT_DISTANCE)
                             / (canvas.getHeight() * Projection.getZoomFactor(zoomlevel));
@@ -90,7 +94,7 @@ public class Map3D extends Map implements GLEventListener {
 
     @Override
     public void reshape(GLAutoDrawable g, int x, int y, int width, int height) {   
-        // recreate the projection matrix     
+        // RECREATE PROJECTION MATRIX  
         displayRatio = width / (float)height;
         setProjection(g.getGL(), VIEW_MIN_DISTANCE, VIEW_MAX_DISTANCE);
         gui.getListeners().fireEvent(MAP_RESIZED, null); 
@@ -104,13 +108,13 @@ public class Map3D extends Map implements GLEventListener {
     public void mouseDragged(MouseEvent e) {      
         float diffX = e.getX() - oldMousePosX;
         float diffY = e.getY() - oldMousePosY;
-        // rotate camera if mouse wheel (or left mouse button + ctrl) is pressed
+        // ROTATE CAMERA if mouse wheel (or left mouse button + ctrl) is pressed
         if (isMouseButtonPressed(e, 2) || (isMouseButtonPressed(e, 1) && e.isControlDown())) {
             rotationHorizontal += ROTATION_SPEED * diffX;
             rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
             rotationVertical = Util.clip(rotationVertical + diffY, 0, 60);
         }    
-        // move camera if left mouse button is pressed (and no ctrl)
+        // MOVE CAMERA if left mouse button is pressed (and no ctrl)
         if (isMouseButtonPressed(e, 1) && !e.isControlDown()) {
             float shareY = (float) Math.cos(Math.toRadians(rotationHorizontal));
             float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));            
@@ -127,17 +131,17 @@ public class Map3D extends Map implements GLEventListener {
         ((GLJPanel) canvas).getContext().makeCurrent();
         GL gl = ((GLJPanel) canvas).getGL();
         y = canvas.getHeight() - y;
-        // query modelview and projection matrix as well as the vieport
+        // QUERY MODELVIEW AND PROJECTION MATRIX as well as the viewport
         double[] model = new double[16];
         gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
         double[] proj = new double[16];
         gl.glGetDoublev(GL_PROJECTION_MATRIX, proj, 0);
         int[] viewport = new int[4];
         gl.glGetIntegerv(GL.GL_VIEWPORT, viewport, 0);    
-        // query z (the depth buffer value) at the mouse coordinates
+        // QUERY Z (the depth buffer value) at the mouse coordinates
         float[] z = new float[1];
         gl.glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, FloatBuffer.wrap(z));
-        // get and return world coordinates at (x,y,z)
+        // GET AND RETURN WORLD COORDINATES at (x,y,z)
         double[] result = new double[3];
         (new GLU()).gluUnProject((double) x, (double) y, (double) z[0],
                 model, 0, proj, 0, viewport, 0, result, 0);

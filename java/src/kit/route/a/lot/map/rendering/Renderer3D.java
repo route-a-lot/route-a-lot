@@ -31,9 +31,13 @@ public class Renderer3D extends Renderer {
     private static final Logger logger = Logger.getLogger(Renderer3D.class);
     
     private static final float
-        HEIGHT_SCALE_FACTOR = 0.5f, VIEW_HEIGHT_ADAPTION = 0.2f, 
-        ROUTE_HEIGHT_OFFSET = 10f, ROUTE_WIDTH = 10f;
+        HEIGHT_SCALE_FACTOR = 0.6f, // factor multiplied on all height values
+        VIEW_HEIGHT_ADAPTION = 0.2f, // [0..1] how fast camera height adapts to ground height
+        ROUTE_HEIGHT_OFFSET = 10f, // [meters] height value added to route display
+        ROUTE_WIDTH = 10f; // [pixels] width of the line that is used for route display
+    
     private float viewHeight = Float.NEGATIVE_INFINITY;
+    private boolean cacheResetScheduled = false;
     
     // Temporary variables (only guaranteed to be valid when rendering):
     private Context3D context;
@@ -56,6 +60,14 @@ public class Renderer3D extends Renderer {
         GL gl = context.getGL();
         Coordinates center = context.getCenter();
         int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(context.getDetailLevel());
+        
+        // RESET CACHE IF SCHEDULED
+        if (cacheResetScheduled) {
+            for (Tile tile : cache.resetCache()) {
+                ((Tile3D) tile).freeResources(gl);
+            }
+            cacheResetScheduled = false;
+        }
         
         // FINAL CAMERA TRANSFORMATIONS
         gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (context.getDetailLevel() + 1));
@@ -273,4 +285,9 @@ public class Renderer3D extends Renderer {
         gl.glEnd();
         gl.glPopMatrix();
     }      
+
+    @Override
+    public void resetCache() {
+        cacheResetScheduled = true;
+    }
 }

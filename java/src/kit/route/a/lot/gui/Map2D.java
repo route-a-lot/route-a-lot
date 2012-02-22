@@ -16,7 +16,7 @@ import kit.route.a.lot.gui.event.RenderEvent;
 
 public class Map2D extends Map  {
     
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1;
 
 
     public Map2D(GUI gui) {

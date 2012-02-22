@@ -74,20 +74,16 @@ public class GUI extends JFrame {
     
     // CENTRAL AREA (BUTTON BAR and MAP)
     private JPanel centralArea;
-    private JFileChooser dialogImportOSM, dialogLoadRoute, dialogSaveRoute,
-                dialogExportRoute /*, dialogImportHeightmap*/;
     private JSlider zoomSlider;
     private Map map;
     
     // STATUS BAR
     private JLabel routeValues, mouseCoordinatesDisplay;
 
-    private List<Selection> navNodeList;
-    private Listeners listeners;
-
     // NON-COMPONENT ATTRIBUTES
+    private Listeners listeners;
     private Point popupPos;
-    private int popupIndex;
+    private int popupIndex, numNavNodes = 0;
     private boolean enterPressed = false;
     private boolean active = false; // indicates whether main thread has finished startup
 
@@ -100,7 +96,6 @@ public class GUI extends JFrame {
         super("Route-A-Lot");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setVisible(true);
-        this.navNodeList = new ArrayList<Selection>();
         this.listeners = listeners;
     }
 
@@ -114,28 +109,24 @@ public class GUI extends JFrame {
         // BUTTON PANEL
         JButton buttonLoadRoute = new JButton("Laden");
         buttonLoadRoute.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 GUI.this.loadRouteFileChooser();
             }
         });
         JButton buttonSaveRoute = new JButton("Speichern");
         buttonSaveRoute.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 GUI.this.saveRouteFileChooser();
             }
         });
         JButton buttonExportKML = new JButton("KML-Export");
         buttonExportKML.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 GUI.this.exportRouteKMLFileChooser();
             }
         });
         JButton buttonSwitchMapMode = new JButton("2D/3D");
         buttonSwitchMapMode.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent event) {
                 while (!active); // postbone execution until after startup
                 listeners.fireEvent(SWITCH_MAP_MODE, null);   
@@ -148,14 +139,12 @@ public class GUI extends JFrame {
         zoomSlider.setPaintLabels(true);
         zoomSlider.setSnapToTicks(true);
         zoomSlider.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent ce) {
                 map.setZoomlevel(zoomSlider.getValue());
                 map.calculateView();
             }
         });
         listeners.addListener(VIEW_CHANGED, new Listener() {
-            @Override
             public void handleEvent(Event event) {
                 zoomSlider.setValue(Util.clip(map.getZoomlevel(), 0, 9));
             }
@@ -205,7 +194,6 @@ public class GUI extends JFrame {
         pack();
 
         addWindowListener(new WindowAdapter() {
-            @Override
             public void windowClosing(WindowEvent e) {
                 listeners.fireEvent(CLOSE_APPLICATION, null);
             }
@@ -227,7 +215,6 @@ public class GUI extends JFrame {
 
         fieldStartNode = new JTextField();
         fieldStartNode.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
@@ -236,7 +223,6 @@ public class GUI extends JFrame {
             }
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
-            @Override
             public void keyReleased(KeyEvent e) {
                 if (enterPressed == false) {
                     popupPos = new Point(fieldStartNode.getX(), 
@@ -256,21 +242,19 @@ public class GUI extends JFrame {
 
         fieldEndNode = new JTextField();
         fieldEndNode.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
                 listeners.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new NavNodeNameEvent(fieldEndNode.getText(), navNodeList.size() - 1));
+                        new NavNodeNameEvent(fieldEndNode.getText(), countNavNodes() - 1));
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
-            @Override
             public void keyReleased(KeyEvent e) {
                 if (!enterPressed) {
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
-                    popupIndex = navNodeList.size() - 1;
+                    popupIndex = countNavNodes() - 1;
                     listeners.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldEndNode.getText()));
                 } else {
@@ -283,7 +267,6 @@ public class GUI extends JFrame {
         buttonAddNavNode.setMaximumSize(new Dimension(200, 100));
         buttonAddNavNode.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonAddNavNode.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 addWaypointField("");
                 repaint();
@@ -294,7 +277,6 @@ public class GUI extends JFrame {
         buttonOptimizeRoute.setMaximumSize(new Dimension(200, 100));
         buttonOptimizeRoute.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonOptimizeRoute.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if ((countNavNodes() < OPTIMIZE_WARN_LIMIT) /*|| TODO ask confirmation*/) {
                     listeners.fireEvent(OPTIMIZE_ROUTE, null);
@@ -308,7 +290,6 @@ public class GUI extends JFrame {
         fieldSpeed = new JSpinner(new SpinnerNumberModel(15, 1, null, 1));
         fieldSpeed.setPreferredSize(new Dimension(50, 20));
         fieldSpeed.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent ce) {
                 listeners.fireEvent(SET_SPEED,
                         new NumberEvent(Integer.parseInt(fieldSpeed.getValue().toString())));
@@ -366,7 +347,6 @@ public class GUI extends JFrame {
         highwayMalusSlider.setPaintTicks(true);
         highwayMalusSlider.setSnapToTicks(true);
         highwayMalusSlider.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent e) {
                 listeners.fireEvent(SET_HIGHWAY_MALUS,
                         new NumberEvent(highwayMalusSlider.getValue()));
@@ -380,7 +360,6 @@ public class GUI extends JFrame {
         reliefMalusSlider.setPaintTicks(true);
         reliefMalusSlider.setSnapToTicks(true);
         reliefMalusSlider.addChangeListener(new ChangeListener() {
-            @Override
             public void stateChanged(ChangeEvent arg0) {
                 listeners.fireEvent(SET_HEIGHT_MALUS,
                         new NumberEvent(reliefMalusSlider.getValue()));
@@ -391,7 +370,6 @@ public class GUI extends JFrame {
         buttonImportOSM.setMaximumSize(new Dimension(200, 100));
         buttonImportOSM.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonImportOSM.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 GUI.this.importMapFileChooser();
             }
@@ -401,7 +379,6 @@ public class GUI extends JFrame {
         buttonDeleteMap.setMaximumSize(new Dimension(200, 100));
         buttonDeleteMap.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonDeleteMap.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 if (listChooseMap.getSelectedItem() != null) {
                     listeners.fireEvent(DELETE_IMPORTED_MAP, 
@@ -414,7 +391,6 @@ public class GUI extends JFrame {
         buttonActivateMap.setMaximumSize(new Dimension(200, 100));
         buttonActivateMap.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonActivateMap.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 Object item = listChooseMap.getSelectedItem();
                 listeners.fireEvent(LOAD_MAP,
@@ -425,7 +401,6 @@ public class GUI extends JFrame {
         listChooseMap = new JComboBox();
         listChooseMap.setAlignmentX(JButton.CENTER_ALIGNMENT);
         listChooseMap.addAncestorListener(new AncestorListener() {
-            @Override
             public void ancestorAdded(AncestorEvent e) {
                 listeners.fireEvent(LIST_IMPORTED_MAPS, null);
             }
@@ -435,7 +410,6 @@ public class GUI extends JFrame {
 
         // heightMapManagement = new JButton("Höhendaten - Verwaltung");
         // heightMapManagement.addActionListener(new ActionListener() {
-        // @Override
         // public void actionPerformed(ActionEvent e) {
         // GUI.this.importHeightMapFileChooser();
         // }
@@ -472,20 +446,20 @@ public class GUI extends JFrame {
      * Opens a dialog for map file selection. Fires an event.
      */
     private void importMapFileChooser() {
-        dialogImportOSM = new JFileChooser();
+        JFileChooser dialog = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm", "osm");
-        dialogImportOSM.setFileFilter(filter);
+        dialog.setFileFilter(filter);
         File currentDir = null;
         try {
             currentDir = new File(new File(".").getCanonicalPath());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        dialogImportOSM.setCurrentDirectory(currentDir);
-        int returnValue = dialogImportOSM.showOpenDialog(this);
+        dialog.setCurrentDirectory(currentDir);
+        int returnValue = dialog.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             listeners.fireEvent(IMPORT_OSM,
-                    new TextEvent(dialogImportOSM.getSelectedFile().getPath()));
+                    new TextEvent(dialog.getSelectedFile().getPath()));
         }
     }
 
@@ -510,11 +484,11 @@ public class GUI extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        dialogLoadRoute = new JFileChooser();
-        int returnValue = dialogLoadRoute.showOpenDialog(this);
+        JFileChooser dialog = new JFileChooser();
+        int returnValue = dialog.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             listeners.fireEvent(LOAD_ROUTE,
-                    new TextEvent(dialogLoadRoute.getSelectedFile().getPath()));
+                    new TextEvent(dialog.getSelectedFile().getPath()));
         }
     }
 
@@ -522,11 +496,11 @@ public class GUI extends JFrame {
      * Opens a dialog for route output file selection. Fires an event.
      */
     private void saveRouteFileChooser() {
-        dialogSaveRoute = new JFileChooser();
-        int returnValue = dialogSaveRoute.showSaveDialog(this);
+        JFileChooser dialog = new JFileChooser();
+        int returnValue = dialog.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             listeners.fireEvent(SAVE_ROUTE,
-                    new TextEvent(dialogSaveRoute.getSelectedFile().getPath()));
+                    new TextEvent(dialog.getSelectedFile().getPath()));
         }
     }
 
@@ -534,11 +508,11 @@ public class GUI extends JFrame {
      * Opens a dialog for kml output file selection. Fires an event.
      */
     private void exportRouteKMLFileChooser() {
-        dialogExportRoute = new JFileChooser();
-        int returnValue = dialogExportRoute.showDialog(this, "Exportieren");
+        JFileChooser dialog = new JFileChooser();
+        int returnValue = dialog.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             listeners.fireEvent(EXPORT_ROUTE,
-                            new TextEvent(dialogExportRoute.getSelectedFile().getPath()));
+                            new TextEvent(dialog.getSelectedFile().getPath()));
         }
     }
 
@@ -560,7 +534,6 @@ public class GUI extends JFrame {
         final int pos = waypointArea.getComponentCount();
 
         waypointField.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent arg0) {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
@@ -571,7 +544,6 @@ public class GUI extends JFrame {
         });
 
         waypointField.addKeyListener(new KeyAdapter() {
-            @Override
             public void keyReleased(KeyEvent e) {
                 if (!enterPressed) {
                     popupPos = new Point(waypointField.getX(),
@@ -585,10 +557,9 @@ public class GUI extends JFrame {
         });
 
         buttonDeleteWaypoint.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 waypointArea.remove(row);
-                if ((waypointField.getText().length() != 0) && (navNodeList.size() > pos)) {
+                if ((waypointField.getText().length() != 0) && (countNavNodes() > pos)) {
                     listeners.fireEvent(DELETE_NAVNODE, new NumberEvent(pos));
                 }
                 repaint();
@@ -655,28 +626,28 @@ public class GUI extends JFrame {
      * @return the navigation node list size
      */
     public int countNavNodes() {
-        return navNodeList.size();
+        return numNavNodes;
     }
 
     /**
      * Replaces the current navigation node list and updates
      * the fields display correspondingly.
-     * @param newNavPointsList the new navnode list
+     * @param navNodeList the new navnode list
      */
-    public void updateNavNodes(List<Selection> newNavPointsList) {
+    public void updateNavNodes(List<Selection> navNodeList) {
         waypointArea.removeAll();
         fieldStartNode.setText("");
         fieldStartNode.setBackground(Color.WHITE);
         fieldEndNode.setText("");
         fieldEndNode.setBackground(Color.WHITE);
-        navNodeList = new ArrayList<Selection>(newNavPointsList);
+        numNavNodes = navNodeList.size();
         if (navNodeList.size() > 0) {
             fieldStartNode.setText(navNodeList.get(0).getName());
         }
         if (navNodeList.size() > 1) {
             fieldEndNode.setText(navNodeList.get(navNodeList.size() - 1).getName());
         }
-        for (int i = 1; i < newNavPointsList.size() - 1; i++) {
+        for (int i = 1; i < numNavNodes - 1; i++) {
             addWaypointField(navNodeList.get(i).getName());
         }
         repaint();
@@ -710,7 +681,6 @@ public class GUI extends JFrame {
             final JMenuItem item = new JMenuItem(completion);
             popupSearchCompletions.add(item);
             item.addActionListener(new ActionListener() {
-                @Override
                 public void actionPerformed(ActionEvent e) {
                     listeners.fireEvent(ADD_NAVNODE,
                             new NavNodeNameEvent(item.getText(), popupIndex));
@@ -752,6 +722,11 @@ public class GUI extends JFrame {
         this.active = active;   
     }
 
+    /**
+     * Sets the map mode as indicated by the parameter. Note that a call of this method
+     * doesn't change the active renderer, which should be done prior to calling this method.
+     * @param render3D whether the map is to be shown in 3D mode
+     */
     public void setMapMode(boolean render3D) {
         Coordinates center = map.getCenter();
         int zoomlevel = map.getZoomlevel();       

@@ -1,5 +1,7 @@
 package kit.route.a.lot.map.rendering;
 
+import java.util.Collection;
+
 import kit.route.a.lot.common.Coordinates;
 
 public interface RenderCache {
@@ -20,7 +22,7 @@ public interface RenderCache {
     public Tile addToCache(Tile tile);
 
     /**
-     * resets the cache
+     * Resets the cache. All stored tiles are returned for finalization.
      */
-    public void resetCache();
+    public Collection<Tile> resetCache();
 }

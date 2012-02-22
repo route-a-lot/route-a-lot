@@ -22,15 +22,18 @@ import kit.route.a.lot.controller.State;
 public class Tile3D extends Tile {
 
     private static final int
-        HEIGHT_BORDER = 1, // should stay 1
-        HEIGHT_RESOLUTION = 64, 
-        GRAIN_RESOLUTION = 128;
+        HEIGHT_BORDER = 1, // [1] border in height data that is not rendered but used for coloring
+        HEIGHT_RESOLUTION = 64, // [2^n] resolution of the tile's height grid and height texture
+        GRAIN_RESOLUTION = 128; // [2^n] resolution of the applied noise texture
     private static final float
-        GRAIN_INTENSITY = 0.05f,
-        SLOPE_SHADE_FACTOR = 0.6f,
-        MAX_SLOPE_SHADE_VALUE = 0.6f;
+        GRAIN_INTENSITY = 0.05f, // [0..1] darkest value of grain texture (% of black)
+        SLOPE_SHADE_FACTOR = 0.6f, // factor multiplied on all slope shades
+        MAX_SLOPE_SHADE_VALUE = 0.6f; // [0..1] upper limit of slope shade (1 = black)
+    
+    // [meters] heights that specific colors (s.b.) will be mapped to
     private static final float[] COLOR_STAGES =
         {-500, 0, 5, 70, 200, 350, 520, 700, 900, 1100, 1450, 2300};
+    // [{{0..255, 0..255, 0..255}, ...}] rgb colors for the above declared heights
     private static final float[][] COLORS = 
         {{0, 0, 0}, {0, 0, 100}, {140, 170, 150},
          {143, 189, 143}, {151, 253, 153}, 
@@ -42,10 +45,22 @@ public class Tile3D extends Tile {
     private int textureID = -1, heightTextureID = -1, displaylistID = -1;
     private static int grainTextureID = -1;
     
-    public Tile3D(Coordinates topLeft, int tileSize, int detail) {
-        super(topLeft, tileSize, detail);
+    /**
+     * Creates a new quadratic 3D tile. Needed resources will not
+     * be allocated here, but instead as soon as needed.
+     * @param topLeft northwestern corner of the tile area
+     * @param tileSize tile width and height
+     * @param detailLevel level indicating the desired tile quality
+     */
+    public Tile3D(Coordinates topLeft, int tileSize, int detailLevel) {
+        super(topLeft, tileSize, detailLevel);
     }
 
+    /**
+     * Returns the tile's height matrix. If the height matrix has not been
+     * created so far, this will be done here.
+     * @return the tile's height matrix
+     */
     private float[][] getHeights() {
         if (heights == null) {
             heights = new float[HEIGHT_RESOLUTION + 2 * HEIGHT_BORDER]
@@ -76,6 +91,10 @@ public class Tile3D extends Tile {
         }
     }
 
+    /**
+     * Renders the tile to the given context, in the process building all needed resources.
+     * @param gl
+     */
     public void render(GL gl) {
         // BUILD TEXTURES IF NECESSARY
         if (!gl.glIsTexture(textureID)) {
@@ -130,6 +149,10 @@ public class Tile3D extends Tile {
         }   
     }
     
+    /**
+     * Creates the height coloring and shading texture for this tile.
+     * @param gl the current OpenGL context
+     */
     private void createHeightTexture(GL gl) {
         BufferedImage heightImage = new BufferedImage(HEIGHT_RESOLUTION, HEIGHT_RESOLUTION,
                 BufferedImage.TYPE_INT_RGB);
@@ -162,6 +185,10 @@ public class Tile3D extends Tile {
         heightTextureID = createTexture(gl, heightImage, false);
     } 
     
+    /**
+     * Creates the random noise texture that will be used as detail texture on the tiles.
+     * @param gl
+     */
     private static void createGrainTexture(GL gl) {
         BufferedImage grainImage = new BufferedImage(GRAIN_RESOLUTION, GRAIN_RESOLUTION,
                 BufferedImage.TYPE_INT_RGB);
@@ -174,6 +201,13 @@ public class Tile3D extends Tile {
         grainTextureID = createTexture(gl, grainImage, true);
     }
     
+    /**
+     * Returns a color value corresponding to the given height.
+     * The color is interpolated from the color stages found in
+     * <code>COLOR_STAGES</code> and <code>COLORS</code>.
+     * @param color the output color
+     * @param height the height that is to be color encoded
+     */
     private static void getHeightColor(float[] color, float height) {
         int col1 = COLOR_STAGES.length - 1, col2 = col1;
         for (int i = 1; i < COLOR_STAGES.length; i++) {
@@ -183,13 +217,21 @@ public class Tile3D extends Tile {
                 break;
             }
         }        
-        float ratio = (col1 == col2) ? 0 : (height - COLOR_STAGES[col1]) / (COLOR_STAGES[col2] - COLOR_STAGES[col1]);
+        float ratio = (col1 == col2) ? 0 : (height - COLOR_STAGES[col1])
+                / (COLOR_STAGES[col2] - COLOR_STAGES[col1]);
         for (int i = 0; i < 3; i++) {
             color[i] = (COLORS[col1][i] + (COLORS[col2][i] - COLORS[col1][i]) * ratio) / 255;
         }
         
     }
     
+    /**
+     * Creates a texture in the given OpenGL context.
+     * @param gl the context
+     * @param image the RGB or RGBA image serving as texture source
+     * @param repeat whether the texture should should have repeat mode activated
+     * @return the texture name (ID)
+     */
     private static int createTexture(GL gl, BufferedImage image, boolean repeat) {
         if (image == null) {
             return -1;
@@ -213,7 +255,14 @@ public class Tile3D extends Tile {
         //(new GLU()).gluBuild2DMipmaps(GL.GL_TEXTURE_2D, GL.GL_RGB, image.getWidth(), image.getHeight(), GL.GL_BGRA, GL.GL_UNSIGNED_BYTE, dest);       
         return tex;
     }
-        
+    
+    /**
+     * Tests whether this tile is in the given view frustum.
+     * If the tile was not loaded so far, the test will assume
+     * a minimum height of -500 and a maximum height of 8000.
+     * @param frustum the current view frustum
+     * @return whether the tile is in the frustum
+     */
     boolean isInFrustum(Frustum frustum) {
         Coordinates center = topLeft.clone().add(bottomRight).scale(0.5f);
         return (frustum == null) || frustum.isBoxWithin(
@@ -224,14 +273,19 @@ public class Tile3D extends Tile {
                         0.5f * (maxHeight - minHeight)});
     }
 
+    /**
+     * Frees all resources used exclusively by the tile that were stored
+     * in the GPU RAM, as those will not be freed by the garbage collector.
+     * @param gl the current OpenGL context
+     */
     public void freeResources(GL gl) {
-        if (textureID >= 0) {
+        if (gl.glIsTexture(textureID)) {
             gl.glDeleteTextures(1, new int[] { textureID }, 0);
         }
-        if (heightTextureID >= 0) {
+        if (gl.glIsTexture(heightTextureID)) {
             gl.glDeleteTextures(1, new int[] { heightTextureID }, 0);
         }
-        if (displaylistID >= 0) {
+        if (gl.glIsList(displaylistID)) {
             gl.glDeleteLists(displaylistID, 1);
         }
     }
