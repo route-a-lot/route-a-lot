@@ -5,18 +5,27 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Collection;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
+
 import static javax.media.opengl.GL.*;
 
 import com.sun.opengl.util.BufferUtil;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Frustum;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.Area;
+import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.POINode;
 
 
 public class Tile3D extends Tile {
@@ -145,8 +154,63 @@ public class Tile3D extends Tile {
                 gl.glActiveTexture(GL_TEXTURE1);
                 gl.glDisable(GL_TEXTURE_2D);
                 gl.glActiveTexture(GL_TEXTURE0);
+                renderPOIs(gl);
             gl.glEndList();
         }   
+    }
+    
+    
+    private void renderPOIs(GL gl) {
+        Collection<MapElement> elements = State.getInstance().getLoadedMapInfo()
+                    .getOverlay(detailLevel, topLeft, bottomRight, false);
+        if (elements.size() == 0) {
+            return;
+        }
+        float[] yellow = new float[]{1, 1, 0};
+        for (MapElement element : elements) {
+            if (element instanceof POINode) {
+                POINode poi = (POINode) element;
+                if ((poi.getInfo().getName() != null)
+                     && (poi.getInfo().getName().length() > 0)
+                     && (poi.getInfo().getCategory() != OSMType.FAVOURITE)){
+                    renderPin(gl, poi.getPos(), yellow, 1f);
+                } 
+            }
+            if (element instanceof Area) {
+                Selection selection = ((Area) element).getSelection();
+                if (selection != null) {
+                    renderPin(gl, selection.getPosition(), yellow, 1f);
+                }
+            }
+        }
+    }
+    
+    private void renderPin(GL gl, Coordinates position, float[] color, float size) {
+        Coordinates dimensions = position.clone().subtract(topLeft).scale(1 / tileSize);
+        float height = getHeights()[(int)dimensions.getLongitude()][(int)dimensions.getLatitude()];
+        gl.glPushMatrix();
+        double[] model = new double[16];
+        gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
+        double zoomH = 0.1 / Math.sqrt((model[0] * model[0]) + (model[1] * model[1]) + (model[2] * model[2]));
+        double zoomZ = 0.1 / Math.sqrt((model[8] * model[8]) + (model[9] * model[9]) + (model[10] * model[10]));
+        gl.glTranslatef(position.getLongitude(), position.getLatitude(), height);
+        gl.glScaled(zoomH * size, zoomH * size, zoomZ * size);
+        gl.glDisable(GL_TEXTURE_2D);
+        
+        gl.glRotatef(20, 0.3f, 1, 0);
+        
+        GLU glu = new GLU();
+        GLUquadric quadric = glu.gluNewQuadric();
+        //glu.gluQuadricNormals(quadric, GLU.GLU_FLAT);
+        gl.glColor3f(0.5f, 0.5f, 0.5f);
+        glu.gluCylinder(quadric, 0.03, 0.03, 1, 5, 1);
+        gl.glTranslatef(0, 0, 1);
+        gl.glEnable(GL_LIGHTING);
+        gl.glColor3f(color[0], color[1], color[2]);
+        glu.gluSphere(quadric, 0.12, 8, 8);
+        gl.glDisable(GL_LIGHTING);
+        glu.gluDeleteQuadric(quadric);     
+        gl.glPopMatrix();  
     }
     
     /**
@@ -289,4 +353,5 @@ public class Tile3D extends Tile {
             gl.glDeleteLists(displaylistID, 1);
         }
     }
+   
 }

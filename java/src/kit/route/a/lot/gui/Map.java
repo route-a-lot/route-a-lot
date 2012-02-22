@@ -45,6 +45,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         TEXT_DELETE_NAVNODE = "lösche Navigationspunkt",
         TEXT_DESCRIPTION_NAME = "<html><div width='80px'><u>%1$s</u></div></html>",
         TEXT_DESCRIPTION_BODY = "<html><div width='80px'>%1$s</div></html>";
+    
     private static final int MAX_ZOOMLEVEL = 20;
     
     protected int oldMousePosX, oldMousePosY, zoomlevel = 3;

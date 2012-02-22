@@ -63,7 +63,16 @@ public class Map3D extends Map implements GLEventListener {
         gl.glFogi(GL_FOG_MODE, GL_LINEAR);
         gl.glFogf(GL_FOG_START, FOG_START_DISTANCE);
         gl.glFogf(GL_FOG_END, FOG_END_DISTANCE);
-        gl.glFogfv(GL_FOG_COLOR, new float[]{0, 0, 0, 1}, 0);     
+        gl.glFogfv(GL_FOG_COLOR, new float[]{0, 0, 0, 1}, 0);   
+        
+        // LIGHTING (ONLY FOR PINS)        
+        gl.glEnable(GL_LIGHT0);
+        gl.glEnable(GL_COLOR_MATERIAL);
+        float[] lightpos = {0.5f, 1, 1, 0};
+        float[] ambient = {1, 0.5f, 0.5f, 0.5f}; 
+        gl.glLightfv(GL_LIGHT0, GL_POSITION, FloatBuffer.wrap(lightpos));
+        gl.glMaterialfv(GL_FRONT, GL_AMBIENT, FloatBuffer.wrap(ambient));
+        gl.glMaterialf(GL_FRONT, GL_SHININESS, 0.6f);    
     }
     
     @Override
@@ -131,7 +140,7 @@ public class Map3D extends Map implements GLEventListener {
         ((GLJPanel) canvas).getContext().makeCurrent();
         GL gl = ((GLJPanel) canvas).getGL();
         y = canvas.getHeight() - y;
-        // QUERY MODELVIEW AND PROJECTION MATRIX as well as the viewport
+        // QUERY MODELVIEW, PROJECTION MATRIX AND VIEWPORT
         double[] model = new double[16];
         gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
         double[] proj = new double[16];
@@ -141,7 +150,7 @@ public class Map3D extends Map implements GLEventListener {
         // QUERY Z (the depth buffer value) at the mouse coordinates
         float[] z = new float[1];
         gl.glReadPixels(x, y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, FloatBuffer.wrap(z));
-        // GET AND RETURN WORLD COORDINATES at (x,y,z)
+        // GET AND RETURN WORLD COORDINATES AT (x,y,z)
         double[] result = new double[3];
         (new GLU()).gluUnProject((double) x, (double) y, (double) z[0],
                 model, 0, proj, 0, viewport, 0, result, 0);

@@ -1,13 +1,16 @@
 package kit.route.a.lot.map.rendering;
 
+import static javax.media.opengl.GL.*;
+
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 import javax.media.opengl.GL;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
 
 import org.apache.log4j.Logger;
 
@@ -15,13 +18,17 @@ import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Frustum;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
+import kit.route.a.lot.map.Area;
+import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
@@ -240,13 +247,13 @@ public class Renderer3D extends Renderer {
         gl.glEnable(GL.GL_DEPTH_TEST);
 
         // FLAGS
-        renderFlag(navPoints.get(0).getPosition(), new float[]{0, 0.8f, 0}, 10f);
+        renderFlag(navPoints.get(0).getPosition(), new float[]{0, 0.8f, 0}, 0.9f);
         if (navPoints.size() > 1) { 
             renderFlag(navPoints.get(navPoints.size() - 1).getPosition(),
-                    new float[]{0.8f, 0, 0}, 10f);
+                    new float[]{0.8f, 0, 0}, 0.9f);
         }
         for (int i = 1; i < navPoints.size() - 1; i++) {
-            renderFlag(navPoints.get(i).getPosition(), new float[]{1, 1, 0}, 5f);
+            renderFlag(navPoints.get(i).getPosition(), new float[]{1, 1, 0}, 0.7f);
         }
     }
     
@@ -270,18 +277,31 @@ public class Renderer3D extends Renderer {
         float height = heightmap.getHeight(projection.getGeoCoordinates(position));
         GL gl = context.getGL();
         gl.glPushMatrix();
+        double[] model = new double[16];
+        gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
+        double zoomH = 0.08 / Math.sqrt((model[0] * model[0]) + (model[1] * model[1]) + (model[2] * model[2]));
+        double zoomZ = 0.08 / Math.sqrt((model[8] * model[8]) + (model[9] * model[9]) + (model[10] * model[10]));
         gl.glTranslatef(position.getLongitude(), position.getLatitude(), height);
-        float zoom = context.getDetailLevel() * context.getDetailLevel();
-        gl.glScalef(size * zoom, size * zoom, size * zoom);
-        gl.glBegin(GL.GL_TRIANGLE_FAN);  
-            gl.glColor3f(1, 1, 1);
-            gl.glVertex3f(0, 0, 0);
-            gl.glColor3f(color[0], color[1], color[2]);
-            gl.glVertex3f(-1, -1, 1);
-            gl.glVertex3f(-1, 1, 1);
-            gl.glVertex3f(1, 1, 1);
-            gl.glVertex3f(1, -1, 1);
-            gl.glVertex3f(-1, -1, 1);
+        gl.glScaled(zoomH * size, zoomH * size, zoomZ * size);
+        gl.glDisable(GL_TEXTURE_2D);
+        
+        //gl.glEnable(GL_LIGHTING);
+        GLU glu = new GLU();
+        GLUquadric quadric = glu.gluNewQuadric();
+        gl.glColor3f(0.3f, 0.3f, 0.3f);
+        glu.gluCylinder(quadric, 0.1, 0.1, 3, 7, 1);
+        gl.glTranslatef(0, 0, 3);
+        gl.glColor3f(0.5f, 0.5f, 0.5f);
+        glu.gluDisk(quadric, 0, 0.1, 7, 1);
+        gl.glTranslatef(0, 0, -3);
+        glu.gluDeleteQuadric(quadric);
+        //gl.glDisable(GL_LIGHTING);
+        
+        gl.glColor3f(color[0], color[1], color[2]);
+        gl.glBegin(GL_TRIANGLES);  
+            gl.glVertex3f(0, 0, 2);
+            gl.glVertex3f(0, 0, 3);
+            gl.glVertex3f(1.5f, 0, 2.5f);
         gl.glEnd();
         gl.glPopMatrix();
     }      
@@ -290,4 +310,5 @@ public class Renderer3D extends Renderer {
     public void resetCache() {
         cacheResetScheduled = true;
     }
+
 }

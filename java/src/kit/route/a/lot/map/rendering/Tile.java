@@ -35,7 +35,7 @@ public class Tile {
     
     protected Coordinates topLeft, bottomRight;   
     private BufferedImage image = null;
-    private int detail, tileSize;
+    protected int detailLevel, tileSize;
     
     // the image's graphics object (only valid during prerendering / POI drawing)
     private Graphics2D graphics;
@@ -44,12 +44,12 @@ public class Tile {
      * Creates an new (empty) tile using a calculated resolution
      * @param topLeft the north western corner of the tile
      * @param bottomRight the south eastern corner of the tile
-     * @param detail the desired level of detail
+     * @param detailLevel the desired level of detail
      */
-    public Tile(Coordinates topLeft, int tileSize, int detail) {
+    public Tile(Coordinates topLeft, int tileSize, int detailLevel) {
         this.topLeft = topLeft;
         this.bottomRight = topLeft.clone().add(tileSize, tileSize);
-        this.detail = detail;
+        this.detailLevel = detailLevel;
         this.tileSize = tileSize;
     }
 
@@ -60,8 +60,8 @@ public class Tile {
      */
     protected BufferedImage getImage() {
         if (image == null) {
-            image = new BufferedImage(tileSize / Projection.getZoomFactor(detail),
-                tileSize / Projection.getZoomFactor(detail),
+            image = new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel),
+                tileSize / Projection.getZoomFactor(detailLevel),
                 BufferedImage.TYPE_INT_ARGB);
         }
         return image;
@@ -70,7 +70,7 @@ public class Tile {
     public void prerender() {
         //QUERY QUADTREE ELEMENTS
         Collection<MapElement> map = State.getInstance().getLoadedMapInfo()
-                  .getBaseLayer(detail, topLeft, bottomRight, false); // TODO test if true is faster
+                  .getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
         if (map.size() == 0) {
             return;
         }
@@ -124,7 +124,7 @@ public class Tile {
     
     public void drawPOIs() {
         Collection<MapElement> elements = State.getInstance().getLoadedMapInfo()
-                                            .getOverlay(detail, topLeft, bottomRight, false);
+                                            .getOverlay(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }
@@ -271,9 +271,9 @@ public class Tile {
                 basicSize = 15;
                 break;
         }
-        int size = basicSize / Projection.getZoomFactor(detail);
+        int size = basicSize / Projection.getZoomFactor(detailLevel);
         if (!top) {
-            graphics.setStroke(new BasicStroke(size + 2/(float)Math.pow(detail + 1, 0.8), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics.setStroke(new BasicStroke(size + 2/(float)Math.pow(detailLevel + 1, 0.8), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         } else {
             graphics.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         }
@@ -295,14 +295,14 @@ public class Tile {
     }
       
     private void drawStreetArrows(Street street) {
-        if (detail > 1 || street.getWayInfo().getOneway() == WayInfo.ONEWAY_NO) {
+        if (detailLevel > 1 || street.getWayInfo().getOneway() == WayInfo.ONEWAY_NO) {
             return;
         }
         
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
         
-        float arrowLength = 12.f / Projection.getZoomFactor(detail);
+        float arrowLength = 12.f / Projection.getZoomFactor(detailLevel);
         float headLength = arrowLength / 2;
         double arrowDistance = 12 * arrowLength;
         double currentDistance = 0;
@@ -342,7 +342,7 @@ public class Tile {
     
     private void drawStreetNames(Street street) {
         Address curAddress = street.getWayInfo().getAddress();
-        if (detail > 3 || curAddress == null) {
+        if (detailLevel > 3 || curAddress == null) {
             return;
         }
         
@@ -351,18 +351,18 @@ public class Tile {
             return;
         }
         
-        if (detail == 3 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
+        if (detailLevel == 3 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY) {
             return;
         }
         
-        if (detail == 2 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
+        if (detailLevel == 2 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_SECONDARY) {
             return;
         }
         
-        if (detail == 1 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
+        if (detailLevel == 1 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_SECONDARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_TERTIARY
@@ -376,7 +376,7 @@ public class Tile {
         int nPoints = nodes.length;
         
         float streetNameLength = graphics.getFontMetrics().stringWidth(curAddress.getStreet());
-        double streetNameDistance = 512 / Math.sqrt(Projection.getZoomFactor(detail));
+        double streetNameDistance = 512 / Math.sqrt(Projection.getZoomFactor(detailLevel));
 
         graphics.setColor(Color.DARK_GRAY);
         graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
@@ -448,7 +448,7 @@ public class Tile {
     }
     
     private Coordinates getLocalCoordinates(Coordinates coordinates) {
-        return Renderer.getLocalCoordinates(coordinates, topLeft, detail);
+        return Renderer.getLocalCoordinates(coordinates, topLeft, detailLevel);
     }
     
     public static long getSpecifier(Coordinates topLeft, int tileSize, int detail) {
@@ -456,7 +456,7 @@ public class Tile {
     }
 
     public long getSpecifier() {
-        return getSpecifier(topLeft, tileSize, detail);
+        return getSpecifier(topLeft, tileSize, detailLevel);
     }
 
 }
