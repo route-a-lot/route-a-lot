@@ -20,7 +20,7 @@ import kit.route.a.lot.gui.event.RenderEvent;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
-import kit.route.a.lot.gui.event.AddNavNodeEvent;
+import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.io.HeightLoader;
@@ -47,6 +47,7 @@ public class Controller {
     private static final File
         SRAL_DIRECTORY = new File("./sral"),
         SRTM_DIRECTORY = new File("./srtm"),
+        STATE_FILE = new File("./state.state"),
         DEFAULT_OSM_MAP = new File("./test/resources/karlsruhe_small_current.osm");
     
     private static final String SRAL_EXT = ".sral";
@@ -71,63 +72,72 @@ public class Controller {
     }
     
     private Controller() {
-        // IMPORT HEIGHT DATA
+        state.setProgress(0);
+        
+        // REGISTER LISTENERS
+        addGUIListeners();
+        state.setProgress(30);
+        
+        // IMPORT HEIGHT DATA   
         Util.startTimer();
         importHeightmaps(SRTM_DIRECTORY);
-        logger.info("### Loaded heightmaps in " + Util.stopTimer() + " ###");
+        logger.info("Heightmaps loaded: " + Util.stopTimer());
+        state.setProgress(60); 
         
         // LOAD STATE
+        Util.startTimer();
         loadState();
-        logger.info("### Loaded state in " + Util.stopTimer() + " ###");
+        logger.info("State loaded: " + Util.stopTimer());
+        state.setProgress(90);  
         
-        // LOAD SRAL MAP FROM STATE or IMPORT DEFAULT OSM MAP
-        if (state.getLoadedMapFile() != null && state.getLoadedMapFile().exists()) {
-            loadMap(state.getLoadedMapFile());
-            logger.info("### Loaded map in " + Util.stopTimer() + " ###");
-        } else if (DEFAULT_OSM_MAP.exists()) {
-            logger.info("import default map...");
-            importMap(DEFAULT_OSM_MAP);
-            setViewToMapCenter();
-            logger.info("### Imported default map in " + Util.stopTimer() + " ###");
-        } else {
-            logger.warn("no map loaded");
-        }      
-    
-        // SET GUI INITIAL SETTINGS
-        addGUIListeners();
-        guiHandler.setView(state.getCenterCoordinates());
-        guiHandler.setSpeed(state.getSpeed());
-        guiHandler.setActive(true);
+        // IMPORT DEFAULT OSM MAP
+        if (state.getLoadedMapFile() == null) {
+            if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
+                importMap(DEFAULT_OSM_MAP);
+                logger.info("Imported default map: " + Util.stopTimer());
+            } else {
+                logger.warn("No map loaded");
+            }      
+        }
+        
+        state.setProgress(100);
     }   
     
     private void addGUIListeners() {
-        guiHandler.addListener(ADD_NAVNODE, new Listener() {
+        Listener.addListener(ADD_NAVNODE, new Listener() {
             public void handleEvent(Event e) {
-                if (e instanceof AddNavNodeEvent) {
-                    AddNavNodeEvent event = (AddNavNodeEvent) e;
-                    addNavNode(event.getPosition(), event.getIndex());
+                if (e instanceof PositionNumberEvent) {
+                    PositionNumberEvent event = (PositionNumberEvent) e;
+                    addNavNode(event.getPosition(), event.getNumber());
                 } else {  
                     NavNodeNameEvent event = (NavNodeNameEvent) e;
                     addNavNode(event.getName(), event.getIndex());
                 }
             }            
         });
-        guiHandler.addListener(VIEW_CHANGED, new Listener() {
+        Listener.addListener(VIEW_CHANGED, new Listener() {
+            public void handleEvent(Event e) {
+                PositionNumberEvent event = (PositionNumberEvent) e;
+                state.setCenterCoordinates(event.getPosition());
+                state.setDetailLevel(event.getNumber());   
+            }
+        });
+        Listener.addListener(RENDER, new Listener() {
             public void handleEvent(Event e) {
                 render(((RenderEvent) e).getContext());
             }   
         });
-        guiHandler.addListener(IMPORT_OSM, new Listener() {
+        Listener.addListener(IMPORT_OSM, new Listener() {
             public void handleEvent(Event e) {
                 importMap(new File(((TextEvent) e).getText()));  
             } 
         });  
-        guiHandler.addListener(OPTIMIZE_ROUTE, new Listener() {
+        Listener.addListener(OPTIMIZE_ROUTE, new Listener() {
             public void handleEvent(Event e) {
                 optimizeRoute();
             } 
         });
-        guiHandler.addListener(DELETE_NAVNODE, new Listener() {
+        Listener.addListener(DELETE_NAVNODE, new Listener() {
             public void handleEvent(Event e) {
                 if (e instanceof PositionEvent) {
                     deleteNavNode(((PositionEvent) e).getPosition());
@@ -136,112 +146,120 @@ public class Controller {
                 }
             }    
         });
-        guiHandler.addListener(LOAD_MAP, new Listener() {
+        Listener.addListener(LOAD_MAP, new Listener() {
             public void handleEvent(Event e) {
                 String text = ((TextEvent) e).getText();
                 loadMap((text.length() == 0) ? null
                         : new File(SRAL_DIRECTORY + "/" + text + SRAL_EXT));
+                setViewToMapCenter();
             }    
         });
-        guiHandler.addListener(ADD_FAVORITE, new Listener() {
+        Listener.addListener(ADD_FAVORITE, new Listener() {
             public void handleEvent(Event e) {
                 AddFavoriteEvent event = (AddFavoriteEvent) e;
                 addFavorite(event.getPosition(), event.getName(), event.getDescription());
             }  
         });
-        guiHandler.addListener(SAVE_ROUTE, new Listener() {
+        Listener.addListener(SAVE_ROUTE, new Listener() {
             public void handleEvent(Event e) {
                 saveRoute(((TextEvent) e).getText());
             }    
         });
-        guiHandler.addListener(LOAD_ROUTE, new Listener() {
+        Listener.addListener(LOAD_ROUTE, new Listener() {
             public void handleEvent(Event e) {
                 loadRoute(((TextEvent) e).getText());
             }           
         });
-        guiHandler.addListener(EXPORT_ROUTE, new Listener() {
+        Listener.addListener(EXPORT_ROUTE, new Listener() {
             public void handleEvent(Event e) {
                 exportRoute(new File(((TextEvent) e).getText()));
             }          
         });
-        guiHandler.addListener(DELETE_FAVORITE, new Listener() {
+        Listener.addListener(DELETE_FAVORITE, new Listener() {
             public void handleEvent(Event e) {
                 deleteFavorite(((PositionEvent) e).getPosition());
             }           
         });
-        guiHandler.addListener(SET_SPEED, new Listener() {
+        Listener.addListener(SET_SPEED, new Listener() {
             public void handleEvent(Event e) {
                 setSpeed(((NumberEvent) e).getNumber());
             }
         });
-        guiHandler.addListener(POSITION_CLICKED, new Listener() {
+        Listener.addListener(POSITION_CLICKED, new Listener() {
             public void handleEvent(Event e) {
                 passElementType(((PositionEvent) e).getPosition());
             }       
         });
-        guiHandler.addListener(SET_HEIGHT_MALUS, new Listener() {
+        Listener.addListener(SET_HEIGHT_MALUS, new Listener() {
             public void handleEvent(Event e) {
                 setHeightMalus(((NumberEvent) e).getNumber());
             }           
         });
-        guiHandler.addListener(SET_HIGHWAY_MALUS, new Listener() {
+        Listener.addListener(SET_HIGHWAY_MALUS, new Listener() {
             public void handleEvent(Event e) {
                 setHighwayMalus(((NumberEvent) e).getNumber());
             }        
         });
-        guiHandler.addListener(CLOSE_APPLICATION, new Listener() {
+        Listener.addListener(CLOSE_APPLICATION, new Listener() {
             public void handleEvent(Event e) {
                 prepareForShutdown();
             } 
         });
-        guiHandler.addListener(SHOW_POI_DESCRIPTION, new Listener() {
+        Listener.addListener(SHOW_POI_DESCRIPTION, new Listener() {
             public void handleEvent(Event e) {
                 passDescription(((PositionEvent) e).getPosition());
             } 
         });
-        guiHandler.addListener(SWITCH_MAP_MODE, new Listener() {
+        Listener.addListener(SWITCH_MAP_MODE, new Listener() {
             public void handleEvent(Event e) {
                 setMapMode(!(state.getActiveRenderer() instanceof Renderer3D));
             }         
         });
-        guiHandler.addListener(LIST_SEARCH_COMPLETIONS, new Listener() {
+        Listener.addListener(LIST_SEARCH_COMPLETIONS, new Listener() {
             public void handleEvent(Event e) {
                 passSearchCompletion(((TextEvent) e).getText());
             }      
         });
-        guiHandler.addListener(SHOW_NAVNODE_DESCRIPTION, new Listener() {
+        Listener.addListener(SHOW_NAVNODE_DESCRIPTION, new Listener() {
             public void handleEvent(Event e) {
                 getNavNodeFromText(((TextEvent) e).getText());
             }  
         });
-        guiHandler.addListener(DELETE_IMPORTED_MAP, new Listener() {
+        Listener.addListener(DELETE_IMPORTED_MAP, new Listener() {
             public void handleEvent(Event e) {
                 deleteMap(new File(SRAL_DIRECTORY + "/" + ((TextEvent) e).getText() + SRAL_EXT));
             }         
         });
-        guiHandler.addListener(LIST_IMPORTED_MAPS, new Listener() {
+        Listener.addListener(LIST_IMPORTED_MAPS, new Listener() {
             public void handleEvent(Event e) {
                 updateImportedMapsList();
             }      
         });
-        guiHandler.addListener(MAP_RESIZED, new Listener() {
+        Listener.addListener(MAP_RESIZED, new Listener() {
             public void handleEvent(Event e) {
                 state.getActiveRenderer().resetCache();
             }      
         });
     }
     
-    private static void loadState() {
-        File stateFile = new File("./state.state");
-        if (stateFile.exists()) {   
-            logger.info("load state file..."); 
+    private void loadState() {
+        State state = State.getInstance(); 
+        if (STATE_FILE.exists()) {   
             try { 
-                StateIO.loadState(stateFile); 
+                StateIO.loadState(STATE_FILE); 
+                //guiHandler.setMapMode(state.getActiveRenderer() instanceof Renderer3D);              
             } catch (IOException e) {
-                logger.error("state loading: Read error occurred.");
+                logger.error("State loading: Read error occurred.");
                 e.printStackTrace();
             } 
-        }
+            // LOAD SRAL MAP FROM STATE
+            if ((state.getLoadedMapFile() != null) && state.getLoadedMapFile().exists()) {
+                logger.info("Loading map file from state");
+                loadMap(state.getLoadedMapFile());
+            }  
+        }   
+        guiHandler.setSpeed(state.getSpeed());  
+        guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());       
     }
     
     private void importMap(File osmFile) {
@@ -260,7 +278,6 @@ public class Controller {
                 logger.error("Could not save imported map to file.");
             }
             setViewToMapCenter();
-            guiHandler.setView(state.getCenterCoordinates());
             updateImportedMapsList();
         }    
     }
@@ -279,8 +296,6 @@ public class Controller {
             } catch (IOException e) {
                 logger.error("Map could not be loaded.");
             }
-            setViewToMapCenter(); 
-            guiHandler.setView(state.getCenterCoordinates());
         }
     }
 
@@ -525,14 +540,11 @@ public class Controller {
         Coordinates upLeft = new Coordinates();
         Coordinates bottomRight = new Coordinates();
         state.getLoadedMapInfo().getBounds(upLeft, bottomRight);
-        Coordinates center = new Coordinates();
-        center.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-        center.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-        state.setCenterCoordinates(center);
+        state.setCenterCoordinates(Coordinates.interpolate(upLeft, bottomRight, 0.5f));
+        guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());
     }
     
     private void render(Context context) {
-        state.setDetailLevel(context.getDetailLevel());
         state.getActiveRenderer().render(context); 
     }
     

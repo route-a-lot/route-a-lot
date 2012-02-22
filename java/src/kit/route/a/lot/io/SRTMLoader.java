@@ -26,7 +26,6 @@ public class SRTMLoader implements HeightLoader {
         if (dateien == null) {
             return;
         }
-        logger.info("Loading hgt files...");
         for (File file: dateien) {
             String[] fileNameParts = file.getName().split("\\.");
             if ((fileNameParts.length != 2) || (fileNameParts[0].length() != 7)

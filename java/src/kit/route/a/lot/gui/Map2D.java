@@ -1,7 +1,7 @@
 package kit.route.a.lot.gui;
 
 
-import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+import static kit.route.a.lot.common.Listener.*;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.gui.event.RenderEvent;
 
@@ -31,8 +32,9 @@ public class Map2D extends Map  {
                 super.paint(g);       
                 Coordinates diff = new Coordinates(getHeight(), getWidth())
                                         .scale(Projection.getZoomFactor(zoomlevel) / 2f);
-                gui.getListeners().fireEvent(VIEW_CHANGED,
-                        new RenderEvent(new Context2D(center.clone().subtract(diff), diff.add(center), zoomlevel, g)));
+                Listener.fireEvent(RENDER,
+                        new RenderEvent(new Context2D(center.clone().subtract(diff),
+                                diff.add(center), zoomlevel, g)));
             }      
         };
         return result;

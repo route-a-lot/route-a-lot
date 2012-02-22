@@ -3,7 +3,6 @@ package kit.route.a.lot.gui;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
@@ -12,10 +11,9 @@ import kit.route.a.lot.common.Selection;
 public class GUIHandler {
 
     private GUI gui;
-    private Listeners listeners = new Listeners(Listener.TYPE_COUNT);
     
     public GUIHandler() {
-        gui = new GUI(listeners);
+        gui = new GUI();
         gui.setBounds(0, 25, 600, 600);
         gui.addContents();
     }
@@ -40,9 +38,8 @@ public class GUIHandler {
         gui.passElementType(element);
     }
     
-    
-    public void setView(Coordinates center) {
-        gui.setView(center);
+    public void setView(Coordinates center, int detailLevel) {
+        gui.setView(center, detailLevel);
     }
     
     public void setSpeed(int speed) {   
@@ -63,10 +60,6 @@ public class GUIHandler {
     
     public void showSearchCompletion(List<String> completion) {
         gui.showSearchCompletions(completion);
-    }
-    
-    public void addListener(int eventType, Listener listener) {
-        listeners.addListener(eventType, listener);
     }
     
     public void setMapMode(boolean render3D) {

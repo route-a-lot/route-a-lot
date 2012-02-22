@@ -12,10 +12,13 @@ import java.util.List;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.rendering.Renderer;
+import kit.route.a.lot.map.rendering.Renderer3D;
 
 
 public class StateIO {
-
+    private static final boolean LOAD_MAP_MODE = false, LOAD_POSITION = true;
+    
     /**
      * Loads the current application state from a file.
      * Note that this does not load the map, a call to MapIO.loadMap()
@@ -37,8 +40,12 @@ public class StateIO {
         // essential data
         String path = stream.readUTF();
         state.setLoadedMapFile((path == null) ? null : new File(path));
-        state.setCenterCoordinates(Coordinates.loadFromStream(stream));
-        state.setDetailLevel(stream.readInt()); 
+        Coordinates center = Coordinates.loadFromStream(stream);
+        int detailLevel = stream.readInt();
+        if (LOAD_POSITION) {
+            state.setCenterCoordinates(center);
+            state.setDetailLevel(detailLevel); 
+        }
         
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
@@ -54,6 +61,10 @@ public class StateIO {
         state.setHeightMalus(stream.readInt());
         state.setHighwayMalus(stream.readInt());
         state.setSpeed(stream.readInt());
+        boolean render3D = stream.readBoolean();
+        if (LOAD_MAP_MODE) {
+            state.setActiveRenderer((render3D) ? new Renderer3D() : new Renderer());
+        }
               
         stream.close();
     }
@@ -100,6 +111,7 @@ public class StateIO {
         stream.writeInt(state.getHeightMalus());
         stream.writeInt(state.getHighwayMalus());
         stream.writeInt(state.getSpeed());
+        stream.writeBoolean(state.getActiveRenderer() instanceof Renderer3D);
         
         stream.close();
     }

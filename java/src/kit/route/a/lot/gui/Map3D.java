@@ -1,8 +1,7 @@
 package kit.route.a.lot.gui;
 
 import static javax.media.opengl.GL.*;
-import static kit.route.a.lot.common.Listener.MAP_RESIZED;
-import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+import static kit.route.a.lot.common.Listener.*;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -13,6 +12,7 @@ import javax.media.opengl.glu.GLU;
 
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.RenderEvent;
@@ -25,7 +25,9 @@ public class Map3D extends Map implements GLEventListener {
             VIEW_ANGLE = 85, // horizontal camera opening angle
             UNIT_DISTANCE = 1, // (unscaled) average camera - model distance
             VIEW_MIN_DISTANCE = 0.01f, VIEW_MAX_DISTANCE = 2,
-            FOG_START_DISTANCE = 1.3f, FOG_END_DISTANCE = 2;
+            FOG_START_DISTANCE = 1.3f, FOG_END_DISTANCE = 2,
+            MAX_VERTICAL_ROTATION = 50;
+            
         
     private float rotationHorizontal = 0, rotationVertical = 25;
     private float displayRatio = 1;
@@ -94,7 +96,7 @@ public class Map3D extends Map implements GLEventListener {
         gl.glTranslated(-center.getLongitude(), -center.getLatitude(), 0);
         
         // CREATE RENDER EVENT
-        gui.getListeners().fireEvent(VIEW_CHANGED, 
+        Listener.fireEvent(RENDER, 
                 new RenderEvent(new Context3D(center, zoomlevel, gl)));    
     }
 
@@ -106,7 +108,7 @@ public class Map3D extends Map implements GLEventListener {
         // RECREATE PROJECTION MATRIX  
         displayRatio = width / (float)height;
         setProjection(g.getGL(), VIEW_MIN_DISTANCE, VIEW_MAX_DISTANCE);
-        gui.getListeners().fireEvent(MAP_RESIZED, null); 
+        Listener.fireEvent(MAP_RESIZED, null); 
         calculateView();
     }
     
@@ -121,7 +123,7 @@ public class Map3D extends Map implements GLEventListener {
         if (isMouseButtonPressed(e, 2) || (isMouseButtonPressed(e, 1) && e.isControlDown())) {
             rotationHorizontal += ROTATION_SPEED * diffX;
             rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
-            rotationVertical = Util.clip(rotationVertical + diffY, 0, 60);
+            rotationVertical = Util.clip(rotationVertical + diffY, 0, MAX_VERTICAL_ROTATION);
         }    
         // MOVE CAMERA if left mouse button is pressed (and no ctrl)
         if (isMouseButtonPressed(e, 1) && !e.isControlDown()) {

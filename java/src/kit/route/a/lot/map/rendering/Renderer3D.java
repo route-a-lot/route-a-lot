@@ -56,6 +56,9 @@ public class Renderer3D extends Renderer {
      */
     @Override
     public void render(Context renderContext) {
+        if (!(context instanceof Context3D)) {
+            return;
+        }
         // RETRIEVE VARIABLES TO WORK WITH
         context = (Context3D) renderContext;
         projection = ProjectionFactory.getCurrentProjection();

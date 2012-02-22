@@ -58,6 +58,9 @@ public class Renderer {
      *            level of detail of the map view
      */
     public void render(Context context) {
+        if (!(context instanceof Context2D)) {
+            return;
+        }
         Context2D ctx = (Context2D) context;
         myContext = ctx;
         state = State.getInstance();

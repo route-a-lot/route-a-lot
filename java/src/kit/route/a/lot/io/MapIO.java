@@ -48,12 +48,9 @@ public class MapIO {
             throw new IOException("Wrong format version: " + file.getName());
         } 
 
-        logger.info("load map info...");
         state.getLoadedMapInfo().loadFromStream(stream);
-        logger.info("load routing graph...");
         state.getLoadedGraph().loadFromStream(stream);
         stream.close();
-        logger.info("map loading finished");
     }
 
     /**

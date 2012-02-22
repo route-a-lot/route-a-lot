@@ -22,11 +22,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
-import kit.route.a.lot.gui.event.AddNavNodeEvent;
+import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
 
@@ -97,7 +98,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                     if (description.equals(TEXT_INSERT_DESCRIPTION) || description.length() == 0) {
                         description = TEXT_EMPTY;
                     }
-                    gui.getListeners().fireEvent(ADD_FAVORITE, new AddFavoriteEvent(
+                    Listener.fireEvent(ADD_FAVORITE, new AddFavoriteEvent(
                             getPosition(clickEvent.getX(), clickEvent.getY()), name, description));
                 }
                 favoriteMenu.setVisible(false);
@@ -143,13 +144,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         });
         deleteFavoriteItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                gui.getListeners().fireEvent(DELETE_FAVORITE,
+                Listener.fireEvent(DELETE_FAVORITE,
                         new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
         deleteNavPoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                gui.getListeners().fireEvent(DELETE_NAVNODE,
+                Listener.fireEvent(DELETE_NAVNODE,
                         new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             }
         });
@@ -198,11 +199,13 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
     
     /**
-     * Sets the zoom level. Negative values will be treated as 0.
+     * Sets the zoom level.
      * @param zoomlevel the desired zoom level
      */
     public void setZoomlevel(int zoomlevel) {
         this.zoomlevel = Util.clip(zoomlevel, 0, MAX_ZOOMLEVEL);
+        Listener.fireEvent(VIEW_CHANGED,
+                new PositionNumberEvent(center.clone(), zoomlevel));
     }
     
     /**
@@ -237,8 +240,8 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
                         break;
                     }
         }    
-        gui.getListeners().fireEvent(ADD_NAVNODE,
-                new AddNavNodeEvent(getPosition(clickEvent.getX(), clickEvent.getY()), pos));
+        Listener.fireEvent(ADD_NAVNODE,
+                new PositionNumberEvent(getPosition(clickEvent.getX(), clickEvent.getY()), pos));
         canvas.repaint();
     }
     
@@ -247,7 +250,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     private void checkPopup(MouseEvent me) {
         clickEvent = me;
-        gui.getListeners().fireEvent(POSITION_CLICKED,
+        Listener.fireEvent(POSITION_CLICKED,
                 new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
     }
       
@@ -272,7 +275,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         if (zoomlevel != oldZoom) {
             center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
             calculateView();
-        }     
+        }            
     }
     
     /**
@@ -311,7 +314,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             navNodeMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
         } else if (isMouseButtonPressed(clickEvent, 1)
                 && (itemType == FAVORITE || itemType == POI)){
-            gui.getListeners().fireEvent(SHOW_POI_DESCRIPTION,
+            Listener.fireEvent(SHOW_POI_DESCRIPTION,
                     new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
             descriptionMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
         }

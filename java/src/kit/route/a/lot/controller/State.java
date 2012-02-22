@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -32,6 +34,7 @@ public class State {
     private int duration;
     private int heightMalus;
     private int highwayMalus;
+    private int progress;
 
     public State() {
         detailLevel = 2;
@@ -40,8 +43,10 @@ public class State {
         duration = 0;
         heightMalus = 0;
         highwayMalus = 0;
+        progress = 0;
         loadedHeightmap = new Heightmap();
         activeRenderer = new Renderer();
+        centerCoordinates = new Coordinates(0, 0);
         resetMap();
     }
     
@@ -72,7 +77,6 @@ public class State {
         loadedGraph = new AdjacentFieldsRoutingGraph();      
         navigationNodes = new ArrayList<Selection>();
         currentRoute = new ArrayList<Integer>();
-        centerCoordinates = new Coordinates(0, 0);
         routeDescription = new RouteDescription();    
         activeRenderer.resetCache();
     }
@@ -147,8 +151,8 @@ public class State {
         return centerCoordinates;
     }
 
-    public void setCenterCoordinates(Coordinates areaCoord) {
-        this.centerCoordinates = areaCoord;
+    public void setCenterCoordinates(Coordinates center) {
+        this.centerCoordinates = center;
     }
 
 
@@ -212,6 +216,15 @@ public class State {
 
     public void setHighwayMalus(int heighwayMalus) {
         this.highwayMalus = heighwayMalus;
+    }
+    
+    public int getProgress() {
+        return progress;
+    }
+
+    public void setProgress(int progress) {
+        this.progress = progress;
+        Listener.fireEvent(Listener.PROGRESS_DONE, new NumberEvent(progress));
     }
 
 }
