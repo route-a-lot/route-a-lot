@@ -10,11 +10,12 @@ public class Selection {
     	private Coordinates position;
     	private String name;
     	
-    	public Selection(int fromID, int toID, float ratio, Coordinates position) {
+    	public Selection(int fromID, int toID, float ratio, Coordinates position, String name) {
        		this.fromID = fromID;
         	this.toID = toID;
         	this.ratio = ratio;
         	this.position = position;  
+        	this.name = name;
     	}
     
     	public String getName() {

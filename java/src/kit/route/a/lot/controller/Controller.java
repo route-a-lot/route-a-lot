@@ -320,6 +320,7 @@ public class Controller {
             }
         }
         calculateRoute();
+        guiHandler.updateNavNodes(state.getNavigationNodes());
     }
 
     private void exportRoute(File file) {
@@ -341,7 +342,7 @@ public class Controller {
                 state.getNavigationNodes().add(position, newSel);
             }
         }
-        guiHandler.updateNavPointsList(state.getNavigationNodes());
+        guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();
         // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
         //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
@@ -361,7 +362,7 @@ public class Controller {
                 state.getNavigationNodes().add(position, newSel);
             }
         }
-        guiHandler.updateNavPointsList(state.getNavigationNodes());
+        guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();
         // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
         //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
@@ -372,7 +373,7 @@ public class Controller {
         Selection sel = state.getLoadedMapInfo().select(str);
         if (sel != null) {
             state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, sel);
-            guiHandler.updateNavPointsList(state.getNavigationNodes());
+            guiHandler.updateNavNodes(state.getNavigationNodes());
             calculateRoute();
         }
     }
@@ -381,7 +382,7 @@ public class Controller {
         if (pos < state.getNavigationNodes().size()) {
             state.getNavigationNodes().remove(pos);
             state.setCurrentRoute(new ArrayList<Integer>());
-            guiHandler.updateNavPointsList(state.getNavigationNodes());
+            guiHandler.updateNavNodes(state.getNavigationNodes());
             calculateRoute();
         }
     }
@@ -393,7 +394,7 @@ public class Controller {
             if (Coordinates.getDistance(navNodePos, pos) < radius) {
                 state.getNavigationNodes().remove(i);
                 state.getCurrentRoute().clear();
-                guiHandler.updateNavPointsList(state.getNavigationNodes());
+                guiHandler.updateNavNodes(state.getNavigationNodes());
                 calculateRoute();
             }
         }
@@ -401,7 +402,7 @@ public class Controller {
 
     private void optimizeRoute() {  
         Router.optimizeRoute(state.getNavigationNodes());
-        guiHandler.updateNavPointsList(state.getNavigationNodes());
+        guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();
     }
     

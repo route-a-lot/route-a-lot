@@ -44,7 +44,8 @@ public class StateIO {
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
         for (int i = 0; i < len; i++) {
             navNodes.add(new Selection(stream.readInt(), stream.readInt(),
-                    stream.readFloat(), Coordinates.loadFromStream(stream)));
+                    stream.readFloat(), Coordinates.loadFromStream(stream),
+                    stream.readUTF()));
         }
         state.setNavigationNodes(navNodes);
         
@@ -91,6 +92,7 @@ public class StateIO {
             stream.writeInt(navNode.getTo());
             stream.writeFloat(navNode.getRatio());
             navNode.getPosition().saveToStream(stream);
+            stream.writeUTF(navNode.getName());
         }
 
         // miscellaneous data

@@ -32,7 +32,7 @@ public class GUIHandler {
         gui.setImportedMapsList(maps, activeMapIndex);
     }
     
-    public void updateNavPointsList(List<Selection> navPointsList) {
+    public void updateNavNodes(List<Selection> navPointsList) {
         gui.updateNavNodes(navPointsList);
     }
     
