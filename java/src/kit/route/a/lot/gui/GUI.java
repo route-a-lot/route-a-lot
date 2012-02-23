@@ -15,11 +15,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -98,8 +100,12 @@ public class GUI extends JFrame {
      * @param view center geo coordinates (possibly mercator projected)
      */
     public GUI() {
-        super("Route-A-Lot");
+        super("Route-A-Lot");  
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        URL iconFile = ClassLoader.getSystemResource("icon.png");
+        if (iconFile != null) {
+            setIconImage(new ImageIcon(iconFile).getImage());
+        }
         setVisible(true);
     }
 

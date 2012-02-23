@@ -166,7 +166,7 @@ public class Tile3D extends Tile {
         if (elements.size() == 0) {
             return;
         }
-        float[] yellow = new float[]{1, 1, 0};
+        float[] yellow = new float[]{0.7f, 0.7f, 0};
         for (MapElement element : elements) {
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
