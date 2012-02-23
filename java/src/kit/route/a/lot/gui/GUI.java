@@ -180,6 +180,7 @@ public class GUI extends JFrame {
         // tabArea.setMnemonicAt(1, KeyEvent.VK_2);
 
         routeValues = new JLabel();
+        showRouteValues(0, 0);
         mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
@@ -200,7 +201,7 @@ public class GUI extends JFrame {
         statusBar.add(new JLabel("Route:"));
         statusBar.add(Box.createHorizontalStrut(10));
         statusBar.add(routeValues);
-        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(Box.createHorizontalStrut(130));
         statusBar.add(progressBar);
         statusBar.add(Box.createHorizontalGlue());
         statusBar.add(mouseCoordinatesDisplay);

@@ -28,7 +28,7 @@ public class Router {
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
-                p.add(0.3 / (size * size));
+                p.add(0.8 / (size * size));
                 // Fill the Matrix
                 Route route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
                 if (route == null) {
@@ -44,7 +44,7 @@ public class Router {
         int resultLength = -1;  
         int faculty = fak(size - 1);
         for (int f = 0; f < faculty; f++) {
-            p.add(0.7 / faculty);
+            p.add(0.2 / faculty);
             // Iterate over all permutations
             boolean isRouteable = true;
             int[] current = permutation(size - 2, f);

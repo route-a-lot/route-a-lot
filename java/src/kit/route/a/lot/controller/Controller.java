@@ -126,17 +126,26 @@ public class Controller {
             }   
         });
         Listener.addListener(IMPORT_OSM, new Listener() {
-            public void handleEvent(Event e) {
-                Progress p = new Progress();
-                importMap(new File(((TextEvent) e).getText()), new Progress());  
-                p.finish();
+            public void handleEvent(final Event e) {
+                final File file = new File(((TextEvent) e).getText());
+                new Thread() {
+                    public void run() {
+                        Progress p = new Progress();
+                        importMap(file, p);
+                        p.finish(); 
+                    }   
+                }.start();
             } 
         });  
         Listener.addListener(OPTIMIZE_ROUTE, new Listener() {
             public void handleEvent(Event e) {
-                Progress p = new Progress();
-                optimizeRoute(p);
-                p.finish();
+                new Thread() {
+                    public void run() {
+                        Progress p = new Progress();
+                        optimizeRoute(p);
+                        p.finish();
+                    }   
+                }.start();
             } 
         });
         Listener.addListener(DELETE_NAVNODE, new Listener() {
@@ -270,6 +279,7 @@ public class Controller {
     }
     
     private void importMap(File osmFile, Progress p) {
+        p.add(0.03);
         if(!osmFile.exists()) {
             logger.error("OSM File doesn't exist");
         } else {
