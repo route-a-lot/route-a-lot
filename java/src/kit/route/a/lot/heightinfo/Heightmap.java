@@ -9,7 +9,7 @@ import kit.route.a.lot.common.Coordinates;
 
 public class Heightmap implements IHeightmap {
 
-    private static final float UNDEFINED_HEIGHT = 2000;
+    private static final float UNDEFINED_HEIGHT = 0;
     private List<HeightTile> map;
 
     /* Konstruktor */

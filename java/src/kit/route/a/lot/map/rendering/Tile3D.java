@@ -44,7 +44,7 @@ public class Tile3D extends Tile {
         {-500, 0, 5, 70, 200, 350, 520, 700, 900, 1100, 1450, 2300};
     // [{{0..255, 0..255, 0..255}, ...}] rgb colors for the above declared heights
     private static final float[][] COLORS = 
-        {{0, 0, 0}, {0, 0, 100}, {140, 170, 150},
+        {{0, 0, 0}, {210, 230, 190}, {140, 170, 150},
          {143, 189, 143}, {151, 253, 153}, 
          {239, 222, 166}, {227, 187, 138}, {174, 144, 115},
          {245, 166, 127}, {203, 115, 76}, {126, 69, 40}, {255, 255, 255}};
@@ -203,11 +203,13 @@ public class Tile3D extends Tile {
         GLUquadric quadric = glu.gluNewQuadric();
         //glu.gluQuadricNormals(quadric, GLU.GLU_FLAT);
         gl.glColor3f(0.5f, 0.5f, 0.5f);
-        glu.gluCylinder(quadric, 0.03, 0.03, 1, 5, 1);
-        gl.glTranslatef(0, 0, 1);
         gl.glEnable(GL_LIGHTING);
+        glu.gluCylinder(quadric, 0.03, 0.03, 0.6f, 5, 1);
+        gl.glTranslatef(0, 0, 0.6f);
+        
         gl.glColor3f(color[0], color[1], color[2]);
         glu.gluSphere(quadric, 0.12, 8, 8);
+        //glu.gluCylinder(quadric, 0.2, 0.1, 0.5, 8, 1);
         gl.glDisable(GL_LIGHTING);
         glu.gluDeleteQuadric(quadric);     
         gl.glPopMatrix();  
