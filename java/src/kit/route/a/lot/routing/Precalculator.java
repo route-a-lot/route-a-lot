@@ -48,7 +48,7 @@ public class Precalculator {
         logger.info("Starting precalculation with " + procNum + " threads...");
         ExecutorService executorService = Executors.newFixedThreadPool(procNum);
         Collection<Future<?>> futures = new ArrayList<Future<?>>(graph.getIDCount());
-        if (doAreas(p.sub(0.3))) {
+        if (doAreas(p.sub(0.01))) {
             logger.info("Starting calculation of ArcFlags");
             startTime = System.currentTimeMillis();
             startPeriod = startTime;
@@ -57,12 +57,12 @@ public class Precalculator {
                 futures.add(executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        createFlags(currentI, p.sub(0.6f / graph.getIDCount()));
+                        createFlags(currentI, p.sub(0.99f / graph.getIDCount()));
                     }
                 }));       
             }
-            logger.info("All tasks added waiting for them to complete...");
             executorService.shutdown();
+            logger.info("Count of futures " + futures.size());
             for (Future<?> future : futures) {
                 try {
                     future.get();
@@ -72,12 +72,11 @@ public class Precalculator {
                     e.printStackTrace();
                 }
             }
-            p.add(0.1);
             logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000));
         } else {
             logger.error("Failed to do precalculation");
-            p.add(0.7);
         }
+        p.finish();
         return;
     }
     
@@ -125,8 +124,8 @@ public class Precalculator {
                 }
             }
         }
-        incrementFinishedIds();
         p.add(1);
+        incrementFinishedIds();
         // If there exist nodes not yet visited at this point, they can't reach the node at all.
         logger.trace("Done calculating ArcFlags for ID " + String.valueOf(node));
     }

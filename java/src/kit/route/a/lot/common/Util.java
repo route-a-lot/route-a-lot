@@ -137,7 +137,7 @@ public class Util {
         int sec = seconds % 60;
         int min = seconds / 60 % 60;
         int h = seconds / 3600;
-        return ((h != 0) ? h + " h " : "") + ((min != 0) ? min + " min" : sec + " sek");
+        return ((h != 0) ? h + " h " : "") + ((min != 0) ? min + " min" : sec + " s");
     }
     
     public static String formatNanoSeconds(long nanos) {
@@ -162,21 +162,25 @@ public class Util {
         int minutes = iSeconds / 60 % 60;
         int hours = iSeconds / 3600 % 24;
         int days = iSeconds / 86400;
-        String sSeconds = seconds + "s";
-        String sMinutes = minutes + "min " + sSeconds;
-        String sHours = hours + "h " + sMinutes;
-        String sDays = days + "d " + sHours;
+        String sSeconds = "";
+        String sMinutes = "";
+        String sHours = "";
+        String sDays = "";
         if (days == 0) {
             if (hours == 0) {
                 if (minutes == 0) {
+                    sSeconds = seconds + "s";
                     return sSeconds;
                 } else {
+                    sMinutes = minutes + "min " + sSeconds;
                     return sMinutes;
                 }
             } else {
+                sHours = hours + "h " + sMinutes;
                 return sHours;
             }
         } else {
+            sDays = days + "d " + sHours;
             return sDays;
         }
     }
