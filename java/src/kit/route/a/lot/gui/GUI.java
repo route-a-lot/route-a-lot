@@ -56,7 +56,7 @@ import kit.route.a.lot.gui.event.TextEvent;
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    private static final int OPTIMIZE_WARN_LIMIT = 10;
+    private static final int OPTIMIZE_WARN_LIMIT = 20;
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea;
@@ -85,6 +85,7 @@ public class GUI extends JFrame {
     // NON-COMPONENT ATTRIBUTES
     private Point popupPos;
     private int popupIndex, numNavNodes = 0;
+    private long taskStartTime;
     private boolean enterPressed = false;
     private boolean active = false; // indicates whether main thread has finished startup
 
@@ -187,13 +188,12 @@ public class GUI extends JFrame {
         Listener.addListener(PROGRESS, new Listener() {
             public void handleEvent(Event e) {
                 int progress = ((NumberEvent) e).getNumber();
-                if (progress < 0 || progress >= 100) {
-                    active = true;
-                }
-                if (progress == 0) {
-                    active = false;
-                }
+                active = (progress < 0 || progress >= 100);
+                int time = (int)((System.nanoTime() - taskStartTime) / 1000000000
+                                    * ((100 - progress) /(double) progress));
                 progressBar.setValue(Util.clip(progress, 0, 100));
+                progressBar.setString((active) ? "" : progressBar.getValue()
+                        + "%, verbleibend ca. " + Util.formatSecondsRegular(time));
             }
         });
         JPanel statusBar = new JPanel();
@@ -220,6 +220,7 @@ public class GUI extends JFrame {
             }
         });
     
+        startTask();
     }
 
     /**
@@ -301,6 +302,7 @@ public class GUI extends JFrame {
         buttonOptimizeRoute.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if ((countNavNodes() < OPTIMIZE_WARN_LIMIT) /*|| TODO ask confirmation*/) {
+                    startTask();
                     Listener.fireEvent(OPTIMIZE_ROUTE, null);
                 }               
             }
@@ -415,6 +417,7 @@ public class GUI extends JFrame {
         buttonActivateMap.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 Object item = listChooseMap.getSelectedItem();
+                startTask();
                 Listener.fireEvent(LOAD_MAP,
                         new TextEvent((item != null) ? item.toString() : ""));
             }
@@ -478,8 +481,8 @@ public class GUI extends JFrame {
             e.printStackTrace();
         }
         dialog.setCurrentDirectory(currentDir);
-        int returnValue = dialog.showOpenDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
+        if (dialog.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            startTask();
             Listener.fireEvent(IMPORT_OSM,
                     new TextEvent(dialog.getSelectedFile().getPath()));
         }
@@ -707,11 +710,8 @@ public class GUI extends JFrame {
      * @param duration the route duration using the current average speed (in seconds)
      */
     public void showRouteValues(int length, int duration) {
-        int hours = duration / 3600;
-        int minutes = (duration - hours * 3600) / 60;
-        int seconds = duration - (hours * 3600) - (minutes * 60);
-        String output = String.format("%1$3.1f km / ", length / 1000f) + ((hours != 0) ? hours + " h " : "");
-        routeValues.setText("(" + output + ((minutes != 0) ? minutes + " min" : seconds + " sek")+ ")");
+        String output = String.format("%1$3.1f km / ", length / 1000f);
+        routeValues.setText("(" + output + Util.formatSecondsRegular(duration) + ")");
     }
     
     /**
@@ -720,16 +720,6 @@ public class GUI extends JFrame {
      */
     public void showMouseCoordinates(Coordinates mousePosition) {
         mouseCoordinatesDisplay.setText(mousePosition.toString());
-    }
-
-    
-    /**
-     * Called when the main thread has finished operating. Signals the GUI whether it
-     * can now respond to AWT events without danger of malsynchronisation.
-     * @param active (de-)activates some GUI event responds
-     */
-    public void setActive(boolean active) {
-        this.active = active;   
     }
 
     /**
@@ -745,5 +735,9 @@ public class GUI extends JFrame {
         centralArea.add(map, BorderLayout.CENTER);
         centralArea.validate();
         setView(center, zoomlevel);
+    }
+    
+    private void startTask() {
+        taskStartTime = System.nanoTime();
     }
 }

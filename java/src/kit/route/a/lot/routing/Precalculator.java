@@ -39,9 +39,7 @@ public class Precalculator {
     private static Logger logger = Logger.getLogger(Precalculator.class);
     
     private static int finishedIds = 0;
-    private static double startTime;
-    private static double startPeriod;
-    private static double currentTime;
+    private static long startTime, startPeriod, currentTime;
     
     public static void precalculate(final Progress p) {
         graph = State.getInstance().getLoadedGraph();
@@ -61,8 +59,7 @@ public class Precalculator {
                     public void run() {
                         createFlags(currentI, p.sub(0.6f / graph.getIDCount()));
                     }
-                }));
-                
+                }));       
             }
             logger.info("All tasks added waiting for them to complete...");
             executorService.shutdown();
@@ -91,9 +88,9 @@ public class Precalculator {
             if (currentTime - startPeriod > 5000) {
                 startPeriod = currentTime;
                 logger.info("Calculation of ArcFlags at " + (finishedIds * 100 / graph.getIDCount()) + "%");
-                double elapsedTime = (currentTime - startTime) / 1000;
-                logger.info("Elapsed time: " + formatSeconds(elapsedTime)
-                        + " - estimated time remaining: " + formatSeconds(elapsedTime / (((double) finishedIds) / graph.getIDCount()) - elapsedTime));
+                long elapsedTime = (currentTime - startTime) / 1000;
+                logger.info("Elapsed time: " + formatSeconds(elapsedTime) + " - estimated time remaining: "
+                        + formatSeconds((long)(elapsedTime  * ((graph.getIDCount() / (double) finishedIds) - 1))));
             }
         }
     }

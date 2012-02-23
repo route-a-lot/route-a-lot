@@ -86,20 +86,21 @@ public class Controller {
         
         // LOAD STATE
         Util.startTimer();
-        loadState(p.sub(0.5));
+        loadState(p.sub(0.6));
         logger.info("State loaded: " + Util.stopTimer());
         
         // IMPORT DEFAULT OSM MAP
         if (state.getLoadedMapFile() == null) {
             if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
-                importMap(DEFAULT_OSM_MAP, p.sub(0.1));
+                p.add(-0.3);
+                importMap(DEFAULT_OSM_MAP, p.sub(0.3));
                 logger.info("Imported default map: " + Util.stopTimer());
             } else {
                 logger.warn("No map loaded");
-            }      
-        }    
+            }
+        }
         p.finish();
-    }   
+    }
     
     private void addGUIListeners() {
         Listener.addListener(ADD_NAVNODE, new Listener() {
@@ -158,13 +159,17 @@ public class Controller {
             }    
         });
         Listener.addListener(LOAD_MAP, new Listener() {
-            public void handleEvent(Event e) {
-                String text = ((TextEvent) e).getText();
-                Progress p = new Progress();
-                loadMap((text.length() == 0) ? null : new File(
-                        SRAL_DIRECTORY + "/" + text + SRAL_EXT), p);
-                p.finish();
-                setViewToMapCenter();
+            public void handleEvent(final Event e) {
+                new Thread() {
+                    public void run() {
+                        String text = ((TextEvent) e).getText();
+                        Progress p = new Progress();
+                        loadMap((text.length() == 0) ? null : new File(
+                                SRAL_DIRECTORY + "/" + text + SRAL_EXT), p);
+                        p.finish(); 
+                        setViewToMapCenter();
+                    }   
+                }.start();               
             }    
         });
         Listener.addListener(ADD_FAVORITE, new Listener() {
@@ -284,13 +289,13 @@ public class Controller {
             logger.error("OSM File doesn't exist");
         } else {
             state.resetMap();
-            new OSMLoader(State.getInstance()).importMap(osmFile, p.sub(0.3));
-            Precalculator.precalculate(p.sub(0.6)); // TODO
+            new OSMLoader(State.getInstance()).importMap(osmFile, p.sub(0.02));
+            Precalculator.precalculate(p.sub(0.97)); // TODO
             state.getLoadedMapInfo().compactifyDatastructures();
             state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
                     + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {
-                MapIO.saveMap(state.getLoadedMapFile(), p.sub(0.1));
+                MapIO.saveMap(state.getLoadedMapFile(), p.sub(0.01));
             } catch (IOException e) {
                 logger.error("Could not save imported map to file.");
             }

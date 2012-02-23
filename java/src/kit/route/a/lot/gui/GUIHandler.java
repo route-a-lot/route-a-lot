@@ -17,10 +17,6 @@ public class GUIHandler {
         gui.setBounds(0, 25, 600, 600);
         gui.addContents();
     }
-
-    public void setActive(boolean active) {
-        gui.setActive(true);
-    }
     
     public void updateGUI() {
         gui.updateGUI();

@@ -5,7 +5,7 @@ import kit.route.a.lot.gui.event.NumberEvent;
 
 public class Progress {
     
-    private double weight, progress = 0, lastprogress = 0;
+    private double weight, progress = 0, lastProgress = 0;
     private Progress parent;
     
     public Progress() {
@@ -26,7 +26,8 @@ public class Progress {
         progress += addProgress;
         if (parent != null) {
             parent.add(addProgress * weight);
-        } else if (progress - lastprogress >= 0.01){
+        } else if (progress - lastProgress >= 0.01){
+            lastProgress = progress;
             Listener.fireEvent(Listener.PROGRESS,
                     new NumberEvent((int)(progress * 100)));
         }
@@ -40,6 +41,9 @@ public class Progress {
     public void finish() {
         add(1 - progress); 
         progress = 1;
+        if (parent == null) {
+            Listener.fireEvent(Listener.PROGRESS, new NumberEvent(100));
+        }
     }
     
 }

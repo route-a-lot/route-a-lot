@@ -124,17 +124,7 @@ public class Util {
     }
     
     public static String stopTimer() {
-        long time = (System.nanoTime() - timer);
-        String result = time + "ns";
-        if (time > 1000000000) {
-            result = String.format("%1$1.2f s", time / 1000000000f);
-        } else if (time > 1000000) {
-            result = String.format("%1$1.2f ms", time / 1000000f);
-        } else if (time > 1000) {
-            result = String.format("%1$1.2f μs", time / 1000f);
-        }        
-        startTimer();
-        return result;
+        return formatNanoSeconds(System.nanoTime() - timer);
     }
     
     public static int RGBToInt(float[] rgb) {
@@ -142,7 +132,31 @@ public class Util {
         return (argb[0] << 24) + ((argb[1] & 0xFF) << 16) + ((argb[2] & 0xFF) << 8) + (argb[3] & 0xFF);
     }
     
-    public static String formatSeconds(double dSeconds) {
+    
+    public static String formatSecondsRegular(int seconds) {
+        int sec = seconds % 60;
+        int min = seconds / 60 % 60;
+        int h = seconds / 3600;
+        return ((h != 0) ? h + " h " : "") + ((min != 0) ? min + " min" : sec + " sek");
+    }
+    
+    public static String formatNanoSeconds(long nanos) {
+        String result;
+        if (nanos > 60000000000L) {
+            result = String.format("%1$1.2f min", nanos / 60000000000d);
+        } else if (nanos > 1000000000L) {
+            result = String.format("%1$1.2f s", nanos / 1000000000d);
+        } else if (nanos > 1000000L) {
+            result = String.format("%1$1.2f ms", nanos / 1000000d);
+        } else if (nanos > 1000L) {
+            result = String.format("%1$1.2f μs", nanos / 1000d);
+        } else {
+            result = nanos + " ns";
+        }   
+        return result;
+    }
+    
+    public static String formatSeconds(long dSeconds) {
         int iSeconds = (int) dSeconds;
         int seconds = iSeconds % 60;
         int minutes = iSeconds / 60 % 60;

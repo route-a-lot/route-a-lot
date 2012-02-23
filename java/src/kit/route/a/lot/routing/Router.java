@@ -22,13 +22,15 @@ public class Router {
     
     public static void optimizeRoute(List<Selection> navigationNodes, Progress p) {
         int size = navigationNodes.size();
+        int faculty = fak(size - 1);
         if (size < 4) {
             return;
         }
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
+        double progressRatio = ((double) faculty) / (faculty + (size * size * size));
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
-                p.add(0.8 / (size * size));
+                p.add((1 - progressRatio) / (size * size));
                 // Fill the Matrix
                 Route route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
                 if (route == null) {
@@ -42,9 +44,9 @@ public class Router {
         
         int[] result = null;  // The shortest permutation (so far)
         int resultLength = -1;  
-        int faculty = fak(size - 1);
+        
         for (int f = 0; f < faculty; f++) {
-            p.add(0.2 / faculty);
+            p.add(progressRatio / faculty);
             // Iterate over all permutations
             boolean isRouteable = true;
             int[] current = permutation(size - 2, f);
