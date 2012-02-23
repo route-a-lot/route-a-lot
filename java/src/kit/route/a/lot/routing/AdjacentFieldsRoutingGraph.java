@@ -237,7 +237,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
             // filter edges
-            if ((arcFlags[i] | flags) != 0) {
+            if ((arcFlags[i] & flags) != 0) {
                 relevantEdges.add(edges[i]);
             }
         }

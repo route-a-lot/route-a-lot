@@ -53,7 +53,5 @@ public class StateIOTest extends StateIO {
         setUp();
         loadState(file);
         assertTrue(original.equals(state));
-        
-        
     }
 }

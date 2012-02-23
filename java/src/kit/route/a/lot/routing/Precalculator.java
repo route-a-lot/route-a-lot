@@ -133,12 +133,20 @@ public class Precalculator {
 
     private static boolean doAreas(Progress p) {
         final int AREAS = 63;
-        final String FILE = "graph.txt";
+        File file;
+        try {
+            file = File.createTempFile("graph", ".txt");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            return false;
+        }
+        file.deleteOnExit();
+        //final String FILE = "graph.txt";
         String BINARY = "gpmetis";
         logger.info("Creating areas with Metis...");
         // Write graph file
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter(FILE));
+            BufferedWriter out = new BufferedWriter(new FileWriter(file));
             out.write(graph.getMetisRepresentation());
             out.close();
         } catch (IOException e) {
@@ -153,7 +161,7 @@ public class Precalculator {
             tryAgain = false;
             try {
                 String buffer;
-                Process process = Runtime.getRuntime().exec(BINARY + " " + FILE + " " + AREAS);
+                Process process = Runtime.getRuntime().exec(BINARY + " " + file.getAbsolutePath() + " " + AREAS);
                 BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
                 BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));               
                 // read the output from the command
@@ -176,17 +184,19 @@ public class Precalculator {
         p.addProgress(0.7);
         
         // read resulting file
-        String filePath = FILE + ".part." + AREAS;
+        String filePath = file.getAbsolutePath() + ".part." + AREAS;
         byte[] areas = new byte[(int) new File(filePath).length()];
-        BufferedInputStream file;
+        BufferedInputStream buff;
         try {
-            file = new BufferedInputStream(new FileInputStream(filePath));
-            file.read(areas);
-            file.close();
+            buff = new BufferedInputStream(new FileInputStream(filePath));
+            buff.read(areas);
+            buff.close();
         } catch (IOException e) {
             logger.error("Couldn't read area file, got rights?");
             return false;
         }
+        File metisFile = new File(filePath);
+        metisFile.delete();
         graph.readAreas(new String(areas));
         logger.info("Areas successfully created");
         p.addProgress(0.1);

@@ -20,13 +20,11 @@ class StateMock extends State {
         if(other == this) {
             return true;
         }
-        if(!(other instanceof StateMock)) {
+        if(!(other instanceof State)) {
             return false;
         }
-        StateMock comparee = (StateMock) other;
-        return loadedMapInfo.equals(comparee.getLoadedMapInfo())
-                && loadedGraph.equals(comparee.getLoadedGraph())
-                && super.equals(other);
+        State comparee = (State) other;
+        return super.equals(other);
     }
     
     @Override

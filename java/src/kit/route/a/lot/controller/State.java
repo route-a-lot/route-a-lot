@@ -45,10 +45,7 @@ public class State {
             return false;
         }
         State comparee = (State) other;
-        return loadedMapInfo.equals(comparee.getLoadedMapInfo())
-                && loadedGraph.equals(comparee.getLoadedGraph())
-                && loadedHeightmap.equals(comparee.getLoadedHeightmap())
-                && centerCoordinates.equals(comparee.getCenterCoordinates())
+        return centerCoordinates.equals(comparee.getCenterCoordinates())
                 && detailLevel == comparee.getDetailLevel()
                 && clickRadius == comparee.getClickRadius()
                 && routeDescription.equals(comparee.getRouteDescription())
