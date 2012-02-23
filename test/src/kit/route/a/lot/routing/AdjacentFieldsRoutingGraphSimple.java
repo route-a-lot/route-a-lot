@@ -152,4 +152,11 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
     public int[] getWeightsArray() {
         return weights.clone();
     }
+
+
+    @Override
+    public void setAllArcFlags() {
+        // TODO Auto-generated method stub
+        
+    }
 }

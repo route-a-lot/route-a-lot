@@ -130,5 +130,11 @@ public class GraphMock implements RoutingGraph {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public void setAllArcFlags() {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

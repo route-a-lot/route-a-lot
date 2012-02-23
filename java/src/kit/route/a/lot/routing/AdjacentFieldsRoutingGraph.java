@@ -391,4 +391,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public int[] getWeightsArray() {
         return weights.clone();
     }
+    
+    @Override
+    public void setAllArcFlags() {
+        Arrays.fill(arcFlags, ~0L);
+    }
 }

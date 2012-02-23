@@ -74,6 +74,7 @@ public class Precalculator {
             }
             logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000));
         } else {
+            graph.setAllArcFlags();
             logger.error("Failed to do precalculation");
         }
         p.finish();

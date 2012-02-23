@@ -56,5 +56,7 @@ public interface RoutingGraph {
     public int[] getEdgesArray();
     
     public int[] getWeightsArray();
+    
+    public void setAllArcFlags();
 
 }
