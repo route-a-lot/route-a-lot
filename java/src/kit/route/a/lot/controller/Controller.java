@@ -80,13 +80,13 @@ public class Controller {
         
         // IMPORT HEIGHT DATA    
         Util.startTimer();
-        importHeightmaps(SRTM_DIRECTORY, p.sub(0.4));
+        importHeightmaps(SRTM_DIRECTORY, p.sub(0.2));
         logger.info("Heightmaps loaded: " + Util.stopTimer());
         
         
         // LOAD STATE
         Util.startTimer();
-        loadState(p.sub(0.6));
+        loadState(p.sub(0.8));
         logger.info("State loaded: " + Util.stopTimer());
         
         // IMPORT DEFAULT OSM MAP

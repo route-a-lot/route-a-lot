@@ -25,7 +25,7 @@ public class Map3D extends Map implements GLEventListener {
             VIEW_ANGLE = 85, // horizontal camera opening angle
             UNIT_DISTANCE = 1, // (unscaled) average camera - model distance
             VIEW_MIN_DISTANCE = 0.01f, VIEW_MAX_DISTANCE = 2,
-            FOG_START_DISTANCE = 1.3f, FOG_END_DISTANCE = 2,
+            FOG_START_DISTANCE = 1.4f, FOG_END_DISTANCE = 2,
             MAX_VERTICAL_ROTATION = 50;
             
         

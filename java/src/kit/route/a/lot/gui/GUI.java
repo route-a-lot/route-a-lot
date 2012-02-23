@@ -26,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
@@ -56,18 +57,20 @@ import kit.route.a.lot.gui.event.TextEvent;
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    private static final int OPTIMIZE_WARN_LIMIT = 20;
+    private static final int OPTIMIZE_WARN_LIMIT = 10;
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea;
     private JTextField fieldStartNode, fieldEndNode;
     private JSpinner fieldSpeed;
     private JPopupMenu popupSearchCompletions;
+    private JButton buttonAddNavNode, buttonOptimizeRoute;
     
     // MAP TAB
     private JPanel mapTab;
     private JSlider highwayMalusSlider, reliefMalusSlider;
     private JComboBox listChooseMap; 
+    private JButton buttonImportOSM, buttonActivateMap, buttonDeleteMap;
     
     // DESCRIPTION TAB
     /* private JList textRoute;
@@ -188,7 +191,7 @@ public class GUI extends JFrame {
         Listener.addListener(PROGRESS, new Listener() {
             public void handleEvent(Event e) {
                 int progress = ((NumberEvent) e).getNumber();
-                active = (progress < 0 || progress >= 100);
+                setActive(progress < 0 || progress >= 100);
                 int time = (int)((System.nanoTime() - taskStartTime) / 1000000000
                                     * ((100 - progress) /(double) progress));
                 progressBar.setValue(Util.clip(progress, 0, 100));
@@ -286,7 +289,7 @@ public class GUI extends JFrame {
             }
         });
 
-        JButton buttonAddNavNode = new JButton("+");
+        buttonAddNavNode = new JButton("+");
         buttonAddNavNode.setMaximumSize(new Dimension(200, 100));
         buttonAddNavNode.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonAddNavNode.addActionListener(new ActionListener() {
@@ -296,12 +299,12 @@ public class GUI extends JFrame {
             }
         });
 
-        JButton buttonOptimizeRoute = new JButton("Reihenfolge optimieren");
+        buttonOptimizeRoute = new JButton("Reihenfolge optimieren");
         buttonOptimizeRoute.setMaximumSize(new Dimension(200, 100));
         buttonOptimizeRoute.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonOptimizeRoute.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if ((countNavNodes() < OPTIMIZE_WARN_LIMIT) /*|| TODO ask confirmation*/) {
+                if ((countNavNodes() < OPTIMIZE_WARN_LIMIT) || getUserConfirmation()) {
                     startTask();
                     Listener.fireEvent(OPTIMIZE_ROUTE, null);
                 }               
@@ -390,7 +393,7 @@ public class GUI extends JFrame {
             }
         });
 
-        JButton buttonImportOSM = new JButton("Importiere OSM-Karte");
+        buttonImportOSM = new JButton("Importiere OSM-Karte");
         buttonImportOSM.setMaximumSize(new Dimension(200, 100));
         buttonImportOSM.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonImportOSM.addActionListener(new ActionListener() {
@@ -399,7 +402,7 @@ public class GUI extends JFrame {
             }
         });
 
-        JButton buttonDeleteMap = new JButton("Entfernen");
+        buttonDeleteMap = new JButton("Entfernen");
         buttonDeleteMap.setMaximumSize(new Dimension(200, 100));
         buttonDeleteMap.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonDeleteMap.addActionListener(new ActionListener() {
@@ -411,7 +414,7 @@ public class GUI extends JFrame {
             }
         });
 
-        JButton buttonActivateMap = new JButton("Aktivieren");
+        buttonActivateMap = new JButton("Aktivieren");
         buttonActivateMap.setMaximumSize(new Dimension(200, 100));
         buttonActivateMap.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonActivateMap.addActionListener(new ActionListener() {
@@ -739,5 +742,26 @@ public class GUI extends JFrame {
     
     private void startTask() {
         taskStartTime = System.nanoTime();
+    }
+    
+    private void setActive(boolean value) {
+        active = value;
+        buttonAddNavNode.setEnabled(value);
+        buttonOptimizeRoute.setEnabled(value);
+        buttonImportOSM.setEnabled(value);
+        buttonActivateMap.setEnabled(value);
+        buttonDeleteMap.setEnabled(value);
+    }
+    
+    private boolean getUserConfirmation() {
+        String[] options = {"Fortfahren", "Abbrechen"};
+        return (JOptionPane.showOptionDialog(this,
+            "Die Optimierung benötigt bei einer großen Zahl an Zwischenhalten viel Zeit.",
+            "Warnung",
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.WARNING_MESSAGE,
+            null,
+            options,
+            options[0]) == JOptionPane.OK_OPTION);
     }
 }
