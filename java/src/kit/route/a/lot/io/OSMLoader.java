@@ -134,7 +134,7 @@ public class OSMLoader {
                 return;
             }
         }
-        p.add(0.05);
+        p.addProgress(0.05);
 
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
@@ -983,7 +983,7 @@ public class OSMLoader {
         try {
             inputStream.close();
             inputStream = new BufferedInputStream(new ProgressInputStream(
-                    new FileInputStream(file), p.sub(0.6), file.length()));
+                    new FileInputStream(file), p.createSubProgress(0.6), file.length()));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         } catch (IOException e) {
@@ -1022,7 +1022,7 @@ public class OSMLoader {
             uniqueEdgeStartIDs[i] = uniqueEdgeStartIds.get(i);
             uniqueEdgeEndIDs[i] = uniqueEdgeEndIds.get(i);
         }
-        p.add(0.15);
+        p.addProgress(0.15);
         
         for (int i = 0; i < startIDs.length; i++) {
             if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
@@ -1035,11 +1035,11 @@ public class OSMLoader {
                 logger.error("Added an edge with weight < 0");
             }
         }
-        p.add(0.05);
+        p.addProgress(0.05);
 
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
         state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
-        p.add(0.15);
+        p.addProgress(0.15);
     }
     
 }

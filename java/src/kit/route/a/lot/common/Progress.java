@@ -18,14 +18,14 @@ public class Progress {
         this.weight = weight;
     }
     
-    public Progress sub(double weight) {
+    public Progress createSubProgress(double weight) {
         return new Progress(this, weight);
     }
     
-    synchronized public void add(double addProgress) {
+    synchronized public void addProgress(double addProgress) {
         progress += addProgress;
         if (parent != null) {
-            parent.add(addProgress * weight);
+            parent.addProgress(addProgress * weight);
         } else if (progress - lastProgress >= 0.01){
             lastProgress = progress;
             Listener.fireEvent(Listener.PROGRESS,
@@ -39,7 +39,7 @@ public class Progress {
     }*/
 
     public void finish() {
-        add(1 - progress); 
+        addProgress(1 - progress); 
         progress = 1;
         if (parent == null) {
             Listener.fireEvent(Listener.PROGRESS, new NumberEvent(100));

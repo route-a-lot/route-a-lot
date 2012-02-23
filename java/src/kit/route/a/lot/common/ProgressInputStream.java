@@ -42,7 +42,7 @@ public class ProgressInputStream extends FilterInputStream {
     
     private void checkProgress() {
         if (progress > BYTES_PER_UPDATE) {
-            p.add(progress / (double) size);
+            p.addProgress(progress / (double) size);
             progress = 0;
         }
     }

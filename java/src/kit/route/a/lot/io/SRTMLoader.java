@@ -29,7 +29,7 @@ public class SRTMLoader implements HeightLoader {
         }
         int count = files.length;
         for (int i = 0; i < count; i++) {
-            p.add(1d / count);
+            p.addProgress(1d / count);
             String[] fileNameParts = files[i].getName().split("\\.");
             if ((fileNameParts.length != 2) || (fileNameParts[0].length() != 7)
                     || !fileNameParts[1].equals(FILE_EXTENSION)) {    

@@ -80,20 +80,20 @@ public class Controller {
         
         // IMPORT HEIGHT DATA    
         Util.startTimer();
-        importHeightmaps(SRTM_DIRECTORY, p.sub(0.2));
+        importHeightmaps(SRTM_DIRECTORY, p.createSubProgress(0.2));
         logger.info("Heightmaps loaded: " + Util.stopTimer());
         
         
         // LOAD STATE
         Util.startTimer();
-        loadState(p.sub(0.8));
+        loadState(p.createSubProgress(0.8));
         logger.info("State loaded: " + Util.stopTimer());
         
         // IMPORT DEFAULT OSM MAP
         if (state.getLoadedMapFile() == null) {
             if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
-                p.add(-0.3);
-                importMap(DEFAULT_OSM_MAP, p.sub(0.3));
+                p.addProgress(-0.3);
+                importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
                 logger.info("Imported default map: " + Util.stopTimer());
             } else {
                 logger.warn("No map loaded");
@@ -270,11 +270,11 @@ public class Controller {
                 logger.error("State loading: Read error occurred.");
                 e.printStackTrace();
             } 
-            p.add(0.05);
+            p.addProgress(0.05);
             // LOAD SRAL MAP FROM STATE
             if ((state.getLoadedMapFile() != null) && state.getLoadedMapFile().exists()) {
                 logger.info("Loading map file from state");
-                loadMap(state.getLoadedMapFile(), p.sub(0.95));
+                loadMap(state.getLoadedMapFile(), p.createSubProgress(0.95));
             }
             p.finish();
         }
@@ -287,13 +287,13 @@ public class Controller {
             logger.error("OSM File doesn't exist");
         } else {
             state.resetMap();
-            new OSMLoader(State.getInstance()).importMap(osmFile, p.sub(0.005));
-            Precalculator.precalculate(p.sub(0.994));
+            new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.005));
+            Precalculator.precalculate(p.createSubProgress(0.994));
             state.getLoadedMapInfo().compactifyDatastructures();
             state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
                     + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {
-                MapIO.saveMap(state.getLoadedMapFile(), p.sub(0.001));
+                MapIO.saveMap(state.getLoadedMapFile(), p.createSubProgress(0.001));
             } catch (IOException e) {
                 logger.error("Could not save imported map to file.");
             }

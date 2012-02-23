@@ -85,15 +85,15 @@ public class MapIO {
         stream.writeChars("SRAL");  // magic number
         stream.writeUTF("0.5");     // version number
         // TODO: maybe add date or name
-        p.add(0.05);
+        p.addProgress(0.05);
         logger.info("save map info...");
         state.getLoadedMapInfo().saveToStream(stream);
-        p.add(0.7);
+        p.addProgress(0.7);
         logger.info("save graph...");
         state.getLoadedGraph().saveToStream(stream); 
         stream.close();     
         logger.info("map saving finished");
-        p.add(0.25);
+        p.addProgress(0.25);
     }
     
 }

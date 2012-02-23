@@ -26,7 +26,7 @@ public class MapIOTest {
             logger.info("TEST: Import OSM map.");
             File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
             OSMLoader osmLoader = new OSMLoader(State.getInstance());
-            osmLoader.importMap(karlsruheMap, p.sub(0.6));
+            osmLoader.importMap(karlsruheMap, p.createSubProgress(0.6));
             State state = State.getInstance();
             
             // Controller.setViewToMapCenter() externalized:
@@ -40,14 +40,14 @@ public class MapIOTest {
             
             logger.info("TEST: Save SRAL map.");
             try {
-                MapIO.saveMap(sralMap, p.sub(0.3));
+                MapIO.saveMap(sralMap, p.createSubProgress(0.3));
             } catch (IOException e) {
                 logger.error("TEST: SRAL save error.");
             }
         } else {
             logger.info("TEST: Load SRAL map.");
             try {
-                MapIO.loadMap(sralMap, p.sub(1));
+                MapIO.loadMap(sralMap, p.createSubProgress(1));
             } catch (IOException e) {
                 logger.error("TEST: SRAL load error: " + e.getMessage());
             }

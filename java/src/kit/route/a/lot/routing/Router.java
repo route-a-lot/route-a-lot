@@ -30,7 +30,7 @@ public class Router {
         double progressRatio = ((double) faculty) / (faculty + (size * size * size));
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
-                p.add((1 - progressRatio) / (size * size));
+                p.addProgress((1 - progressRatio) / (size * size));
                 // Fill the Matrix
                 Route route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
                 if (route == null) {
@@ -46,7 +46,7 @@ public class Router {
         int resultLength = -1;  
         
         for (int f = 0; f < faculty; f++) {
-            p.add(progressRatio / faculty);
+            p.addProgress(progressRatio / faculty);
             // Iterate over all permutations
             boolean isRouteable = true;
             int[] current = permutation(size - 2, f);
