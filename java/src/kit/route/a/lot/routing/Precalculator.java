@@ -44,12 +44,12 @@ public class Precalculator {
     public static void precalculate(final Progress p) {
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
+        logger.info("Starting precalculation...");
         int procNum = Runtime.getRuntime().availableProcessors();
-        logger.info("Starting precalculation with " + procNum + " threads...");
         ExecutorService executorService = Executors.newFixedThreadPool(procNum);
         Collection<Future<?>> futures = new ArrayList<Future<?>>(graph.getIDCount());
         if (doAreas(p.createSubProgress(0.01))) {
-            logger.info("Starting calculation of ArcFlags");
+            logger.info("Starting calculation of ArcFlags  with " + procNum + " threads...");
             startTime = System.currentTimeMillis();
             startPeriod = startTime;
             for (int i = 0; i < graph.getIDCount(); i++) {

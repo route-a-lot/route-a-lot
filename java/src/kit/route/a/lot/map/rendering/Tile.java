@@ -83,12 +83,12 @@ public class Tile {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        /*/COLOR TILE BACKGROUND
-        int c1 = Math.abs(this.hashCode()) % 256;
-        int c2 = Math.abs(getImage().hashCode()) % 256;
-        graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
-        graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detail), tileSize / Projection.getZoomFactor(detail));
-        //*/
+        //COLOR TILE BACKGROUND
+//        int c1 = Math.abs(this.hashCode()) % 256;
+//        int c2 = Math.abs(getImage().hashCode()) % 256;
+//        graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
+//        graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize / Projection.getZoomFactor(detailLevel));
+        //
         
         //DRAW BASE LAYER ELEMENTS
         for (MapElement element : map) {
