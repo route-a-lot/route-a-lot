@@ -6,6 +6,7 @@ import java.io.File;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.RouteDescription;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.routing.RoutingGraph;
@@ -19,7 +20,7 @@ import org.junit.Test;
 public class StateIOTest extends StateIO {
     
     OSMLoader loader;
-    StateMock state;
+    State state;
     
     @BeforeClass
     public static void setUpClass() {
@@ -28,7 +29,7 @@ public class StateIOTest extends StateIO {
     
     @Before
     public void setUp() throws Exception {
-        state = new StateMock();
+        state = new State();
         loader = new OSMLoader(state);
         loader.weightCalculator = new WeightCalculatorMock();
     }
@@ -40,8 +41,9 @@ public class StateIOTest extends StateIO {
     @Test
     public void saveAndLoad() throws Exception {
         File file = new File("mock.state");
+        file.deleteOnExit();
         loader.importMap(new File("test/resources/karlsruhe_small.osm"), new Progress());
-        StateMock original = state;
+        State original = state;
         
         // test deterministic importing
         setUp();

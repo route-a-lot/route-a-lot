@@ -116,9 +116,8 @@ public class Router {
             }
             logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
             route = fromAToB(prev, navPoint);
-            if (route != null) {    //TODO is this the best way to handle this situation (I dont think so)
+            if (route != null) {    //TODO is this the best way to handle this situation (I dont think so) // Why not?
                 result.addAll(route.toList());
-                result.add(-1);
                 prev = navPoint;
             } else {
                 logger.warn("Ignoring " + navPoint + " for routing." + " (no path found).");
@@ -193,7 +192,7 @@ public class Router {
             } else if (currentNode == -1) {
                 // This is the shortest path.
                 logger.debug("Found route from " + a.toString() + " to " + b.toString() + ": " + currentPath);
-                return currentPath.getRoute();
+                return currentPath;
             }
             for (Integer to : graph.getRelevantNeighbors(currentNode, new byte[] { graph.getAreaID(b.getFrom()), graph.getAreaID(b.getTo()) })) {
                 // Here we add the new paths.

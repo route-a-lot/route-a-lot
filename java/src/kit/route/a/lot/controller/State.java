@@ -45,7 +45,9 @@ public class State {
             return false;
         }
         State comparee = (State) other;
-        return centerCoordinates.equals(comparee.getCenterCoordinates())
+        return navigationNodes.equals(comparee.navigationNodes)
+                && currentRoute.equals(comparee.currentRoute)
+                && centerCoordinates.equals(comparee.getCenterCoordinates())
                 && detailLevel == comparee.getDetailLevel()
                 && clickRadius == comparee.getClickRadius()
                 && routeDescription.equals(comparee.getRouteDescription())
