@@ -446,8 +446,8 @@ public class Controller {
         double startTime = System.currentTimeMillis();
         if (state.getNavigationNodes().size() >= 2) {
             state.setCurrentRoute(Router.calculateRoute(state.getNavigationNodes()));
-            int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed()); 
-            int length = ComplexInfoSupplier.getLength(state.getCurrentRoute());
+            int duration = ComplexInfoSupplier.getDuration(state.getCurrentRoute(), state.getSpeed(), state.getNavigationNodes()); 
+            int length = ComplexInfoSupplier.getLength(state.getCurrentRoute(), state.getNavigationNodes());
             guiHandler.showRouteValues(length, duration);
             guiHandler.updateGUI();
         }
@@ -537,8 +537,8 @@ public class Controller {
     private void setSpeed(int speed) {
         if(speed >= 0) {
             state.setSpeed(speed);
-            guiHandler.showRouteValues(ComplexInfoSupplier.getLength(state.getCurrentRoute()),
-                    ComplexInfoSupplier.getDuration(state.getCurrentRoute(), speed));
+            guiHandler.showRouteValues(ComplexInfoSupplier.getLength(state.getCurrentRoute(), state.getNavigationNodes()),
+                    ComplexInfoSupplier.getDuration(state.getCurrentRoute(), speed, state.getNavigationNodes()));
         }
     }
     

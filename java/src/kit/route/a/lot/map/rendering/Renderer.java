@@ -138,18 +138,30 @@ public class Renderer {
         if (mustDrawRoute) {
             drawnRoute = route;
             drawnRouteDetail = detail;
-            if (drawnRoute.length == 0) { 
+            int size = 0;
+            for (int i = 0; i < drawnRoute.length; i++) {
+                if (drawnRoute[i] != -1) {
+                    size++;
+                }
+            }
+            if (route.length == 0) { 
                 routeImage = null;
             } else {
-                Node[] routeNodes = new Node[drawnRoute.length];
+                Node[] routeNodes = new Node[size];
                 routeTopLeft = new Coordinates(Float.MAX_VALUE, Float.MAX_VALUE);
                 routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
                 
                 // find route bounding rectangle dimensions
-                for (int i = 0; i < routeNodes.length; i++) {
-                    routeNodes[i] = mapInfo.getNode(drawnRoute[i]);
-                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, routeNodes[i].getPos(), detail);
+                int pos = 0;
+                for (int i = 0; i < drawnRoute.length; i++) {
+                    if (drawnRoute[i] != -1) {
+                        routeNodes[pos] = mapInfo.getNode(drawnRoute[i]);
+                        adjustBorderCoordinates(routeTopLeft, routeBottomRight, routeNodes[pos].getPos(), detail);
+                        pos++;
+                    }
+                    
                 }
+                
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());

@@ -118,6 +118,7 @@ public class Router {
             route = fromAToB(prev, navPoint);
             if (route != null) {    //TODO is this the best way to handle this situation (I dont think so)
                 result.addAll(route.toList());
+                result.add(-1);
                 prev = navPoint;
             } else {
                 logger.warn("Ignoring " + navPoint + " for routing." + " (no path found).");
