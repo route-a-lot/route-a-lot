@@ -21,9 +21,9 @@ public class SimpleRouter {
             if (prev == navPoint) {
                 continue;
             }
-            List<Integer> route = fromAToB(prev, navPoint);
-            if (route.size() != 0) {    // cause Router does this too, otherwise we would get different results
-                result.addAll(route);
+            Route route = fromAToB(prev, navPoint);
+            if (route != null) {    // cause Router does this too, otherwise we would get different results
+                result.addAll(route.toList());
                 result.add(-1);
                 prev = navPoint;
             } else {
@@ -34,7 +34,10 @@ public class SimpleRouter {
         return result;
     }
     
-    private static List<Integer> fromAToB(Selection a, Selection b) {
+    private static Route fromAToB(Selection a, Selection b) {
+        if (a == null || b == null) {
+            return null;
+        }
         List<Integer> newRoute = new ArrayList<Integer>();
         
         RoutingGraph graph = State.getInstance().getLoadedGraph();
@@ -42,7 +45,7 @@ public class SimpleRouter {
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
         
         if (a == null || b == null) {
-            return newRoute;
+            return null;
         }
         
         boolean[] seen = new boolean[graph.getIDCount()];
@@ -63,7 +66,7 @@ public class SimpleRouter {
         } else if (weight1 != -1) {
             heap.add(new Route(a.getTo(), (int) (weight1 * (1 - a.getRatio()))));
         } else {
-            heap.add(new Route(a.getFrom(), (int) (weight2 * (1 - a.getRatio()))));
+            heap.add(new Route(a.getFrom(), (int) (weight2 * (a.getRatio()))));
         }
         
         Route currentPath;
@@ -94,7 +97,7 @@ public class SimpleRouter {
             } else if (currentNode == -1) {
                 // This is the shortest path.
                 newRoute.addAll(currentPath.getRoute().toList());
-                return newRoute;
+                return currentPath.getRoute();
             }
             
             for (Integer to : graph.getAllNeighbors(currentNode)) {
@@ -106,40 +109,74 @@ public class SimpleRouter {
             
         }
         
-        return  new ArrayList<Integer>();
+        return  null;
     }
     
     public static List<Selection> optimizeRouteWith4Targets(List<Selection> navigationNodes) {
-        int weight1 = getRouteLength(Router.calculateRoute(navigationNodes), navigationNodes);
+        //int weight1 = getRouteLength(Router.calculateRoute(navigationNodes), navigationNodes);
         List<Selection> secSol = new ArrayList<Selection>();
         secSol.add(navigationNodes.get(0));
         secSol.add(navigationNodes.get(2));
         secSol.add(navigationNodes.get(1));
         secSol.add(navigationNodes.get(3));
-        int weight2 = getRouteLength(Router.calculateRoute(secSol), secSol);
-        if (weight1 <= 0 && weight2 <= 0) {
+        
+        Route r01 = fromAToB(navigationNodes.get(0), navigationNodes.get(1));
+        Route r02 = fromAToB(navigationNodes.get(0), navigationNodes.get(2));
+        Route r12 = fromAToB(navigationNodes.get(1), navigationNodes.get(2));
+        Route r21 = fromAToB(navigationNodes.get(2), navigationNodes.get(1));
+        Route r13 = fromAToB(navigationNodes.get(1), navigationNodes.get(3));
+        Route r23 = fromAToB(navigationNodes.get(2), navigationNodes.get(3));
+        
+        if (r02 == null || r21 == null || r13 == null) {
             return navigationNodes;
-        } else if (weight1 <= 0){
+        } else if (r12 == null || r01 == null || r23 == null) {
             return secSol;
-        } else if (weight2 <= 0){
-            return navigationNodes;
         }
+        
+        int a01 = r01.getLength();
+        int a02 = r02.getLength();
+        int a12 = r12.getLength();
+        int a21 = r21.getLength();
+        int a13 = r13.getLength();
+        int a23 = r23.getLength();
+        
+        int weight1 = a01+a12+a23;
+        int weight2 = a02+a21+a13;
+
         return (weight2 < weight1) ? secSol : navigationNodes;
     }
     
     private static int getRouteLength(List<Integer> route, List<Selection> navNodes) {
-        if (navNodes.size() > 2 || route.size() == 0) {
+//        int length = 0;
+//        for (int i = 1; i < route.size() - 1; i++) {
+//            if (route.get(i) == -1) {
+//                i++;
+//            } else {
+//                length += State.getInstance().getLoadedGraph().getWeight(route.get(i - 1), route.get(i));
+//            }
+//        }
+//        return length;
+//    }
+        if (navNodes.size() < 2 || route.size() == 0) {
             return 0;
         }
         int length = 0;
         int navNode = 1;
         if (route.get(0) == navNodes.get(0).getTo()) {
-            length += (navNodes.get(navNode).getRatio()) *
-                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
+            length += (1 - navNodes.get(0).getRatio()) *
+                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(0).getFrom(), navNodes.get(0).getTo());
         } else {
-            length += ((1 - navNodes.get(0).getRatio())) *
-                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
+            length += (navNodes.get(0).getRatio()) *
+                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(0).getTo(), navNodes.get(0).getFrom());
         }
+        if (route.get(route.size() - 1) == navNodes.get(navNodes.size() - 1).getTo()) {
+            length += (1 - navNodes.get(navNodes.size() - 1).getRatio()) *
+                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNodes.size() - 1).getTo(), navNodes.get(navNodes.size() - 1).getFrom());
+        } else {
+            length += (navNodes.get(navNodes.size() - 1).getRatio()) *
+                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNodes.size() - 1).getFrom(), navNodes.get(navNodes.size() - 1).getTo());
+        }
+        
         for (int i = 1; i < route.size() - 1; i++) {
             
             if(route.get(i) == -1) {
@@ -151,10 +188,10 @@ public class SimpleRouter {
                             State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
                 }
                 if (route.get(i + 1) == navNodes.get(navNode).getFrom()) {
-                    length += (1 - navNodes.get(navNode).getRatio()) *
+                    length += (navNodes.get(navNode).getRatio()) *
                             State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
                 } else {
-                    length += ((navNodes.get(navNode).getRatio())) *
+                    length += ((1 - navNodes.get(navNode).getRatio())) *
                             State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
                 }
                 i++;

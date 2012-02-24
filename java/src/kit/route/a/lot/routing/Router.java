@@ -158,7 +158,7 @@ public class Router {
         } else if (weight1 != -1) { //one way "to two"
             heap.add(new Route(a.getTo(), (int) (weight1 * (1 - a.getRatio()))));
         } else {    //one way in direction to -> from
-            heap.add(new Route(a.getFrom(), (int) (weight2 * (1 - a.getRatio()))));
+            heap.add(new Route(a.getFrom(), (int) (weight2 *  a.getRatio())));
         }
         
         // start the calculation.

@@ -286,42 +286,60 @@ public class RoutingAndGraphTest {
     }
 
     private int getRouteLength(List<Integer> route, List<Selection> navNodes) {
-        if (navNodes.size() > 2 || route.size() == 0) {
-            return 0;
-        }
         int length = 0;
-        int navNode = 1;
-        if (route.get(0) == navNodes.get(0).getTo()) {
-            length += (navNodes.get(navNode).getRatio()) *
-                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
-        } else {
-            length += ((1 - navNodes.get(0).getRatio())) *
-                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
-        }
         for (int i = 1; i < route.size() - 1; i++) {
-            
-            if(route.get(i) == -1) {
-                if (route.get(i - 1) == navNodes.get(navNode).getFrom()) {
-                    length += (navNodes.get(navNode).getRatio()) *
-                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
-                } else {
-                    length += ((1 - navNodes.get(navNode).getRatio())) *
-                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
-                }
-                if (route.get(i + 1) == navNodes.get(navNode).getFrom()) {
-                    length += (1 - navNodes.get(navNode).getRatio()) *
-                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
-                } else {
-                    length += ((navNodes.get(navNode).getRatio())) *
-                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
-                }
+            if (route.get(i) == -1) {
                 i++;
-                navNode++;
             } else {
                 length += State.getInstance().getLoadedGraph().getWeight(route.get(i - 1), route.get(i));
             }
         }
         return length;
+        
+//        if (navNodes.size() < 2 || route.size() == 0) {
+//            return 0;
+//        }
+//        int length = 0;
+//        int navNode = 1;
+//        if (route.get(0) == navNodes.get(0).getTo()) {
+//            length += (1 - navNodes.get(0).getRatio()) *
+//                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(0).getFrom(), navNodes.get(0).getTo());
+//        } else {
+//            length += (navNodes.get(0).getRatio()) *
+//                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(0).getTo(), navNodes.get(0).getFrom());
+//        }
+//        if (route.get(route.size() - 1) == navNodes.get(navNodes.size() - 1).getTo()) {
+//            length += (1 - navNodes.get(navNodes.size() - 1).getRatio()) *
+//                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNodes.size() - 1).getTo(), navNodes.get(navNodes.size() - 1).getFrom());
+//        } else {
+//            length += (navNodes.get(navNodes.size() - 1).getRatio()) *
+//                    State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNodes.size() - 1).getFrom(), navNodes.get(navNodes.size() - 1).getTo());
+//        }
+//        
+//        for (int i = 1; i < route.size() - 1; i++) {
+//            
+//            if(route.get(i) == -1) {
+//                if (route.get(i - 1) == navNodes.get(navNode).getFrom()) {
+//                    length += (navNodes.get(navNode).getRatio()) *
+//                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
+//                } else {
+//                    length += ((1 - navNodes.get(navNode).getRatio())) *
+//                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
+//                }
+//                if (route.get(i + 1) == navNodes.get(navNode).getFrom()) {
+//                    length += (navNodes.get(navNode).getRatio()) *
+//                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getTo(), navNodes.get(navNode).getFrom());
+//                } else {
+//                    length += ((1 - navNodes.get(navNode).getRatio())) *
+//                            State.getInstance().getLoadedGraph().getWeight(navNodes.get(navNode).getFrom(), navNodes.get(navNode).getTo());
+//                }
+//                i++;
+//                navNode++;
+//            } else {
+//                length += State.getInstance().getLoadedGraph().getWeight(route.get(i - 1), route.get(i));
+//            }
+//        }
+//        return length;
     }
       
 }
