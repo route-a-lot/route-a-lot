@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
@@ -32,7 +33,7 @@ public class RouteIOTest extends RouteIO {
 
     @Before
     public void setUp() throws Exception {
-        state = new State();
+        state = State.getInstance();
         loader = new OSMLoader(state);
         loader.weightCalculator = new WeightCalculatorMock();
     }
@@ -50,21 +51,24 @@ public class RouteIOTest extends RouteIO {
         Random randomGenerator = new Random();
         do {
             ArrayList<Selection> selections = new ArrayList<Selection>();
-            selections.add(new Selection(null, randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), ""));
-            selections.add(new Selection(null, randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), ""));
+            selections.add(new Selection(new Coordinates(), randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), ""));
+            selections.add(new Selection(new Coordinates(), randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), ""));
             state.setNavigationNodes(selections);
+            state.setLoadedMapFile(file);   // Dummy
+            assertEquals(state, State.getInstance());
             assertEquals(selections, state.getNavigationNodes());
             try {
                 saveCurrentRoute(file);
             } catch (IOException e) {
                 assertTrue(false);
             }
+            state.setNavigationNodes(null);
             try {
                 loadCurrentRoute(file);
             } catch (IOException e) {
                 assertFalse(!false);
             }
-            assertEquals(selections, state.getNavigationNodes());
+            assertEquals(selections.toString(), state.getNavigationNodes().toString());
             exportCurrentRouteToKML(file);
         } while (randomGenerator.nextInt(10000) > 100);
     }

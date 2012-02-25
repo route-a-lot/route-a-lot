@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import kit.route.a.lot.map.Node;
+
 
 public class Selection {
 
@@ -21,6 +23,21 @@ public class Selection {
         	this.ratio = ratio; 
         	this.name = name;
     	}
+    	
+        public boolean equals(Object other) {
+            if(other == this) {
+                return true;
+            }
+            if(!(other instanceof Selection)) {
+                return false;
+            }
+            Selection comparee = (Selection) other;
+            return fromID == comparee.fromID
+                    && toID == comparee.toID
+                    && ratio == comparee.ratio
+                    && position == comparee.position
+                    && name == comparee.name;
+        }
     
     	public String getName() {
     	    return name;
