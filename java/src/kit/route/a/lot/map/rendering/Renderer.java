@@ -239,35 +239,67 @@ public class Renderer {
         for (int i = 1; i < routeNodes.length; i++) {
             drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
         }
-        for (int i = 0; i < navPoints.size(); i++) {
-            Selection navSelection = navPoints.get(i);
+        if (drawnRoute.length > 0) {
+            Selection navSelection = navPoints.get(0);  //till loop we treat start and target
             Node from = mapInfo.getNode(navSelection.getFrom());
             Node to = mapInfo.getNode(navSelection.getTo());
             Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
                     to.getPos(), navSelection.getRatio());
-            boolean drawedFrom = false;
-            boolean drawedTo = false;
-            if (idIsInRoute(from.getID(), drawnRoute) && idIsInRoute(to.getID(), drawnRoute)) {
-                if (navSelection.getRatio() < 0.5) {
-                    drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-                } else {
-                    drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-                }
-            } else {
-                if (idIsInRoute(from.getID(), drawnRoute)) {
-                    drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-                    drawedFrom = true;
-                }
-                if (idIsInRoute(to.getID(), drawnRoute)) {
-                    drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-                    drawedTo = true;
-                }
-            }
-            if (drawedFrom && drawedTo && (i == 0 || i == navPoints.size() - 1)) {
-                System.out.println("ERROR: Drawed whole selection a the end of the route.");
-            }
+            drawLineBetweenCoordinates(routeNodes[0].getPos(), nodeOnEdge, detail, graphics);
             drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+            navSelection = navPoints.get(navPoints.size() - 1);
+            from = mapInfo.getNode(navSelection.getFrom());
+            to = mapInfo.getNode(navSelection.getTo());
+            nodeOnEdge = Coordinates.interpolate(from.getPos(),
+                    to.getPos(), navSelection.getRatio());
+            drawLineBetweenCoordinates(routeNodes[routeNodes.length - 1].getPos(), nodeOnEdge, detail, graphics);
+            drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+            int navNodesPos = 1;
+            for (int i = 1; i < drawnRoute.length - 1; i++) {   //for navigationNodes which aren't start, or target
+                if (drawnRoute[i] == -1) {
+                    navSelection = navPoints.get(navNodesPos);
+                    from = mapInfo.getNode(navSelection.getFrom());
+                    to = mapInfo.getNode(navSelection.getTo());
+                    nodeOnEdge = Coordinates.interpolate(from.getPos(),
+                            to.getPos(), navSelection.getRatio());
+                    drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i - 1]), nodeOnEdge, detail, graphics);
+                    drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i - 1]), nodeOnEdge, detail, graphics);
+                    drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+                    navNodesPos++;
+                }
+            }
         }
+        
+        
+//        for (int i = 0; i < navPoints.size(); i++) {
+//            Selection navSelection = navPoints.get(i);
+//            Node from = mapInfo.getNode(navSelection.getFrom());
+//            Node to = mapInfo.getNode(navSelection.getTo());
+//            Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
+//                    to.getPos(), navSelection.getRatio());
+//            boolean drawedFrom = false;
+//            boolean drawedTo = false;
+//            if (idIsInRoute(from.getID(), drawnRoute) && idIsInRoute(to.getID(), drawnRoute)) {
+//                if (navSelection.getRatio() < 0.5) {
+//                    drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
+//                } else {
+//                    drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
+//                }
+//            } else {
+//                if (idIsInRoute(from.getID(), drawnRoute)) {
+//                    drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
+//                    drawedFrom = true;
+//                }
+//                if (idIsInRoute(to.getID(), drawnRoute)) {
+//                    drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
+//                    drawedTo = true;
+//                }
+//            }
+//            if (drawedFrom && drawedTo && (i == 0 || i == navPoints.size() - 1)) {
+//                System.out.println("ERROR: Drawed whole selection a the end of the route.");
+//            }
+//            drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+//        }
     }
     
     private boolean idIsInRoute(int id, Integer[] route) {
