@@ -16,6 +16,7 @@ public class StreetAreaTest {
     
     Area area;
     Street street;
+    Street street2;
     
     @BeforeClass
     public static void setUpClass() {
@@ -38,6 +39,13 @@ public class StreetAreaTest {
         streetNode[2] = new Node(new Coordinates(3.0f,3.0f));
         streetNode[3] = new Node(new Coordinates(4.0f,4.0f));
         street.setNodes(streetNode);
+        street2 = new Street("Rundstraße", new WayInfo());
+        Node[] street2Node = new Node[4];
+        street2Node[0] = new Node(new Coordinates(1.0f,1.0f));
+        street2Node[1] = new Node(new Coordinates(1.0f,4.0f));
+        street2Node[2] = new Node(new Coordinates(4.0f,1.0f));
+        street2Node[3] = new Node(new Coordinates(4.0f,4.0f));
+        street2.setNodes(streetNode);
     }
 
     @After
@@ -48,7 +56,14 @@ public class StreetAreaTest {
     public void testIsInBounce() {
         assertTrue(street.isEdgeInBounds(street.getNodes()[0].getPos(), street.getNodes()[2].getPos(), new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
         assertTrue(street.isInBounds(new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
-        assertTrue(area.isInBounds(new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
+        assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(4.5f, 4.5f)));
+        assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(3.7f, 3.7f)));
+        assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(4.5f, 4.5f)));
+        assertTrue(street2.isInBounds(new Coordinates(2.0f, 2.0f), new Coordinates(3.0f, 3.0f)));
+        assertTrue(area.isInBounds(new Coordinates(1.0f, 1.0f), new Coordinates(6.0f, 6.0f)));
+        assertTrue(area.isInBounds(new Coordinates(4.0f, 4.0f), new Coordinates(6.0f, 6.0f)));
+        assertTrue(area.isInBounds(new Coordinates(5.0f, 3.0f), new Coordinates(5.0f, 4.0f)));
+        assertTrue(area.isInBounds(new Coordinates(2.0f, 2.0f), new Coordinates(3.0f, 3.0f)));
     }
     
     @Test
