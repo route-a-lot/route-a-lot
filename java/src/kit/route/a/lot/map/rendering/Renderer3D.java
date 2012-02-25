@@ -159,103 +159,93 @@ public class Renderer3D extends Renderer {
         return false;
     }
     
+
     /**
      * Draws the current route (retrieved from state).
      */
     private void drawRoute() {
-        List<Selection> navPoints = State.getInstance().getNavigationNodes();
-        if (navPoints.size() <= 0) {
+        List<Selection> navNodes = State.getInstance().getNavigationNodes();
+        if (navNodes.size() <= 0) {
             return;
         }
-        List<Integer> route = State.getInstance().getCurrentRoute();
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        List<Coordinates> route = getRouteCoordinates(State.getInstance().getCurrentRoute(), navNodes);
+        // TODO route simplification
         GL gl = context.getGL();
-
-        // Copy route and navPoints into fullRouteList
-        List<Node> fullRouteList = new ArrayList<Node>(route.size());
-        Iterator<Selection> navNodes = navPoints.iterator();
-        // add starting point
-        Selection selection = navNodes.next();
-        fullRouteList.add(new Node(selection.getPosition()));
-        fullRouteList.add(new Node(Coordinates.interpolate(
-                mapInfo.getNode(selection.getFrom()).getPos(),
-                mapInfo.getNode(selection.getTo()).getPos(),
-                selection.getRatio())));
-        selection = (navNodes.hasNext()) ? navNodes.next() : null;
-        // add other navnodes / route nodes
-        for (int i = 0; i < route.size(); i++) {
-            int currentRouteNode = route.get(i);
-            fullRouteList.add(mapInfo.getNode(currentRouteNode));
-            if (selection != null && (currentRouteNode == selection.getFrom()
-                    || currentRouteNode == selection.getTo())) {
-                Coordinates nodeOnEdge = Coordinates.interpolate(
-                        mapInfo.getNode(selection.getFrom()).getPos(),
-                        mapInfo.getNode(selection.getTo()).getPos(),
-                        selection.getRatio());
-                fullRouteList.add(new Node(nodeOnEdge));
-                fullRouteList.add(new Node(selection.getPosition()));
-                fullRouteList.add(new Node(nodeOnEdge));
-                selection = (navNodes.hasNext()) ? navNodes.next() : null;
-            }         
-        }
-        
-        // Simplify route TODO redo
-        Node[] fullRoute = Street.simplifyNodes(fullRouteList.toArray(new Node[fullRouteList.size()]),
-                Projection.getZoomFactor(context.getDetailLevel()) * 3);
-        
+             
         gl.glDisable(GL.GL_TEXTURE_2D);   
         gl.glDisable(GL.GL_DEPTH_TEST);
         // LINE SHADOWS
         gl.glLineWidth(ROUTE_WIDTH);
         gl.glColor3f(0, 0, 0);
         gl.glBegin(GL.GL_LINE_STRIP);
-        for (Node node: fullRoute) {    
-            drawVertex(gl, node.getPos());
+        for (Coordinates pos: route) {    
+            drawVertex(gl, pos);
         }
         gl.glEnd();
         // LINE ROUNDED ENDS SHADOWS
         gl.glPointSize(ROUTE_WIDTH);
         gl.glBegin(GL.GL_POINTS);
-        for (Node node: fullRoute) {
-            drawVertex(gl, node.getPos());
+        for (Coordinates pos: route) {    
+            drawVertex(gl, pos);
         }
         gl.glEnd();
         // LINES
         gl.glLineWidth(ROUTE_WIDTH - 2);
         gl.glColor3f(0.315f, 0.05f, 0.478f);
         gl.glBegin(GL.GL_LINE_STRIP);
-        for (Node node: fullRoute) {    
-            drawVertex(gl, node.getPos());
+        for (Coordinates pos: route) {    
+            drawVertex(gl, pos);
         }
         gl.glEnd();     
         // LINE ROUNDED ENDS
         gl.glPointSize(ROUTE_WIDTH - 2);
         gl.glBegin(GL.GL_POINTS);
-        for (Node node: fullRoute) {
-            drawVertex(gl, node.getPos());
+        for (Coordinates pos: route) {    
+            drawVertex(gl, pos);
         }
         gl.glEnd();    
         // NAVNODES
         gl.glColor3f(0.8f, 0, 0);
         gl.glPointSize(ROUTE_WIDTH);
         gl.glBegin(GL.GL_POINTS);
-        for (Selection navNode: navPoints) {
+        for (Selection navNode: navNodes) {
             drawVertex(gl, navNode.getPosition());
         }
         gl.glEnd();
         gl.glEnable(GL.GL_DEPTH_TEST);
 
         // FLAGS
-        renderFlag(navPoints.get(0).getPosition(), new float[]{0, 0.8f, 0}, 0.9f);
-        if (navPoints.size() > 1) { 
-            renderFlag(navPoints.get(navPoints.size() - 1).getPosition(),
+        renderFlag(navNodes.get(0).getPosition(), new float[]{0, 0.8f, 0}, 0.9f);
+        if (navNodes.size() > 1) { 
+            renderFlag(navNodes.get(navNodes.size() - 1).getPosition(),
                     new float[]{0.8f, 0, 0}, 0.9f);
         }
-        for (int i = 1; i < navPoints.size() - 1; i++) {
-            renderFlag(navPoints.get(i).getPosition(), new float[]{1, 1, 0}, 0.7f);
+        for (int i = 1; i < navNodes.size() - 1; i++) {
+            renderFlag(navNodes.get(i).getPosition(), new float[]{1, 1, 0}, 0.7f);
         }
     }
     
+    private List<Coordinates> getRouteCoordinates(List<Integer> routeIDs, List<Selection> navNodes) {
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        List<Coordinates> result = new ArrayList<Coordinates>();
+        int k = 0;
+        for (int i = -1; i < routeIDs.size(); i++) {
+            if ((i < 0) || (routeIDs.get(i) < 0)) {
+                Selection navNode = navNodes.get(k++);
+                Coordinates edgePos = Coordinates.interpolate(
+                        mapInfo.getNodePosition(navNode.getFrom()),
+                        mapInfo.getNodePosition(navNode.getTo()),
+                        navNode.getRatio());
+                result.add(edgePos);
+                result.add(navNode.getPosition());
+                result.add(edgePos);
+            } else {
+                result.add(mapInfo.getNodePosition(routeIDs.get(i)));
+            }
+        }
+        return result;
+    }
+
     /**
      * Sends a single vertex to OpenGL, using the height at <code>point</code> as z coordinate.
      * @param gl the active OpenGL context

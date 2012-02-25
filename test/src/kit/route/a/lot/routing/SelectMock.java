@@ -31,7 +31,7 @@ public class SelectMock {
             i++;
         }
         
-        return new Selection(start, target, random.nextFloat(), null, "");
+        return new Selection(null, start, target, random.nextFloat(), "");
     }
         
 }

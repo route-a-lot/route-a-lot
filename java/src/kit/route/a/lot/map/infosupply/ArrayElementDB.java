@@ -53,11 +53,13 @@ public class ArrayElementDB implements ElementDB {
             element.assignID(mapElements.size() - 1);
         }
     }
-
     
     @Override
-    public Node getNode(int nodeID) {
-        return nodes.get(nodeID);
+    public Node getNode(int id) {
+        if (id < 0 || id >= nodes.size()) { 
+            throw new IllegalArgumentException("Illegal ID: " + id);
+        }
+        return nodes.get(id);
     }
     
     @Override

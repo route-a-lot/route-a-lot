@@ -137,7 +137,7 @@ public class RoutingAndGraphTest {
                 int start = stream.readInt();
                 int target = stream.readInt();
                 float ratio = stream.readFloat();
-                selections.add(new Selection(start, target, ratio, null, ""));
+                selections.add(new Selection(null, start, target, ratio, ""));
             }
             route = Router.calculateRoute(selections);
             int length = getRouteLength(route, selections);
@@ -174,7 +174,7 @@ public class RoutingAndGraphTest {
                 int start = stream.readInt();
                 int target = stream.readInt();
                 float ratio = stream.readFloat();
-                selections.add(new Selection(start, target, ratio, null, ""));
+                selections.add(new Selection(null, start, target, ratio, ""));
             }
             State.getInstance().setNavigationNodes(selections); // safety
             Router.optimizeRoute(selections, new Progress());

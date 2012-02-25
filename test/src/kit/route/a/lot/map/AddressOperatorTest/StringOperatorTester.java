@@ -40,7 +40,7 @@ public class StringOperatorTester {
             Street foundItem = (Street)elements[index];
             Node[] nodes = foundItem.getNodes(); 
             index = (nodes.length)/2;
-            Selection selection = new Selection(nodes[index].getID(),nodes[index+1].getID(),0.0f,null,"");
+            Selection selection = new Selection(null,nodes[index].getID(),nodes[index+1].getID(),0.0f,"");
             return selection;     
 
     }

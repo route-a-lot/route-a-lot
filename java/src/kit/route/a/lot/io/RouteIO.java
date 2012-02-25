@@ -43,20 +43,24 @@ public class RouteIO {
         if (file == null) {
             throw new IllegalArgumentException();
         }
-        // Open file stream, abort on failure
-        DataInputStream stream = new DataInputStream(new FileInputStream(file));
-        State state = State.getInstance();
+        File mapFile = State.getInstance().getLoadedMapFile();
+        if (mapFile == null) {
+            throw new IllegalArgumentException();
+        }
+        Projection projection = ProjectionFactory.getCurrentProjection();
+        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         
-        // TODO: add multimap support
+        // read from stream, use either selections or geo coordinates, depending on the current map
+        DataInputStream stream = new DataInputStream(new FileInputStream(file));
+        boolean isSameMap = stream.readUTF().equals(mapFile.getName());
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
         for (int i = 0; i < len; i++) {
-            navNodes.add(new Selection(stream.readInt(), stream.readInt(),
-                    stream.readFloat(), Coordinates.loadFromStream(stream),
-                    stream.readUTF()));
+            Coordinates pos = projection.getLocalCoordinates(Coordinates.loadFromStream(stream));
+            Selection selection = Selection.loadFromStream(stream);
+            navNodes.add((isSameMap) ? selection : mapInfo.select(pos));
         }
-        state.setNavigationNodes(navNodes);
-        
+        State.getInstance().setNavigationNodes(navNodes);
         stream.close();
     }
 
@@ -70,18 +74,20 @@ public class RouteIO {
         if (file == null) {
             throw new IllegalArgumentException();
         }
-        // Open file stream, abort on failure
-        DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
-        State state = State.getInstance();
+        File mapFile = State.getInstance().getLoadedMapFile();
+        if (mapFile == null) {
+            throw new IllegalStateException();
+        }
+        Projection projection = ProjectionFactory.getCurrentProjection();
+        List<Selection> navNodes = State.getInstance().getNavigationNodes();
         
-        List<Selection> navNodes = state.getNavigationNodes();
+        // save to stream, save each navnode as selection and as geo coordinates
+        DataOutputStream stream = new DataOutputStream(new FileOutputStream(file));
+        stream.writeUTF(mapFile.getName());
         stream.writeInt(navNodes.size());
         for (Selection navNode: navNodes) {
-            stream.writeInt(navNode.getFrom());
-            stream.writeInt(navNode.getTo());
-            stream.writeFloat(navNode.getRatio());
-            navNode.getPosition().saveToStream(stream);
-            stream.writeUTF(navNode.getName());
+            projection.getGeoCoordinates(navNode.getPosition()).saveToStream(stream);
+            navNode.saveToStream(stream);
         }
         stream.close();
     }

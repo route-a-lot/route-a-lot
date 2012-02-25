@@ -75,6 +75,7 @@ public class Router {
             }
         }
         setSelection(navigationNodes, result);
+        result.toString();
         p.finish();
     }
     

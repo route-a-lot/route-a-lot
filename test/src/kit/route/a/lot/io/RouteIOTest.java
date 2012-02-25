@@ -50,8 +50,8 @@ public class RouteIOTest extends RouteIO {
         Random randomGenerator = new Random();
         do {
             ArrayList<Selection> selections = new ArrayList<Selection>();
-            selections.add(new Selection(randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), null, ""));
-            selections.add(new Selection(randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), null, ""));
+            selections.add(new Selection(null, randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), ""));
+            selections.add(new Selection(null, randomGenerator.nextInt(size), randomGenerator.nextInt(size), randomGenerator.nextFloat(), ""));
             state.setNavigationNodes(selections);
             assertEquals(selections, state.getNavigationNodes());
             try {

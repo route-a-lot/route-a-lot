@@ -50,9 +50,9 @@ public class StateIO {
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
         for (int i = 0; i < len; i++) {
-            navNodes.add(new Selection(stream.readInt(), stream.readInt(),
-                    stream.readFloat(), Coordinates.loadFromStream(stream),
-                    stream.readUTF()));
+            navNodes.add(new Selection(Coordinates.loadFromStream(stream),
+                    stream.readInt(), stream.readInt(),
+                    stream.readFloat(), stream.readUTF()));
         }
         state.setNavigationNodes(navNodes);
         
@@ -98,10 +98,10 @@ public class StateIO {
         List<Selection> navNodes = state.getNavigationNodes();
         stream.writeInt(navNodes.size());
         for (Selection navNode: navNodes) {
+            navNode.getPosition().saveToStream(stream);
             stream.writeInt(navNode.getFrom());
             stream.writeInt(navNode.getTo());
             stream.writeFloat(navNode.getRatio());
-            navNode.getPosition().saveToStream(stream);
             stream.writeUTF(navNode.getName());
         }
 

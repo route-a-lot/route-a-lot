@@ -186,10 +186,7 @@ public class MapInfo {
 
     /**
      * Returns the coordinates of a given node id.
-     * 
-     * @param nodeID
-     *            the id of the node
-     * 
+     * @param nodeID the id of the node
      * @return the coordinates of the node correspondenting to the give id.
      */
     public Coordinates getNodePosition(int nodeID) {

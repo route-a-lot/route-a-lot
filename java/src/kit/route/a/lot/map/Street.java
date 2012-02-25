@@ -92,8 +92,8 @@ public class Street extends MapElement implements Comparable<Street> {
     public Selection getSelection(Coordinates pos) {
         int start = getClosestEdgeStartPosition(pos);
         Coordinates geoPos = ProjectionFactory.getCurrentProjection().getGeoCoordinates(pos);
-        return new Selection(nodes[start].getID(), nodes[start + 1].getID(),
-                getRatio(start, start + 1, pos), pos, (name != null) ? name : geoPos.toString());
+        return new Selection(pos, nodes[start].getID(), nodes[start + 1].getID(),
+                getRatio(start, start + 1, pos), (name != null) ? name : geoPos.toString());
     }
 
 
