@@ -75,7 +75,7 @@ public class Router {
             }
         }
         setSelection(navigationNodes, result);
-        result.toString();
+       // result.toString();    //result can be null, if no route was found
         p.finish();
     }
     
