@@ -56,14 +56,22 @@ public class StreetAreaTest {
     public void testIsInBounce() {
         assertTrue(street.isEdgeInBounds(street.getNodes()[0].getPos(), street.getNodes()[2].getPos(), new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
         assertTrue(street.isInBounds(new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
+        assertFalse(street.isInBounds(new Coordinates(7.0f, 7.0f), new Coordinates(9.0f, 9.0f)));
         assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(4.5f, 4.5f)));
         assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(3.7f, 3.7f)));
         assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(4.5f, 4.5f)));
         assertTrue(street2.isInBounds(new Coordinates(2.0f, 2.0f), new Coordinates(3.0f, 3.0f)));
         assertTrue(area.isInBounds(new Coordinates(1.0f, 1.0f), new Coordinates(6.0f, 6.0f)));
+        assertFalse(area.isInBounds(new Coordinates(7.0f, 7.0f), new Coordinates(9.0f, 9.0f)));
         assertTrue(area.isInBounds(new Coordinates(4.0f, 4.0f), new Coordinates(6.0f, 6.0f)));
         assertTrue(area.isInBounds(new Coordinates(5.0f, 3.0f), new Coordinates(5.0f, 4.0f)));
         assertTrue(area.isInBounds(new Coordinates(2.0f, 2.0f), new Coordinates(3.0f, 3.0f)));
+    }
+    
+    @Test
+    public void testReduce() {
+        assertTrue(((Street) street.getReduced(5, 5)).getNodes().length < street.getNodes().length);
+        assertTrue(((Area) area.getReduced(5, 5)).getNodes().length < area.getNodes().length);
     }
     
     @Test
