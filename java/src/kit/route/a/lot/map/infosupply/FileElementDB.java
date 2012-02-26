@@ -39,11 +39,13 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
     
     private DataOutputStream nodePositionStream;
     private File nodePositionFile;
+    private RandomAccessFile nodePositionRAF;
 
     public FileElementDB(File outputFile) {
         try {
             randAccessFile = new RandomAccessFile(outputFile, "rw");
             nodePositionFile = File.createTempFile("nodePositions", ".bin");
+            nodePositionFile.deleteOnExit();
             nodePositionStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nodePositionFile)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -64,6 +66,8 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
                 isSavingNodes = false;
                 isSavingElements = true;
                 try {
+                    nodePositionStream.close();
+                    nodePositionRAF = new RandomAccessFile(nodePositionFile, "rw");
                     elementsCountPointer = randAccessFile.getFilePointer();
                     randAccessFile.writeInt(0);
                 } catch (IOException e) {
@@ -99,67 +103,14 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
     
     public void lastElementAdded() {
         try {
+            nodePositionRAF.close();
+            nodePositionFile.delete();
+
             randAccessFile.writeInt(0);
             randAccessFile.seek(nodesCountPointer);
             randAccessFile.writeInt(nodesCount);
             randAccessFile.seek(elementsCountPointer);
             randAccessFile.writeInt(elementsCount);
-            
-            nodePositionStream.close();
-            RandomAccessFile nodePositions = new RandomAccessFile(nodePositionFile, "r");
-            
-            Collections.sort(swapList);
-            
-//            // swap node ids in map elements - are already swapped in OSMLoader
-//            Iterator<SwapTask> swapIterator = swapList.iterator();
-//            if (swapIterator.hasNext()) {
-//                long prevPointer;
-//                SwapTask currentSwap = swapIterator.next();
-//                
-//                for (int i = 0; i < elementsCount && swapIterator.hasNext(); i++) {
-//                    prevPointer = randAccessFile.getFilePointer();
-//                    MapElement element = MapElement.loadFromInput(randAccessFile, false);
-//                    Node[] nodes;
-//                    if (element instanceof Street) {
-//                        Street street = (Street) element;
-//                        nodes = street.getNodes();
-//                    } else if (element instanceof Area) {
-//                        Area area = (Area) element;
-//                        nodes = area.getNodes();
-//                    } else {
-//                        logger.error("Read element was neither a street nor an area. That's weird...");
-//                        break;
-//                    }
-//                    for (Node node : nodes) {
-//                        if (node.getID() == currentSwap.from) {
-//                            node.setID(currentSwap.to);
-//                            currentSwap = swapIterator.next();
-//                        }
-//                    }
-//                    randAccessFile.seek(prevPointer);
-//                    MapElement.saveToOutput(randAccessFile, element, false);
-//                }
-//                swapIterator = swapList.iterator();
-//            }
-            
-            // swap node positions
-            for (SwapTask currentSwap : swapList) {
-                System.out.println(currentSwap.id1 + " ' " + currentSwap.id2);
-                
-//                nodePositions.seek(currentSwap.id1 * 8);    // 8 == length of long
-//                long posNode1 = nodePositions.readLong();
-//                randAccessFile.seek(posNode1);
-//                MapElement node1 = MapElement.loadFromInput(randAccessFile, false);
-//                nodePositions.seek(currentSwap.id2 * 8);
-//                long posNode2 = nodePositions.readLong();
-//                randAccessFile.seek(posNode2);
-//                MapElement node2 = MapElement.loadFromInput(randAccessFile, false);
-//                randAccessFile.seek(posNode2);
-//                MapElement.saveToOutput(randAccessFile, node1, false);
-//                randAccessFile.seek(posNode1);
-//                MapElement.saveToOutput(randAccessFile, node2, false);
-            }
-            
             randAccessFile.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -200,28 +151,60 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
     public void saveToStream(DataOutputStream stream) throws IOException {
         throw new UnsupportedOperationException();
     }
-    
-    public List<SwapTask> swapList = new ArrayList<SwapTask>();
 
     @Override
     public void swapNodeIDs(int id1, int id2) {
-        swapList.add(new SwapTask(id1, id2));
-        swapList.add(new SwapTask(id2, id1));
-    }
-    
-    private class SwapTask implements Comparable<SwapTask> {
-        int id1;
-        int id2;
-        
-        SwapTask(int id1, int id2) {
-            this.id1 = id1;
-            this.id2 = id2;
+        if (!isSavingElements) {
+            return;
         }
-        
-        @Override
-        public int compareTo(SwapTask o) {
-            return id1 - o.id1;
+        try {
+            randAccessFile.seek(30);
+            System.out.println(randAccessFile.readByte());
+            System.out.println(randAccessFile.readInt());
+            nodePositionRAF.seek(id1 * 8);  // 8 == length of long
+            long posNode1 = nodePositionRAF.readLong();
+            randAccessFile.seek(posNode1);
+            byte descriptor = randAccessFile.readByte();
+            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
+                logger.error("Element was neither a node nor a point of interest. That's weird...");
+            }
+            
+            int readId = randAccessFile.readInt();
+            if (readId != id1) {
+                logger.error("The node to swap didn't have the expected id." + id1);
+            }
+            randAccessFile.seek(posNode1);
+            randAccessFile.readByte();
+            
+            randAccessFile.writeInt(id2);
+            nodePositionRAF.seek(id2 * 8);
+            long posNode2 = nodePositionRAF.readLong();
+            nodePositionRAF.seek(id2 * 8);
+            nodePositionRAF.writeLong(posNode1);
+            nodePositionRAF.seek(id1 * 8);
+            nodePositionRAF.writeLong(posNode2);
+            randAccessFile.seek(posNode2);
+            descriptor = randAccessFile.readByte();
+            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
+                logger.error("Element was neither a node nor a point of interest. That's weird...");
+            }
+            
+            readId = randAccessFile.readInt();
+            if (readId != id2) {
+                logger.error("The node to swap didn't have the expected id." + id2);
+            }
+            randAccessFile.seek(posNode2);
+            randAccessFile.readByte();
+            
+            randAccessFile.writeInt(id1);
+            
+            randAccessFile.seek(30);
+            System.out.println(randAccessFile.readByte());
+            System.out.println(randAccessFile.readInt());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
 }

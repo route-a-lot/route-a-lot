@@ -11,9 +11,17 @@ public class POINode extends Node {
 
     private POIDescription info = null;
 
+    public POINode(Coordinates position, POIDescription description, int id){
+        super(position, id);
+        this.info = description;
+    }
+    
     public POINode(Coordinates position, POIDescription description){
         super(position);
-        this.info = description;
+    }
+    
+    public POINode(int id) {
+        super(id);
     }
     
     public POINode() {

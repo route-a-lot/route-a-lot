@@ -24,11 +24,23 @@ public class Node extends MapElement {
         return lat == node.lat && lon == node.lon;
     }
     
+    public Node(Coordinates pos, int id) {
+        this.id = id;
+        lat = pos.getLatitude();
+        lon = pos.getLongitude();
+    }
+    
     public Node(Coordinates pos) {
         lat = pos.getLatitude();
         lon = pos.getLongitude();
     }
 
+    public Node(int id) {
+        this.id = id;
+        lat = 0;
+        lon = 0;
+    }
+    
     public Node() {
         lat = 0;
         lon = 0;
@@ -65,12 +77,14 @@ public class Node extends MapElement {
 
     @Override
     protected void load(DataInput input) throws IOException {
+        this.id = input.readInt();
         this.lat = input.readFloat();
         this.lon = input.readFloat();
     }
 
     @Override
     protected void save(DataOutput output) throws IOException {
+        output.writeInt(id);
         output.writeFloat(this.lat);
         output.writeFloat(this.lon);
     }

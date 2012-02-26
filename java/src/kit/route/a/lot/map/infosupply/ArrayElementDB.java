@@ -106,8 +106,7 @@ public class ArrayElementDB implements ElementDB {
         nodes = new ArrayList<Node>(len);
         for (int i = 0; i < len; i++) {
             Node node = (Node) MapElement.loadFromInput(stream, false);
-            nodes.add(node);
-            node.assignID(i);
+            nodes.set(node.getID(), node);
         }
         logger.debug("load map element array...");
         len = stream.readInt();

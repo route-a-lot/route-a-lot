@@ -12,13 +12,13 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 public abstract class MapElement{
 
     /** constant used in a stream for announcing {@link Node} element data following */
-    protected static final byte DESCRIPTOR_NODE = 1;
+    public static final byte DESCRIPTOR_NODE = 1;
     /** constant used in a stream for announcing {@link Street} element data following */
-    protected static final byte DESCRIPTOR_STREET = 2;
+    public static final byte DESCRIPTOR_STREET = 2;
     /** constant used in a stream for announcing {@link Area} element data following */
-    protected static final byte DESCRIPTOR_AREA = 3;
+    public static final byte DESCRIPTOR_AREA = 3;
     /** constant used in a stream for announcing {@link POI} element data following */
-    protected static final byte DESCRIPTOR_POI = 4;  
+    public static final byte DESCRIPTOR_POI = 4;  
     
     /** the map element identifier */
     protected int id = -1;

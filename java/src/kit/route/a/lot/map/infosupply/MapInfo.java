@@ -35,7 +35,7 @@ public class MapInfo {
     private Coordinates geoTopLeft;
     private Coordinates geoBottomRight;
     
-    private static boolean useDirectFile = false;
+    private static boolean useDirectFile = true;
     private File outputFile;
 
     public MapInfo() {
@@ -90,7 +90,7 @@ public class MapInfo {
      *            the unique id of the node
      */
     public void addNode(Coordinates position, int id, Address address) {
-        Node newNode = new Node(position);
+        Node newNode = new Node(position, id);
         if (elementDB == null) {
             throw new IllegalStateException();
         }
@@ -119,8 +119,7 @@ public class MapInfo {
             Node[] nodes = new Node[ids.size()];
             if (useDirectFile) {
                 for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = new Node();
-                    nodes[i].setID(ids.get(i));
+                    nodes[i] = new Node(ids.get(i));
                 }
                 street.setNodes(nodes);
                 elementDB.addMapElement(street);
@@ -138,8 +137,7 @@ public class MapInfo {
             Node[] nodes = new Node[ids.size()];
             if (useDirectFile) {
                 for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = new Node();
-                    nodes[i].setID(ids.get(i));
+                    nodes[i] = new Node(ids.get(i));
                 }
                 area.setNodes(nodes);
                 elementDB.addMapElement(area);
@@ -167,7 +165,7 @@ public class MapInfo {
      *            the description of the POI
      */
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
-        POINode newPOI = new POINode(position, description);
+        POINode newPOI = new POINode(position, description, id);
         elementDB.addNode(id, newPOI);
         geographicalOperator.addToOverlay(newPOI);      
     }
