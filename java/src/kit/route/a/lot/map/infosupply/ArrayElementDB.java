@@ -73,7 +73,6 @@ public class ArrayElementDB implements ElementDB {
             throw new IllegalStateException("Node ID conflict: " + nodeID);
         }
         nodes.add(nodeID, node);
-        node.assignID(nodeID);
         //logger.debug("NodeArraySize: " + nodes.size());
     }
     

@@ -35,7 +35,7 @@ public class MapInfo {
     private Coordinates geoTopLeft;
     private Coordinates geoBottomRight;
     
-    private static boolean useDirectFile = true;
+    private static boolean useDirectFile = false;
     private File outputFile;
 
     public MapInfo() {
@@ -46,6 +46,7 @@ public class MapInfo {
         geoBottomRight = new Coordinates();
         if (useDirectFile) {
             outputFile = new File("elements.tmp");
+            outputFile.deleteOnExit();
             elementDB = new FileElementDB(outputFile);
         }
     }

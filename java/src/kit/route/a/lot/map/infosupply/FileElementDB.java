@@ -2,7 +2,6 @@ package kit.route.a.lot.map.infosupply;
 
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,24 +9,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
-import kit.route.a.lot.map.Street;
 
 
 public class FileElementDB extends ArrayElementDB implements ElementDB {
-    
-    private static Logger logger = Logger.getLogger(FileElementDB.class);
     
     private boolean isSavingNodes = false;
     private boolean isSavingElements = false;
@@ -163,11 +153,7 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             nodePositionRAF.seek(id1 * 8);  // 8 == length of long
             long posNode1 = nodePositionRAF.readLong();
             randAccessFile.seek(posNode1);
-            byte descriptor = randAccessFile.readByte();
-//            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
-//                logger.error("Element was neither a node nor a point of interest. That's weird...");
-//            }
-            
+            randAccessFile.readByte();
             randAccessFile.writeInt(id2);
             nodePositionRAF.seek(id2 * 8);
             long posNode2 = nodePositionRAF.readLong();
@@ -176,18 +162,7 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             nodePositionRAF.seek(id1 * 8);
             nodePositionRAF.writeLong(posNode2);
             randAccessFile.seek(posNode2);
-            descriptor = randAccessFile.readByte();
-//            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
-//                logger.error("Element was neither a node nor a point of interest. That's weird...");
-//            }
-            
-//            readId = randAccessFile.readInt();
-//            if (readId != id2) {
-//                logger.error("The node to swap didn't have the expected id." + id2);
-//            }
-//            randAccessFile.seek(posNode2);
-//            randAccessFile.readByte();
-            
+            randAccessFile.readByte();
             randAccessFile.writeInt(id1);
             
             randAccessFile.seek(posOnEntering);
