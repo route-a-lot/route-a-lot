@@ -158,23 +158,15 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             return;
         }
         try {
-            randAccessFile.seek(30);
-            System.out.println(randAccessFile.readByte());
-            System.out.println(randAccessFile.readInt());
+            long posOnEntering = randAccessFile.getFilePointer();
+            
             nodePositionRAF.seek(id1 * 8);  // 8 == length of long
             long posNode1 = nodePositionRAF.readLong();
             randAccessFile.seek(posNode1);
             byte descriptor = randAccessFile.readByte();
-            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
-                logger.error("Element was neither a node nor a point of interest. That's weird...");
-            }
-            
-            int readId = randAccessFile.readInt();
-            if (readId != id1) {
-                logger.error("The node to swap didn't have the expected id." + id1);
-            }
-            randAccessFile.seek(posNode1);
-            randAccessFile.readByte();
+//            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
+//                logger.error("Element was neither a node nor a point of interest. That's weird...");
+//            }
             
             randAccessFile.writeInt(id2);
             nodePositionRAF.seek(id2 * 8);
@@ -185,22 +177,20 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             nodePositionRAF.writeLong(posNode2);
             randAccessFile.seek(posNode2);
             descriptor = randAccessFile.readByte();
-            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
-                logger.error("Element was neither a node nor a point of interest. That's weird...");
-            }
+//            if (descriptor != MapElement.DESCRIPTOR_NODE && descriptor != MapElement.DESCRIPTOR_POI) {
+//                logger.error("Element was neither a node nor a point of interest. That's weird...");
+//            }
             
-            readId = randAccessFile.readInt();
-            if (readId != id2) {
-                logger.error("The node to swap didn't have the expected id." + id2);
-            }
-            randAccessFile.seek(posNode2);
-            randAccessFile.readByte();
+//            readId = randAccessFile.readInt();
+//            if (readId != id2) {
+//                logger.error("The node to swap didn't have the expected id." + id2);
+//            }
+//            randAccessFile.seek(posNode2);
+//            randAccessFile.readByte();
             
             randAccessFile.writeInt(id1);
             
-            randAccessFile.seek(30);
-            System.out.println(randAccessFile.readByte());
-            System.out.println(randAccessFile.readInt());
+            randAccessFile.seek(posOnEntering);
         } catch (IOException e) {
             e.printStackTrace();
         }

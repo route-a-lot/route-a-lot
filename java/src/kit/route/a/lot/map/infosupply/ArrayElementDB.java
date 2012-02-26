@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.apache.log4j.Logger;
@@ -103,11 +104,12 @@ public class ArrayElementDB implements ElementDB {
     public void loadFromStream(DataInputStream stream) throws IOException {
         logger.debug("load node array...");
         int len = stream.readInt();
-        nodes = new ArrayList<Node>(len);
+        Node[] nodesArray = new Node[len];
         for (int i = 0; i < len; i++) {
             Node node = (Node) MapElement.loadFromInput(stream, false);
-            nodes.set(node.getID(), node);
+            nodesArray[node.getID()] = node;
         }
+        nodes = new ArrayList<Node>(Arrays.asList(nodesArray));
         logger.debug("load map element array...");
         len = stream.readInt();
         mapElements = new ArrayList<MapElement>(len);

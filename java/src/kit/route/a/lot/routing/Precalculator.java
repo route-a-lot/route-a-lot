@@ -31,8 +31,6 @@ public class Precalculator {
      * Operation precalculate
      * 
      * @return
-     * 
-     * @return
      */
     
     private static RoutingGraph graph, inverted;
@@ -62,7 +60,6 @@ public class Precalculator {
                 }));       
             }
             executorService.shutdown();
-            logger.info("Count of futures " + futures.size());
             for (Future<?> future : futures) {
                 try {
                     future.get();
