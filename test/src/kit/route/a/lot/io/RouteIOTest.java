@@ -12,6 +12,7 @@ import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
 import kit.route.a.lot.routing.Router;
 
@@ -33,7 +34,9 @@ public class RouteIOTest extends RouteIO {
 
     @Before
     public void setUp() throws Exception {
+        new State();
         state = State.getInstance();
+        state.setLoadedMapInfo(new MapInfo());
         loader = new OSMLoader(state);
         loader.weightCalculator = new WeightCalculatorMock();
     }
