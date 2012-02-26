@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
@@ -40,16 +40,16 @@ public class POINode extends Node {
     }
     
     @Override
-    protected void load(DataInputStream stream) throws IOException {
-        super.load(stream);
-        this.info = new POIDescription(stream.readUTF(), stream.readInt(), stream.readUTF());
+    protected void load(DataInput input) throws IOException {
+        super.load(input);
+        this.info = new POIDescription(input.readUTF(), input.readInt(), input.readUTF());
     }
 
     @Override
-    protected void save(DataOutputStream stream) throws IOException {
-        super.save(stream);
-        stream.writeUTF(getInfo().getName());
-        stream.writeInt(getInfo().getCategory());       
-        stream.writeUTF(getInfo().getDescription());
+    protected void save(DataOutput output) throws IOException {
+        super.save(output);
+        output.writeUTF(getInfo().getName());
+        output.writeInt(getInfo().getCategory());       
+        output.writeUTF(getInfo().getDescription());
     }
 }

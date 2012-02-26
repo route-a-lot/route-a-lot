@@ -105,7 +105,7 @@ public class ArrayElementDB implements ElementDB {
         int len = stream.readInt();
         nodes = new ArrayList<Node>(len);
         for (int i = 0; i < len; i++) {
-            Node node = (Node) MapElement.loadFromStream(stream, false);
+            Node node = (Node) MapElement.loadFromInput(stream, false);
             nodes.add(node);
             node.assignID(i);
         }
@@ -113,7 +113,7 @@ public class ArrayElementDB implements ElementDB {
         len = stream.readInt();
         mapElements = new ArrayList<MapElement>(len);
         for (int i = 0; i < len; i++) {
-            MapElement element = MapElement.loadFromStream(stream, false);
+            MapElement element = MapElement.loadFromInput(stream, false);
             mapElements.add(element);
             element.assignID(i);
         }
@@ -121,7 +121,7 @@ public class ArrayElementDB implements ElementDB {
         len = stream.readInt();
         favorites = new ArrayList<POINode>(len);
         for (int i = 0; i < len; i++) {
-            POINode favorite = (POINode) MapElement.loadFromStream(stream, false);
+            POINode favorite = (POINode) MapElement.loadFromInput(stream, false);
             nodes.add(favorite);
             favorite.assignID(i); // TODO: necessary?
         }
@@ -132,17 +132,17 @@ public class ArrayElementDB implements ElementDB {
         logger.info("save node array...");
         stream.writeInt(nodes.size());
         for (Node node: nodes) {
-            MapElement.saveToStream(stream, node, false);
+            MapElement.saveToOutput(stream, node, false);
         }
         logger.info("save map element array...");
         stream.writeInt(mapElements.size());
         for (MapElement element: mapElements) {
-            MapElement.saveToStream(stream, element, false);
+            MapElement.saveToOutput(stream, element, false);
         }
         logger.info("save favorite array...");
         stream.writeInt(favorites.size());
         for (POINode favorite: favorites) {
-            MapElement.saveToStream(stream, favorite, false);
+            MapElement.saveToOutput(stream, favorite, false);
         }
     }
 

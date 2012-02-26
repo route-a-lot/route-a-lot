@@ -1,15 +1,13 @@
 package kit.route.a.lot.common;
 
-import java.util.ArrayList;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Street;
-
-import java.util.Iterator;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.Character;
-import java.lang.String;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.Street;
 
 
 public class StringTrie {
@@ -100,7 +98,7 @@ public class StringTrie {
         StringTrie result = new StringTrie();
         int treeSize = stream.readInt();
         for(int i = 0; i < treeSize; i++) {
-            result.tree.add(MapElement.loadFromStream(stream, true));
+            result.tree.add(MapElement.loadFromInput(stream, true));
         }
         result.maxLength = stream.readInt();
         return result;
@@ -109,7 +107,7 @@ public class StringTrie {
     public void saveToStream(DataOutputStream stream) throws IOException {
         stream.writeInt(tree.size());
         for(MapElement element: tree) {
-            MapElement.saveToStream(stream, element, true);
+            MapElement.saveToOutput(stream, element, true);
         }
         stream.writeInt(maxLength);          
     }

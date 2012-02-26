@@ -1,10 +1,11 @@
 package kit.route.a.lot.map;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import kit.route.a.lot.common.Selection;
+
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
@@ -94,48 +95,48 @@ public abstract class MapElement{
 
     
     /**
-     * Loads a {@link MapElement} from the stream. Before doing so determines
-     * the map element type from the stream and creates the map element.
+     * Loads a {@link MapElement} from the input. Before doing so determines
+     * the map element type from the input and creates the map element.
      * 
-     * @param stream the source stream
+     * @param input the input
      * @param asID whether the element is stored indirectly via ID
      * @return the loaded {@link MapElement}
      * @throws IllegalArgumentException <b>stream</b> is <code>null</code>
      * @throws UnsupportedOperationException element type could not be determined
-     * @throws IOException map element could not be loaded from the stream
+     * @throws IOException map element could not be loaded from the input
      */
-    public static MapElement loadFromStream(DataInputStream stream, boolean asID) throws IOException {
-        if (stream == null) {
+    public static MapElement loadFromInput(DataInput input, boolean asID) throws IOException {
+        if (input == null) {
             throw new IllegalArgumentException();
         }
         MapElement result;
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
-        byte descriptor = stream.readByte();
+        byte descriptor = input.readByte();
         switch (descriptor) {
-            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getNode(stream.readInt()) : new POINode(); break;
-            case DESCRIPTOR_NODE: result = (asID) ? mapInfo.getNode(stream.readInt()) : new Node(); break;
-            case DESCRIPTOR_STREET: result = (asID) ? mapInfo.getMapElement(stream.readInt()) : new Street(); break;
-            case DESCRIPTOR_AREA: result = (asID) ? mapInfo.getMapElement(stream.readInt()) : new Area(); break;
+            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getNode(input.readInt()) : new POINode(); break;
+            case DESCRIPTOR_NODE: result = (asID) ? mapInfo.getNode(input.readInt()) : new Node(); break;
+            case DESCRIPTOR_STREET: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new Street(); break;
+            case DESCRIPTOR_AREA: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new Area(); break;
             default: throw new UnsupportedOperationException("Cannot determine element type from stream.");         
         }
         if (!asID) {
-            result.load(stream);
+            result.load(input);
         }
         return result;
     }
 
     /**
-     * Saves a map element (or its ID if <code>asID</code> is set) to the stream.
-     * Before doing so determines the map element type and saves it to the stream.
+     * Saves a map element (or its ID if <code>asID</code> is set) to the output.
+     * Before doing so determines the map element type and saves it to the output.
      * 
-     * @param stream the destination stream
+     * @param output the output
      * @param element the {@link MapElement} that is to be saved
      * @param asID determines whether the element itself or rather its ID is saved
      * @throws IllegalArgumentException either argument is <code>null</code>
-     * @throws IOException <b>element</b> could not be saved to the stream
+     * @throws IOException <b>element</b> could not be saved to the output
      */
-    public static void saveToStream(DataOutputStream stream, MapElement element, boolean asID) throws IOException {     
-        if ((stream == null) || (element == null)) {
+    public static void saveToOutput(DataOutput output, MapElement element, boolean asID) throws IOException {     
+        if ((output == null) || (element == null)) {
             throw new IllegalArgumentException();
         }
         byte descriptor = 0;
@@ -150,31 +151,31 @@ public abstract class MapElement{
         } else {
            throw new UnsupportedOperationException("Cannot save element: " + element.getName());
         }
-        stream.writeByte(descriptor);
+        output.writeByte(descriptor);
         if (asID) {
-            stream.writeInt(element.getID());
+            output.writeInt(element.getID());
         } else {
-            element.save(stream);
+            element.save(output);
         }
     }
 
     /**
-     * Loads a map element from the stream.
+     * Loads a map element from the input.
      * 
-     * @param stream the source stream
-     * @throws NullPointerException <b>stream</b> is <code>null</code>
-     * @throws IOException element could not be loaded from the stream  
+     * @param input the source input
+     * @throws NullPointerException <b>input</b> is <code>null</code>
+     * @throws IOException element could not be loaded from the input  
      */
-    protected abstract void load(DataInputStream stream) throws IOException;
+    protected abstract void load(DataInput input) throws IOException;
 
     /**
-     * Saves a map element to the stream.
+     * Saves a map element to the output.
      * 
-     * @param stream the destination stream
-     * @throws NullPointerException <b>stream</b> is <code>null</code>
-     * @throws IOException element could not be saved to the stream
+     * @param output the destination output
+     * @throws NullPointerException <b>output</b> is <code>null</code>
+     * @throws IOException element could not be saved to the output
      */
-    protected abstract void save(DataOutputStream stream) throws IOException;
+    protected abstract void save(DataOutput output) throws IOException;
     
     //public abstract boolean equals(MapElement other);
 

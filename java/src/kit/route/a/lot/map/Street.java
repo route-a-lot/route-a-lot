@@ -2,8 +2,8 @@ package kit.route.a.lot.map;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,6 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import java.lang.Comparable;
 
 public class Street extends MapElement implements Comparable<Street> {
 
@@ -193,25 +192,25 @@ public class Street extends MapElement implements Comparable<Street> {
     }
 
     @Override
-    protected void load(DataInputStream stream) throws IOException {
-        setName(stream.readUTF());
-        int len = stream.readInt();
+    protected void load(DataInput input) throws IOException {
+        setName(input.readUTF());
+        int len = input.readInt();
         nodes = new Node[len];
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         for (int i = 0; i < len; i++) {
-            nodes[i] = mapInfo.getNode(stream.readInt());
+            nodes[i] = mapInfo.getNode(input.readInt());
         }
-        this.wayInfo = WayInfo.loadFromStream(stream);
+        this.wayInfo = WayInfo.loadFromInput(input);
     }
 
     @Override
-    protected void save(DataOutputStream stream) throws IOException {
-        stream.writeUTF(getName());
-        stream.writeInt(this.nodes.length);
+    protected void save(DataOutput output) throws IOException {
+        output.writeUTF(getName());
+        output.writeInt(this.nodes.length);
         for (Node node : this.nodes) {
-            stream.writeInt(node.getID());
+            output.writeInt(node.getID());
         }
-        this.wayInfo.saveToStream(stream);
+        this.wayInfo.saveToOutput(output);
     }
 
     @Override

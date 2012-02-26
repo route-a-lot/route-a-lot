@@ -1,7 +1,7 @@
 package kit.route.a.lot.map;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
@@ -64,15 +64,15 @@ public class Node extends MapElement {
     }
 
     @Override
-    protected void load(DataInputStream stream) throws IOException {
-        this.lat = stream.readFloat();
-        this.lon = stream.readFloat();
+    protected void load(DataInput input) throws IOException {
+        this.lat = input.readFloat();
+        this.lon = input.readFloat();
     }
 
     @Override
-    protected void save(DataOutputStream stream) throws IOException {
-        stream.writeFloat(this.lat);
-        stream.writeFloat(this.lon);
+    protected void save(DataOutput output) throws IOException {
+        output.writeFloat(this.lat);
+        output.writeFloat(this.lon);
     }
 
 }

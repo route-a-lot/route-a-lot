@@ -1,7 +1,7 @@
 package kit.route.a.lot.common;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 
 
@@ -98,27 +98,27 @@ public class Address {
     }
 
 
-    public static Address loadFromStream(DataInputStream stream) throws IOException {
+    public static Address loadFromInput(DataInput input) throws IOException {
         Address result = new Address();
-        result.setStreet(stream.readUTF());
-        result.setHousenumber(stream.readUTF());
-        result.setState(stream.readUTF());
-        result.setPostcode(stream.readUTF());
-        result.setCity(stream.readUTF());
-        result.setCountry(stream.readUTF());
-        result.setFullAddress(stream.readUTF());
-        result.setInterpolation(stream.readUTF());
+        result.setStreet(input.readUTF());
+        result.setHousenumber(input.readUTF());
+        result.setState(input.readUTF());
+        result.setPostcode(input.readUTF());
+        result.setCity(input.readUTF());
+        result.setCountry(input.readUTF());
+        result.setFullAddress(input.readUTF());
+        result.setInterpolation(input.readUTF());
         return result;
     }
 
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        stream.writeUTF(getStreet());
-        stream.writeUTF(getHousenumber());
-        stream.writeUTF(getState());
-        stream.writeUTF(getPostcode());
-        stream.writeUTF(getCity());
-        stream.writeUTF(getCountry());
-        stream.writeUTF(getFullAddress());       
-        stream.writeUTF(getInterpolation());
+    public void saveToOutput(DataOutput output) throws IOException {
+        output.writeUTF(getStreet());
+        output.writeUTF(getHousenumber());
+        output.writeUTF(getState());
+        output.writeUTF(getPostcode());
+        output.writeUTF(getCity());
+        output.writeUTF(getCountry());
+        output.writeUTF(getFullAddress());       
+        output.writeUTF(getInterpolation());
     }
 }

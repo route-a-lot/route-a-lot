@@ -11,7 +11,6 @@ import java.util.Set;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.infosupply.QuadTree;
 
 public class QTLeaf extends QuadTree {
 
@@ -119,13 +118,13 @@ public class QTLeaf extends QuadTree {
         int len = stream.readInt();
         overlay = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            overlay[i] = MapElement.loadFromStream(stream, stream.readBoolean());
+            overlay[i] = MapElement.loadFromInput(stream, stream.readBoolean());
         }
         // load each base layer element via type and ID
         len = stream.readInt();
         baseLayer = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            baseLayer[i] = MapElement.loadFromStream(stream, stream.readBoolean());
+            baseLayer[i] = MapElement.loadFromInput(stream, stream.readBoolean());
         }
     }
 
@@ -136,7 +135,7 @@ public class QTLeaf extends QuadTree {
         for (MapElement element: overlay) {
             if (element != null) {
                 stream.writeBoolean(element.getID() >= 0);
-                MapElement.saveToStream(stream, element, element.getID() >= 0);
+                MapElement.saveToOutput(stream, element, element.getID() >= 0);
             }
         }
         // for each base layer element, save type and ID
@@ -144,7 +143,7 @@ public class QTLeaf extends QuadTree {
         for (MapElement element: baseLayer) {
             if (element != null) {
                 stream.writeBoolean(element.getID() >= 0);
-                MapElement.saveToStream(stream, element, element.getID() >= 0);
+                MapElement.saveToOutput(stream, element, element.getID() >= 0);
             }
         }
     }

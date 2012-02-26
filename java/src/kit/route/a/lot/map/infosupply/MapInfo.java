@@ -1,8 +1,12 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.IOException;
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -30,6 +34,9 @@ public class MapInfo {
     
     private Coordinates geoTopLeft;
     private Coordinates geoBottomRight;
+    
+    private static boolean useDirectFile = false;
+    private File outputFile;
 
     public MapInfo() {
         elementDB = new ArrayElementDB();
@@ -37,6 +44,10 @@ public class MapInfo {
         addressOperator = new TrieAddressOperator();
         geoTopLeft = new Coordinates();
         geoBottomRight = new Coordinates();
+        if (useDirectFile) {
+            outputFile = new File("elements.tmp");
+            elementDB = new FileElementDB(outputFile);
+        }
     }
 
     /**
@@ -106,22 +117,40 @@ public class MapInfo {
         if (wayInfo.isStreet()) {
             Street street = new Street(name, wayInfo);
             Node[] nodes = new Node[ids.size()];
-            for (int i = 0; i < ids.size(); i++) {
-                nodes[i] = getNode(ids.get(i));
+            if (useDirectFile) {
+                for (int i = 0; i < ids.size(); i++) {
+                    nodes[i] = new Node();
+                    nodes[i].setID(ids.get(i));
+                }
+                street.setNodes(nodes);
+                elementDB.addMapElement(street);
+            } else {
+                for (int i = 0; i < ids.size(); i++) {
+                    nodes[i] = getNode(ids.get(i));
+                }
+                street.setNodes(nodes);
+                elementDB.addMapElement(street);
+                geographicalOperator.addToBaseLayer(street);
+                addressOperator.add(street);
             }
-            street.setNodes(nodes);
-            elementDB.addMapElement(street);
-            geographicalOperator.addToBaseLayer(street);
-            addressOperator.add(street);
         } else {
             Area area = new Area(name, wayInfo);
             Node[] nodes = new Node[ids.size()];
-            for (int i = 0; i < ids.size(); i++) {
-                nodes[i] = elementDB.getNode(ids.get(i));
+            if (useDirectFile) {
+                for (int i = 0; i < ids.size(); i++) {
+                    nodes[i] = new Node();
+                    nodes[i].setID(ids.get(i));
+                }
+                area.setNodes(nodes);
+                elementDB.addMapElement(area);
+            } else {
+                for (int i = 0; i < ids.size(); i++) {
+                    nodes[i] = elementDB.getNode(ids.get(i));
+                }
+                area.setNodes(nodes);
+                elementDB.addMapElement(area);
+                geographicalOperator.addToBaseLayer(area);
             }
-            area.setNodes(nodes);
-            elementDB.addMapElement(area);
-            geographicalOperator.addToBaseLayer(area);
         }
     }
 
@@ -299,6 +328,21 @@ public class MapInfo {
         elementDB.saveToStream(stream);
         geographicalOperator.saveToStream(stream);
         addressOperator.saveToStream(stream);
+    }
+    
+    public void lastElementAdded() {
+        if (!useDirectFile) {
+            return;
+        }
+        ((FileElementDB) elementDB).lastElementAdded();
+        elementDB = new ArrayElementDB();
+        try {
+            elementDB.loadFromStream(new DataInputStream(new BufferedInputStream(new FileInputStream(outputFile))));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void printQuadTree() {

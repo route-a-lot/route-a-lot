@@ -2,8 +2,8 @@ package kit.route.a.lot.map;
 
 import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
@@ -91,26 +91,26 @@ public class Area extends MapElement {
     }
     
     @Override //TODO: attribs, load() and save() are identical to methods of same name in Street
-    protected void load(DataInputStream stream) throws IOException {
-        String name = stream.readUTF();
+    protected void load(DataInput input) throws IOException {
+        String name = input.readUTF();
         this.name = EMPTY.equals(name) ? null : name;
-        int len = stream.readInt();
+        int len = input.readInt();
         this.nodes = new Node[len];
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
         for (int i = 0; i < len; i++) {        
-            this.nodes[i] = mapInfo.getNode(stream.readInt());
+            this.nodes[i] = mapInfo.getNode(input.readInt());
         }
-        this.wayInfo = WayInfo.loadFromStream(stream);
+        this.wayInfo = WayInfo.loadFromInput(input);
     }
 
     @Override
-    protected void save(DataOutputStream stream) throws IOException {
-        stream.writeUTF(getName());
-        stream.writeInt(this.nodes.length);
+    protected void save(DataOutput output) throws IOException {
+        output.writeUTF(getName());
+        output.writeInt(this.nodes.length);
         for (Node node: this.nodes) {
-            stream.writeInt(node.getID());
+            output.writeInt(node.getID());
         }
-        this.wayInfo.saveToStream(stream);
+        this.wayInfo.saveToOutput(output);
     }
 
     @Override

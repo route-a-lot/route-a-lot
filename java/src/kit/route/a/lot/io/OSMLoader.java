@@ -891,9 +891,6 @@ public class OSMLoader {
                     if (curWayInfo.isStreet()) {
                         curAddress.setStreet(curWayName);
                     }
-                    if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
-                        state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayInfo);
-                    }
 
                     if (curWayInfo.isRoutable()) {
 
@@ -955,6 +952,10 @@ public class OSMLoader {
                         }
 
                     }
+                    
+                    if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
+                        state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayInfo);
+                    }
 
                     inWay = false;
                     inPolyline = false;
@@ -1000,7 +1001,9 @@ public class OSMLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
+        state.getLoadedMapInfo().lastElementAdded();
+        
         weightCalculator.setProjection(projection);
 
         logger.info("create adjacient fields...");
