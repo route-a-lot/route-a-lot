@@ -33,6 +33,20 @@ public class Area extends MapElement {
         this(null, null);
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof Area)) {
+            return false;
+        }
+        Area comparee = (Area) other;
+        return nodes.equals(comparee.nodes)
+                && name == comparee.name
+                && wayInfo.equals(comparee.wayInfo);
+    }
+    
     public Node[] getNodes() {
         return nodes;
     }

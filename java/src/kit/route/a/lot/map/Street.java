@@ -38,6 +38,20 @@ public class Street extends MapElement implements Comparable<Street> {
     }
 
     @Override
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof Street)) {
+            return false;
+        }
+        Street comparee = (Street) other;
+        return nodes.equals(comparee.nodes)
+                && name == comparee.name
+                && wayInfo.equals(comparee.wayInfo);
+    }
+    
+    @Override
     public String getName() {
         return (this.name != null) ? this.name : "";
     }
