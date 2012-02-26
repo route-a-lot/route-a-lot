@@ -35,74 +35,126 @@ public class RoutingScalTest {
         int tries = 10000;
         double startTime;
         double duration;
-        double resTime = 0;
-        double t50 = 0;
+        double WA_resTime = 0;
+        double NA_resTime = 0;
+        double WA_t50 = 0;
+        double NA_t50 = 0;
         int s50 = 0;
-        double t100 = 0;
+        double WA_t100 = 0;
+        double NA_t100 = 0;
         int s100 = 0;
-        double t150 = 0;
+        double WA_t150 = 0;
+        double NA_t150 = 0;
         int s150 = 0;
-        double t200 = 0;
+        double WA_t200 = 0;
+        double NA_t200 = 0;
         int s200 = 0;
-        double t250 = 0;
+        double WA_t250 = 0;
+        double NA_t250 = 0;
         int s250 = 0;
-        double t300 = 0;
+        double WA_t300 = 0;
+        double NA_t300 = 0;
         int s300 = 0;
         int over300 = 0;
         List<Selection> selections;
-        List<Integer> route;
+        List<Integer> route = null;
         for(int i = 0; i < tries; i++) {
             selections = new ArrayList<Selection>();
             selections.add(SelectMock.getRandomSelection());
             selections.add(SelectMock.getRandomSelection());
             startTime = System.currentTimeMillis();
-            route = Router.calculateRoute(selections);
+            for (int j = 0; j < 100; j++) {  //avoidint 0
+                route = Router.calculateRoute(selections);
+            }
             duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
-            resTime += duration; 
+            duration /= 100;
+            WA_resTime += duration; 
             
+            if (duration < 0.001) {    //for testing if we got 0
+                System.err.println("WA daration is: " + duration);
+            }
             
-            
-           if (route.size() < 50 && !(duration < 0.00001)) {
-               t50 += duration;
+           if (route.size() < 50) {
+               WA_t50 += duration;
                s50++;
-           } else if (route.size() < 100 && !(duration < 0.00001)) {
-               t100 += duration;
+           } else if (route.size() < 100) {
+               WA_t100 += duration;
                s100++;
-           } else if (route.size() < 150 && !(duration < 0.00001)) {
-               t150 += duration;
+           } else if (route.size() < 150) {
+               WA_t150 += duration;
                s150++;
-           } else if (route.size() < 200 && !(duration < 0.00001)){
-               t200 += duration;
+           } else if (route.size() < 200){
+               WA_t200 += duration;
                s200++;
-           } else if (route.size() < 250 && !(duration < 0.00001)) {
-               t250 += duration;
+           } else if (route.size() < 250) {
+               WA_t250 += duration;
                s250++;
-           } else if (route.size() < 300 && !(duration < 0.00001)) {
-               t300 += duration;
+           } else if (route.size() < 300) {
+               WA_t300 += duration;
                s300++;
            } else {
                over300++;
            }
+           
+           
+           
+           startTime = System.currentTimeMillis();
+           for (int j = 0; j < 10; j++) {
+               SimpleRouter.calculateRoute(selections);
+           }
+           duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
+           duration /= 10;
+           NA_resTime += duration; 
+           
+           if (duration < 0.001) {    //for testing if we got 0
+               System.err.println("NA duration is "+duration);
+           }
+           
+          if (route.size() < 50) {
+              NA_t50 += duration;
+          } else if (route.size() < 100) {
+              NA_t100 += duration;
+          } else if (route.size() < 150) {
+              NA_t150 += duration;
+          } else if (route.size() < 200){
+              NA_t200 += duration;
+          } else if (route.size() < 250) {
+              NA_t250 += duration;
+          } else if (route.size() < 300) {
+              NA_t300 += duration;
+          }
+          if (i % 100 == 0) {
+              System.out.println(i / 100 + "% of the test completed");
+          }
         }
         System.out.println("Routing with one start und target (WA = with Arc-Flags, NA = without Arc-Flags): ");
+        System.out.println("Number of routes: 10000" );
+        System.out.println("average WA time: " + WA_resTime/10000);
+        System.out.println("average NA time: " + NA_resTime/10000);
         System.out.println("\nnumber of routes with length < 50: " + s50);
         System.out.println("average time for calculating routes with length < 50: ");
-        System.out.println("WA: " + t50/s50 + "ms");
+        System.out.println("WA: " + WA_t50/s50 + "ms");
+        System.out.println("NA: " + NA_t50/s50 + "ms");
         System.out.println("\nnumber of routes with 49 < length < 100: " + s100);
         System.out.println("average time for calculating routes with 49 < length < 100: ");
-        System.out.println("WA: " + t100/s100 + "ms");
+        System.out.println("WA: " + WA_t100/s100 + "ms");
+        System.out.println("NA: " + NA_t100/s100 + "ms");
         System.out.println("\nnumber of routes with 99 < length < 150: " + s150);
         System.out.println("average time for calculating routes with 99 < length < 149: ");
-        System.out.println("WA: " + t150/s150 + "ms");
+        System.out.println("WA: " + WA_t150/s150 + "ms");
+        System.out.println("NA: " + NA_t150/s150 + "ms");
         System.out.println("\nnumber of routes with 149 < length < 200: " + s200);
         System.out.println("average time for calculating routes with 149 < length < 200: ");
-        System.out.println("WA: " + t200/s200 + "ms");
+        System.out.println("WA: " + WA_t200/s200 + "ms");
+        System.out.println("NA: " + NA_t200/s200 + "ms");
         System.out.println("\nnumber of routes with 199 < length < 250: " + s250);
         System.out.println("average time for calculating routes with 199 < length < 250: ");
-        System.out.println("WA: " + t250/s250 + "ms");
+        System.out.println("WA: " + WA_t250/s250 + "ms");
+        System.out.println("NA: " + NA_t250/s250 + "ms");
         System.out.println("\nnumber of routes with 249 < length < 300: " + s300);
         System.out.println("average time for calculating routes with 249 < length < 300: ");
-        System.out.println("WA: " + t300/s300 + "ms");
+        System.out.println("WA: " + WA_t300/s300 + "ms");
+        System.out.println("NA: " + NA_t300/s300 + "ms");
         System.out.println("\nroutes with length > 299 :" + over300);
     }
 }
