@@ -37,7 +37,7 @@ public class Util {
     }
     
     public static int fak(int i) {
-        if (i == 1) {
+        if (i <= 1) {
             return 1;
         } else {
             return i * fak(i-1);

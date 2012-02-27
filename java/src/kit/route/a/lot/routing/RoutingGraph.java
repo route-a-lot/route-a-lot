@@ -1,7 +1,7 @@
 package kit.route.a.lot.routing;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -22,13 +22,13 @@ public interface RoutingGraph {
      * Any old graph will be deleted doing so.
      * @param stream the source stream
      */
-    public void loadFromStream(DataInputStream stream) throws IOException;
+    public void loadFromInput(DataInput input) throws IOException;
 
     /**
      * Saves the underlying routing graph to the given stream.
      * @param stream the destination stream
      */
-    public void saveToStream(DataOutputStream stream) throws IOException;
+    public void saveToOutput(DataOutput output) throws IOException;
 
     byte getAreaID(int node);
 

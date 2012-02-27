@@ -1,8 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.awt.Color;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -113,37 +113,37 @@ public class QTLeaf extends QuadTree {
     
 
     @Override
-    protected void load(DataInputStream stream) throws IOException {
+    protected void load(DataInput input) throws IOException {
         // load each overlay element via type and ID
-        int len = stream.readInt();
+        int len = input.readInt();
         overlay = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            overlay[i] = MapElement.loadFromInput(stream, stream.readBoolean());
+            overlay[i] = MapElement.loadFromInput(input, input.readBoolean());
         }
         // load each base layer element via type and ID
-        len = stream.readInt();
+        len = input.readInt();
         baseLayer = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            baseLayer[i] = MapElement.loadFromInput(stream, stream.readBoolean());
+            baseLayer[i] = MapElement.loadFromInput(input, input.readBoolean());
         }
     }
 
     @Override
-    protected void save(DataOutputStream stream) throws IOException {
+    protected void save(DataOutput output) throws IOException {
         // for each overlay element, save type and ID
-        stream.writeInt(countArrayElementsSize(overlay));
+        output.writeInt(countArrayElementsSize(overlay));
         for (MapElement element: overlay) {
             if (element != null) {
-                stream.writeBoolean(element.getID() >= 0);
-                MapElement.saveToOutput(stream, element, element.getID() >= 0);
+                output.writeBoolean(element.getID() >= 0);
+                MapElement.saveToOutput(output, element, element.getID() >= 0);
             }
         }
         // for each base layer element, save type and ID
-        stream.writeInt(countArrayElementsSize(baseLayer));
+        output.writeInt(countArrayElementsSize(baseLayer));
         for (MapElement element: baseLayer) {
             if (element != null) {
-                stream.writeBoolean(element.getID() >= 0);
-                MapElement.saveToOutput(stream, element, element.getID() >= 0);
+                output.writeBoolean(element.getID() >= 0);
+                MapElement.saveToOutput(output, element, element.getID() >= 0);
             }
         }
     }
@@ -152,7 +152,7 @@ public class QTLeaf extends QuadTree {
     protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
         Set<MapElement> elememts, boolean exact) {
         if(isInBounds(upLeft, bottomRight)) {
-            if (QTGeographicalOperator.drawFrames) {
+            if (QTGeographicalOperator.DRAW_FRAMES) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.blue);
             }
             for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {

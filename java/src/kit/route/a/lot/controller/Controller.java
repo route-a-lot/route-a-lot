@@ -180,12 +180,12 @@ public class Controller {
         });
         Listener.addListener(SAVE_ROUTE, new Listener() {
             public void handleEvent(Event e) {
-                saveRoute(((TextEvent) e).getText());
+                saveRoute(new File(((TextEvent) e).getText()));
             }    
         });
         Listener.addListener(LOAD_ROUTE, new Listener() {
             public void handleEvent(Event e) {
-                loadRoute(((TextEvent) e).getText());
+                loadRoute(new File(((TextEvent) e).getText()));
             }           
         });
         Listener.addListener(EXPORT_ROUTE, new Listener() {
@@ -287,6 +287,7 @@ public class Controller {
             logger.error("OSM File doesn't exist");
         } else {
             state.resetMap();
+            System.gc();
             new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.005));
             Precalculator.precalculate(p.createSubProgress(0.994));
             state.getLoadedMapInfo().compactifyDatastructures();
@@ -333,26 +334,24 @@ public class Controller {
     }
     
     
-    private void saveRoute(String path) {
-        File routeFile = new File(path);
+    private void saveRoute(File file) {
         if (state.getCurrentRoute().size() != 0) {
             try {
-                RouteIO.saveCurrentRoute(routeFile);
+                RouteIO.saveCurrentRoute(file);
             } catch (IOException e) {
-                logger.error("Could not save route to file '" + path + "'.");
+                logger.error("Could not save route to file '" + file + "'.");
             }
         }
     }
 
-    private void loadRoute(String path) {
-        File routeFile = new File(path);
-        if (!routeFile.exists()) {
-            logger.error("RouteFile existiert nicht");
-        } else {
+    private void loadRoute(File file) {
+        if (!file.exists()) {
+            logger.error("No such route file: " + file);
+        } else if (state.getLoadedMapFile() != null) {
             try {
-                RouteIO.loadCurrentRoute(routeFile);
+                RouteIO.loadCurrentRoute(file);
             } catch (IOException e) {
-                logger.error("Could not load route from file '" + path + "'.");
+                logger.error("Could not load route from file '" + file + "'.");
             }
         }
         calculateRoute();

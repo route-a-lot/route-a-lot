@@ -53,13 +53,14 @@ import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
+import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    private static final int OPTIMIZE_WARN_LIMIT = 10;
+    private static final int OPTIMIZE_WARN_LIMIT = 12;
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea;
@@ -196,13 +197,13 @@ public class GUI extends JFrame {
         progressBar.setStringPainted(true);
         Listener.addListener(PROGRESS, new Listener() {
             public void handleEvent(Event e) {
-                int progress = ((NumberEvent) e).getNumber();
+                float progress = ((FloatEvent) e).getNumber();
                 setActive(progress < 0 || progress >= 100);
                 int time = (int)((System.nanoTime() - taskStartTime) / 1000000000
-                                    * ((100 - progress) /(double) progress));
-                progressBar.setValue(Util.clip(progress, 0, 100));
+                                    * ((100 - progress) / progress));
+                progressBar.setValue(Util.clip((int) progress, 0, 100));
                 progressBar.setString((active) ? "" : progressBar.getValue()
-                        + "%, verbleibend ca. " + Util.formatSecondsRegular(time));
+                        + "%, noch " + Util.formatSecondsRegular(time));
             }
         });
         JPanel statusBar = new JPanel();
@@ -762,12 +763,9 @@ public class GUI extends JFrame {
     private boolean getUserConfirmation() {
         String[] options = {"Fortfahren", "Abbrechen"};
         return (JOptionPane.showOptionDialog(this,
-            "Die Optimierung benötigt bei einer großen Zahl an Zwischenhalten viel Zeit.",
-            "Warnung",
-            JOptionPane.OK_CANCEL_OPTION,
-            JOptionPane.WARNING_MESSAGE,
-            null,
-            options,
-            options[0]) == JOptionPane.OK_OPTION);
+            "Die Optimierung benötigt bei einer großen Zahl " +
+            "an Zwischenhalten viel Zeit.", "Warnung",
+            JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
+            null, options, options[0]) == JOptionPane.OK_OPTION);
     }
 }

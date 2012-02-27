@@ -1,7 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
@@ -116,18 +116,18 @@ public abstract class QuadTree {
     /**
      * Loads a new quad tree from the given stream.
      * 
-     * @param stream
+     * @param input
      *            the source stream
      * @throws IOException
      *             quadtree could not be loaded from the stream
      */
-    public static QuadTree loadFromStream(DataInputStream stream) throws IOException {
-        stream.readLong(); // skip value => ignore
+    public static QuadTree loadFromInput(DataInput input) throws IOException {
+        input.readLong(); // skip value => ignore
 
-        Coordinates upLeft = Coordinates.loadFromStream(stream);
-        Coordinates bottomRight = Coordinates.loadFromStream(stream);
+        Coordinates upLeft = Coordinates.loadFromInput(input);
+        Coordinates bottomRight = Coordinates.loadFromInput(input);
         QuadTree tree;
-        byte descriptor = stream.readByte();
+        byte descriptor = input.readByte();
         switch (descriptor) {
             case DESCRIPTOR_QUADTREE_NODE:
                 tree = new QTNode(upLeft, bottomRight);
@@ -135,29 +135,29 @@ public abstract class QuadTree {
             default:
                 tree = new QTLeaf(upLeft, bottomRight);
         }
-        tree.load(stream);
+        tree.load(input);
         return tree;
     };
 
     /**
      * Saves the given quad tree to the given stream.
      * 
-     * @param stream
+     * @param output
      *            the destination stream
      * @throws IOException
      *             quadtree could not be saved to the stream
      */
-    public static void saveToStream(DataOutputStream stream, QuadTree tree) throws IOException {
-        stream.writeLong(0); // TODO: reserved for skip value => implement
-        tree.upLeft.saveToStream(stream);
-        tree.bottomRight.saveToStream(stream);
+    public static void saveToOutput(DataOutput output, QuadTree tree) throws IOException {
+        output.writeLong(0); // TODO: reserved for skip value => implement
+        tree.upLeft.saveToOutput(output);
+        tree.bottomRight.saveToOutput(output);
         if (tree instanceof QTNode) {
-            stream.writeByte(DESCRIPTOR_QUADTREE_NODE);
+            output.writeByte(DESCRIPTOR_QUADTREE_NODE);
         } else {
-            stream.writeByte(DESCRIPTOR_QUADTREE_LEAF);
+            output.writeByte(DESCRIPTOR_QUADTREE_LEAF);
         }
 
-        tree.save(stream);
+        tree.save(output);
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class QuadTree {
      * @throws IOException
      *             quadtree could not be loaded from the stream
      */
-    protected abstract void load(DataInputStream stream) throws IOException;
+    protected abstract void load(DataInput input) throws IOException;
 
     /**
      * Saves the quad tree to the given stream.<br>
@@ -181,7 +181,7 @@ public abstract class QuadTree {
      * @throws IOException
      *             quadtree could not be saved to the stream
      */
-    protected abstract void save(DataOutputStream stream) throws IOException;
+    protected abstract void save(DataOutput output) throws IOException;
     
     protected abstract void compactifyDataStructures();
 

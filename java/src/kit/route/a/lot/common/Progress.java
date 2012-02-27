@@ -1,16 +1,17 @@
 package kit.route.a.lot.common;
 
-import kit.route.a.lot.gui.event.NumberEvent;
+import kit.route.a.lot.gui.event.FloatEvent;
 
 
 public class Progress {
     
     private double weight, progress = 0, lastProgress = 0;
+    private long lastTime = 0;
     private Progress parent;
     
     public Progress() {
         this(null, 1);
-        Listener.fireEvent(Listener.PROGRESS, new NumberEvent(0));
+        Listener.fireEvent(Listener.PROGRESS, new FloatEvent(0));
     }
     
     public Progress(Progress parent, double weight) {
@@ -26,10 +27,14 @@ public class Progress {
         progress += addProgress;
         if (parent != null) {
             parent.addProgress(addProgress * weight);
-        } else if (progress - lastProgress >= 0.01){
-            lastProgress = progress;
-            Listener.fireEvent(Listener.PROGRESS,
-                    new NumberEvent((int)(progress * 100)));
+        } else {
+            long time = System.currentTimeMillis();           
+            if ((progress - lastProgress >= 0.01) || time - lastTime >= 1000){
+                lastProgress = progress;
+                lastTime = time;
+                Listener.fireEvent(Listener.PROGRESS,
+                        new FloatEvent((float) progress * 100f));
+            }
         }
     }
     
@@ -42,7 +47,7 @@ public class Progress {
         addProgress(1 - progress); 
         progress = 1;
         if (parent == null) {
-            Listener.fireEvent(Listener.PROGRESS, new NumberEvent(100));
+            Listener.fireEvent(Listener.PROGRESS, new FloatEvent(100));
         }
     }
     

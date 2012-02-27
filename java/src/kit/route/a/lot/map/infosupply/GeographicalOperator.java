@@ -1,7 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -97,7 +97,7 @@ public interface GeographicalOperator {
      * @param stream the source stream.
      * @throws IOException a stream read error occurred
      */
-    public void loadFromStream(DataInputStream stream) throws IOException;
+    public void loadFromInput(DataInput input) throws IOException;
     
     /**
      * Saves the geographic representation of a map to the stream.
@@ -105,7 +105,7 @@ public interface GeographicalOperator {
      * @param stream the destination stream.
      * @throws IOException a stream write error occurred
      */
-    public void saveToStream(DataOutputStream stream) throws IOException;
+    public void saveToOutput(DataOutput output) throws IOException;
     
     /**
      * Reduces memory consumption by trimming all internal capacities to the actually used size.

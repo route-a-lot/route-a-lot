@@ -1,7 +1,7 @@
 package kit.route.a.lot.common;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -94,22 +94,22 @@ public class StringTrie {
 
     }//end ksort 
 
-    public static StringTrie loadFromStream(DataInputStream stream) throws IOException {      
+    public static StringTrie loadFromInput(DataInput input) throws IOException {      
         StringTrie result = new StringTrie();
-        int treeSize = stream.readInt();
+        int treeSize = input.readInt();
         for(int i = 0; i < treeSize; i++) {
-            result.tree.add(MapElement.loadFromInput(stream, true));
+            result.tree.add(MapElement.loadFromInput(input, true));
         }
-        result.maxLength = stream.readInt();
+        result.maxLength = input.readInt();
         return result;
     }
     
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        stream.writeInt(tree.size());
+    public void saveToOutput(DataOutput output) throws IOException {
+        output.writeInt(tree.size());
         for(MapElement element: tree) {
-            MapElement.saveToOutput(stream, element, true);
+            MapElement.saveToOutput(output, element, true);
         }
-        stream.writeInt(maxLength);          
+        output.writeInt(maxLength);          
     }
     
 }

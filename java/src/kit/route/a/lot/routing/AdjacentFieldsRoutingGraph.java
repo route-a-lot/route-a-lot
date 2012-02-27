@@ -1,7 +1,7 @@
 package kit.route.a.lot.routing;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -177,49 +177,49 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     }
 
     @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
-        if (stream == null) {
+    public void loadFromInput(DataInput input) throws IOException {
+        if (input == null) {
             throw new IllegalArgumentException();
         }
-        int nodeCount = stream.readInt();
+        int nodeCount = input.readInt();
         edgesPos = new int[nodeCount];
         areaID = new byte[nodeCount];
         for (int i = 0; i < nodeCount; i++) {
-            edgesPos[i] = stream.readInt();         
+            edgesPos[i] = input.readInt();         
         }
         for (int i = 0; i < nodeCount-1; i++) {
-            areaID[i] = stream.readByte();        
+            areaID[i] = input.readByte();        
         }        
-        int edgeCount = stream.readInt();
+        int edgeCount = input.readInt();
         edges = new int[edgeCount];
         weights = new int[edgeCount];
         arcFlags = new long[edgeCount];
         monitors = new Object[edgeCount];
         for (int i = 0; i < edgeCount; i++) {
-            edges[i] = stream.readInt();
-            weights[i] = stream.readInt();
-            arcFlags[i] = stream.readLong();
+            edges[i] = input.readInt();
+            weights[i] = input.readInt();
+            arcFlags[i] = input.readLong();
             monitors[i] = new Object();
         }
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        if (stream == null) {
+    public void saveToOutput(DataOutput output) throws IOException {
+        if (output == null) {
             throw new IllegalArgumentException();
         }
-        stream.writeInt(edgesPos.length);
+        output.writeInt(edgesPos.length);
         for (int pos: edgesPos) {
-            stream.writeInt(pos);       
+            output.writeInt(pos);       
         }
         for (byte id: areaID) {
-            stream.writeByte(id);       
+            output.writeByte(id);       
         }
-        stream.writeInt(edges.length);
+        output.writeInt(edges.length);
         for (int i = 0; i < edges.length; i++) {
-            stream.writeInt(edges[i]);
-            stream.writeInt(weights[i]);
-            stream.writeLong(arcFlags[i]);
+            output.writeInt(edges[i]);
+            output.writeInt(weights[i]);
+            output.writeLong(arcFlags[i]);
         }
     }
     

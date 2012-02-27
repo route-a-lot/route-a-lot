@@ -39,21 +39,21 @@ public class MapIO {
             throw new IllegalStateException("No map initialized!");
         }
         // Open file stream, abort on failure
-        DataInputStream stream = new DataInputStream(new BufferedInputStream(
+        DataInputStream input = new DataInputStream(new BufferedInputStream(
                 new ProgressInputStream(new FileInputStream(file), p, file.length())));
         
         // Read data from stream, abort on error
-        if ((stream.readChar() != 'S') || (stream.readChar() != 'R')
-                || (stream.readChar() != 'A') || (stream.readChar() != 'L')) {
+        if ((input.readChar() != 'S') || (input.readChar() != 'R')
+                || (input.readChar() != 'A') || (input.readChar() != 'L')) {
             throw new IOException("Is not a map file: " + file.getName());
         }
-        if (!stream.readUTF().equals("0.5")) {
+        if (!input.readUTF().equals("0.5")) {
             throw new IOException("Wrong format version: " + file.getName());
         } 
 
-        state.getLoadedMapInfo().loadFromStream(stream);
-        state.getLoadedGraph().loadFromStream(stream);
-        stream.close();
+        state.getLoadedMapInfo().loadFromInput(input);
+        state.getLoadedGraph().loadFromInput(input);
+        input.close();
     }
 
     /**
@@ -78,20 +78,20 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        DataOutputStream stream = new DataOutputStream(
+        DataOutputStream output = new DataOutputStream(
                 new BufferedOutputStream(new FileOutputStream(file)));
         
         // Write data to stream, abort on error
-        stream.writeChars("SRAL");  // magic number
-        stream.writeUTF("0.5");     // version number
+        output.writeChars("SRAL");  // magic number
+        output.writeUTF("0.5");     // version number
         // TODO: maybe add date or name
         p.addProgress(0.05);
         logger.info("save map info...");
-        state.getLoadedMapInfo().saveToStream(stream);
+        state.getLoadedMapInfo().saveToOutput(output);
         p.addProgress(0.7);
         logger.info("save graph...");
-        state.getLoadedGraph().saveToStream(stream); 
-        stream.close();     
+        state.getLoadedGraph().saveToOutput(output); 
+        output.close();     
         logger.info("map saving finished");
         p.addProgress(0.25);
     }

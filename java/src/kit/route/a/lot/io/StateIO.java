@@ -40,7 +40,7 @@ public class StateIO {
         // essential data
         String path = stream.readUTF();
         state.setLoadedMapFile((path == null) ? null : new File(path));
-        Coordinates center = Coordinates.loadFromStream(stream);
+        Coordinates center = Coordinates.loadFromInput(stream);
         int detailLevel = stream.readInt();
         if (LOAD_POSITION) {
             state.setCenterCoordinates(center);
@@ -50,7 +50,7 @@ public class StateIO {
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
         for (int i = 0; i < len; i++) {
-            navNodes.add(new Selection(Coordinates.loadFromStream(stream),
+            navNodes.add(new Selection(Coordinates.loadFromInput(stream),
                     stream.readInt(), stream.readInt(),
                     stream.readFloat(), stream.readUTF()));
         }
@@ -92,13 +92,13 @@ public class StateIO {
             stream.writeUTF(state.getLoadedMapFile().getPath());
         }
         
-        state.getCenterCoordinates().saveToStream(stream);
+        state.getCenterCoordinates().saveToOutput(stream);
         stream.writeInt(state.getDetailLevel());
         
         List<Selection> navNodes = state.getNavigationNodes();
         stream.writeInt(navNodes.size());
         for (Selection navNode: navNodes) {
-            navNode.getPosition().saveToStream(stream);
+            navNode.getPosition().saveToOutput(stream);
             stream.writeInt(navNode.getFrom());
             stream.writeInt(navNode.getTo());
             stream.writeFloat(navNode.getRatio());

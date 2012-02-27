@@ -1,11 +1,10 @@
 package kit.route.a.lot.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
 
-import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.routing.RoutingGraph;
 
 
@@ -69,28 +68,28 @@ public class GraphMock implements RoutingGraph {
     }
 
     @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
-        if (stream == null) {
+    public void loadFromInput(DataInput input) throws IOException {
+        if (input == null) {
             throw new IllegalArgumentException();
         }
-        int nodeCount = stream.readInt();
+        int nodeCount = input.readInt();
         for (int i = 0; i < nodeCount; i++) {
-            startIDs[i] = stream.readInt();         
-            endIDs[i] = stream.readInt(); 
-            weights[i] = stream.readInt(); 
+            startIDs[i] = input.readInt();         
+            endIDs[i] = input.readInt(); 
+            weights[i] = input.readInt(); 
         }
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {  
-        if (stream == null) {
+    public void saveToOutput(DataOutput output) throws IOException {  
+        if (output == null) {
             throw new IllegalArgumentException();
         }
-        stream.writeInt(startIDs.length);
+        output.writeInt(startIDs.length);
         for (int i = 0; i < startIDs.length; i++) {
-            stream.writeInt(startIDs[i]);
-            stream.writeInt(endIDs[i]);
-            stream.writeInt(weights[i]);
+            output.writeInt(startIDs[i]);
+            output.writeInt(endIDs[i]);
+            output.writeInt(weights[i]);
         }
     }
 

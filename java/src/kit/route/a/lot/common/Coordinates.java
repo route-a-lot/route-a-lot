@@ -1,7 +1,7 @@
 package kit.route.a.lot.common;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 
 public class Coordinates {
@@ -122,16 +122,16 @@ public class Coordinates {
     }
     
     
-    public static Coordinates loadFromStream(DataInputStream stream) throws IOException {
+    public static Coordinates loadFromInput(DataInput input) throws IOException {
         Coordinates result = new Coordinates();
-        result.latitude = stream.readFloat();
-        result.longitude = stream.readFloat();
+        result.latitude = input.readFloat();
+        result.longitude = input.readFloat();
         return result;
     }
     
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        stream.writeFloat(this.latitude);
-        stream.writeFloat(this.longitude);
+    public void saveToOutput(DataOutput output) throws IOException {
+        output.writeFloat(this.latitude);
+        output.writeFloat(this.longitude);
     }
     
 }

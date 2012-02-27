@@ -1,8 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.awt.Color;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,24 +28,17 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     private static final float BASE_LAYER_MULTIPLIER = 3;
     private static final int NUM_LEVELS = 9;
+    public static boolean DRAW_FRAMES = false;
+    
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     private QuadTree zoomlevels[] = new QuadTree[NUM_LEVELS];
+    
     
     public QTGeographicalOperator() {
         setBounds(new Coordinates(), new Coordinates());
     }
     
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof QTGeographicalOperator)) {
-            return false;
-        }
-        QTGeographicalOperator comparee = (QTGeographicalOperator) other;
-        return java.util.Arrays.equals(zoomlevels, comparee.zoomlevels);
-        
-    }
+    
     @Override
     public void setBounds(Coordinates topLeft, Coordinates bottomRight) {
         zoomlevels = new QuadTree[NUM_LEVELS];
@@ -136,7 +129,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
             logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
             logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         }*/    
-        if (QTGeographicalOperator.drawFrames) {
+        if (QTGeographicalOperator.DRAW_FRAMES) {
             State.getInstance().getActiveRenderer().addFrameToDraw(upLeft, bottomRight, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
@@ -187,9 +180,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
 //        State.getInstance().getActiveRenderer().redraw();
         return sel;
     }
-    
-    public static boolean drawFrames = false;
-    
+       
     /**
      * Selects the map element nearest to the given position, taking all map elements
      * within a search radius into consideration.
@@ -240,19 +231,19 @@ public class QTGeographicalOperator implements GeographicalOperator {
           
 
     @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
+    public void loadFromInput(DataInput input) throws IOException {
         logger.debug("Loading " + zoomlevels.length + " zoomlevels...");
         for(int i = 0; i < zoomlevels.length; i++) {
             logger.trace("load zoom level " + i + "...");
-            zoomlevels[i] = QuadTree.loadFromStream(stream);
+            zoomlevels[i] = QuadTree.loadFromInput(input);
         }
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {
+    public void saveToOutput(DataOutput output) throws IOException {
         for(int i = 0; i < zoomlevels.length; i++) {
             logger.info("save zoom level " + i + "...");
-            QuadTree.saveToStream(stream, zoomlevels[i]);
+            QuadTree.saveToOutput(output, zoomlevels[i]);
         }
     }
     
@@ -271,4 +262,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
         System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
     }
     
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof QTGeographicalOperator)) {
+            return false;
+        }
+        QTGeographicalOperator comparee = (QTGeographicalOperator) other;
+        return java.util.Arrays.equals(zoomlevels, comparee.zoomlevels);
+        
+    }
 }

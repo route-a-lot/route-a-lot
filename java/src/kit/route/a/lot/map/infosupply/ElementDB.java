@@ -1,8 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.util.ArrayList;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -57,7 +57,7 @@ public interface ElementDB {
      * @param stream the source stream
      * @throws IOException a stream read error occurred
      */
-    public void loadFromStream(DataInputStream stream) throws IOException;
+    public void loadFromInput(DataInput input) throws IOException;
 
     /**
      * Saves all id stored elements to the given stream. 
@@ -65,7 +65,7 @@ public interface ElementDB {
      * @param stream the destination stream
      * @throws IOException a stream write error occurred
      */
-    public void saveToStream(DataOutputStream stream) throws IOException;
+    public void saveToOutput(DataOutput output) throws IOException;
     
     public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius);
     

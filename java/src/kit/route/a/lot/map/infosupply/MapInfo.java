@@ -1,8 +1,9 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.io.BufferedInputStream;
+import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataOutput;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -304,29 +305,29 @@ public class MapInfo {
     /**
      * Loads the map from the given stream.
      * 
-     * @param stream the source stream.
+     * @param input the source stream.
      * @throws IOException a stream read error occurred
      */
-    public void loadFromStream(DataInputStream stream) throws IOException {
-        geoTopLeft = Coordinates.loadFromStream(stream);
-        geoBottomRight = Coordinates.loadFromStream(stream);
-        elementDB.loadFromStream(stream);
-        geographicalOperator.loadFromStream(stream);
-        addressOperator.loadFromStream(stream);
+    public void loadFromInput(DataInput input) throws IOException {
+        geoTopLeft = Coordinates.loadFromInput(input);
+        geoBottomRight = Coordinates.loadFromInput(input);
+        elementDB.loadFromInput(input);
+        geographicalOperator.loadFromInput(input);
+        addressOperator.loadFromInput(input);
     }
 
     /**
      * Saves the map to the given stream.
      * 
-     * @param stream the destination stream.
+     * @param output the destination stream.
      * @throws IOException a stream write error occurred
      */
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        geoTopLeft.saveToStream(stream);
-        geoBottomRight.saveToStream(stream);
-        elementDB.saveToStream(stream);
-        geographicalOperator.saveToStream(stream);
-        addressOperator.saveToStream(stream);
+    public void saveToOutput(DataOutput output) throws IOException {
+        geoTopLeft.saveToOutput(output);
+        geoBottomRight.saveToOutput(output);
+        elementDB.saveToOutput(output);
+        geographicalOperator.saveToOutput(output);
+        addressOperator.saveToOutput(output);
     }
     
     public void lastElementAdded() {
@@ -336,7 +337,8 @@ public class MapInfo {
         ((FileElementDB) elementDB).lastElementAdded();
         elementDB = new ArrayElementDB();
         try {
-            elementDB.loadFromStream(new DataInputStream(new BufferedInputStream(new FileInputStream(outputFile))));
+            elementDB.loadFromInput(new DataInputStream(
+                    new BufferedInputStream(new FileInputStream(outputFile))));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

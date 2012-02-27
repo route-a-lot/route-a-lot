@@ -68,7 +68,7 @@ public class OSMLoader {
      *            the osm File to be imported
      * @param progress 
      */
-    public void importMap(File file, final Progress p) {
+    public void importMap(File file, Progress p) {
         // TODO handle progress
         logger.info("Importing " + file);
         SAXParserFactory factory = SAXParserFactory.newInstance();

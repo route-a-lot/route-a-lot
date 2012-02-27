@@ -45,7 +45,7 @@ public class RouteIO {
         }
         File mapFile = State.getInstance().getLoadedMapFile();
         if (mapFile == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalStateException();
         }
         Projection projection = ProjectionFactory.getCurrentProjection();
         MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
@@ -56,8 +56,8 @@ public class RouteIO {
         int len = stream.readInt();
         ArrayList<Selection> navNodes = new ArrayList<Selection>(len);  
         for (int i = 0; i < len; i++) {
-            Coordinates pos = projection.getLocalCoordinates(Coordinates.loadFromStream(stream));
-            Selection selection = Selection.loadFromStream(stream);
+            Coordinates pos = projection.getLocalCoordinates(Coordinates.loadFromInput(stream));
+            Selection selection = Selection.loadFromInput(stream);
             navNodes.add((isSameMap) ? selection : mapInfo.select(pos));
         }
         State.getInstance().setNavigationNodes(navNodes);
@@ -86,8 +86,8 @@ public class RouteIO {
         stream.writeUTF(mapFile.getName());
         stream.writeInt(navNodes.size());
         for (Selection navNode: navNodes) {
-            projection.getGeoCoordinates(navNode.getPosition()).saveToStream(stream);
-            navNode.saveToStream(stream);
+            projection.getGeoCoordinates(navNode.getPosition()).saveToOutput(stream);
+            navNode.saveToOutput(stream);
         }
         stream.close();
     }

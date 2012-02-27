@@ -1,7 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,49 +100,49 @@ public class ArrayElementDB implements ElementDB {
 
     
     @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
+    public void loadFromInput(DataInput input) throws IOException {
         logger.debug("load node array...");
-        int len = stream.readInt();
+        int len = input.readInt();
         Node[] nodesArray = new Node[len];
         for (int i = 0; i < len; i++) {
-            Node node = (Node) MapElement.loadFromInput(stream, false);
+            Node node = (Node) MapElement.loadFromInput(input, false);
             nodesArray[node.getID()] = node;
         }
         nodes = new ArrayList<Node>(Arrays.asList(nodesArray));
         logger.debug("load map element array...");
-        len = stream.readInt();
+        len = input.readInt();
         mapElements = new ArrayList<MapElement>(len);
         for (int i = 0; i < len; i++) {
-            MapElement element = MapElement.loadFromInput(stream, false);
+            MapElement element = MapElement.loadFromInput(input, false);
             mapElements.add(element);
             element.assignID(i);
         }
         logger.debug("load favorite array...");
-        len = stream.readInt();
+        len = input.readInt();
         favorites = new ArrayList<POINode>(len);
         for (int i = 0; i < len; i++) {
-            POINode favorite = (POINode) MapElement.loadFromInput(stream, false);
+            POINode favorite = (POINode) MapElement.loadFromInput(input, false);
             nodes.add(favorite);
             favorite.assignID(i); // TODO: necessary?
         }
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {  
+    public void saveToOutput(DataOutput output) throws IOException {  
         logger.info("save node array...");
-        stream.writeInt(nodes.size());
+        output.writeInt(nodes.size());
         for (Node node: nodes) {
-            MapElement.saveToOutput(stream, node, false);
+            MapElement.saveToOutput(output, node, false);
         }
         logger.info("save map element array...");
-        stream.writeInt(mapElements.size());
+        output.writeInt(mapElements.size());
         for (MapElement element: mapElements) {
-            MapElement.saveToOutput(stream, element, false);
+            MapElement.saveToOutput(output, element, false);
         }
         logger.info("save favorite array...");
-        stream.writeInt(favorites.size());
+        output.writeInt(favorites.size());
         for (POINode favorite: favorites) {
-            MapElement.saveToOutput(stream, favorite, false);
+            MapElement.saveToOutput(output, favorite, false);
         }
     }
 

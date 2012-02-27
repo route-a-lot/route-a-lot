@@ -1,10 +1,8 @@
 package kit.route.a.lot.common;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
-
-import kit.route.a.lot.map.Node;
 
 
 public class Selection {
@@ -67,17 +65,17 @@ public class Selection {
     	    return "Selection from " + fromID + " to " + toID;
     	}
     	
-        public static Selection loadFromStream(DataInputStream stream) throws IOException {
-            return new Selection(Coordinates.loadFromStream(stream),
-                    stream.readInt(), stream.readInt(),
-                    stream.readFloat(), stream.readUTF());
+        public static Selection loadFromInput(DataInput input) throws IOException {
+            return new Selection(Coordinates.loadFromInput(input),
+                    input.readInt(), input.readInt(),
+                    input.readFloat(), input.readUTF());
         }
         
-        public void saveToStream(DataOutputStream stream) throws IOException {
-            position.saveToStream(stream);
-            stream.writeInt(fromID);
-            stream.writeInt(toID);
-            stream.writeFloat(ratio);
-            stream.writeUTF(name); 
+        public void saveToOutput(DataOutput output) throws IOException {
+            position.saveToOutput(output);
+            output.writeInt(fromID);
+            output.writeInt(toID);
+            output.writeFloat(ratio);
+            output.writeUTF(name); 
         }
 }

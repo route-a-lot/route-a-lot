@@ -5,7 +5,6 @@ import static javax.media.opengl.GL.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.media.opengl.GL;
@@ -24,8 +23,6 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.Street;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.map.rendering.Renderer;
 

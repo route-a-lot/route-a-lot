@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,7 +37,8 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             randAccessFile = new RandomAccessFile(outputFile, "rw");
             nodePositionFile = File.createTempFile("nodePositions", ".bin");
             nodePositionFile.deleteOnExit();
-            nodePositionStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nodePositionFile)));
+            nodePositionStream = new DataOutputStream(new BufferedOutputStream(
+                    new FileOutputStream(nodePositionFile)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -133,12 +135,12 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
+    public void loadFromInput(DataInput input) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {
+    public void saveToOutput(DataOutput output) throws IOException {
         throw new UnsupportedOperationException();
     }
 

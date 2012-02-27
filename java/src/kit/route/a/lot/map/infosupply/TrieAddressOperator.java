@@ -1,8 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,13 +56,13 @@ public class TrieAddressOperator implements AddressOperator {
     }
 
     @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
-        mapElements = StringTrie.loadFromStream(stream);
+    public void loadFromInput(DataInput input) throws IOException {
+        mapElements = StringTrie.loadFromInput(input);
     }
 
     @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        mapElements.saveToStream(stream);
+    public void saveToOutput(DataOutput output) throws IOException {
+        mapElements.saveToOutput(output);
     }
     
     public boolean equals(Object other) {

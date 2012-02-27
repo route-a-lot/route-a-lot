@@ -1,11 +1,10 @@
 package kit.route.a.lot.routing;
 
-import java.io.DataInputStream;import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import kit.route.a.lot.common.Progress;
 
 
 public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
@@ -83,14 +82,7 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
         // TODO Auto-generated method stub
         return null;
     }
-    @Override
-    public void loadFromStream(DataInputStream stream) throws IOException {
-        // TODO Auto-generated method stub
-    }
-    @Override
-    public void saveToStream(DataOutputStream stream) throws IOException {
-        // TODO Auto-generated method stub
-    }
+
     @Override
     public byte getAreaID(int node) {
         // TODO Auto-generated method stub
@@ -156,6 +148,20 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
 
     @Override
     public void setAllArcFlags() {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void loadFromInput(DataInput input) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    @Override
+    public void saveToOutput(DataOutput output) throws IOException {
         // TODO Auto-generated method stub
         
     }

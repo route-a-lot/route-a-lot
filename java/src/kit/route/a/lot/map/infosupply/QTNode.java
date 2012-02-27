@@ -1,8 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.awt.Color;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -121,16 +121,16 @@ public class QTNode extends QuadTree {
     }
 
     @Override
-    protected void load(DataInputStream stream) throws IOException {
+    protected void load(DataInput input) throws IOException {
         for (int i = 0; i < 4; i++) {
-            children[i] = QuadTree.loadFromStream(stream);
+            children[i] = QuadTree.loadFromInput(input);
         }
     }
 
     @Override
-    protected void save(DataOutputStream stream) throws IOException {
+    protected void save(DataOutput output) throws IOException {
         for (QuadTree child: children) {
-            QuadTree.saveToStream(stream, child);
+            QuadTree.saveToOutput(output, child);
         }
     }
 
@@ -138,7 +138,7 @@ public class QTNode extends QuadTree {
     protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements, boolean exact) {
         if (isInBounds(upLeft, bottomRight)) {
-            if (QTGeographicalOperator.drawFrames) {
+            if (QTGeographicalOperator.DRAW_FRAMES) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.black);
             }
             for(QuadTree qt : children) {
