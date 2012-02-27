@@ -77,7 +77,7 @@ public class RendererPerformanceTest {
         nodes[2] = node3;
         nodes[3] = node4;
         street.setNodes(nodes);
-        mapInfo.addMapElement(street);
+        mapInfo.addToBaseLayer(street);
         long start = System.currentTimeMillis();
         renderer.render(context);
         long duration = System.currentTimeMillis() - start;

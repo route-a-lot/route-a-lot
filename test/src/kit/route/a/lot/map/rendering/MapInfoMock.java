@@ -10,20 +10,24 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class MapInfoMock extends MapInfo {
     
-    private Collection<MapElement> elements = new ArrayList<MapElement>();
+    private Collection<MapElement> baseLayer = new ArrayList<MapElement>();
     private Collection<MapElement> overlay = new ArrayList<MapElement>();
     
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {
-        return elements;
+    public void addToBaseLayer(MapElement element) {
+        baseLayer.add(element);
     }
     
-    public void addMapElement(MapElement element) {
-        System.out.println("vor addElement");
-        System.out.println(elements.add(element));
-        System.out.println("size: "+ elements.size());
+    public void addToOverlay(MapElement element) {
+        overlay.add(element);
     }
     
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight) {  
+    @Override
+    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        return baseLayer;
+    }
+    
+    @Override
+    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exakt) {  
         return overlay;
     }
 }

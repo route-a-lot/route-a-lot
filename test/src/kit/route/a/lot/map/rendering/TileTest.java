@@ -1,6 +1,7 @@
 package kit.route.a.lot.map.rendering;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.map.Node;
 
 import org.junit.Test;
@@ -33,6 +34,34 @@ public class TileTest {
         assertArrayEquals(expectedNodesMedium, mediumTile.getRelevantNodesForStreet(allNodes));
         assertArrayEquals(expectedNodesSmall, smallTile.getRelevantNodesForStreet(allNodes));
         assertArrayEquals(expectedNodesOther, otherTile.getRelevantNodesForStreet(allNodes));
+    }
+    
+    @Test
+    public void testPrerenderPerformance() {
+        MapInfoMock mapInfoMock = new MapInfoMock();;
+        Tile myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
+        long start;
+        long duration;
+        for (int count = 1; count < 1000000; count *= 7) {
+            mapInfoMock = new MapInfoMock();
+            myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
+            fillMapInfoMock(mapInfoMock, count, new Coordinates(0, 0), new Coordinates(100, 100));
+            start = System.nanoTime();
+            myTile.prerender();
+            duration = System.nanoTime() - start;
+            System.out.println("Prerendering " + count + " elements took " + Util.formatNanoSeconds(duration));
+        }
+    }
+    
+    private void fillMapInfoMock(MapInfoMock mapInfoMock, int nElements, Coordinates topLeft, Coordinates bottomRight) {
+        MapElementGenerator generator = new MapElementGenerator();
+        for (int i = 0; i < nElements; i++) {
+            if (Math.random() < 0.73) {
+                mapInfoMock.addToBaseLayer(generator.generateStreetInBounds(topLeft, bottomRight));
+            } else {
+                mapInfoMock.addToBaseLayer(generator.generateBuildingInBounds(topLeft, bottomRight));
+            }
+        }
     }
 
 }

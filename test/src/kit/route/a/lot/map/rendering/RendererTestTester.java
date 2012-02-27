@@ -71,7 +71,7 @@ public class RendererTestTester {
         nodes[2] = node3;
         nodes[3] = node4;
         street.setNodes(nodes);
-        mapInfo.addMapElement(street);
+        mapInfo.addToBaseLayer(street);
         renderer.render(context);
        
         label.repaint();

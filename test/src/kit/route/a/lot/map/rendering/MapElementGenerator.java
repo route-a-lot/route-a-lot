@@ -78,5 +78,36 @@ public class MapElementGenerator {
         Node node = new Node(coordinates);
         return node;
     }
+    
+    public Node generateNodeInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        double latitude = (bottomRight.getLatitude() - topLeft.getLatitude()) * Math.random() + topLeft.getLatitude();
+        double longitude = (bottomRight.getLongitude() - topLeft.getLongitude()) * Math.random() + topLeft.getLongitude();
+        return new Node(new Coordinates((float) latitude, (float) longitude));
+    }
+    
+    public Street generateStreetInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        Street street = generateStreet();
+        Node[] nodes = new Node[(int) Math.random() * 12];
+        for (int i = 0; i < nodes.length; i++) {
+            nodes[i] = generateNodeInBounds(topLeft, bottomRight);
+        }
+        street.setNodes(nodes);
+        return street;
+    }
+    
+    public Area generateBuildingInBounds(Coordinates topLeft, Coordinates bottomRight) {
+        WayInfo wayInfo = new WayInfo();
+        wayInfo.setBuilding(true);
+        Area area = new Area(null, wayInfo);
+        Node[] nodes = new Node[(int) Math.random() * 8 + 1];
+        nodes[0] = generateNodeInBounds(topLeft, bottomRight);
+        for (int i = 1; i < nodes.length - 1; i++) {
+            nodes[i] = generateNodeInBounds(nodes[i - 1].getPos(),
+                    nodes[i - 1].getPos().clone().add((float) (10 * (Math.random() - 0.5)), (float) (10 * (Math.random() - 0.5))));
+        }
+        nodes[nodes.length - 1] = nodes[0];
+        area.setNodes(nodes);
+        return area;
+    }
 
 }
