@@ -153,6 +153,9 @@ public class RouteIO {
             Projection projection = ProjectionFactory.getCurrentProjection();
             MapInfo mapInfo = state.getMapInfo();
             for (int i = 0; i < route.size(); i++) {
+                if (route.get(i) == -1) {
+                    continue;
+                }
                 Coordinates localCoordinates = mapInfo.getNode(route.get(i)).getPos();
                 Coordinates geoCoordinates = projection.getGeoCoordinates(localCoordinates);
                 
