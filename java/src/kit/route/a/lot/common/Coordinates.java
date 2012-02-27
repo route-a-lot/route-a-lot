@@ -48,6 +48,11 @@ public class Coordinates {
                 && (Math.abs(longitude - pos.longitude) < 0.005f);
     }
     
+    /**
+     * Adds summands latitude to latitude and summands longitude to longitude and returns this.
+     * @param summand
+     * @return
+     */
     public Coordinates add(Coordinates summand) {
         if (summand != null) {
             latitude += summand.latitude;
@@ -55,13 +60,26 @@ public class Coordinates {
         }
         return this;
     }
-    
+
+    /**
+     * Adds addLat to latitude and addLon to the longitude and returns this.
+     * 
+     * @param addLat
+     * @param addLon
+     * @return
+     */
     public Coordinates add(float addLat, float addLon) {
         latitude += addLat;
         longitude += addLon;
         return this;
     }
     
+    /**
+     * Subtracts subtrahends latitude from latitude and subtrahends longitude from longitude and returns this.
+     * 
+     * @param subtrahend
+     * @return
+     */
     public Coordinates subtract(Coordinates subtrahend) {
         if (subtrahend != null) {
             latitude -= subtrahend.latitude;
@@ -70,12 +88,22 @@ public class Coordinates {
         return this;
     }
     
+    /**
+     * Multiplies latitude and longitude by factor and sets them to this products.
+     * 
+     * @param factor
+     * @return this
+     */
     public Coordinates scale(float factor) {
         latitude *= factor;
         longitude *= factor;
         return this;
     }
        
+    /**
+     * Normalizes the vector represented by this object.
+     * @return this
+     */
     public Coordinates normalize() {
         double length = getLength();
         latitude /= length;
@@ -83,6 +111,10 @@ public class Coordinates {
         return this;
     }
     
+    /**
+     * Sets latitude to -latitude and longitude to -longitude.
+     * @return this
+     */
     public Coordinates invert() {
         latitude = -latitude;
         longitude = -longitude;

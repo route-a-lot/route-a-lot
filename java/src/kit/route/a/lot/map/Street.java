@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
@@ -39,18 +40,16 @@ public class Street extends MapElement implements Comparable<Street> {
 
     @Override
     public boolean equals(Object other) {
-        if(other == this) {
+        if (other == this) {
             return true;
         }
-        if(!(other instanceof Street)) {
+        if (!(other instanceof Street)) {
             return false;
         }
         Street comparee = (Street) other;
-        return nodes.equals(comparee.nodes)
-                && name == comparee.name
-                && wayInfo.equals(comparee.wayInfo);
+        return nodes.equals(comparee.nodes) && name == comparee.name && wayInfo.equals(comparee.wayInfo);
     }
-    
+
     @Override
     public String getName() {
         return (this.name != null) ? this.name : "";
@@ -76,8 +75,11 @@ public class Street extends MapElement implements Comparable<Street> {
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
         boolean inBounds = false;
         int i = 1;
+        int drawingSize = getDrawingSize();
+        Coordinates extendedTopLeft = topLeft.clone().add(-drawingSize, -drawingSize);
+        Coordinates extendedBottomRight = bottomRight.clone().add(drawingSize, drawingSize);
         while (i < nodes.length && inBounds == false) {
-            if (isEdgeInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), topLeft, bottomRight)) {
+            if (isEdgeInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), extendedTopLeft, extendedBottomRight)) {
                 inBounds = true;
             }
             i++;
@@ -92,10 +94,10 @@ public class Street extends MapElement implements Comparable<Street> {
                         node2.getLatitude());
         // coord.sys. begins in upper left corner
         Rectangle2D.Float box =
-                new Rectangle2D.Float(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()), Math.min(
-                        topLeft.getLatitude(), bottomRight.getLatitude()), Math.abs(bottomRight
-                        .getLongitude() - topLeft.getLongitude()), Math.abs(topLeft.getLatitude()
-                        - bottomRight.getLatitude()));
+                new Rectangle2D.Float(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()) - 10,
+                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()) - 10, Math.abs(bottomRight
+                                .getLongitude() - topLeft.getLongitude()) + 20, Math.abs(topLeft
+                                .getLatitude() - bottomRight.getLatitude()) + 20);
         return box.contains(node1.getLongitude(), node1.getLatitude())
                 || box.contains(node2.getLongitude(), node2.getLatitude()) || box.intersectsLine(edge);
         // TODO pos -> neg (e.g. -180° -> 180°)
@@ -105,8 +107,8 @@ public class Street extends MapElement implements Comparable<Street> {
     public Selection getSelection(Coordinates pos) {
         int start = getClosestEdgeStartPosition(pos);
         Coordinates geoPos = ProjectionFactory.getCurrentProjection().getGeoCoordinates(pos);
-        return new Selection(pos, nodes[start].getID(), nodes[start + 1].getID(),
-                getRatio(start, start + 1, pos), (name != null) ? name : geoPos.toString());
+        return new Selection(pos, nodes[start].getID(), nodes[start + 1].getID(), getRatio(start, start + 1,
+                pos), (name != null) ? name : geoPos.toString());
     }
 
 
@@ -178,11 +180,11 @@ public class Street extends MapElement implements Comparable<Street> {
         double pos1LalRad = Math.toRadians(Math.abs(geoPos1.getLatitude()));
         double pos2LongRad = Math.toRadians(Math.abs(geoPos2.getLongitude()));
         double pos2LalRad = Math.toRadians(Math.abs(geoPos2.getLatitude()));
-        
+
         double distanceRad =
                 Math.acos(Math.sin(pos1LalRad) * Math.sin(pos2LalRad) + Math.cos(pos1LalRad)
                         * Math.cos(pos2LalRad) * Math.cos(pos1LongRad - pos2LongRad)); // distance in deg
-        
+
         return distanceRad * 6371001; // 6371001 is the mean earth radius in meter
     }
 
@@ -194,8 +196,8 @@ public class Street extends MapElement implements Comparable<Street> {
         double angleBC = Math.acos((b * b + c * c - a * a) / (2 * b * c));
         double angleAC = Math.acos((a * a + c * c - b * b) / (2 * a * c));
         if (angleBC > Math.PI / 2 || angleAC > Math.PI / 2) {
-            if (Coordinates.getDistance(nodes[startNode].getPos(), pos)
-                    < Coordinates.getDistance(nodes[endNode].getPos(), pos)) {
+            if (Coordinates.getDistance(nodes[startNode].getPos(), pos) < Coordinates.getDistance(
+                    nodes[endNode].getPos(), pos)) {
                 return 0.0f;
             } else {
                 return 1.0f;
@@ -245,7 +247,7 @@ public class Street extends MapElement implements Comparable<Street> {
             return result;
         }
     }
-    
+
     public static Node[] simplifyNodes(Node[] nodes, float range) {
         if (nodes.length <= 1) {
             return nodes;
@@ -281,41 +283,80 @@ public class Street extends MapElement implements Comparable<Street> {
         }
         return length;
     }
-    
-    public boolean equals(Street other){
 
-        if(name.equals(other.getName()) ){
+    public boolean equals(Street other) {
+
+        if (name.equals(other.getName())) {
             return true;
         }
         return false;
     }
 
-    public int compareTo(Street other){
+    public int compareTo(Street other) {
         int value;
         int otherValue;
         String otherName = other.getName();
         int minlength = otherName.length();
-        if(name.length() < minlength){
+        if (name.length() < minlength) {
             minlength = name.length();
         }
 
-        for(int i = 0; i < minlength; i++){
-            value = Character.getNumericValue( name.charAt(i) );
-            if(value < 0 || value > 25){value = 25;}
-            otherValue = Character.getNumericValue( otherName.charAt(i) );
-            if(value < 0 || otherValue > 25){otherValue = 25;}
-            if(value > otherValue){
+        for (int i = 0; i < minlength; i++) {
+            value = Character.getNumericValue(name.charAt(i));
+            if (value < 0 || value > 25) {
+                value = 25;
+            }
+            otherValue = Character.getNumericValue(otherName.charAt(i));
+            if (value < 0 || otherValue > 25) {
+                otherValue = 25;
+            }
+            if (value > otherValue) {
                 return value - otherValue;
-            } else if(value < otherValue) {
+            } else if (value < otherValue) {
                 return value - otherValue;
-            }               
+            }
         }
 
-        /*wenn Präfix gleich aber dieser String kürzer 
-                  steht er lexikographisch weiter vorne*/
+        /*
+         * wenn Präfix gleich aber dieser String kürzer steht er lexikographisch weiter vorne
+         */
         return name.length() - otherName.length();
     }
 
-    
-    
+    public static int getStreetDrawingSize(WayInfo wayInfo) {
+        int basicSize = 10;
+        switch (wayInfo.getType()) {
+            case OSMType.HIGHWAY_MOTORWAY:
+            case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
+            case OSMType.HIGHWAY_MOTORWAY_LINK:
+                basicSize = 40;
+                break;
+            case OSMType.HIGHWAY_PRIMARY:
+            case OSMType.HIGHWAY_PRIMARY_LINK:
+                basicSize = 30;
+                break;
+            case OSMType.HIGHWAY_SECONDARY:
+            case OSMType.HIGHWAY_SECONDARY_LINK:
+                basicSize = 22;
+                break;
+            case OSMType.HIGHWAY_TERTIARY:
+            case OSMType.HIGHWAY_TERTIARY_LINK:
+                basicSize = 20;
+                break;
+            case OSMType.HIGHWAY_RESIDENTIAL:
+            case OSMType.HIGHWAY_LIVING_STREET:
+            case OSMType.HIGHWAY_UNCLASSIFIED:
+                basicSize = 18;
+                break;
+            case OSMType.HIGHWAY_CYCLEWAY:
+                basicSize = 15;
+                break;
+        }
+        return basicSize;
+    }
+
+    public int getDrawingSize() {
+        return getStreetDrawingSize(wayInfo);
+    }
+
 }

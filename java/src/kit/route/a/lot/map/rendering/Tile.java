@@ -220,7 +220,6 @@ public class Tile {
         int[] yPoints = new int[nPoints];
 
         WayInfo wayInfo = street.getWayInfo();
-        int basicSize = 10;
 
         // set colors
         if (top) {
@@ -244,33 +243,7 @@ public class Tile {
         }
 
         // set size
-        switch (wayInfo.getType()) {
-            case OSMType.HIGHWAY_MOTORWAY:
-            case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
-            case OSMType.HIGHWAY_MOTORWAY_LINK:
-                basicSize = 40;
-                break;
-            case OSMType.HIGHWAY_PRIMARY:
-            case OSMType.HIGHWAY_PRIMARY_LINK:
-                basicSize = 30;
-                break;
-            case OSMType.HIGHWAY_SECONDARY:
-            case OSMType.HIGHWAY_SECONDARY_LINK:
-                basicSize = 22;
-                break;
-            case OSMType.HIGHWAY_TERTIARY:
-            case OSMType.HIGHWAY_TERTIARY_LINK:
-                basicSize = 20;
-                break;
-            case OSMType.HIGHWAY_RESIDENTIAL:
-            case OSMType.HIGHWAY_LIVING_STREET:
-            case OSMType.HIGHWAY_UNCLASSIFIED:
-                basicSize = 18;
-                break;
-            case OSMType.HIGHWAY_CYCLEWAY:
-                basicSize = 15;
-                break;
-        }
+        int basicSize = street.getDrawingSize();
         int size = basicSize / Projection.getZoomFactor(detailLevel);
         if (!top) {
             graphics.setStroke(new BasicStroke(size + 2/(float)Math.pow(detailLevel + 1, 0.8), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -287,7 +260,7 @@ public class Tile {
         graphics.drawPolyline(xPoints, yPoints, nPoints);
                
     }
-  
+
     private void drawPoint(Coordinates globalCoordinates, int size) {
         Coordinates localCoordinates = getLocalCoordinates(globalCoordinates);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
@@ -376,7 +349,7 @@ public class Tile {
         int nPoints = nodes.length;
         
         float streetNameLength = graphics.getFontMetrics().stringWidth(curAddress.getStreet());
-        double streetNameDistance = 512 / Math.sqrt(Projection.getZoomFactor(detailLevel));
+        double streetNameDistance = 512;
 
         graphics.setColor(Color.DARK_GRAY);
         graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
