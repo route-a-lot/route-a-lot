@@ -139,9 +139,7 @@ public class GUI extends JFrame {
         JButton buttonSwitchMapMode = new JButton("2D/3D");
         buttonSwitchMapMode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (active) {
-                    Listener.fireEvent(SWITCH_MAP_MODE, null);   
-                }
+                Listener.fireEvent(SWITCH_MAP_MODE, null);   
             }
         });
 
@@ -199,7 +197,7 @@ public class GUI extends JFrame {
             public void handleEvent(Event e) {
                 float progress = ((FloatEvent) e).getNumber();
                 setActive(progress < 0 || progress >= 100);
-                int time = (int)((System.nanoTime() - taskStartTime) / 1000000000
+                int time = (int)((System.currentTimeMillis() - taskStartTime) / 1000
                                     * ((100 - progress) / progress));
                 progressBar.setValue(Util.clip((int) progress, 0, 100));
                 progressBar.setString((active) ? "" : progressBar.getValue()
@@ -748,16 +746,12 @@ public class GUI extends JFrame {
     }
     
     private void startTask() {
-        taskStartTime = System.nanoTime();
+        taskStartTime = System.currentTimeMillis();
     }
     
     private void setActive(boolean value) {
         active = value;
-        buttonAddNavNode.setEnabled(value);
-        buttonOptimizeRoute.setEnabled(value);
-        buttonImportOSM.setEnabled(value);
-        buttonActivateMap.setEnabled(value);
-        buttonDeleteMap.setEnabled(value);
+        setEnabled(value);     
     }
     
     private boolean getUserConfirmation() {

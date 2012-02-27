@@ -154,8 +154,7 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             
             nodePositionRAF.seek(id1 * 8);  // 8 == length of long
             long posNode1 = nodePositionRAF.readLong();
-            randAccessFile.seek(posNode1);
-            randAccessFile.readByte();
+            randAccessFile.seek(posNode1 + 1);
             randAccessFile.writeInt(id2);
             nodePositionRAF.seek(id2 * 8);
             long posNode2 = nodePositionRAF.readLong();
@@ -163,8 +162,7 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
             nodePositionRAF.writeLong(posNode1);
             nodePositionRAF.seek(id1 * 8);
             nodePositionRAF.writeLong(posNode2);
-            randAccessFile.seek(posNode2);
-            randAccessFile.readByte();
+            randAccessFile.seek(posNode2 + 1);
             randAccessFile.writeInt(id1);
             
             randAccessFile.seek(posOnEntering);
