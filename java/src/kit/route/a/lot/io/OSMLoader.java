@@ -1015,7 +1015,7 @@ public class OSMLoader {
         for (int i = 0; i < countIDs; i++) {
             startIDs[i] = startIds.get(i);
             endIDs[i] = endIds.get(i);
-            weights[i] = weightCalculator.calcWeight(startIDs[i], endIDs[i]);
+            weights[i] = weightCalculator.calcWeightWithHeight(startIDs[i], endIDs[i]);
         }
 
         int countUniqueIDs = uniqueEdgeStartIds.size();

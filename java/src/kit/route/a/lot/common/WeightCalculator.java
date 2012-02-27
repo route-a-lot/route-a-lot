@@ -32,7 +32,7 @@ public class WeightCalculator {
      *            -
      * @return int
      */
-    public int calcHeightWeight(int fromID, int toID) {
+    public int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
         Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
         IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
@@ -41,12 +41,10 @@ public class WeightCalculator {
         float fromHeight = heightmap.getHeight(from) / 100;
         float toHeight = heightmap.getHeight(to) / 100;
         
-        float heightDifference = 0;
+        float heightDifference = Math.abs(fromHeight - toHeight);
         
-        
-        
-        float weight = 0;
-        return (int) weight;
+        int weight = (int) Math.sqrt(Math.pow(flatWeight, 2) + Math.pow(heightDifference, 2));
+        return weight;
     }// end calcHeightWeight
 
 
