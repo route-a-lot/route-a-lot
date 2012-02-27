@@ -17,7 +17,7 @@ public class ProjectionFactory {
      * @return the projection for the current map
      */
     public static Projection getCurrentProjection() {
-        Coordinates topLeft = State.getInstance().getLoadedMapInfo().getGeoTopLeft();
+        Coordinates topLeft = State.getInstance().getMapInfo().getGeoTopLeft();
         return getNewProjection(topLeft, null);
         // Coordinates bottomRight = State.getInstance().getLoadedMapInfo().getGeoBottomRight();
         // return getNewProjection(topLeft, bottomRight);

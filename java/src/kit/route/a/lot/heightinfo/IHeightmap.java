@@ -1,13 +1,8 @@
 package kit.route.a.lot.heightinfo;
 
-import java.util.Set;
-
 import kit.route.a.lot.common.Coordinates;
 
 public interface IHeightmap {
-
-
-    public Set<HeightTile> getTiles(Coordinates upLeft, Coordinates bottomRight);
 
     public float getHeight(Coordinates pos);
 

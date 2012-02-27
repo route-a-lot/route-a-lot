@@ -67,9 +67,9 @@ public class TileMock {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        Collection<MapElement> map = state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight);
+        Collection<MapElement> map = state.getMapInfo().getBaseLayer(detail, topLeft, bottomRight);
         /*-----für Test-----------*/
-        System.out.println(state.getLoadedMapInfo().getBaseLayer(detail, topLeft, bottomRight).size());
+        System.out.println(state.getMapInfo().getBaseLayer(detail, topLeft, bottomRight).size());
         //long middle = System.nanoTime();
 
         for (MapElement element : map) {

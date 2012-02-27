@@ -1,9 +1,7 @@
 package kit.route.a.lot.heightinfo;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 
@@ -27,30 +25,6 @@ public class Heightmap implements IHeightmap {
         Heightmap comparee = (Heightmap) other;
         return map.equals(comparee.map);
     }
-
-    @Override
-    public Set<HeightTile> getTiles(Coordinates upLeft, Coordinates bottomRight) {
-
-        Set<HeightTile> tiles = new HashSet<HeightTile>();
-
-        float maxlat = (float) Math.floor(upLeft.getLatitude());
-        float minlon = (float) Math.floor(upLeft.getLongitude());
-        float minlat = (float) Math.floor(bottomRight.getLatitude());
-        float maxlon = (float) Math.floor(bottomRight.getLongitude());
-
-        for (int i = (int) maxlat; i <= (int) minlat; i++) {
-            for (int j = (int) minlon; j <= (int) maxlon; j++) {
-                Coordinates origin = new Coordinates((float) i, (float) j);
-                HeightTile tmpTile = new RAMHeightTile(0, 0, origin);
-                for (HeightTile tile : map) {
-                    if (tile.equals(tmpTile)) {
-                        tiles.add(tile);
-                    }// end if
-                }// end while
-            }// end for
-        }// end for
-        return tiles;
-    }// end getTiles
 
     @Override
     public float getHeight(Coordinates pos) {

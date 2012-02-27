@@ -3,6 +3,7 @@ package kit.route.a.lot.map.infosupply;
 import static org.junit.Assert.*;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
@@ -22,20 +23,13 @@ public class TestElementDB {
     
     @BeforeClass
     public static void setUpClass() {
+        State.getInstance().resetMap();
         PropertyConfigurator.configure("config/log4j.conf");
     }
 
     @Before
     public void setUp() throws Exception {
         elements = new ArrayElementDB();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-    
-    @Test
-    public void testAdGet() {
         for(int i = 0; i < 10; i++) {
             Node node = new Node(new Coordinates(0.0f + i, 0.0f +i));
             MapElement element1 = new MapElementGenerator().generateStreet();
@@ -47,6 +41,14 @@ public class TestElementDB {
             elements.addMapElement(element2);
             elements.addNode(i, node);
         }
+    }
+
+    @After
+    public void tearDown() throws Exception {
+    }
+    
+    @Test
+    public void testAdGet() {
         assertTrue(elements.getNode(1).getPos().getLatitude() == 1.0f && elements.getNode(1).getPos().getLongitude() == 1.0f);
         assertEquals(1,elements.getFavorites().get(1).getID());
         assertEquals(6 ,elements.getMapElement(6).getID());

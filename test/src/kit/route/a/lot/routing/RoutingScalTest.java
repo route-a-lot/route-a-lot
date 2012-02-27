@@ -30,7 +30,7 @@ public class RoutingScalTest {
         graph = State.getInstance().getLoadedGraph();
     }
     
-    @Test
+//    @Test
     public void routingFromAToB() {
         int tries = 10000;
         double startTime;

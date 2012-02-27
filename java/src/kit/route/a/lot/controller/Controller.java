@@ -290,7 +290,7 @@ public class Controller {
             System.gc();
             new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.005));
             Precalculator.precalculate(p.createSubProgress(0.994));
-            state.getLoadedMapInfo().compactifyDatastructures();
+            state.getMapInfo().compactifyDatastructures();
             state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
                     + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {
@@ -365,7 +365,7 @@ public class Controller {
     }
       
     private void addNavNode(Coordinates pos, int position) {
-        Selection newSel = state.getLoadedMapInfo().select(pos);
+        Selection newSel = state.getMapInfo().select(pos);
         if (newSel != null) {
             if (position == 0 && state.getNavigationNodes().size() > 1) {
                 state.getNavigationNodes().remove(0);
@@ -385,7 +385,7 @@ public class Controller {
     }
     
     private void addNavNode(String name, int position) {
-        Selection newSel = state.getLoadedMapInfo().select(name);
+        Selection newSel = state.getMapInfo().select(name);
         if (newSel != null) {
             if (position == 0 && state.getNavigationNodes().size() > 1) {
                 state.getNavigationNodes().remove(0);
@@ -405,7 +405,7 @@ public class Controller {
     }
 
     private void getNavNodeFromText(String str) {
-        Selection sel = state.getLoadedMapInfo().select(str);
+        Selection sel = state.getMapInfo().select(str);
         if (sel != null) {
             state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, sel);
             guiHandler.updateNavNodes(state.getNavigationNodes());
@@ -456,12 +456,12 @@ public class Controller {
 
     
     private void addFavorite(Coordinates pos, String name, String description) {  
-        state.getLoadedMapInfo().addFavorite(pos, new POIDescription(name, OSMType.FAVOURITE, description));
+        state.getMapInfo().addFavorite(pos, new POIDescription(name, OSMType.FAVOURITE, description));
         guiHandler.updateGUI();
     }
 
     private void deleteFavorite(Coordinates pos) {
-        state.getLoadedMapInfo().deleteFavorite(pos, state.getDetailLevel(), state.getClickRadius());
+        state.getMapInfo().deleteFavorite(pos, state.getDetailLevel(), state.getClickRadius());
         guiHandler.updateGUI();
     }
 
@@ -479,12 +479,12 @@ public class Controller {
                 return;
             }
         }    
-        if (state.getLoadedMapInfo().getPOIDescription(pos,
+        if (state.getMapInfo().getPOIDescription(pos,
                 state.getClickRadius(), state.getDetailLevel()) != null) {
             guiHandler.passElementType(POI);
             return;
         } 
-        if(state.getLoadedMapInfo().getFavoriteDescription(pos,
+        if(state.getMapInfo().getFavoriteDescription(pos,
                 state.getDetailLevel(), state.getClickRadius()) != null) {
             guiHandler.passElementType(FAVORITE);
             return;
@@ -493,10 +493,10 @@ public class Controller {
     }
     
     private void passDescription(Coordinates pos) {   
-        POIDescription description = state.getLoadedMapInfo()
+        POIDescription description = state.getMapInfo()
             .getFavoriteDescription(pos, state.getDetailLevel(), state.getClickRadius());
         if (description == null) {
-            description = state.getLoadedMapInfo()
+            description = state.getMapInfo()
                 .getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel());
         }
         if (description != null) {
@@ -505,7 +505,7 @@ public class Controller {
     }
 
     private void passSearchCompletion(String str) {
-        guiHandler.showSearchCompletion(state.getLoadedMapInfo().suggestCompletions(str));
+        guiHandler.showSearchCompletion(state.getMapInfo().suggestCompletions(str));
     }
     
     private void passTextRoute() {   //TODO
@@ -554,12 +554,12 @@ public class Controller {
     }
     
     private void setViewToMapCenter() {
-        if (state.getLoadedMapInfo() == null) {
+        if (state.getMapInfo() == null) {
             return;
         }
         Coordinates upLeft = new Coordinates();
         Coordinates bottomRight = new Coordinates();
-        state.getLoadedMapInfo().getBounds(upLeft, bottomRight);
+        state.getMapInfo().getBounds(upLeft, bottomRight);
         state.setCenterCoordinates(Coordinates.interpolate(upLeft, bottomRight, 0.5f));
         guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());
     }

@@ -35,7 +35,7 @@ public class MapIO {
             throw new IllegalArgumentException();
         }
         State state = State.getInstance();
-        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)) {
+        if ((state.getMapInfo() == null) || (state.getLoadedGraph() == null)) {
             throw new IllegalStateException("No map initialized!");
         }
         // Open file stream, abort on failure
@@ -51,7 +51,7 @@ public class MapIO {
             throw new IOException("Wrong format version: " + file.getName());
         } 
 
-        state.getLoadedMapInfo().loadFromInput(input);
+        state.getMapInfo().loadFromInput(input);
         state.getLoadedGraph().loadFromInput(input);
         input.close();
     }
@@ -73,7 +73,7 @@ public class MapIO {
             throw new IllegalArgumentException();
         }
         State state = State.getInstance();
-        if ((state.getLoadedMapInfo() == null) || (state.getLoadedGraph() == null)) {
+        if ((state.getMapInfo() == null) || (state.getLoadedGraph() == null)) {
             throw new IllegalStateException("No map loaded!");
         }
         
@@ -87,7 +87,7 @@ public class MapIO {
         // TODO: maybe add date or name
         p.addProgress(0.05);
         logger.info("save map info...");
-        state.getLoadedMapInfo().saveToOutput(output);
+        state.getMapInfo().saveToOutput(output);
         p.addProgress(0.7);
         logger.info("save graph...");
         state.getLoadedGraph().saveToOutput(output); 

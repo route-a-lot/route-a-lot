@@ -110,7 +110,7 @@ public class Area extends MapElement {
         this.name = EMPTY.equals(name) ? null : name;
         int len = input.readInt();
         this.nodes = new Node[len];
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         for (int i = 0; i < len; i++) {        
             this.nodes[i] = mapInfo.getNode(input.readInt());
         }

@@ -110,7 +110,7 @@ public abstract class MapElement{
             throw new IllegalArgumentException();
         }
         MapElement result;
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         byte descriptor = input.readByte();
         switch (descriptor) {
             case DESCRIPTOR_POI: result = (asID) ? mapInfo.getNode(input.readInt()) : new POINode(); break;

@@ -49,11 +49,11 @@ public abstract class HeightTile {
     }
 
     public void setHeight(Coordinates pos, int height) {
-        float latDiff = pos.getLatitude() - origin.getLatitude();
-        float lonDiff = pos.getLongitude() - origin.getLongitude();
-        int x = tileWidth * (int) lonDiff;
-        int y = height * (int) latDiff;    
-        setHeight(x, y, height);
+//        float latDiff = pos.getLatitude() - origin.getLatitude();
+//        float lonDiff = pos.getLongitude() - origin.getLongitude();
+//        int x = tileWidth * (int) lonDiff;
+//        int y = height * (int) latDiff;    
+//        setHeight(x, y, height);
     }
 
     public boolean equals(HeightTile other) {

@@ -62,7 +62,7 @@ public class Node extends MapElement {
 
     @Override
     public Selection getSelection() { //TODO: verify
-        return State.getInstance().getLoadedMapInfo().select(getPos());
+        return State.getInstance().getMapInfo().select(getPos());
     }
 
 

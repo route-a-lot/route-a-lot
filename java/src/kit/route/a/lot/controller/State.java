@@ -70,7 +70,7 @@ public class State {
     public static State getInstance() {
         return singleton;
     }
-
+    
     public File getLoadedMapFile() {
         return this.loadedMapFile;
     }
@@ -80,12 +80,12 @@ public class State {
     }
 
 
-    public MapInfo getLoadedMapInfo() {
+    public MapInfo getMapInfo() {
         return loadedMapInfo;
     }
 
-    public void setLoadedMapInfo(MapInfo loadedMapInfo) {
-        this.loadedMapInfo = loadedMapInfo;
+    public void setMapInfo(MapInfo mapInfo) {
+        this.loadedMapInfo = mapInfo;
     }
 
 

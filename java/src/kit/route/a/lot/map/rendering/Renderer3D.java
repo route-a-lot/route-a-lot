@@ -223,7 +223,7 @@ public class Renderer3D extends Renderer {
     }
     
     private List<Coordinates> getRouteCoordinates(List<Integer> routeIDs, List<Selection> navNodes) {
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         List<Coordinates> result = new ArrayList<Coordinates>();
         int k = 0;
         for (int i = -1; i < routeIDs.size(); i++) {

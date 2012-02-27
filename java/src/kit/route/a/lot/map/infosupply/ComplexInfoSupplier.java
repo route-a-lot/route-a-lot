@@ -23,7 +23,7 @@ public class ComplexInfoSupplier {
         }
         int length = 0;
         int navNode = 1;
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         if (route.get(0) == navNodes.get(0).getTo()) {
             length += (navNodes.get(navNode).getRatio()) *
                     Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNode).getFrom()),
@@ -79,13 +79,13 @@ public class ComplexInfoSupplier {
     private static Street giveMeCurrentStreet(int index, ArrayList<Integer> route) {
         boolean found = false;
         int i = index;
-        ArrayList<Street> pointStreets= getStreet(State.getInstance().getLoadedMapInfo().getNodePosition(route.get(index)));
+        ArrayList<Street> pointStreets= getStreet(State.getInstance().getMapInfo().getNodePosition(route.get(index)));
         if (i  == route.size() - 1 || pointStreets.size() == 1) {
             found = true;
         }
         i++;
         while(index < route.size() && found == false) {
-            ArrayList<Street> nextStreets = getStreet(State.getInstance().getLoadedMapInfo().getNodePosition(route.get(i)));
+            ArrayList<Street> nextStreets = getStreet(State.getInstance().getMapInfo().getNodePosition(route.get(i)));
             if (pointStreets.size() == 1) {
                 return pointStreets.get(0);
             } else {
@@ -106,7 +106,7 @@ public class ComplexInfoSupplier {
     
     //returns the streets, which the point of this position is part of
     private static ArrayList<Street> getStreet(Coordinates position) {
-        Collection<MapElement> elements = State.getInstance().getLoadedMapInfo().getBaseLayerForPositionAndRadius(position, 1, true);
+        Collection<MapElement> elements = State.getInstance().getMapInfo().getBaseLayerForPositionAndRadius(position, 1, true);
         ArrayList<Street> streets = new ArrayList<Street>();
         for (MapElement element : elements) {
             if (element instanceof Street) {

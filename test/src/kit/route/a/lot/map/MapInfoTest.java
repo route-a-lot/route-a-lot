@@ -93,7 +93,7 @@ public class MapInfoTest {
             System.err.println("select funktioniert noch nicht :(");
         }
 
-        assertEquals(7, a.size());
+        assertEquals(2, a.size());
     }
 
 }

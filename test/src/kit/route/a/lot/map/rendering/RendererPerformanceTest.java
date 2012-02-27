@@ -55,7 +55,7 @@ public class RendererPerformanceTest {
         fenster.setVisible(true);
         fenster.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         renderer = new RendererMock();
-        mapInfo = (MapInfoMock)renderer.state.getLoadedMapInfo();
+        mapInfo = (MapInfoMock)renderer.state.getMapInfo();
         topLeft = new Coordinates(0f,0f);
         bottomRight = new Coordinates(40f,40f);
         zoomLevel = 0;

@@ -48,7 +48,7 @@ public class RouteIO {
             throw new IllegalStateException();
         }
         Projection projection = ProjectionFactory.getCurrentProjection();
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         
         // read from stream, use either selections or geo coordinates, depending on the current map
         DataInputStream stream = new DataInputStream(new FileInputStream(file));
@@ -151,7 +151,7 @@ public class RouteIO {
             
             StringBuilder coordinatesSB = new StringBuilder();
             Projection projection = ProjectionFactory.getCurrentProjection();
-            MapInfo mapInfo = state.getLoadedMapInfo();
+            MapInfo mapInfo = state.getMapInfo();
             for (int i = 0; i < route.size(); i++) {
                 Coordinates localCoordinates = mapInfo.getNode(route.get(i)).getPos();
                 Coordinates geoCoordinates = projection.getGeoCoordinates(localCoordinates);

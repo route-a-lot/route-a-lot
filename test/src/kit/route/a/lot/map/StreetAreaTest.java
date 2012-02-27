@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.controller.State;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
@@ -21,6 +22,7 @@ public class StreetAreaTest {
     @BeforeClass
     public static void setUpClass() {
         PropertyConfigurator.configure("config/log4j.conf");
+        State.getInstance().resetMap();
     }
 
     @Before
@@ -70,8 +72,8 @@ public class StreetAreaTest {
     
     @Test
     public void testReduce() {
-        assertTrue(((Street) street.getReduced(5, 5)).getNodes().length < street.getNodes().length);
-        assertTrue(((Area) area.getReduced(5, 5)).getNodes().length < area.getNodes().length);
+        assertTrue(((Street) street.getReduced(5, 5)).getNodes().length <= street.getNodes().length);
+        assertTrue(((Area) area.getReduced(5, 5)).getNodes().length <= area.getNodes().length);
     }
     
     @Test

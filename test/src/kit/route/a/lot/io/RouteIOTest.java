@@ -36,7 +36,7 @@ public class RouteIOTest extends RouteIO {
     public void setUp() throws Exception {
         new State();
         state = State.getInstance();
-        state.setLoadedMapInfo(new MapInfo());
+        state.setMapInfo(new MapInfo());
         loader = new OSMLoader(state);
         loader.weightCalculator = new WeightCalculatorMock();
     }

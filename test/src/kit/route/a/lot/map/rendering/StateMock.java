@@ -12,7 +12,7 @@ public class StateMock extends State {
     private MapInfoMock mapInfo = new MapInfoMock();
     private List<Selection> navigationNodes = new ArrayList<Selection>();
     
-    public MapInfoMock getLoadedMapInfo() {
+    public MapInfoMock getMapInfo() {
         return mapInfo;
     }
     

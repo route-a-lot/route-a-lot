@@ -114,7 +114,7 @@ public class OSMLoaderTest {
     public void testNonContinuous() {
         loader.importMap(new File("test/resources/testmaps/non-continuous.osm"), new Progress());
         assertEquals(2, state.getNodeCount());
-        assertEquals(1, state.getWayCount());
+        assertEquals(0, state.getWayCount());
     }
     
     @Test

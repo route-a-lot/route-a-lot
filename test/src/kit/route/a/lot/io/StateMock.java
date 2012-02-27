@@ -33,7 +33,7 @@ class StateMock extends State {
     }
     
     @Override
-    public MapInfo getLoadedMapInfo() {
+    public MapInfo getMapInfo() {
         return loadedMapInfo;
     }
     

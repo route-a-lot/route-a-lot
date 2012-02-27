@@ -34,6 +34,7 @@ public class RoutingAndGraphTest {
 
     @BeforeClass
     public static void initialize() {
+        State.getInstance().resetMap();
         PropertyConfigurator.configure("config/log4j.conf");
         loader = new OSMLoader(State.getInstance());
         simpleRoutingState = new RoutingStateMock();

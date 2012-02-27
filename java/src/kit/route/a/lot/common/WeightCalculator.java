@@ -33,8 +33,8 @@ public class WeightCalculator {
      * @return int
      */
     public int calcHeightWeight(int fromID, int toID) {
-        Coordinates from = State.getInstance().getLoadedMapInfo().getNodePosition(fromID);
-        Coordinates to = State.getInstance().getLoadedMapInfo().getNodePosition(toID);
+        Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
+        Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
         IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
         /*
          * verbesserter Pythagoras, für kleine Entfernungen ausreichend, Abstand Breitenkreise 111.3km,
@@ -59,8 +59,8 @@ public class WeightCalculator {
 
 
     public int calcWeight(int fromID, int toID) {
-        Coordinates from = State.getInstance().getLoadedMapInfo().getNodePosition(fromID);
-        Coordinates to = State.getInstance().getLoadedMapInfo().getNodePosition(toID);
+        Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
+        Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
 
         Coordinates geoFrom = projection.getGeoCoordinates(from);
         Coordinates geoTo = projection.getGeoCoordinates(to);

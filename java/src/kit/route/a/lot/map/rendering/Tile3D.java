@@ -161,7 +161,7 @@ public class Tile3D extends Tile {
     
     
     private void renderPOIs(GL gl) {
-        Collection<MapElement> elements = State.getInstance().getLoadedMapInfo()
+        Collection<MapElement> elements = State.getInstance().getMapInfo()
                     .getOverlay(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;

@@ -124,7 +124,7 @@ public class Renderer {
      * Draws the given route on the given rendering context.
      */
     private void drawRoute(Context2D context, int detail) {
-        MapInfo mapInfo = state.getLoadedMapInfo();
+        MapInfo mapInfo = state.getMapInfo();
         Integer[] route = state.getCurrentRoute().toArray(new Integer[state.getCurrentRoute().size()]);
         List<Selection> navPoints = state.getNavigationNodes();
                
@@ -352,7 +352,7 @@ public class Renderer {
      * Draws the map overlay for the current context.
      */
     private void drawOverlay(Context2D context, int detail) {
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         Collection<MapElement> elements = mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight(), false); // TODO test if true is faster
 
         int size = 8;

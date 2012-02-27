@@ -139,9 +139,9 @@ public class OSMLoader {
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
         projection = ProjectionFactory.getNewProjection(topLeft, bottomRight);
-        state.getLoadedMapInfo().setBounds(projection.getLocalCoordinates(topLeft),
+        state.getMapInfo().setBounds(projection.getLocalCoordinates(topLeft),
                 projection.getLocalCoordinates(bottomRight));
-        state.getLoadedMapInfo().setGeoTopLeft(topLeft);
+        state.getMapInfo().setGeoTopLeft(topLeft);
         logger.debug("Finished calculating bounds: topLeft=" + topLeft + ", bottomRight=" + bottomRight);
 
         osmIds = new long[nodeCount];
@@ -900,7 +900,7 @@ public class OSMLoader {
                             int curId = curWayIds.get(i);
                             if (curId > maxWayNodeId) {
                                 maxWayNodeId++;
-                                state.getLoadedMapInfo().swapNodeIds(curId, maxWayNodeId);
+                                state.getMapInfo().swapNodeIds(curId, maxWayNodeId);
                                 long osmId1 = osmIds[curId];
                                 long osmId2 = osmIds[maxWayNodeId];
                                 idMap.remove(osmId1);
@@ -954,7 +954,7 @@ public class OSMLoader {
                     }
                     
                     if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
-                        state.getLoadedMapInfo().addWay(curWayIds, curWayName, curWayInfo);
+                        state.getMapInfo().addWay(curWayIds, curWayName, curWayInfo);
                     }
 
                     inWay = false;
@@ -966,10 +966,10 @@ public class OSMLoader {
 
                     if (curType != 0) {
                         curNodePOIDescription.setCategory(curType);
-                        state.getLoadedMapInfo().addPOI(curNodeCoordinates, curNodeId, curNodePOIDescription,
+                        state.getMapInfo().addPOI(curNodeCoordinates, curNodeId, curNodePOIDescription,
                                 curAddress);
                     } else {
-                        state.getLoadedMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
+                        state.getMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
                     }
 
                     inNode = false;
@@ -1002,7 +1002,7 @@ public class OSMLoader {
             e.printStackTrace();
         }
         
-        state.getLoadedMapInfo().lastElementAdded();
+        state.getMapInfo().lastElementAdded();
         
         weightCalculator.setProjection(projection);
 

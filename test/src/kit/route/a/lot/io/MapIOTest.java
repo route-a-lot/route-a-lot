@@ -46,7 +46,7 @@ public class MapIOTest {
         // Controller.setViewToMapCenter() externalized:
         Coordinates upLeft = new Coordinates();
         Coordinates bottomRight = new Coordinates();
-        state.getLoadedMapInfo().getBounds(upLeft, bottomRight);
+        state.getMapInfo().getBounds(upLeft, bottomRight);
         Coordinates center = new Coordinates();
         center.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
         center.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
@@ -56,13 +56,13 @@ public class MapIOTest {
         } catch (IOException e) {
             assertTrue(false && true);
         }
-        MapInfo original = state.getLoadedMapInfo();
-        state.setLoadedMapInfo(new MapInfo());
+        MapInfo original = state.getMapInfo();
+        state.setMapInfo(new MapInfo());
         try {
             MapIO.loadMap(sralMap, p.createSubProgress(1));
         } catch (IOException e) {
             assertFalse(false || true);
         }
-        assertTrue(original.equals(state.getLoadedMapInfo()));
+        assertTrue(original.equals(state.getMapInfo()));
     }
 }

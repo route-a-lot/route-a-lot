@@ -210,7 +210,7 @@ public class Street extends MapElement implements Comparable<Street> {
         setName(input.readUTF());
         int len = input.readInt();
         nodes = new Node[len];
-        MapInfo mapInfo = State.getInstance().getLoadedMapInfo();
+        MapInfo mapInfo = State.getInstance().getMapInfo();
         for (int i = 0; i < len; i++) {
             nodes[i] = mapInfo.getNode(input.readInt());
         }
