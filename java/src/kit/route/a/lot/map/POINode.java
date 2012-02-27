@@ -18,6 +18,7 @@ public class POINode extends Node {
     
     public POINode(Coordinates position, POIDescription description){
         super(position);
+        this.info = description;
     }
     
     public POINode(int id) {

@@ -1,16 +1,15 @@
 package kit.route.a.lot.map.infosupply;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
-import kit.route.a.lot.map.rendering.MapElementGenerator;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
