@@ -28,11 +28,12 @@ public class StreetAreaTest {
     @Before
     public void setUp() throws Exception {
         area = new Area("See", new WayInfo());
-        Node[] areaNode = new Node[4];
+        Node[] areaNode = new Node[5];
         areaNode[0] = new Node(new Coordinates(1.0f, 1.0f));
         areaNode[1] = new Node(new Coordinates(5.0f, 1.0f));
         areaNode[2] = new Node(new Coordinates(5.0f, 5.0f));
-        areaNode[3] = new Node(new Coordinates(1.0f, 5.0f));
+        areaNode[3] = new Node(new Coordinates(3.0f, 5.0f));
+        areaNode[4] = new Node(new Coordinates(1.0f, 5.0f));
         area.setNodes(areaNode);
         street = new Street("Parkstraße", new WayInfo());
         Node[] streetNode = new Node[4];
@@ -72,8 +73,8 @@ public class StreetAreaTest {
     
     @Test
     public void testReduce() {
-        assertTrue(((Street) street.getReduced(5, 5)).getNodes().length <= street.getNodes().length);
-        assertTrue(((Area) area.getReduced(5, 5)).getNodes().length <= area.getNodes().length);
+        assertEquals(2, ((Street) street.getReduced(5, 2)).getNodes().length);
+        assertEquals(4, ((Area) area.getReduced(5, 2)).getNodes().length);
     }
     
     @Test

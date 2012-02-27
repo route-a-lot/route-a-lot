@@ -5,6 +5,11 @@ import java.util.Collection;
 import kit.route.a.lot.common.Coordinates;
 
 public interface RenderCache {
+    
+    /**
+     * Maximum number of entries in the cache
+     */
+    public static final int CACHE_SIZE = 196;
 
     /**
      * Returns the tile for the given tile specifier if it is in the cache.

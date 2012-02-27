@@ -57,10 +57,6 @@ public class WayInfo {
     public static final byte ACCESS_FORESTRY = 4;
     public static final byte ACCESS_AGRICULTURAL = 4;
 
-    public static enum Access {
-        YES, FORESTRY, AGRICULTURAL, PRIVATE, DESTINATION, NO
-    }
-
     public static final byte SURFACE_PAVED = 1;
     public static final byte SURFACE_UNPAVED = 2;
     public static final byte SURFACE_ASPHALT = 3;

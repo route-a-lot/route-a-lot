@@ -26,6 +26,6 @@ public class ProjectionTest {
         Coordinates testCoordinates = new Coordinates(49.2f, 8.3f);
         Coordinates local = projection.getLocalCoordinates(testCoordinates);
         Coordinates geo = projection.getGeoCoordinates(local);
-        assertEquals(testCoordinates, geo);
+        assertTrue(testCoordinates.equals(geo));
     }
 }

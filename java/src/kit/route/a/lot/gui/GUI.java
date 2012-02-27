@@ -373,7 +373,7 @@ public class GUI extends JFrame {
     private void createMapTab() {
         // COMPONENTS
         JLabel captionHighwayMalus = new JLabel("Fernstraßenmalus");
-        highwayMalusSlider = new JSlider(1, 5, 1);
+        highwayMalusSlider = new JSlider(0, 4, 0);
         highwayMalusSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
         highwayMalusSlider.setMajorTickSpacing(1);
         highwayMalusSlider.setPaintTicks(true);
@@ -386,7 +386,7 @@ public class GUI extends JFrame {
         });
 
         JLabel captionReliefMalus = new JLabel("Reliefmalus");
-        reliefMalusSlider = new JSlider(1, 5, 1);
+        reliefMalusSlider = new JSlider(0, 4, 0);
         reliefMalusSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
         reliefMalusSlider.setMajorTickSpacing(1);
         reliefMalusSlider.setPaintTicks(true);

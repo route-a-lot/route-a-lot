@@ -40,10 +40,6 @@ public class MapInfoTest {
         info = new MapInfo(topLeft, bottomRight);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void test() {
         info.addNode(new Coordinates(2f, 2f), 0, new Address());
@@ -58,7 +54,6 @@ public class MapInfoTest {
         info.addNode(new Coordinates(11.0f, 11.0f), 9, new Address());
         info.addNode(new Coordinates(10.0f, 12.0f), 10, new Address());
         info.addNode(new Coordinates(12.0f, 20.0f), 11, new Address());
-
 
         ArrayList<Integer> ids = new ArrayList<Integer>();
         ids.add(0);
@@ -77,21 +72,10 @@ public class MapInfoTest {
         WayInfo street = new WayInfo();
         street.setStreet(true);
         info.addWay(ids, "Hubert Straße", street);
-
         info.addWay(aids, "Fußballplatz", new WayInfo());
 
         Collection<MapElement> a =
                 info.getBaseLayer(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f), false);
-        // System.out.println(a.size());
-        for (MapElement ele : a) {
-            System.out.println(ele);
-        }
-        Selection sel = info.select(bottomRight);
-        if (sel != null) {
-            // System.out.println(sel);
-        } else {
-            System.err.println("select funktioniert noch nicht :(");
-        }
 
         assertEquals(2, a.size());
     }

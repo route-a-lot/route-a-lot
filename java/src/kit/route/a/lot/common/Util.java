@@ -78,35 +78,6 @@ public class Util {
         return filename.substring(0, extensionIndex);
     }
     
-    
-    
-    
-    
-    public static void getFaceNormal(float[] norm, float[] pa, float[] pb, float[] pc) {
-        float[] v1 = new float[] {pb[0]-pa[0], pb[1]-pa[1], pb[2]-pa[2]};
-        float[] v2 = new float[] {pc[0]-pa[0], pc[1]-pa[1], pc[2]-pa[2]};
-        crossProduct(norm, v1, v2);
-        normalize(norm);
-    }
-    
-    private static void crossProduct(float[] c, float[] a, float[] b) {  
-        c[0] = a[1]*b[2] - b[1]*a[2];
-        c[1] = a[2]*b[0] - b[2]*a[0];
-        c[2] = a[0]*b[1] - b[0]*a[1];
-    }
-    
-    public static void normalize(float[] vec) {
-        float length = (float) Math.sqrt(vec[0]*vec[0]+vec[1]*vec[1]+vec[2]*vec[2]);
-        for (int a = 0; a < 3; a++) {
-            vec[a] /= length;
-        }
-    }
-    
-    public static float map(float value, float bottom, float top, float newbottom, float newtop) {
-        value = clip(value, bottom, top);
-        return (value - bottom) * (newtop / top) + newbottom;
-    }
-    
     public static float clip(float value, float bottom, float top) {
         return (value < bottom) ? bottom : (value > top) ? top : value;
     }

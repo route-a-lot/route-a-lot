@@ -88,7 +88,7 @@ public class QTTest {
     }
     
     @Test
-    public void testGetBounce() {
+    public void testGetBounds() {
         Coordinates coord1 = new Coordinates();
         Coordinates coord2 = new Coordinates();
         operator.getBounds(coord1, coord2);

@@ -36,25 +36,17 @@ public class WeightCalculator {
         Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
         Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
         IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
-        /*
-         * verbesserter Pythagoras, für kleine Entfernungen ausreichend, Abstand Breitenkreise 111.3km,
-         * Abstand Längenkreise 111.3*cos(lat)km,wobei lat genau zwischen lat1 und lat2 liegt
-         */
-        float lat1 = from.getLatitude();
-        float lon1 = from.getLongitude();
-        float lat2 = to.getLatitude();
-        float lon2 = to.getLongitude();
-        double lat = (lat1 + lat2) * 0.5 * 0.017453292;
-        double dx = 111.3 * Math.cos(lat) * (lon1 - lon2);
-        double dy = 111.3 * (lat1 - lat2);
-        double distance =
-                (int) Math
-                        .sqrt(Math.pow(dx, 2)
-                                + Math.pow(dy, 2)
-                                + Math.pow(
-                                        (State.getInstance().getHeightMalus() * (heightmap.getHeight(from) * 0.001 - heightmap
-                                                .getHeight(to) * 0.001)), 2)/* pow */);
-        return (int) (distance * 1000);// Distanz in metern
+
+        int flatWeight = calcWeight(fromID, toID);
+        float fromHeight = heightmap.getHeight(from) / 100;
+        float toHeight = heightmap.getHeight(to) / 100;
+        
+        float heightDifference = 0;
+        
+        
+        
+        float weight = 0;
+        return (int) weight;
     }// end calcHeightWeight
 
 
@@ -76,11 +68,6 @@ public class WeightCalculator {
                         * Math.cos(geoToLalRad) * Math.cos(geoFromLonRad - geoToLonRad));
         return (int) (100 * 6371000.785 * distanceRad); // 6371000 is earthRadius in meter, so result will be
                                                         // given in cm
-    }
-
-
-    public int calcWeight(Selection edge) {
-        return calcWeight(edge.getFrom(), edge.getTo());
     }
 
 

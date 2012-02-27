@@ -23,7 +23,7 @@ public class CacheTest {
     @Before
     public void setUp() throws Exception {
         cache = new HashRenderCache();
-        for(int i = 0; i < 128; i++) {
+        for(int i = 0; i < HashRenderCache.CACHE_SIZE; i++) {
             cache.addToCache(new Tile(new Coordinates(i+5.0f, i+5.0f), 50, 1));
         }
     }
@@ -36,9 +36,8 @@ public class CacheTest {
     public void testCache() {
         Tile tile = cache.queryCache(new Coordinates(0.0f, 0.0f), 50, 1);
         assertEquals(tile, cache.queryCache(new Coordinates(0.0f, 0.0f), 50, 1));
-        Tile foot = null;
-        for(int i = 0; i <127; i++) {
-            foot = cache.queryCache(new Coordinates(1+i+5.0f, 1+i+5.0f), 50, 1);
+        for(int i = 0; i < HashRenderCache.CACHE_SIZE - 1; i++) {
+            cache.queryCache(new Coordinates(1+i+5.0f, 1+i+5.0f), 50, 1);
         }
         assertEquals(tile, cache.addToCache(new Tile(new Coordinates(128+5.0f, 128+5.0f), 50, 1)));
         cache.resetCache();

@@ -10,11 +10,6 @@ import kit.route.a.lot.map.rendering.RenderCache;
 public class HashRenderCache implements RenderCache {
 
     /**
-     * Maximum number of entries in the cache
-     */
-    private static final int CACHE_SIZE = 196;
-    
-    /**
      * Map, mapping tile specifiers to tiles
      */
     private HashMap<Long, Tile> map = new HashMap<Long, Tile>();
@@ -52,8 +47,6 @@ public class HashRenderCache implements RenderCache {
             removedTile = map.remove(leastRecentlyUsed.removeFirst());   
         }
         leastRecentlyUsed.addLast(specifier);
-        //if (removedTile != null)
-        //    System.err.println("CACHE REPLACE: " + removedTile.getSpecifier() + " by " + specifier);
         return removedTile;        
     }
 
