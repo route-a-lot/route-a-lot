@@ -25,14 +25,26 @@ public class ComplexInfoSupplier {
         int navNode = 1;
         MapInfo mapInfo = State.getInstance().getMapInfo();
         if (route.get(0) == navNodes.get(0).getTo()) {
-            length += (navNodes.get(navNode).getRatio()) *
-                    Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNode).getFrom()),
-                            mapInfo.getNodePosition(navNodes.get(navNode).getTo()));
+            length += (1 - navNodes.get(0).getRatio()) *
+                    Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(0).getFrom()),
+                            mapInfo.getNodePosition(navNodes.get(0).getTo()));
         } else {
-            length += ((1 - navNodes.get(0).getRatio())) *
-                    Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNode).getTo()),
-                            mapInfo.getNodePosition(navNodes.get(navNode).getFrom()));
+            length += (navNodes.get(0).getRatio()) *
+                    Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(0).getTo()),
+                            mapInfo.getNodePosition(navNodes.get(0).getFrom()));
         }
+        
+        if (route.get(route.size() - 1) == navNodes.get(navNodes.size() - 1).getTo()) {
+            length += (1 - navNodes.get(navNodes.size() - 1).getRatio()) *
+                    Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getTo()),
+                            mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getFrom()));
+        } else {
+            length += ((navNodes.get(0).getRatio())) *
+                    Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getFrom()),
+                            mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getTo()));
+        }
+        
+        
         for(int i = 1; i < route.size() - 1; i++){
             
             if(route.get(i) == -1) {
@@ -46,20 +58,20 @@ public class ComplexInfoSupplier {
                                     mapInfo.getNodePosition(navNodes.get(navNode).getFrom()));
                 }
                 if (route.get(i + 1) == navNodes.get(navNode).getFrom()) {
-                    length += (1 - navNodes.get(navNode).getRatio()) *
+                    length += (navNodes.get(navNode).getRatio()) *
                             Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNode).getTo()),
                                     mapInfo.getNodePosition(navNodes.get(navNode).getFrom()));
                 } else {
-                    length += ((navNodes.get(navNode).getRatio())) *
+                    length += (1 - navNodes.get(navNode).getRatio()) *
                             Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNode).getFrom()),
                                     mapInfo.getNodePosition(navNodes.get(navNode).getTo()));
                 }
                 i++;
                 navNode++;
                 
-            } else if (i + 1 != route.size() - 1){
-                    length += Street.getDistanceInMeter(mapInfo.getNodePosition(route.get(i - 1)), mapInfo.getNodePosition(route.get(i)));
-                }
+            } else {
+                length += Street.getDistanceInMeter(mapInfo.getNodePosition(route.get(i - 1)), mapInfo.getNodePosition(route.get(i)));
+            }
             
         }
         return length;

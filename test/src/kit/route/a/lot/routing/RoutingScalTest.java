@@ -1,12 +1,17 @@
 package kit.route.a.lot.routing;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
+import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.OSMLoader;
@@ -31,7 +36,7 @@ public class RoutingScalTest {
     }
     
 //    @Test
-    public void routingFromAToB() {
+    public void routingFromAToBSeizuireTest() {
         int tries = 10000;
         double startTime;
         double duration;
@@ -127,6 +132,8 @@ public class RoutingScalTest {
               System.out.println(i / 100 + "% of the test completed");
           }
         }
+        System.out.println("number of vert.: " + graph.getIDCount());
+        System.out.println("number of edges: " + graph.getEdgesArray().length);
         System.out.println("Routing with one start und target (WA = with Arc-Flags, NA = without Arc-Flags): ");
         System.out.println("Number of routes: 10000" );
         System.out.println("average WA time: " + WA_resTime/10000);
@@ -156,5 +163,76 @@ public class RoutingScalTest {
         System.out.println("WA: " + WA_t300/s300 + "ms");
         System.out.println("NA: " + NA_t300/s300 + "ms");
         System.out.println("\nroutes with length > 299 :" + over300);
+    }
+    
+    //@Test
+    public void fromAtoBScalTestInFile() throws Exception{
+        double startTime;
+        double duration;
+        FileWriter writer = new FileWriter(new File("RoutingScalTEstResult.txt"), false);
+
+        List<Selection> selections = new ArrayList<Selection>();
+        List<Integer> route = null;
+        
+        writer.write("number of vert.: " + graph.getIDCount());
+        writer.write(", number of edges: " + graph.getEdgesArray().length);
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        
+        writer.write("from topLeft -> bottomRight");
+        Projection projection = ProjectionFactory.getCurrentProjection();
+        Coordinates target = projection.getLocalCoordinates(State.getInstance().getMapInfo().getGeoBottomRight());
+        selections.add(State.getInstance().getMapInfo().select(target));
+        target = projection.getLocalCoordinates(State.getInstance().getMapInfo().getGeoTopLeft());
+        selections.add(State.getInstance().getMapInfo().select(target));
+        startTime = System.currentTimeMillis();
+        for (int j = 0; j < 100; j++) {  //avoidint 0
+            route = Router.calculateRoute(selections);
+        }
+        duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
+        duration /= 100;
+        writer.write("size: " + route.size());
+        writer.write(System.getProperty("line.separator"));
+        writer.write("with Arc-Flags: " + duration);
+        writer.write(System.getProperty("line.separator"));
+        startTime = System.currentTimeMillis();
+        for (int j = 0; j < 100; j++) {  //avoidint 0
+            route = SimpleRouter.calculateRoute(selections);
+        }
+        duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
+        duration /= 100;
+        writer.write("without Arc-Flags: " + duration);
+        writer.write(System.getProperty("line.separator"));
+        
+        
+        for (int i = 0; i < 1000; i++) {    //modify number of tests
+            selections = new ArrayList<Selection>();
+            selections.add(SelectMock.getRandomSelection());
+            selections.add(SelectMock.getRandomSelection());
+            startTime = System.currentTimeMillis();
+            if (Router.calculateRoute(selections).size() < 200) {
+                continue;
+            }
+            for (int j = 0; j < 10; j++) {  //avoidint 0
+                route = Router.calculateRoute(selections);
+            }
+            duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
+            duration /= 10;
+            writer.write(System.getProperty("line.separator"));
+            writer.write("size: " + route.size());
+            writer.write(System.getProperty("line.separator"));
+            writer.write("with Arc-Flags: " + duration);
+            writer.write(System.getProperty("line.separator"));
+            startTime = System.currentTimeMillis();
+            for (int j = 0; j < 10; j++) {  //avoidint 0
+                route = SimpleRouter.calculateRoute(selections);
+            }
+            duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
+            duration /= 10;
+            writer.write("without Arc-Flags: " + duration);
+        }
+        
+        writer.flush();
+        writer.close();
     }
 }
