@@ -23,15 +23,6 @@ public class WeightCalculator {
         this.projection = projection;
     }
 
-    /**
-     * Operation calcWeight
-     * 
-     * @param fromID
-     *            -
-     * @param toID
-     *            -
-     * @return int
-     */
     public int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
         Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
@@ -40,9 +31,9 @@ public class WeightCalculator {
         int flatWeight = calcWeight(fromID, toID);
         float fromHeight = heightmap.getHeight(from) / 100;
         float toHeight = heightmap.getHeight(to) / 100;
-        
+
         float heightDifference = Math.abs(fromHeight - toHeight);
-        
+
         int weight = (int) Math.sqrt(Math.pow(flatWeight, 2) + Math.pow(heightDifference, 2));
         return weight;
     }// end calcHeightWeight

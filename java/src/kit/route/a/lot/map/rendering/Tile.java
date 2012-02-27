@@ -18,12 +18,12 @@ import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
-import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.infosupply.MapInfo;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +36,8 @@ public class Tile {
     protected Coordinates topLeft, bottomRight;   
     private BufferedImage image = null;
     protected int detailLevel, tileSize;
+    
+    protected MapInfo mapInfo;
     
     // the image's graphics object (only valid during prerendering / POI drawing)
     private Graphics2D graphics;
@@ -51,6 +53,12 @@ public class Tile {
         this.bottomRight = topLeft.clone().add(tileSize, tileSize);
         this.detailLevel = detailLevel;
         this.tileSize = tileSize;
+        mapInfo = StateMock.getInstance().getMapInfo();
+    }
+    
+    public Tile(Coordinates topLeft, int tileSize, int detailLevel, MapInfo mapInfo) {
+        this(topLeft, tileSize, detailLevel);
+        this.mapInfo = mapInfo;
     }
 
     /**
@@ -69,8 +77,7 @@ public class Tile {
     
     public void prerender() {
         //QUERY QUADTREE ELEMENTS
-        Collection<MapElement> map = State.getInstance().getMapInfo()
-                  .getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
+        Collection<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
         if (map.size() == 0) {
             return;
         }
@@ -89,7 +96,6 @@ public class Tile {
 //        graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
 //        graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize / Projection.getZoomFactor(detailLevel));
         //
-        
         //DRAW BASE LAYER ELEMENTS
         for (MapElement element : map) {
             if (element instanceof Area) {
@@ -123,8 +129,7 @@ public class Tile {
     }
     
     public void drawPOIs() {
-        Collection<MapElement> elements = State.getInstance().getMapInfo()
-                                            .getOverlay(detailLevel, topLeft, bottomRight, false);
+        Collection<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }
@@ -193,7 +198,7 @@ public class Tile {
                     graphics.setColor(Color.GREEN);
                     break;
                 default:
-//                    // System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
+//                     System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
                     return;
 //                    graphics.setColor(Color.WHITE);
             }

@@ -1,33 +1,37 @@
 package kit.route.a.lot.map.rendering;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.map.infosupply.QTGeographicalOperator;
 
 
-public class MapInfoMock extends MapInfo {
+public class MapInfoQTMock extends MapInfoMock {
     
-    private Collection<MapElement> baseLayer = new ArrayList<MapElement>();
-    private Collection<MapElement> overlay = new ArrayList<MapElement>();
+    QTGeographicalOperator operator;
     
+    MapInfoQTMock(Coordinates topLeft, Coordinates bottomRight) {
+        operator = new QTGeographicalOperator();
+        operator.setBounds(topLeft, bottomRight);
+    }
+
     public void addToBaseLayer(MapElement element) {
-        baseLayer.add(element);
+        operator.addToBaseLayer(element);
     }
     
     public void addToOverlay(MapElement element) {
-        overlay.add(element);
+        operator.addToOverlay(element);
     }
     
     @Override
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        return baseLayer;
+        return operator.getBaseLayer(zoomlevel, upLeft, bottomRight, exact);
     }
     
     @Override
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {  
-        return overlay;
+        return operator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
     }
+    
 }

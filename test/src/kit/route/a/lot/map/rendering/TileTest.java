@@ -42,10 +42,13 @@ public class TileTest {
         Tile myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
         long start;
         long duration;
+        Coordinates topLeft = new Coordinates(-20, 0);
+        Coordinates bottomRight = new Coordinates(130, 140);
         for (int count = 1; count < 1000000; count *= 7) {
-            mapInfoMock = new MapInfoMock();
+//            mapInfoMock = new MapInfoMock();
+            mapInfoMock = new MapInfoQTMock(topLeft, bottomRight);
             myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
-            fillMapInfoMock(mapInfoMock, count, new Coordinates(0, 0), new Coordinates(100, 100));
+            fillMapInfoMock(mapInfoMock, count, topLeft, bottomRight);
             start = System.nanoTime();
             myTile.prerender();
             duration = System.nanoTime() - start;
