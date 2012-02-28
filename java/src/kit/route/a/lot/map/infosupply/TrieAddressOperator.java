@@ -53,6 +53,8 @@ public class TrieAddressOperator implements AddressOperator {
     public void add(MapElement element) {
         if(element instanceof Street){
             mapElements.insert(element.getName(),element);
+            System.out.println(element.getName());
+            adressDict.insert(element.getName(), element.getName());
         }
     }
     
