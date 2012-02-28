@@ -697,6 +697,9 @@ public class GUI extends JFrame {
      * @param completions the completion suggestions
      */
     public void showSearchCompletions(List<String> completions) {
+        if(completions == null){
+            return;
+        }
         popupSearchCompletions.removeAll();
         for (String completion : completions) {
             final JMenuItem item = new JMenuItem(completion);
