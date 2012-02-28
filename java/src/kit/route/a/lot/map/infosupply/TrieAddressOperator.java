@@ -14,56 +14,59 @@ import kit.route.a.lot.map.Street;
 
 public class TrieAddressOperator implements AddressOperator {
 
-    private StringTrie mapElements;
+    private StringTrie<MapElement> mapElements;
+    private StringTrie<String> adressDict;
     
     public TrieAddressOperator(){
-        this.mapElements = new StringTrie();
+        this.mapElements = new StringTrie<MapElement>();
+        this.adressDict = new StringTrie<String>();
     }
 
     @Override
     public ArrayList<String> suggestCompletions(String expression) {
-        ArrayList<String> completions = mapElements.search(expression);
+        ArrayList<String> completions = adressDict.search(expression);
         return completions;
     }
 
     @Override
     public Selection select(String address) {
         // TODO Auto-generated method stub
-            ArrayList<MapElement> tree = mapElements.getTree();
-            Street [] tmp = new Street[1];
-            Street[] elements = tree.toArray(tmp);
-            Street item = new Street(address,null);
-            int index = Arrays.binarySearch(elements,item);
-            Street foundItem = (Street)elements[index];
-            Node[] nodes = foundItem.getNodes(); 
-            index = (nodes.length)/2;
-            Selection selection = new Selection(null,nodes[index].getID(),nodes[index+1].getID(),0.0f,"");
-            return selection;     
+            ArrayList<MapElement> targets = mapElements.search(address);
+            if(targets == null || targets.size() == 0){
+                return null;
+            }
+            Street target = (Street)targets.remove(0);
+            Node[] nodes = target.getNodes(); 
+            int index = (nodes.length)/2;
+            if(nodes == null || nodes.length == 0){
+                return null;
+            } else if (nodes.length > 1) {
+                Selection selection = new Selection(null,nodes[index-1].getID(),nodes[index].getID(),0.0f,"");
+                return selection;
+            } else {
+                return(new Selection(null,nodes[0].getID(),nodes[0].getID(),0.0f,""));
+            }
 
     }
  
     @Override
     public void add(MapElement element) {
         if(element instanceof Street){
-            mapElements.insert(null,element);
+            mapElements.insert(element.getName(),element);
         }
     }
     
-    @Override
-    public void buildTrie(){
-        /*sortieren mit radixSort*/
-        mapElements.radixSort();
-    }
 
-    @Override
+   @Override
     public void loadFromInput(DataInput input) throws IOException {
-        mapElements = StringTrie.loadFromInput(input);
+    //    mapElements = StringTrie.loadFromInput(input);
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        mapElements.saveToOutput(output);
+      //  mapElements.saveToOutput(output);
     }
+    
     
     public boolean equals(Object other) {
         // TODO: dummy
