@@ -27,6 +27,7 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
+import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 
@@ -85,6 +86,12 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             }
         });
                
+        Listener.addListener(TILE_RENDERED, new Listener() {
+            public void handleEvent(Event e) {
+                render();
+            }      
+        });
+        
         // ADD FAVORITE POPUP
         final JTextField favoriteNameField = new JTextField(TEXT_INSERT_NAME);
         final JTextField favoriteDescriptionField = new JTextField(TEXT_INSERT_DESCRIPTION);
@@ -261,7 +268,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     public void mouseDragged(MouseEvent e) {
         oldMousePosX = e.getX();
         oldMousePosY = e.getY();  
-        calculateView();   
+        render();   
     }
    
     /**
@@ -274,7 +281,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         setZoomlevel(zoomlevel + e.getWheelRotation());
         if (zoomlevel != oldZoom) {
             center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
-            calculateView();
+            render();
         }            
     }
     
@@ -289,10 +296,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
 
     /**
-     * Derives the new geo coordinates view constraints from the pixel dimensions of the map and subsequently
-     * updates the context.
+     * Redraws the map.
      */
-    void calculateView() {
+    void render() {
         canvas.repaint(); 
     }
         

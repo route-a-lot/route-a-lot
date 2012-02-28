@@ -20,13 +20,13 @@ public abstract class Listener {
         ADD_FAVORITE = 10, DELETE_FAVORITE = 11,
         ADD_NAVNODE = 12, DELETE_NAVNODE = 13,
         LIST_SEARCH_COMPLETIONS = 14, SET_SPEED = 15,      
-        VIEW_CHANGED = 16, MAP_RESIZED = 17,
-        SWITCH_MAP_MODE = 18, RENDER = 19,
-        SET_HIGHWAY_MALUS = 20, SET_HEIGHT_MALUS = 21,
-        LIST_IMPORTED_MAPS = 22, DELETE_IMPORTED_MAP = 23,
-        PROGRESS = 24, CLOSE_APPLICATION = 25;
+        VIEW_CHANGED = 16, MAP_RESIZED = 17, TILE_RENDERED = 18,
+        SWITCH_MAP_MODE = 19, RENDER = 20,
+        SET_HIGHWAY_MALUS = 21, SET_HEIGHT_MALUS = 22,
+        LIST_IMPORTED_MAPS = 23, DELETE_IMPORTED_MAP = 24,
+        PROGRESS = 25, CLOSE_APPLICATION = 26;
     
-    private static final int TYPE_COUNT = 26;
+    private static final int TYPE_COUNT = 27;
     
     private static List<Listener>[] lists;
     static {

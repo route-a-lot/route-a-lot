@@ -151,7 +151,7 @@ public class GUI extends JFrame {
         zoomSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent ce) {
                 map.setZoomlevel(zoomSlider.getValue());
-                map.calculateView();
+                map.render();
             }
         });
         Listener.addListener(VIEW_CHANGED, new Listener() {
@@ -628,7 +628,7 @@ public class GUI extends JFrame {
         map.setCenter(center);
         map.setZoomlevel(detailLevel);
         if (zoomSlider.getValue() == detailLevel) {
-            map.calculateView();
+            map.render();
         } else {
             zoomSlider.setValue(detailLevel);
         }

@@ -109,7 +109,7 @@ public class Map3D extends Map implements GLEventListener {
         displayRatio = width / (float)height;
         setProjection(g.getGL(), VIEW_MIN_DISTANCE, VIEW_MAX_DISTANCE);
         Listener.fireEvent(MAP_RESIZED, null); 
-        calculateView();
+        render();
     }
     
     /**

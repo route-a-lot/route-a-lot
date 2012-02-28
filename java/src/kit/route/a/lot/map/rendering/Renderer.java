@@ -16,6 +16,7 @@ import java.util.List;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Context2D;
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
@@ -25,6 +26,7 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 200;
+    private static final boolean THREADED = true;
     
     /**
      * A cache storing tiles that were previously drawn.
@@ -39,6 +41,8 @@ public class Renderer {
     private int drawnRouteDetail = -1;
     private static final int drawBuffer = 200;
     private static final float routeSize = 20;
+
+    
     
     public Context2D myContext;
     
@@ -101,10 +105,21 @@ public class Renderer {
     private Tile prerenderTile(Coordinates topLeft, int tileSize, int detail) {
         Tile tile = cache.queryCache(topLeft, tileSize, detail);
         if (tile == null) {
-            tile = new Tile(topLeft, tileSize, detail);
-            tile.prerender();
-            tile.drawPOIs();
-            cache.addToCache(tile);
+            final Tile newTile = new Tile(topLeft, tileSize, detail);
+            if (THREADED) {
+                new Thread() {
+                    public void run() {
+                        newTile.prerender();
+                        newTile.drawPOIs();
+                        Listener.fireEvent(Listener.TILE_RENDERED, null);
+                    }
+                }.start();
+            } else {
+                newTile.prerender();
+                newTile.drawPOIs();
+            }
+            cache.addToCache(newTile);
+            return newTile;
         }
         return tile;
     }
