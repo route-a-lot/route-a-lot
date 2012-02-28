@@ -185,4 +185,6 @@ public abstract class QuadTree {
     
     protected abstract void compactifyDataStructures();
 
+    public abstract void clear();
+
 }

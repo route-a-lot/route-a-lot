@@ -25,15 +25,7 @@ public class QTNode extends QuadTree {
 
     public QTNode(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
-        float widthHalf = (bottomRight.getLongitude() - upLeft.getLongitude()) / 2;
-        float heightHalf = (bottomRight.getLatitude() - upLeft.getLatitude()) / 2;
-        Coordinates middleMiddle = upLeft.clone().add(heightHalf, widthHalf);
-        children[0] = new QTLeaf(upLeft, middleMiddle);
-        children[1] = new QTLeaf(upLeft.clone().add(0, widthHalf),
-                                 bottomRight.clone().add(-heightHalf, 0));
-        children[2] = new QTLeaf(upLeft.clone().add(heightHalf, 0),
-                                 bottomRight.clone().add(0, -widthHalf));
-        children[3] = new QTLeaf(middleMiddle, bottomRight);        
+        clear();            
     }
 
     public boolean equals(Object other) {
@@ -165,6 +157,19 @@ public class QTNode extends QuadTree {
         for(QuadTree qt : children) {
             qt.compactifyDataStructures();
         }
+    }
+
+    @Override
+    public void clear() {
+        float widthHalf = (bottomRight.getLongitude() - upLeft.getLongitude()) / 2;
+        float heightHalf = (bottomRight.getLatitude() - upLeft.getLatitude()) / 2;
+        Coordinates middleMiddle = upLeft.clone().add(heightHalf, widthHalf);
+        children[0] = new QTLeaf(upLeft, middleMiddle);
+        children[1] = new QTLeaf(upLeft.clone().add(0, widthHalf),
+                            bottomRight.clone().add(-heightHalf, 0));
+        children[2] = new QTLeaf(upLeft.clone().add(heightHalf, 0),
+                            bottomRight.clone().add(0, -widthHalf));
+        children[3] = new QTLeaf(middleMiddle, bottomRight); 
     }
 
 }

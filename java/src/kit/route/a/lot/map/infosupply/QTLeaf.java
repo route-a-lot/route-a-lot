@@ -21,8 +21,7 @@ public class QTLeaf extends QuadTree {
         
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
-        overlay = new MapElement[1];
-        baseLayer = new MapElement[1];
+        clear();
     }
     
     public boolean equals(Object other) {
@@ -180,5 +179,11 @@ public class QTLeaf extends QuadTree {
     protected void compactifyDataStructures() {
         overlay = Arrays.copyOf(overlay, countArrayElementsSize(overlay));
         baseLayer = Arrays.copyOf(baseLayer, countArrayElementsSize(baseLayer));
+    }
+
+    @Override
+    public void clear() {
+        overlay = new MapElement[1];
+        baseLayer = new MapElement[1];
     }
 }

@@ -14,12 +14,12 @@ import kit.route.a.lot.map.Node;
  * (for real) separately.
  * 
  */
-public class QuadTreeDivider {
+public class FileQuadTreeDivider {
 
     CountingQuadTree root = null;
     boolean refillNeeded = false;
     
-    public QuadTreeDivider(Coordinates topLeft, Coordinates bottomRight) {
+    public FileQuadTreeDivider(Coordinates topLeft, Coordinates bottomRight) {
         root = new CountingQuadTree(topLeft, bottomRight);
     }
 
@@ -46,17 +46,14 @@ public class QuadTreeDivider {
         return result;
     } 
     
-    public HashSet<QuadTree> determineQuadTrees() {
-        HashSet<QuadTree> result = new HashSet<QuadTree>();
-        root.getLeaves(result);
-        return result;
+    public FileQuadTree buildDividedQuadTree(HashSet<FileQuadTree> divisions) {
+        return root.buildDividedQuadTree(divisions);
     }
     
     private class CountingQuadTree {
         
         private static final int MAX_SIZE = 16384;
-        private int size = 0;
-        
+        private int size = 0;     
         
         private Coordinates topLeft, bottomRight;
         private HashSet<CountingQuadTree> children = null;
@@ -66,14 +63,17 @@ public class QuadTreeDivider {
             this.bottomRight = bottomRight;
         }
         
-        public void getLeaves(HashSet<QuadTree> list) {
+        public FileQuadTree buildDividedQuadTree(HashSet<FileQuadTree> leaves) {
+            FileQuadTree result = new FileQuadTree(topLeft, bottomRight);
             if (children == null) {
-                list.add(new QTNode(topLeft, bottomRight));
+                leaves.add(result);
             } else {
+                int i = 0;
                 for (CountingQuadTree child : children) {
-                    child.getLeaves(list);
+                    result.setChild(i++, child.buildDividedQuadTree(leaves));
                 }
             }
+            return result;
         }
 
         /**
