@@ -44,8 +44,8 @@ public class Map2D extends Map  {
      * Adapts the map position and schedules a map redraw.
      */
     @Override
-    public void mouseDragged(MouseEvent e) {         
-        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0) {
+    public void mouseDragged(MouseEvent e) {
+        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0 && (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == 0) {
             center.add(new Coordinates(oldMousePosY - e.getY(), oldMousePosX - e.getX())
                 .scale(Projection.getZoomFactor(zoomlevel)));                      
         }      

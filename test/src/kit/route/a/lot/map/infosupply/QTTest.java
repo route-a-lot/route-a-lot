@@ -83,7 +83,6 @@ public class QTTest {
         assertEquals(1, operator.getOverlay(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
         String s = "" + 2;
         assertEquals(s, operator.getPOIDescription(new Coordinates(2.0f, 2.0f), 0.3f, 0).getName());
-        Selection select = operator.select(new Coordinates(40.0f, 2.9f));
         assertTrue(22 == operator.select(new Coordinates(25.5f, 2.9f)).getFrom());
     }
     

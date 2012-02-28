@@ -126,7 +126,7 @@ public class Map3D extends Map implements GLEventListener {
             rotationVertical = Util.clip(rotationVertical + diffY, 0, MAX_VERTICAL_ROTATION);
         }    
         // MOVE CAMERA if left mouse button is pressed (and no ctrl)
-        if (isMouseButtonPressed(e, 1) && !e.isControlDown()) {
+        if (isMouseButtonPressed(e, 1) && !e.isControlDown() && !isMouseButtonPressed(e, 3)) {
             float shareY = (float) Math.cos(Math.toRadians(rotationHorizontal));
             float shareX = (float) Math.sin(Math.toRadians(rotationHorizontal));            
             Coordinates movement = new Coordinates(shareY * diffY - shareX * diffX,
