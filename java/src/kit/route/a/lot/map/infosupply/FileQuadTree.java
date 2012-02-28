@@ -141,6 +141,7 @@ public class FileQuadTree {
      */
     public void load() throws IOException {
         source.seek(sourcePointer);
+        source.seek(source.readLong()); // allow indirect addressing
         if (source.readBoolean()) {
             int size = source.readByte();
             elements = new ArrayList<MapElement>(size);
@@ -171,8 +172,14 @@ public class FileQuadTree {
      * @param output
      * @throws IOException
      */
-    public void saveToOutput(RandomAccessFile output) throws IOException {  
-        loadIfNeeded();
+    public void save(RandomAccessFile output) throws IOException {  
+        boolean alreadySaved = output.equals(source) && (sourcePointer >= 0);
+        source = output;
+        sourcePointer = source.getFilePointer();
+        output.writeLong(sourcePointer + 8);
+        if (alreadySaved) {
+            return;
+        }   
         output.writeBoolean(elements != null);
         if (elements != null) {
             output.writeByte(elements.size());
@@ -188,7 +195,7 @@ public class FileQuadTree {
                 output.seek(mark + i * 8);
                 output.writeLong(pos);
                 output.seek(pos);
-                children[i].saveToOutput(output);
+                children[i].save(output);
             }
         }
     }
@@ -204,5 +211,4 @@ public class FileQuadTree {
         }
     }
 
-    
 }
