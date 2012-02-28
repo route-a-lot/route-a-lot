@@ -235,4 +235,35 @@ public class RoutingScalTest {
         writer.flush();
         writer.close();
     }
+    
+    
+    @Test
+    public void optimizedRoutingScalTest() throws Exception{
+        FileWriter writer = new FileWriter(new File("OptimizedRoutingScalTEstResult.txt"), false);
+        List<Selection> selections;
+        double startTime;
+        double duration;
+        int i = 4;
+        
+        while(i < 12) {
+            duration = 0;
+            for (int k = 0; k < 5; k++) {   // if we get a too fast, or slow route
+                selections = new ArrayList<Selection>();
+                for (int j = 0; j < i; j++) {
+                    selections.add(SelectMock.getRandomSelection());
+                }
+                startTime = System.currentTimeMillis();
+                for (int j = 0; j < 12 / i; j++) {
+                    Router.optimizeRoute(selections, new Progress());
+                }
+                duration += System.currentTimeMillis() - startTime;
+            }
+            duration /= (int)((12 / i)*5);    //cast not necessary
+            writer.write("number of targets: " + i + ", time: " + duration);
+            writer.write(System.getProperty("line.separator"));
+            i++;
+        }
+        writer.flush();
+        writer.close();
+    }
 }
