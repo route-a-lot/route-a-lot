@@ -17,7 +17,7 @@ public class QTLeaf extends QuadTree {
     private MapElement[] overlay;
     private MapElement[] baseLayer;
     
-    private static final int limit = 64;     //elements per Leaf -> performance-tests
+    private static final int MAX_SIZE = 64;     //elements per Leaf -> performance-tests
         
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
@@ -42,7 +42,7 @@ public class QTLeaf extends QuadTree {
     protected boolean addToOverlay(MapElement element) {
         if (element.isInBounds(getUpLeft(), getBottomRight())) {
             int size = countArrayElementsSize(overlay);
-            if (size >= limit) {
+            if (size >= MAX_SIZE) {
                 return false;
             }      
             if(size == overlay.length) {
@@ -58,7 +58,7 @@ public class QTLeaf extends QuadTree {
     protected boolean addToBaseLayer(MapElement element) {
         if (element.isInBounds(getUpLeft(), getBottomRight())) {
             int size = countArrayElementsSize(baseLayer);
-            if (size >= limit) {
+            if (size >= MAX_SIZE) {
                 return false;
             }
             if(size == baseLayer.length) {
