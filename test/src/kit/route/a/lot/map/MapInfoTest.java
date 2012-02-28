@@ -32,12 +32,8 @@ public class MapInfoTest {
 
     @Before
     public void setUp() throws Exception {
-        topLeft = new Coordinates();
-        topLeft.setLatitude(90);
-        topLeft.setLongitude(0);
-        bottomRight = new Coordinates();
-        bottomRight.setLatitude(0);
-        bottomRight.setLongitude(180);
+        topLeft = new Coordinates(0, 0);
+        bottomRight = new Coordinates(90, 180);
         info = new MapInfo(topLeft, bottomRight);
     }
 
@@ -91,6 +87,7 @@ public class MapInfoTest {
         assertTrue(info.getFavoriteDescription(new Coordinates(10.3f, 15.3f), 0, 1).getName().equals("derp"));
         info.printQuadTree();
         info.addPOI(new Coordinates(7.0f, 6.7f), 12, new POIDescription("nirvana", 0, "ja das gibt es wirklich"), new Address());
-//        assertTrue(info.getPOIDescription(new Coordinates(7.0f, 6.7f), 1.0f, 0).getName().equals("nirvana"));
+        info.printQuadTree();
+        assertTrue(info.getPOIDescription(new Coordinates(7.0f, 6.7f), 1.0f, 0).getName().equals("nirvana"));
     }
 }

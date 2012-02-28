@@ -96,7 +96,16 @@ public class QTLeaf extends QuadTree {
         return size;
     }
     
+    /**
+     * Returns a new array with the same elements as the given array but twice the size.
+     * If the given array is empty a new array with size of 2 is returned.
+     * @param elements
+     * @return
+     */
     private MapElement[] doubleSpace(MapElement[] elements) {
+        if (elements.length == 0) {
+            return new MapElement[2];
+        }
         MapElement[] returnArray = new MapElement[elements.length * 2];
         for(int i = 0; i < elements.length; i++) {
             returnArray[i] = elements[i];
@@ -106,7 +115,7 @@ public class QTLeaf extends QuadTree {
     
     @Override
     public int countElements() {
-        return countArrayElementsSize(baseLayer);
+        return countArrayElementsSize(overlay) + countArrayElementsSize(baseLayer);
     }
     
     
