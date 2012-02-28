@@ -268,7 +268,12 @@ public class StringTrie<T>{
     if(prefix.length() == 0){ 
         return children;
     } else {
-        dfsStartNodes = children[index].getStartNodes(prefix.substring(1));
+        StringTrie<T> nextNeighbor = children[index];
+        if(!(nextNeighbor == null) ){
+            dfsStartNodes = nextNeighbor.getStartNodes(prefix.substring(1));
+        } else {
+            return null;
+        }
     }
     return dfsStartNodes;
     }
