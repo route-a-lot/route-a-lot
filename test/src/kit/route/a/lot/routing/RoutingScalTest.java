@@ -35,8 +35,8 @@ public class RoutingScalTest {
         graph = State.getInstance().getLoadedGraph();
     }
     
-//    @Test
-    public void routingFromAToBSeizuireTest() {
+    @Test
+    public void routingFromAToBSeizuireTest() throws Exception {
         int tries = 10000;
         double startTime;
         double duration;
@@ -129,7 +129,7 @@ public class RoutingScalTest {
               NA_t300 += duration;
           }
           if (i % 100 == 0) {
-              System.out.println(i / 100 + "% of the test completed");
+              System.out.println(i / 100 + "% completed");
           }
         }
         System.out.println("number of vert.: " + graph.getIDCount());
@@ -163,10 +163,81 @@ public class RoutingScalTest {
         System.out.println("WA: " + WA_t300/s300 + "ms");
         System.out.println("NA: " + NA_t300/s300 + "ms");
         System.out.println("\nroutes with length > 299 :" + over300);
+        FileWriter writer = new FileWriter(new File("RoutingScalTest0-300result.txt"), false);
+        writer.write("number of vert.: " + graph.getIDCount());
+        writer.write(", number of edges: " + graph.getEdgesArray().length);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("Routing with one start und target (WA = with Arc-Flags, NA = without Arc-Flags): ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("Number of routes: 10000" );
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average WA time: " + WA_resTime/10000);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average NA time: " + NA_resTime/10000);
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nnumber of routes with length < 50: " + s50);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average time for calculating routes with length < 50: ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("WA: " + WA_t50/s50 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("NA: " + NA_t50/s50 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nnumber of routes with 49 < length < 100: " + s100);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average time for calculating routes with 49 < length < 100: ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("WA: " + WA_t100/s100 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("NA: " + NA_t100/s100 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nnumber of routes with 99 < length < 149: " + s150);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average time for calculating routes with 99 < length < 149: ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("WA: " + WA_t150/s150 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("NA: " + NA_t150/s150 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nnumber of routes with 149 < length < 200: " + s200);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average time for calculating routes with 149 < length < 200: ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("WA: " + WA_t200/s200 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("NA: " + NA_t200/s200 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nnumber of routes with 199 < length < 250: " + s250);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average time for calculating routes with 199 < length < 250: ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("WA: " + WA_t250/s250 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("NA: " + NA_t250/s250 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nnumber of routes with 249 < length < 300: " + s300);
+        writer.write(System.getProperty("line.separator"));
+        writer.write("average time for calculating routes with 249 < length < 300: ");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("WA: " + WA_t300/s300 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("NA: " + NA_t300/s300 + "ms");
+        writer.write(System.getProperty("line.separator"));
+        writer.write("\nroutes with length > 299 :" + over300);
+        writer.flush();
+        writer.close();
     }
     
-    //@Test
+    @Test
     public void fromAtoBScalTestInFile() throws Exception{
+        int maxLength = 0;
+        double maxValue = Double.MIN_VALUE;
         double startTime;
         double duration;
         FileWriter writer = new FileWriter(new File("RoutingScalTEstResult.txt"), false);
@@ -209,17 +280,25 @@ public class RoutingScalTest {
             selections = new ArrayList<Selection>();
             selections.add(SelectMock.getRandomSelection());
             selections.add(SelectMock.getRandomSelection());
-            startTime = System.currentTimeMillis();
-            if (Router.calculateRoute(selections).size() < 200) {
+            if (Router.calculateRoute(selections).size() != 0 && Router.calculateRoute(selections).size() < 200) {
                 continue;
             }
-            for (int j = 0; j < 10; j++) {  //avoidint 0
+            startTime = System.currentTimeMillis();
+            for (int j = 0; j < 10; j++) {  //avoiding 0
                 route = Router.calculateRoute(selections);
             }
             duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
             duration /= 10;
+            if (duration > maxValue) {
+                maxValue = duration;
+                maxLength = route.size();
+            }
             writer.write(System.getProperty("line.separator"));
-            writer.write("size: " + route.size());
+            if (route.size() == 0) {
+                writer.write("!");
+            }
+            writer.write("category: " + route.size() / 100);    //faster searching in file
+            writer.write(", size: " + route.size());
             writer.write(System.getProperty("line.separator"));
             writer.write("with Arc-Flags: " + duration);
             writer.write(System.getProperty("line.separator"));
@@ -230,9 +309,11 @@ public class RoutingScalTest {
             duration = System.currentTimeMillis() - startTime;   //we don't want to waste time
             duration /= 10;
             writer.write("without Arc-Flags: " + duration);
+            writer.flush();
         }
-        
-        writer.flush();
+        writer.write(System.getProperty("line.separator"));
+        writer.write(System.getProperty("line.separator"));
+        writer.write("MaxTime: "+ maxValue + ", length: " + maxLength);
         writer.close();
     }
     
@@ -244,26 +325,26 @@ public class RoutingScalTest {
         double startTime;
         double duration;
         int i = 4;
-        
-        while(i < 12) {
+        double tempdur;
+        while(i < 14) {
             duration = 0;
-            for (int k = 0; k < 5; k++) {   // if we get a too fast, or slow route
+            int k = (i < 13) ? 20 : 5;
+            for (int l = 0; l < k; l++) {   // if we get a too fast, or slow route
                 selections = new ArrayList<Selection>();
                 for (int j = 0; j < i; j++) {
                     selections.add(SelectMock.getRandomSelection());
                 }
                 startTime = System.currentTimeMillis();
-                for (int j = 0; j < 12 / i; j++) {
-                    Router.optimizeRoute(selections, new Progress());
-                }
-                duration += System.currentTimeMillis() - startTime;
+                Router.optimizeRoute(selections, new Progress());
+                tempdur = System.currentTimeMillis() - startTime;
+                duration += tempdur;
             }
-            duration /= (int)((12 / i)*5);    //cast not necessary
-            writer.write("number of targets: " + i + ", time: " + duration);
+            duration /= k;    //two steps for better overview
+            writer.write("number of targets: " + i + ", time: " + duration + "ms");
             writer.write(System.getProperty("line.separator"));
             i++;
+            writer.flush();
         }
-        writer.flush();
         writer.close();
     }
 }
