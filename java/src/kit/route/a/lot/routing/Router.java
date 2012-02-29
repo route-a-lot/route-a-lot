@@ -43,17 +43,17 @@ public class Router {
         }
         
         
-        
-        /*// MST
+        /*
+        // MST
         boolean[] seen = new boolean[size];
-        int[] edges = new int[(size - 1) * 2];    // u need exactly n-1 edges for a MST with n nodes
-        for (int i = 0; i < size - 1; i++) {
+        int[] edges = new int[(size - 1) * 2];    // u need exactly n-1 edges for a MST with n nodes (we need each edge twice)
+        for (int i = 0; i < (size - 1) * 2; i++) {
             int min = -1;
             int shortest = -1;
             for (int j = 0; j < size*size; j++) {
-                if ((min == -1 || min > routes[j / size][j % size]) 
-                        && (seen[j % size] !=  true || seen[j / size] != true)
-                        && j % size != j / size) {
+                if ((min == -1 || min > routes[j / size][j % size])     // We found a (shorter) edge
+                        && (seen[j % size] !=  true || seen[j / size] != true)  // Either the from- or the to-node hasn't been visited yet
+                        && j % size != j / size) {  // It's not a "Schlinge"
                     min = routes[j / size][j % size];
                     shortest = j;
                 }
@@ -62,48 +62,43 @@ public class Router {
                 logger.fatal("Debug me!");
                 return;
             }
-            seen[shortest / size] = true;
-            seen[shortest % size] = true;
+            seen[shortest / size] = seen[shortest % size] = true;
             edges[i] = shortest;
+            edges[++i] = (shortest % size) * size + (shortest / size ) * size;   // add the reverse-edge.
         }
         
-        for (int i = 0; i < size - 1; i++) {
-            int mod = edges[i] % size;
-            int div = edges[i] / size;
-            edges[i + size - 1] = mod * size + div;     // reverse the edge
-        }
-        // We have all edges in both directions (=> almost an Eulerian circle)
+        // We have all edges in both directions (=> almost an Eulerian circle/path)
         int from = 0;
         int[] choosen = new int[size];
         seen = new boolean[size];
         seen[0] = true;
-        int tmp = -1;   // Originaler Startknoten (wichtig bei zu überspringenden Knoten)
-        int h = 0;
+        int tmp = -1;   // temporary starting-vertex (for skipping already visited nodes)
+        int h = 0;  // counter for number of found edges
         int i = 0;
         while (h < size - 1) {
             while(edges[i] / size != from)
                 i++;
             seen[from] = true;
-            if (seen[edges[i] % size] || edges[i] % size == size -1) {
-                if (tmp == -1)
-                    tmp = edges[i] / size;
+            if (seen[edges[i] % size] || edges[i] % size == size - 1) {
+                // Skip seen and the last node(s)
+                tmp = tmp == -1 ? tmp = edges[i] / size: tmp;   // Only replace tmp if it hasn't been replaced yet
                 from = edges[i] % size;
-                continue;
+                continue;   // Note that tmp and i stay unchanged
             }
             tmp = tmp == -1 ? from : tmp;
             choosen[h++] = tmp * size + (edges[i] % size);
             from = edges[i] % size;
-            tmp = -1;
             i = 0;
+            tmp = -1;
         }
         // add edge to target
         choosen[h] = from * size + size - 1;
         int permutation[] = new int[size - 2];
-        for (i = 0; i < size - 1; i++) {
+        for (i = 0; i < size - 1; i++)
             permutation[i] = choosen[i] % size;
-        }
         setSelection(navigationNodes, permutation);
-        */
+        
+        /*/
         int[] result = null;  // The shortest permutation (so far)
         int resultLength = -1;  
         
@@ -138,7 +133,7 @@ public class Router {
         }
         setSelection(navigationNodes, result);
        // result.toString();    //result can be null, if no route was found
-        p.finish();
+        p.finish();//*/
     }
     
     private static String printPermutation(int[] permutation) {
