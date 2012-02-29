@@ -32,6 +32,7 @@ public class TrieAddressOperator implements AddressOperator {
     public Selection select(String address) {
         // TODO Auto-generated method stub
             ArrayList<MapElement> targets = mapElements.search(address);
+            System.out.println("anzahl gefundener Strassen: " + targets.size() );
             if(targets == null || targets.size() == 0){
                 return null;
             }
@@ -42,6 +43,8 @@ public class TrieAddressOperator implements AddressOperator {
                 return null;
             } else if (nodes.length > 1) {
                 Selection selection = new Selection(null,nodes[index-1].getID(),nodes[index].getID(),0.0f,"");
+                System.out.println(nodes[index-1].getID());
+                System.out.println(nodes[index].getID());
                 return selection;
             } else {
                 return(new Selection(null,nodes[0].getID(),nodes[0].getID(),0.0f,""));
