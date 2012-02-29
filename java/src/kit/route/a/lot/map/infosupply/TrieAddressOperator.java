@@ -37,9 +37,11 @@ public class TrieAddressOperator implements AddressOperator {
                 return null;
             }
             Street target = (Street)targets.remove(0);
-            Node[] nodes = target.getNodes(); 
-            int index = (nodes.length)/2;
-            if(nodes == null || nodes.length == 0){
+            return target.getSelection(target.getNodes()[0].getPos());
+            //Node[] nodes = target.getNodes(); 
+            //int index = (nodes.length)/2;
+            
+            /*if(nodes == null || nodes.length == 0){
                 return null;
             } else if (nodes.length > 1) {
                 Selection selection = new Selection(null,nodes[index-1].getID(),nodes[index].getID(),0.0f,"");
@@ -48,7 +50,7 @@ public class TrieAddressOperator implements AddressOperator {
                 return selection;
             } else {
                 return(new Selection(null,nodes[0].getID(),nodes[0].getID(),0.0f,""));
-            }
+            }*/
 
     }
  

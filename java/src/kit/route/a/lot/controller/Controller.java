@@ -386,6 +386,7 @@ public class Controller {
     
     private void addNavNode(String name, int position) {
         Selection newSel = state.getMapInfo().select(name);
+        System.out.println("added " + newSel.getName());
         if (newSel != null) {
             if (position == 0 && state.getNavigationNodes().size() > 1) {
                 state.getNavigationNodes().remove(0);

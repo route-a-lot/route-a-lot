@@ -95,6 +95,7 @@ public class GUI extends JFrame {
     private int popupIndex, numNavNodes = 0;
     private long taskStartTime;
     private boolean enterPressed = false;
+    private URL xIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
     /**
@@ -105,10 +106,11 @@ public class GUI extends JFrame {
     public GUI() {
         super("Route-A-Lot");  
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        URL iconFile = ClassLoader.getSystemResource("icon.png");
+        URL iconFile = ClassLoader.getSystemResource("icon_sral.png");
         if (iconFile != null) {
             setIconImage(new ImageIcon(iconFile).getImage());
         }
+        xIcon = ClassLoader.getSystemResource("icon_sral.png");
         setVisible(true);
     }
 
