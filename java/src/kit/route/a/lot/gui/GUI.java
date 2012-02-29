@@ -124,6 +124,10 @@ public class GUI extends JFrame {
         if (iconFile != null) {
             setIconImage(new ImageIcon(iconFile).getImage());
         }
+        iconFile = ClassLoader.getSystemResource("icon_sral_64.png");
+        if (iconFile != null) {
+            setIconImage(new ImageIcon(iconFile).getImage());
+        }
         iconFile = ClassLoader.getSystemResource("icon_delete.png");
         if (iconFile != null) {
             xIcon = new ImageIcon(iconFile);
@@ -379,7 +383,8 @@ public class GUI extends JFrame {
             }
         });
 
-        buttonAddNavNode = new JButton("+");
+        URL iconFile = ClassLoader.getSystemResource("icon_add.png");
+        buttonAddNavNode = (iconFile != null) ? new JButton(new ImageIcon(iconFile)) : new JButton("+");
         buttonAddNavNode.setMaximumSize(new Dimension(50, 20));
         buttonAddNavNode.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonAddNavNode.addActionListener(new ActionListener() {
