@@ -1,8 +1,10 @@
-package kit.route.a.lot.common;
+package kit.route.a.lot.io;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import kit.route.a.lot.common.Progress;
 
 public class ProgressInputStream extends FilterInputStream {
 
@@ -43,7 +45,7 @@ public class ProgressInputStream extends FilterInputStream {
     private void checkProgress() {
         if (progress > BYTES_PER_UPDATE) {
             p.addProgress(progress / (double) size);
-            progress -= BYTES_PER_UPDATE;
+            progress = 0;
         }
     }
 }
