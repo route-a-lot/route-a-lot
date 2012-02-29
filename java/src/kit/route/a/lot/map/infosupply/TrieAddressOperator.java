@@ -24,7 +24,10 @@ public class TrieAddressOperator implements AddressOperator {
 
     @Override
     public ArrayList<String> suggestCompletions(String expression) {
-        ArrayList<String> completions = adressDict.search(expression);
+        ArrayList<String> completions = null;
+        if(expression.length() > 2){
+            completions = adressDict.search(expression);
+        }
         return completions;
     }
 
@@ -36,22 +39,15 @@ public class TrieAddressOperator implements AddressOperator {
             if(targets == null || targets.size() == 0){
                 return null;
             }
-            Street target = (Street)targets.remove(0);
-            return target.getSelection(target.getNodes()[0].getPos());
-            //Node[] nodes = target.getNodes(); 
-            //int index = (nodes.length)/2;
             
-            /*if(nodes == null || nodes.length == 0){
+            Street target = (Street)targets.remove(0);
+            Node[] nodes = target.getNodes(); 
+            if(nodes == null || nodes.length == 0){
                 return null;
-            } else if (nodes.length > 1) {
-                Selection selection = new Selection(null,nodes[index-1].getID(),nodes[index].getID(),0.0f,"");
-                System.out.println(nodes[index-1].getID());
-                System.out.println(nodes[index].getID());
-                return selection;
             } else {
-                return(new Selection(null,nodes[0].getID(),nodes[0].getID(),0.0f,""));
-            }*/
-
+               int index = (nodes.length)/2;  
+               return target.getSelection(target.getNodes()[index].getPos());
+            }
     }
  
     @Override
