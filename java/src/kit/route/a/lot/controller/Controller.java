@@ -388,15 +388,25 @@ public class Controller {
         Selection newSel = state.getMapInfo().select(name);
         System.out.println("added " + newSel.getName());
         if (newSel != null) {
-            if (position == 0 && state.getNavigationNodes().size() > 1) {
+            if (state.getNavigationNodes().size() == 0) {
+             state.getNavigationNodes().add(newSel);   
+            } else if (position == 0 && state.getNavigationNodes().size() >= 1) {
                 state.getNavigationNodes().remove(0);
                 state.getNavigationNodes().add(0, newSel);
             } else if (position == state.getNavigationNodes().size() && state.getNavigationNodes().size() > 1) {
                 state.getNavigationNodes().remove(state.getNavigationNodes().remove(state.getNavigationNodes().size() - 1));
                 state.getNavigationNodes().add(newSel);
+            } else if (position == state.getNavigationNodes().size()) {
+                state.getNavigationNodes().add(newSel);
+            } else if (position >= state.getNavigationNodes().size()) {
+                state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, newSel);
+            } else if (position == state.getNavigationNodes().size() - 1) {    
+                state.getNavigationNodes().add(position, newSel);
             } else {
+                state.getNavigationNodes().remove(position);
                 state.getNavigationNodes().add(position, newSel);
             }
+            System.err.println(position);
         }
         guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();

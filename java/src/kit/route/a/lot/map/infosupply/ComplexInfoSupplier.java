@@ -43,7 +43,14 @@ public class ComplexInfoSupplier {
                     Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getFrom()),
                             mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getTo()));
         }
+        Coordinates startSelection =  Coordinates.interpolate(mapInfo.getNodePosition(navNodes.get(0).getFrom()),
+                mapInfo.getNodePosition(navNodes.get(0).getTo()), navNodes.get(0).getRatio());
+        Coordinates endSelection =  Coordinates.interpolate(mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getFrom()),
+                mapInfo.getNodePosition(navNodes.get(navNodes.size() - 1).getTo()), navNodes.get(navNodes.size() - 1).getRatio());
+        length += Street.getDistanceInMeter(startSelection, navNodes.get(0).getPosition());
+        length += Street.getDistanceInMeter(endSelection, navNodes.get(navNodes.size() - 1).getPosition());
         
+        System.out.println(Street.getDistanceInMeter(startSelection, mapInfo.getNodePosition(route.get(0))));
         
         for(int i = 1; i < route.size() - 1; i++){
             
@@ -66,6 +73,9 @@ public class ComplexInfoSupplier {
                             Street.getDistanceInMeter(mapInfo.getNodePosition(navNodes.get(navNode).getFrom()),
                                     mapInfo.getNodePosition(navNodes.get(navNode).getTo()));
                 }
+                Coordinates ratioCoord =  Coordinates.interpolate(mapInfo.getNodePosition(navNodes.get(navNode).getFrom()),
+                        mapInfo.getNodePosition(navNodes.get(navNode).getTo()), navNodes.get(navNode).getRatio());
+                length += 2 * Street.getDistanceInMeter(ratioCoord, navNodes.get(navNode).getPosition());
                 i++;
                 navNode++;
                 

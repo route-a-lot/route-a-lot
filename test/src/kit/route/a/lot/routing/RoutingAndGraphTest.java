@@ -34,6 +34,7 @@ public class RoutingAndGraphTest {
 
     @BeforeClass
     public static void initialize() {
+        System.out.println("starte import");
         State.getInstance().resetMap();
         PropertyConfigurator.configure("config/log4j.conf");
         loader = new OSMLoader(State.getInstance());
@@ -43,6 +44,7 @@ public class RoutingAndGraphTest {
         loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"), new Progress());
         Precalculator.precalculate(new Progress());
         graph = State.getInstance().getLoadedGraph();
+        System.out.println("import fertig");
     }
 
     @Test

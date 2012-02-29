@@ -231,8 +231,15 @@ public class Street extends MapElement implements Comparable<Street> {
 
     @Override
     public Selection getSelection() {
-        // TODO Auto-generated method stub
-        return null;
+        if (nodes.length == 0) {
+            return null;
+        }
+        int start = nodes[nodes.length / 2].getID();
+        int end = nodes[nodes.length / 2 + 1].getID();
+        return new Selection(Coordinates.interpolate(nodes[nodes.length / 2].getPos(),
+                   nodes[nodes.length / 2 + 1].getPos(), 0.5f), start, end, 0.5f, (name != null) ? name : 
+                       Coordinates.interpolate(nodes[nodes.length / 2].getPos(),
+                               nodes[nodes.length / 2 + 1].getPos(), 0.5f).toString());
     }
 
     @Override

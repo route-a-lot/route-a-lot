@@ -30,11 +30,13 @@ public class RoutingScalTest {
     
     @Before
     public void initialize() throws Exception {
+        System.out.println("starte import");
         State.getInstance().resetMap();
         loader = new OSMLoader(State.getInstance());
-        loader.importMap(new File("./test/resources/karlsruhe_big.osm"), new Progress());
+        loader.importMap(new File("./test/resources/karlsruhe_small.osm"), new Progress());
         Precalculator.precalculate(new Progress());
         graph = State.getInstance().getLoadedGraph();
+        System.out.println("import abgeschlossen");
     }
     
     @Test

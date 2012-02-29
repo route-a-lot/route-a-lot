@@ -63,6 +63,8 @@ public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private static final int OPTIMIZE_WARN_LIMIT = 12;
+
+    public static final int END_POSITION = -1;
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea, routingSpeedTab, speedTabTopArea, routingButtonPanel, importOptions, availableMaps;
@@ -260,8 +262,10 @@ public class GUI extends JFrame {
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     popupIndex = 0;
                     navComp = fieldStartNode;
-                    Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
-                            new TextEvent(fieldStartNode.getText()));
+                    if (fieldStartNode.getText().length() > 2) {
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                                new TextEvent(fieldStartNode.getText()));
+                    }
                 } else {
                     enterPressed = false;
                 }
@@ -286,10 +290,17 @@ public class GUI extends JFrame {
                 if (!enterPressed) {
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
-                    popupIndex = countNavNodes() - 1;
+                    if (countNavNodes() == 1) {
+                        popupIndex = 1;
+                    } else {
+                        popupIndex = countNavNodes() - 1;
+                    }
+                    System.out.println("\n" + popupIndex + "\n");
                     navComp = fieldEndNode;
-                    Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
-                            new TextEvent(fieldEndNode.getText()));
+                    if (fieldEndNode.getText().length() > 2) {
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                                new TextEvent(fieldEndNode.getText()));
+                    }
                 } else {
                     enterPressed = false;
                 }
@@ -609,9 +620,12 @@ public class GUI extends JFrame {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
                     popupIndex = pos;
+                    System.out.println("\n" + popupIndex + "\n");
                     navComp = waypointField;
-                    Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
-                            new TextEvent(waypointField.getText()));
+                    if (waypointField.getText().length() > 2) {
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                                new TextEvent(waypointField.getText()));
+                    }
                 }
                 enterPressed = false;
             }
