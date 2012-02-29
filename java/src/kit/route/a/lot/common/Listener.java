@@ -24,15 +24,15 @@ public abstract class Listener {
         SWITCH_MAP_MODE = 19, RENDER = 20,
         SET_HIGHWAY_MALUS = 21, SET_HEIGHT_MALUS = 22,
         LIST_IMPORTED_MAPS = 23, DELETE_IMPORTED_MAP = 24,
-        PROGRESS = 25, CLOSE_APPLICATION = 26;
+        PROGRESS = 25, CANCEL_OPERATION = 26, CLOSE_APPLICATION = 27;
     
-    private static final int TYPE_COUNT = 27;
+    private static final int TYPE_COUNT = 28;
     
     private static List<Listener>[] lists;
     static {
         lists = (List<Listener>[]) new ArrayList[TYPE_COUNT];
         for (int i = 0; i < lists.length; i++) {
-            lists[i] = new ArrayList<Listener>();
+            lists[i] = new ArrayList<Listener>(1);
         }
     }
     

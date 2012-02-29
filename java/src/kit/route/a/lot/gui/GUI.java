@@ -6,12 +6,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -22,10 +27,10 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -41,6 +46,7 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.event.ChangeEvent;
@@ -67,7 +73,8 @@ public class GUI extends JFrame {
     public static final int END_POSITION = -1;
     
     // ROUTING TAB
-    private JPanel routingTab, routingTabTopArea, waypointArea, routingSpeedTab, speedTabTopArea, routingButtonPanel, importOptions, availableMaps;
+    private JPanel routingTab, routingTabTopArea, waypointArea, routingSpeedTab,
+                speedTabTopArea, routingButtonPanel, importOptions, availableMaps;
     private JTextField fieldStartNode, fieldEndNode, navComp;
     private JSpinner fieldSpeed;
     private JPopupMenu popupSearchCompletions;
@@ -91,13 +98,14 @@ public class GUI extends JFrame {
     // STATUS BAR
     private JLabel routeValues, mouseCoordinatesDisplay;
     private JProgressBar progressBar;
+    private JButton buttonCancelOperation;
 
     // NON-COMPONENT ATTRIBUTES
     private Point popupPos;
     private int popupIndex, numNavNodes = 0;
     private long taskStartTime;
     private boolean enterPressed = false;
-    private URL xIcon;
+    private Icon xIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
     /**
@@ -108,11 +116,18 @@ public class GUI extends JFrame {
     public GUI() {
         super("Route-A-Lot");  
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        URL iconFile = ClassLoader.getSystemResource("icon_sral.png");
+        URL iconFile = ClassLoader.getSystemResource("icon_sral_16.png");
         if (iconFile != null) {
             setIconImage(new ImageIcon(iconFile).getImage());
         }
-        xIcon = ClassLoader.getSystemResource("icon_sral.png");
+        iconFile = ClassLoader.getSystemResource("icon_sral_32.png");
+        if (iconFile != null) {
+            setIconImage(new ImageIcon(iconFile).getImage());
+        }
+        iconFile = ClassLoader.getSystemResource("icon_delete.png");
+        if (iconFile != null) {
+            xIcon = new ImageIcon(iconFile);
+        }
         setVisible(true);
     }
 
@@ -178,6 +193,30 @@ public class GUI extends JFrame {
         buttonPanel.add(buttonSwitchMapMode);
         buttonPanel.add(zoomSlider);
 
+        // PROGRESS ELEMENTS
+        progressBar = new JProgressBar();
+        progressBar.setStringPainted(true);
+        Listener.addListener(PROGRESS, new Listener() {
+            public void handleEvent(Event e) {
+                float progress = ((FloatEvent) e).getNumber();
+                setActive(progress < 0 || progress >= 100);
+                int time = (int)((System.currentTimeMillis() - taskStartTime) / 1000
+                                    * ((100 - progress) / progress));
+                progressBar.setValue(Util.clip((int) progress, 0, 100));
+                progressBar.setString((active) ? "" : progressBar.getValue()
+                        + "%, noch " + Util.formatSeconds(time, false));
+            }
+        });
+        mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
+        buttonCancelOperation = new JButton(xIcon);
+        buttonCancelOperation.setPreferredSize(new Dimension(20, 15));
+        buttonCancelOperation.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Listener.fireEvent(CANCEL_OPERATION, null);
+            } 
+        });
+
+        
         // AREAS
         centralArea = new JPanel(new BorderLayout());
         centralArea.add(buttonPanel, BorderLayout.NORTH);
@@ -196,27 +235,60 @@ public class GUI extends JFrame {
 
         routeValues = new JLabel();
         showRouteValues(0, 0);
-        mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
-        progressBar = new JProgressBar();
-        progressBar.setStringPainted(true);
-        Listener.addListener(PROGRESS, new Listener() {
-            public void handleEvent(Event e) {
-                float progress = ((FloatEvent) e).getNumber();
-                setActive(progress < 0 || progress >= 100);
-                int time = (int)((System.currentTimeMillis() - taskStartTime) / 1000
-                                    * ((100 - progress) / progress));
-                progressBar.setValue(Util.clip((int) progress, 0, 100));
-                progressBar.setString((active) ? "" : progressBar.getValue()
-                        + "%, noch " + Util.formatSeconds(time, false));
+        
+        JPanel progressArea = new JPanel(new BorderLayout());       
+        progressArea.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+        progressArea.setMaximumSize(new Dimension(400, 100));
+        progressArea.add(progressBar, BorderLayout.CENTER);
+        progressArea.add(buttonCancelOperation, BorderLayout.EAST);
+        
+        // GLASS PANE
+        JPanel glass =  new JPanel() {
+            private static final long serialVersionUID = 1L;
+            protected void paintComponent(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getSize().width, getSize().height);
+            }
+        };
+        glass.setLayout(new BoxLayout(glass, BoxLayout.Y_AXIS));
+        glass.setOpaque(false);
+        glass.setBackground(new Color(0, 0, 0, 80));
+        glass.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                e.consume();
+            }
+            public void mousePressed(MouseEvent e) {
+                e.consume();
+            }
+            public void mouseReleased(MouseEvent e) {
+                e.consume();
+            }      
+        });
+        glass.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                e.consume();
+            }
+            public void keyReleased(KeyEvent e) {
+                e.consume();
             }
         });
+        glass.setFocusTraversalKeysEnabled(false);
+        glass.add(Box.createGlue());
+        glass.add(progressArea);
+        glass.add(Box.createGlue());
+        setGlassPane(glass);
+        
+
+        
+       
+        
+        
+        // STATUS BAR
         JPanel statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
         statusBar.add(new JLabel("Route:"));
         statusBar.add(Box.createHorizontalStrut(10));
-        statusBar.add(routeValues);
-        statusBar.add(Box.createHorizontalStrut(130));
-        statusBar.add(progressBar);
+        statusBar.add(routeValues);    
         statusBar.add(Box.createHorizontalGlue());
         statusBar.add(mouseCoordinatesDisplay);
         statusBar.add(Box.createHorizontalStrut(10));
@@ -593,8 +665,8 @@ public class GUI extends JFrame {
      */
     private void addWaypointField(String text) {
         final JTextField waypointField = new JTextField(text);
-        JButton buttonDeleteWaypoint = new JButton("x");
-        buttonDeleteWaypoint.setPreferredSize(new Dimension(45, 15));
+        JButton buttonDeleteWaypoint = new JButton(xIcon);
+        buttonDeleteWaypoint.setPreferredSize(new Dimension(20, 15));
         final JPanel row = new JPanel(new BorderLayout());
         row.add(waypointField, BorderLayout.CENTER);
         row.add(buttonDeleteWaypoint, BorderLayout.EAST);
@@ -797,7 +869,7 @@ public class GUI extends JFrame {
     
     private void setActive(boolean value) {
         active = value;
-        setEnabled(value);     
+        getGlassPane().setVisible(!value);
     }
     
     private boolean getUserConfirmation() {

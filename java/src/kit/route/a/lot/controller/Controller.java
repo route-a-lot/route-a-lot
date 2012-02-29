@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
@@ -17,6 +20,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
+import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.RenderEvent;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.NumberEvent;
@@ -53,6 +57,9 @@ public class Controller {
     
     private static final String SRAL_EXT = ".sral";
     
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private /*Thread*/ Future<?> currentTask;
+            
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
     private static Logger logger = Logger.getLogger(Controller.class);
@@ -67,7 +74,7 @@ public class Controller {
         } catch (IOException e) {
             logger.error("Could not load library path for " + arch + ".");
             return;
-        }       
+        }
         // SYSTEM SETUP
         new Controller();
     }
@@ -129,24 +136,26 @@ public class Controller {
         Listener.addListener(IMPORT_OSM, new Listener() {
             public void handleEvent(final Event e) {
                 final File file = new File(((TextEvent) e).getText());
-                new Thread() {
+                currentTask = executorService.submit(new Runnable() {
                     public void run() {
                         Progress p = new Progress();
                         importMap(file, p);
                         p.finish(); 
                     }   
-                }.start();
+                });
+                //currentTask.start();
             } 
         });  
         Listener.addListener(OPTIMIZE_ROUTE, new Listener() {
             public void handleEvent(Event e) {
-                new Thread() {
+                currentTask = executorService.submit(new Runnable() {
                     public void run() {
                         Progress p = new Progress();
                         optimizeRoute(p);
                         p.finish();
                     }   
-                }.start();
+                });
+                //currentTask.start();
             } 
         });
         Listener.addListener(DELETE_NAVNODE, new Listener() {
@@ -160,7 +169,7 @@ public class Controller {
         });
         Listener.addListener(LOAD_MAP, new Listener() {
             public void handleEvent(final Event e) {
-                new Thread() {
+                currentTask = executorService.submit(new Runnable() {
                     public void run() {
                         String text = ((TextEvent) e).getText();
                         Progress p = new Progress();
@@ -169,7 +178,8 @@ public class Controller {
                         p.finish(); 
                         setViewToMapCenter();
                     }   
-                }.start();               
+                });
+                //currentTask.start();               
             }    
         });
         Listener.addListener(ADD_FAVORITE, new Listener() {
@@ -256,6 +266,15 @@ public class Controller {
         Listener.addListener(MAP_RESIZED, new Listener() {
             public void handleEvent(Event e) {
                 state.getActiveRenderer().resetCache();
+            }      
+        });
+        Listener.addListener(CANCEL_OPERATION, new Listener() {
+            public void handleEvent(Event e) {
+                if (currentTask != null) {
+                    currentTask.cancel(true);
+                    currentTask = null;
+                    Listener.fireEvent(Listener.PROGRESS, new FloatEvent(100));
+                }
             }      
         });
     }
