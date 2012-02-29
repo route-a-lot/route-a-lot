@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,7 +64,7 @@ public class GUI extends JFrame {
     private static final int OPTIMIZE_WARN_LIMIT = 12;
     
     // ROUTING TAB
-    private JPanel routingTab, routingTabTopArea, waypointArea;
+    private JPanel routingTab, routingTabTopArea, waypointArea, routingSpeedTab, speedTabTopArea, routingButtonPanel, importOptions, availableMaps;
     private JTextField fieldStartNode, fieldEndNode;
     private JSpinner fieldSpeed;
     private JPopupMenu popupSearchCompletions;
@@ -240,10 +241,6 @@ public class GUI extends JFrame {
         popupSearchCompletions.setBackground(Color.WHITE);
 
         // COMPONENTS
-        JLabel caption = new JLabel("<html><u>Wegpunkte:</u></html>");
-        caption.setAlignmentX(JLabel.RIGHT_ALIGNMENT); // should be left alignment, which somehow doesn't work
-
-
         fieldStartNode = new JTextField();
         fieldStartNode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -295,7 +292,7 @@ public class GUI extends JFrame {
         });
 
         buttonAddNavNode = new JButton("+");
-        buttonAddNavNode.setMaximumSize(new Dimension(200, 100));
+        buttonAddNavNode.setMaximumSize(new Dimension(50, 20));
         buttonAddNavNode.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonAddNavNode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -304,7 +301,9 @@ public class GUI extends JFrame {
             }
         });
 
-        buttonOptimizeRoute = new JButton("Reihenfolge optimieren");
+        buttonOptimizeRoute = new JButton("Optimierung");
+        buttonOptimizeRoute.setToolTipText("Knopf zur Optimierung der Zwischenhalte.");
+//        buttonOptimizeRoute.setFont(new Font("Reihenfolge optimieren", Font.PLAIN, 50));
         buttonOptimizeRoute.setMaximumSize(new Dimension(200, 100));
         buttonOptimizeRoute.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonOptimizeRoute.addActionListener(new ActionListener() {
@@ -327,33 +326,41 @@ public class GUI extends JFrame {
                         new NumberEvent(Integer.parseInt(fieldSpeed.getValue().toString())));
             }
         });
-        speedArea.add(new JLabel("<html><u>Geschwindigkeit (\u00D8):</u></html>"), BorderLayout.NORTH);
-        speedArea.add(Box.createVerticalStrut(6), BorderLayout.CENTER);
         speedArea.add(speedInternalArea, BorderLayout.SOUTH);
+        speedArea.setBorder(BorderFactory.createTitledBorder("\u00D8 - Geschwindigkeit:"));
         speedInternalArea.add(fieldSpeed);
         speedInternalArea.add(new JLabel("km/h"));
 
         // AREAS
+        routingSpeedTab = new JPanel();
+        routingSpeedTab.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        routingSpeedTab.setLayout(new BoxLayout(routingSpeedTab, BoxLayout.Y_AXIS));
+        
         routingTabTopArea = new JPanel();
         routingTabTopArea.setLayout(new BoxLayout(routingTabTopArea, BoxLayout.Y_AXIS));
-        routingTabTopArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        routingTabTopArea.setBorder(BorderFactory.createTitledBorder("Navigationspunkte"));
 
-        routingTabTopArea.add(caption);
-        routingTabTopArea.add(Box.createVerticalStrut(10));
+        routingButtonPanel = new JPanel(new BorderLayout());
+        routingButtonPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+        routingButtonPanel.add(buttonAddNavNode, BorderLayout.WEST);
+        routingButtonPanel.add(Box.createHorizontalStrut(20), BorderLayout.CENTER);
+        routingButtonPanel.add(buttonOptimizeRoute, BorderLayout.EAST);
+        
         routingTabTopArea.add(fieldStartNode);
         routingTabTopArea.add(Box.createVerticalStrut(8));
         routingTabTopArea.add(waypointArea);
         routingTabTopArea.add(Box.createVerticalStrut(3));
         routingTabTopArea.add(fieldEndNode);
-        routingTabTopArea.add(Box.createVerticalStrut(20));
-        routingTabTopArea.add(buttonAddNavNode);
-        routingTabTopArea.add(Box.createVerticalStrut(5));
-        routingTabTopArea.add(buttonOptimizeRoute);
-        routingTabTopArea.add(Box.createVerticalStrut(25));
-        routingTabTopArea.add(speedArea);
+        routingTabTopArea.add(Box.createVerticalStrut(10));
+        routingTabTopArea.add(routingButtonPanel);
+        routingTabTopArea.add(Box.createVerticalStrut(10));
+        
+        routingSpeedTab.add(routingTabTopArea);
+        routingSpeedTab.add(Box.createVerticalStrut(5));
+        routingSpeedTab.add(speedArea);
 
         routingTab = new JPanel(new BorderLayout());
-        routingTab.add(routingTabTopArea, BorderLayout.NORTH);
+        routingTab.add(routingSpeedTab, BorderLayout.NORTH);
     }
 
     /*
@@ -450,26 +457,41 @@ public class GUI extends JFrame {
 
         // AREAS
         JPanel mapTabTopArea = new JPanel();
-        mapTabTopArea.setLayout(new BoxLayout(mapTabTopArea, BoxLayout.Y_AXIS));
         mapTabTopArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mapTabTopArea.setLayout(new BoxLayout(mapTabTopArea, BoxLayout.Y_AXIS));
 
         JPanel captionHighwayMalusArea = new JPanel();
         captionHighwayMalusArea.add(captionHighwayMalus);
         JPanel captionReliefMalusArea = new JPanel();
         captionReliefMalusArea.add(captionReliefMalus);
 
-        mapTabTopArea.add(captionHighwayMalusArea);
-        mapTabTopArea.add(highwayMalusSlider);
-        mapTabTopArea.add(captionReliefMalusArea);
-        mapTabTopArea.add(reliefMalusSlider);
-        mapTabTopArea.add(Box.createVerticalStrut(20));
-        mapTabTopArea.add(buttonImportOSM);
-        mapTabTopArea.add(Box.createVerticalStrut(10));
-        mapTabTopArea.add(listChooseMap);
-        mapTabTopArea.add(Box.createVerticalStrut(10));
-        mapTabTopArea.add(buttonDeleteMap);
+        importOptions =  new JPanel();
+        importOptions.setLayout(new BoxLayout(importOptions, BoxLayout.Y_AXIS));
+        importOptions.setBorder(BorderFactory.createTitledBorder("Importoptionen"));
+        
+        importOptions.add(Box.createVerticalStrut(5));
+        importOptions.add(captionHighwayMalusArea);
+        importOptions.add(highwayMalusSlider);
+        importOptions.add(captionReliefMalusArea);
+        importOptions.add(reliefMalusSlider);
+        importOptions.add(Box.createVerticalStrut(20));
+        importOptions.add(buttonImportOSM);
+        importOptions.add(Box.createVerticalStrut(5));
+        
+        availableMaps = new JPanel();
+        availableMaps.setLayout(new BoxLayout(availableMaps, BoxLayout.Y_AXIS));
+        availableMaps.setBorder(BorderFactory.createTitledBorder("Verfügbare Karten"));
+        availableMaps.add(Box.createVerticalStrut(5));
+        availableMaps.add(listChooseMap);
+        availableMaps.add(Box.createVerticalStrut(10));
+        availableMaps.add(buttonDeleteMap);
+        availableMaps.add(Box.createVerticalStrut(5));
+        availableMaps.add(buttonActivateMap);
+        availableMaps.add(Box.createVerticalStrut(5));
+        
+        mapTabTopArea.add(importOptions);
         mapTabTopArea.add(Box.createVerticalStrut(5));
-        mapTabTopArea.add(buttonActivateMap);
+        mapTabTopArea.add(availableMaps);
 
         mapTab = new JPanel(new BorderLayout());
         mapTab.add(mapTabTopArea, BorderLayout.NORTH);
