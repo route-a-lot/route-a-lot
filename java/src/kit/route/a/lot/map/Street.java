@@ -192,6 +192,12 @@ public class Street extends MapElement implements Comparable<Street> {
         double b = Coordinates.getDistance(nodes[startNode].getPos(), pos);
         double a = Coordinates.getDistance(nodes[endNode].getPos(), pos);
         double c = Coordinates.getDistance(nodes[startNode].getPos(), nodes[endNode].getPos());
+        if (b == 0) {
+            return 0.f;
+        }
+        if (a == 0) {
+            return 1.f;
+        }
         // float h = (float)getTriangleCHeight(a, b, c);
         double angleBC = Math.acos((b * b + c * c - a * a) / (2 * b * c));
         double angleAC = Math.acos((a * a + c * c - b * b) / (2 * a * c));

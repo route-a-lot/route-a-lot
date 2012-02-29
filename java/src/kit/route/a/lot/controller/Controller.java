@@ -537,12 +537,6 @@ public class Controller {
     private void passSearchCompletion(String str) {
         guiHandler.showSearchCompletion(state.getMapInfo().suggestCompletions(str));
     }
-    
-    private void passTextRoute() {   //TODO
-        if (state.getCurrentRoute().size() != 0) {
-            ComplexInfoSupplier.getRouteDescription(state.getCurrentRoute());
-        }
-    }
   
     private void updateImportedMapsList() {
         List<String> maps = new ArrayList<String>();

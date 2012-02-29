@@ -88,5 +88,10 @@ public class Node extends MapElement {
         output.writeFloat(this.lat);
         output.writeFloat(this.lon);
     }
+    
+    @Override
+    public String toString() {
+        return "Node at " + lat + " , " + lon;
+    }
 
 }
