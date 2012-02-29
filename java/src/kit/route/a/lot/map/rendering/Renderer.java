@@ -84,7 +84,9 @@ public class Renderer {
             for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates(k * tileSize, i * tileSize);
                 Tile currentTile = prerenderTile(topLeft, tileSize, detail);
-                drawImage(ctx, topLeft, currentTile.getImage(), detail);
+                if (currentTile.getImage() != null) {
+                    drawImage(ctx, topLeft, currentTile.getImage(), detail);
+                }
             }
         }
         // DRAW OVERLAY

@@ -12,7 +12,6 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.ProgressInputStream;
 import kit.route.a.lot.controller.State;
 
 public class MapIO {

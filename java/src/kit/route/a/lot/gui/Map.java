@@ -266,6 +266,9 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (descriptionMenu.isVisible()) {
+            descriptionMenu.setVisible(false);
+        }
         oldMousePosX = e.getX();
         oldMousePosY = e.getY();  
         render();   
