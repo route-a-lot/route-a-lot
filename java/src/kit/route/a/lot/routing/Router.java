@@ -44,27 +44,30 @@ public class Router {
         
         
         /*
-        // MST
+        
+        // Note:    - works on undirected graph's only, so it might give false results.
+        // Double MST
         boolean[] seen = new boolean[size];
-        int[] edges = new int[(size - 1) * 2];    // u need exactly n-1 edges for a MST with n nodes (we need each edge twice)
+        seen[0] = true;
+        int[] edges = new int[(size - 1) * 2];    // you need exactly n-1 edges for a MST with n nodes (we need each edge twice)
         for (int i = 0; i < (size - 1) * 2; i++) {
             int min = -1;
             int shortest = -1;
             for (int j = 0; j < size*size; j++) {
                 if ((min == -1 || min > routes[j / size][j % size])     // We found a (shorter) edge
-                        && (seen[j % size] !=  true || seen[j / size] != true)  // Either the from- or the to-node hasn't been visited yet
-                        && j % size != j / size) {  // It's not a "Schlinge"
+                        && (seen[j % size] == false && seen[j / size] == true)) {   // Prim's algorithm
                     min = routes[j / size][j % size];
                     shortest = j;
                 }
             }
             if (shortest == -1) {
+                // This should NOT happen
                 logger.fatal("Debug me!");
                 return;
             }
             seen[shortest / size] = seen[shortest % size] = true;
             edges[i] = shortest;
-            edges[++i] = (shortest % size) * size + (shortest / size ) * size;   // add the reverse-edge.
+            edges[++i] = (shortest % size) * size + (shortest / size );   // add the reverse-edge.
         }
         
         // We have all edges in both directions (=> almost an Eulerian circle/path)
