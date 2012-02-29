@@ -310,7 +310,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) { // TOOD binary search instead of linear possible?
             if (endID == edges[i]) {
                 synchronized (monitors) {       // TODO bei vielen Threads mit [i] besser?
-                    arcFlags[i] |= 1 << area;
+                    arcFlags[i] |= 1 << area;   // TODO synchronised array?
                 }
             }
         }    

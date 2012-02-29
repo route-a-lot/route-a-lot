@@ -42,6 +42,68 @@ public class Router {
             }  
         }
         
+        
+        
+        /*// MST
+        boolean[] seen = new boolean[size];
+        int[] edges = new int[(size - 1) * 2];    // u need exactly n-1 edges for a MST with n nodes
+        for (int i = 0; i < size - 1; i++) {
+            int min = -1;
+            int shortest = -1;
+            for (int j = 0; j < size*size; j++) {
+                if ((min == -1 || min > routes[j / size][j % size]) 
+                        && (seen[j % size] !=  true || seen[j / size] != true)
+                        && j % size != j / size) {
+                    min = routes[j / size][j % size];
+                    shortest = j;
+                }
+            }
+            if (shortest == -1) {
+                logger.fatal("Debug me!");
+                return;
+            }
+            seen[shortest / size] = true;
+            seen[shortest % size] = true;
+            edges[i] = shortest;
+        }
+        
+        for (int i = 0; i < size - 1; i++) {
+            int mod = edges[i] % size;
+            int div = edges[i] / size;
+            edges[i + size - 1] = mod * size + div;     // reverse the edge
+        }
+        // We have all edges in both directions (=> almost an Eulerian circle)
+        int from = 0;
+        int[] choosen = new int[size];
+        seen = new boolean[size];
+        seen[0] = true;
+        int tmp = -1;   // Originaler Startknoten (wichtig bei zu überspringenden Knoten)
+        int h = 0;
+        int i = 0;
+        while (h < size - 1) {
+            while(edges[i] / size != from)
+                i++;
+            seen[from] = true;
+            if (seen[edges[i] % size] || edges[i] % size == size -1) {
+                if (tmp == -1)
+                    tmp = edges[i] / size;
+                from = edges[i] % size;
+                continue;
+            }
+            tmp = tmp == -1 ? from : tmp;
+            choosen[h++] = tmp * size + (edges[i] % size);
+            from = edges[i] % size;
+            tmp = -1;
+            i = 0;
+        }
+        // add edge to target
+        choosen[h] = from * size + size - 1;
+        int permutation[] = new int[size - 2];
+        for (i = 0; i < size - 1; i++) {
+            permutation[i] = choosen[i] % size;
+        }
+        setSelection(navigationNodes, permutation);
+        */
         int[] result = null;  // The shortest permutation (so far)
         int resultLength = -1;  
         
