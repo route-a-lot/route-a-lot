@@ -14,7 +14,6 @@ public class StringTrie<T>{
     private StringTrie<T> [] children;
     private T word;
     private int count;
-    private final String ISROOT = "$";
     private boolean suffix; 
 
     /**
@@ -29,19 +28,7 @@ public class StringTrie<T>{
         this.suffix = false;
     
     }
-    /**
-    * Root
-    */
-    
-     public StringTrie() {
-
-                this.value = ISROOT;
-                this.children = new StringTrie[27];
-        this.word = null;
-        this.count= 0;
-        this.suffix = false;
-        }
-
+   
     /*
     * build fügt den ersten Knoten in die Kinder der Wurzel ein
     */
@@ -52,27 +39,19 @@ public class StringTrie<T>{
             /* normalisieren für die sortierung*/
             str = normalize(str);
         }
-        /* else if ( !(str.endsWith("$") ) ) {
-            word = str;
-                    str = str + "$";
-            } */
-        
+       
         char cur = str.charAt(0);
-        /*Umlaute entfernen*/
-        //cur = normalize(cur);
-    
         int index = Character.getNumericValue(cur) - 10;
         if ( index < 0 || index > 25 ) {
-            //index = 27;
             System.out.println("Zeichen "+ cur + "ist nicht in alphabet enthalten");
             System.exit(0);
         }
 
         /* falls es noch keine Einträge gibt neuen Knoten erstellen */
-        StringTrie child;
+        StringTrie<T> child;
 
         if ( children[index] == null ) {
-            child = new StringTrie("$");
+            child = new StringTrie<T>("");
             count++;
         } else {
             child = children[index];
@@ -88,51 +67,37 @@ public class StringTrie<T>{
     *
     */
     private StringTrie<T> insert(StringTrie<T> parent, String str, T element) {
-        System.out.println("insert String: " + str);
         if (str.length() == 0){
-                    /*markiere Wortende*/
+            /*markiere Wortende*/
             parent.setSuffix(true);
-                        /*Wort in Blatt einfügen*/
-                        parent.setWord(element);
-            
+            /*Wort in Blatt einfügen*/
+            parent.setWord(element);
             return parent;
         }
         /* Value einfügen */
-            char cur = str.charAt(0);
+        char cur = str.charAt(0);
         parent.setValue(Character.toString(cur) );
-        /*
-        if(cur == '$'){
-            //Wortende markieren
-            parent.setSuffix(true);
-            //Wort in Blatt einfügen
-            parent.setWord(word);
-            return parent;
-        }
-        */
+        
         int index = 0;
         /* der Folgebuchstaben ist Schlüssel für den nächsten Eintrag */
         if(str.length() == 1) {
             index = 26;
         } else {
             cur = str.charAt(1);
-            System.out.println("insert Buchstabe: " + cur);
-            /* Umlaute abfangen */
-            //cur = normalize(cur); 
             index = Character.getNumericValue(cur) - 10;
             /* Sonderfälle abfangen */
             if(index < 0 || index > 25) {
-                //index = 27;
                 System.out.println("Zeichen "+ cur + "ist nicht in alphabet enthalten");
-                        System.exit(0);
+                System.exit(0);
             }
         
         }
         StringTrie<T> child;
-        System.out.println("insert at Index: " + index);
         /* neuen Knoten einfügen, bei erster Traversierung */
         if ( parent.children[index] == null) {
-            child = new StringTrie("$");
-            //parent.setCount();
+            child = new StringTrie<T>("");
+            
+           // parent.setCount();
         } else {
             child = parent.children[index]; 
         }
@@ -207,12 +172,10 @@ public class StringTrie<T>{
     * Tiefensuche
     */
     public ArrayList<T> depthFirstSearch( ArrayList<T> words, StringTrie<T> child){
-    
-            
-         //String tmp = child.getValue();
-                    if (child.getSuffix()) {
+        
+            if (child.getSuffix()) {
                 T element = child.getWord();
-                            TraverseNonTreeEdge(element, words);
+                TraverseNonTreeEdge(element, words);
             } else {
                 TraverseTreeEdge(child, words);
             }
@@ -223,7 +186,6 @@ public class StringTrie<T>{
     //public void TraverseTreeEdge(Node child, String str, String tmp, ArrayList<String> words){
     public void TraverseTreeEdge(StringTrie<T> child, ArrayList<T> words){
 
-        
         StringTrie[] children = child.getChildren();
         for(StringTrie<T> node: children) {
             if( !(node == null) ) {
@@ -245,12 +207,12 @@ public class StringTrie<T>{
             return children;
         }
     StringTrie[] dfsStartNodes = null;
-    char cur = prefix.charAt(0);
-    //cur = normalize(cur); 
+    char cur = prefix.charAt(0); 
     int index = Character.getNumericValue(cur) - 10;
     /* Sonderfälle abfangen */
         if(index < 0 || index > 25) {
-              index = 27;
+            System.out.println("Zeichen "+ cur + "ist nicht in alphabet enthalten");
+            System.exit(0);    
         }
     /*geändert, an unterschiedliche Zeichenlänge angepasst*/
     if(value.length() > 1){
@@ -282,6 +244,9 @@ public class StringTrie<T>{
     * Methode zum normalisieren des Textes
     */
     public String normalize(String str){
+        if(str == null){ 
+            return null; 
+        }
         str = str.replaceAll("ß", "ss");
         Collator collator = Collator.getInstance(Locale.GERMAN);
         collator.setStrength(Collator.PRIMARY);
@@ -293,20 +258,23 @@ public class StringTrie<T>{
                 for(int j = 1; j < alphabet.length; j++){
                 try{
                     if(collator.compare(org[i],alphabet[j]) == 0){
+                        /*normalisieren*/
                         org[i] = alphabet[j];
                         j = alphabet.length;
                     }
-                    /*Sonderfälle*/
+                    /* Zeichen ohne Sonderfallbehandlung entfernen */
                     if(j == (alphabet.length - 1) ){
                         org[i] = "";
                     }
                 } catch(ClassCastException e) {
+                    /*Zeichen die keinen Strings entsprechen entfernen*/
                     org[i] = "";
                 }
                 }       
             
         }
         str = "";
+        /*String generieren*/
         for(int j = 0; j < org.length; j++){
             str = str + org[j];
         }
