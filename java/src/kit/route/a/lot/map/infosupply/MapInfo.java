@@ -1,5 +1,7 @@
 package kit.route.a.lot.map.infosupply;
 
+import static kit.route.a.lot.common.Util.getSharedElementAtEnd;
+
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -15,7 +17,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -38,13 +39,13 @@ public class MapInfo {
     private ElementDB elementDB;
     private GeographicalOperator geographicalOperator;
     private AddressOperator addressOperator;
-    
+
     private Coordinates geoTopLeft;
     private Coordinates geoBottomRight;
-    
+
     private static boolean useDirectFile = false;
     private File outputFile;
-    
+
     Map<String, Collection<Street>> streetsForAddress = new HashMap<String, Collection<Street>>();
 
     public MapInfo() {
@@ -80,7 +81,7 @@ public class MapInfo {
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         geographicalOperator.setBounds(upLeft, bottomRight);
     }
-    
+
     /**
      * Writes the topLeft and bottomRight values of the current map to the given variables.
      * 
@@ -89,7 +90,7 @@ public class MapInfo {
         geographicalOperator.getBounds(upLeft, bottomRight);
     }
 
-    
+
     /**
      * Adds a node to the data structures.
      * 
@@ -107,7 +108,7 @@ public class MapInfo {
         elementDB.addNode(id, newNode);
         // geographicalOperator.addToBaseLayer(newNode);
     }
-    
+
     // TODO Funktion, um Nodes zu finden, die nicht gebraucht werden, und löschen
 
     /**
@@ -134,10 +135,28 @@ public class MapInfo {
                 street.setNodes(nodes);
                 elementDB.addMapElement(street);
             } else {
-                if (!findAndChangeStreetIfPossible(ids, name, wayInfo)) {
-//                    elementDB.addMapElement(street);
-//                    geographicalOperator.addToBaseLayer(street);
+                String mapId = wayInfo.getType() + wayInfo.getOneway() + wayInfo.getBicycle()
+                                            + wayInfo.getAccess() + wayInfo.getAddress().getStreet();
+                Collection<Street> streets = streetsForAddress.get(mapId);
+
+                for (int i = 0; i < ids.size(); i++) {
+                    nodes[i] = getNode(ids.get(i));
                 }
+                street.setNodes(nodes);
+
+                if (streets == null) {
+                    streets = new HashSet<Street>();
+                    streetsForAddress.put(mapId, streets);
+                } else {
+                    Iterator<Street> streetsIterator = streets.iterator();
+                    while (streetsIterator.hasNext()) {
+                        if (mergeStreetsIfPossible(street, streetsIterator.next())) {
+                            streetsIterator.remove();
+                        }
+                    }
+                }
+                streets.add(street);
+                addressOperator.add(street);
             }
         } else {
             Area area = new Area(name, wayInfo);
@@ -160,68 +179,42 @@ public class MapInfo {
     }
 
     /**
-     * Searches for a street that has the same street name as wayInfo
-     *      if a street is found and the street and the given id list share an id the found street is changed and true returned
+     * If possible (i.e. streets share a node at their end) the nodes from otherStreet are inserted into resultStreet.
      * 
-     * @param ids
-     * @param wayInfo
-     * @return true if the street was changed
+     * @param resultStreet
+     * @param otherStreet
+     * @return true if the streets were merged into resultStreet
      */
-    private boolean findAndChangeStreetIfPossible(List<Integer> ids, String name, WayInfo wayInfo) {
-        String streetName = wayInfo.getAddress().getStreet();
-        Collection<Street> streets = streetsForAddress.get(streetName);
-        
-        Street street = new Street(name, wayInfo);
-        Node[] nodes = new Node[ids.size()];
-        for (int i = 0; i < ids.size(); i++) {
-            nodes[i] = getNode(ids.get(i));
-        }
-        street.setNodes(nodes);
-
-        if (streets == null) {
-            streets = new HashSet<Street>();
-            streetsForAddress.put(streetName, streets);
-        } else {
-            for (Street otherStreet : streets) {
-                if (mergeStreetsIfPossible(street, otherStreet)) {
-                    streets.remove(otherStreet);
-                }
-            }
-        }
-        streets.add(street);
-        addressOperator.add(street);
-        return false;
-    }
-
     private boolean mergeStreetsIfPossible(Street resultStreet, Street otherStreet) {
+        // TODO also merge WayInfo
         Node[] resultNodes = resultStreet.getNodes();
         List<Integer> resultIds = new ArrayList<Integer>(resultNodes.length);
         Node[] otherNodes = otherStreet.getNodes();
         List<Integer> otherIds = new ArrayList<Integer>(otherNodes.length);
-        Node[] newNodes = new Node[otherNodes.length + resultNodes.length];
+        for (int i = 0; i < resultNodes.length; i++) {
+            resultIds.add(resultNodes[i].getID());
+        }
         for (int i = 0; i < otherNodes.length; i++) {
-            newNodes[i] = otherNodes[i];
             otherIds.add(otherNodes[i].getID());
         }
-        if (idListsShareAnId(otherIds, resultIds)) {
-            Iterator<Integer> idsIterator = resultIds.iterator();
-            for (int i = otherNodes.length; i < newNodes.length; i++) {
-                newNodes[i] = getNode(idsIterator.next());
+        Integer sharedId = getSharedElementAtEnd(otherIds, resultIds);
+        if (sharedId != null) {
+            Node[] newNodes = new Node[otherNodes.length + resultNodes.length - 1];
+
+            int resultStart = resultIds.get(0).equals(sharedId) ? resultIds.size() - 1 : 0;
+            int resultStep = resultIds.get(0).equals(sharedId) ? -1 : 1;
+            int otherStart = otherIds.get(0).equals(sharedId) ? 1 : otherIds.size() - 2;
+            int otherStep = otherIds.get(0).equals(sharedId) ? 1 : -1;
+
+            int newNodeCount = 0;
+            for (int i = resultStart; i < resultIds.size() && i >= 0; i += resultStep) {
+                newNodes[newNodeCount++] = resultNodes[i];
+            }
+            for (int i = otherStart; i < otherIds.size() && i >= 0; i += otherStep) {
+                newNodes[newNodeCount++] = otherNodes[i];
             }
             resultStreet.setNodes(newNodes);
             return true;
-        }
-        return false;
-    }
-
-    private boolean idListsShareAnId(List<Integer> list1, List<Integer> list2) {
-        // TODO algorithm could be in n*log n instead of n^2, but it has to be performance tested, if that would really be faster
-        for (Integer int1 : list1) {
-            for (Integer int2 : list2) {
-                if (int1.equals(int2)) {
-                    return true;
-                }
-            }
         }
         return false;
     }
@@ -241,7 +234,7 @@ public class MapInfo {
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
         POINode newPOI = new POINode(position, description, id);
         elementDB.addNode(id, newPOI);
-        geographicalOperator.addToOverlay(newPOI);      
+        geographicalOperator.addToOverlay(newPOI);
         addressOperator.add(newPOI);
     }
 
@@ -268,8 +261,8 @@ public class MapInfo {
     public void deleteFavorite(Coordinates position, int detailLevel, int radius) {
         elementDB.deleteFavorite(position, detailLevel, radius);
     }
-    
-    
+
+
     public POIDescription getFavoriteDescription(Coordinates position, int detailLevel, int radius) {
         return elementDB.getFavoriteDescription(position, detailLevel, radius);
     }
@@ -277,9 +270,12 @@ public class MapInfo {
     /**
      * Returns a description of the POI at the given area (little area around the given position)
      * 
-     * @param pos the position of the POI
-     * @param radius the maximum distance a POI may have to <code>pos</code>
-     * @param detailLevel the level of detail currently shown
+     * @param pos
+     *            the position of the POI
+     * @param radius
+     *            the maximum distance a POI may have to <code>pos</code>
+     * @param detailLevel
+     *            the level of detail currently shown
      * @return the description of the POI
      */
     public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
@@ -288,27 +284,31 @@ public class MapInfo {
 
     /**
      * Returns the coordinates of a given node id.
-     * @param nodeID the id of the node
+     * 
+     * @param nodeID
+     *            the id of the node
      * @return the coordinates of the node correspondenting to the give id.
      */
     public Coordinates getNodePosition(int nodeID) {
         return elementDB.getNode(nodeID).getPos();
     }
-    
+
     /**
      * Returns the Node with the given ID.
      * 
-     * @param nodeID the id of the node
+     * @param nodeID
+     *            the id of the node
      * @return the corresponding node object.
      */
     public Node getNode(int nodeID) {
         return elementDB.getNode(nodeID);
     }
-    
+
     /**
      * Returns the MapElement (but no Node!) with the given ID.
      * 
-     * @param nodeID the id of the node
+     * @param nodeID
+     *            the id of the node
      * @return the corresponding node object.
      */
     public MapElement getMapElement(int elementID) {
@@ -338,7 +338,8 @@ public class MapInfo {
     /**
      * Returns a selection to a given coordinate.
      * 
-     * @param pos the given coordinate
+     * @param pos
+     *            the given coordinate
      * @return the correspondenting selection
      */
     public Selection select(Coordinates pos) {
@@ -348,9 +349,12 @@ public class MapInfo {
     /**
      * Return the, to given coordinates, belonging MapElements of the base layer.
      * 
-     * @param zoomlevel the zoomlevel of the view
-     * @param upLeft the coordinates of the upper left corner of the view
-     * @param bottomRight the coordinates of the bottom right corner of the view
+     * @param zoomlevel
+     *            the zoomlevel of the view
+     * @param upLeft
+     *            the coordinates of the upper left corner of the view
+     * @param bottomRight
+     *            the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
     public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
@@ -360,15 +364,18 @@ public class MapInfo {
     /**
      * Return the, to given coordinates, belonging MapElements of the overlay.
      * 
-     * @param zoomlevel the zoomlevel of the view
-     * @param upLeft the coordinates of the upper left corner of the view
-     * @param bottomRight the coordinates of the bottom right corner of the view
+     * @param zoomlevel
+     *            the zoomlevel of the view
+     * @param upLeft
+     *            the coordinates of the upper left corner of the view
+     * @param bottomRight
+     *            the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
     public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         Collection<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
-        for(MapElement ele : elementDB.getFavorites()) {
-            if(ele.isInBounds(upLeft, bottomRight)) {
+        for (MapElement ele : elementDB.getFavorites()) {
+            if (ele.isInBounds(upLeft, bottomRight)) {
                 overlay.add(ele);
             }
         }
@@ -378,8 +385,10 @@ public class MapInfo {
     /**
      * Loads the map from the given stream.
      * 
-     * @param input the source stream.
-     * @throws IOException a stream read error occurred
+     * @param input
+     *            the source stream.
+     * @throws IOException
+     *             a stream read error occurred
      */
     public void loadFromInput(DataInput input) throws IOException {
         geoTopLeft = Coordinates.loadFromInput(input);
@@ -392,8 +401,10 @@ public class MapInfo {
     /**
      * Saves the map to the given stream.
      * 
-     * @param output the destination stream.
-     * @throws IOException a stream write error occurred
+     * @param output
+     *            the destination stream.
+     * @throws IOException
+     *             a stream write error occurred
      */
     public void saveToOutput(DataOutput output) throws IOException {
         geoTopLeft.saveToOutput(output);
@@ -402,7 +413,7 @@ public class MapInfo {
         geographicalOperator.saveToOutput(output);
         addressOperator.saveToOutput(output);
     }
-    
+
     public void lastElementAdded() {
         if (!useDirectFile) {
             for (Collection<Street> streets : streetsForAddress.values()) {
@@ -417,8 +428,7 @@ public class MapInfo {
         ((FileElementDB) elementDB).lastElementAdded();
         elementDB = new ArrayElementDB();
         try {
-            elementDB.loadFromInput(new DataInputStream(
-                    new BufferedInputStream(new FileInputStream(outputFile))));
+            elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(new FileInputStream(outputFile))));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -431,23 +441,23 @@ public class MapInfo {
             ((QTGeographicalOperator) geographicalOperator).printQuadTree();
         }
     }
-    
+
     public void compactifyDatastructures() {
         // todo pack elementdb as well?
         geographicalOperator.compactifyDatastructures();
     }
-    
+
     public void swapNodeIds(int id1, int id2) {
         elementDB.swapNodeIDs(id1, id2);
         if (logger.isTraceEnabled()) {
             logger.trace("Swapping node " + id1 + " and " + id2);
         }
     }
-    
+
     public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius, boolean exact) {
         return geographicalOperator.getBaseLayer(pos, radius, exact);
     }
-    
+
     public Coordinates getGeoTopLeft() {
         return geoTopLeft;
     }
@@ -455,30 +465,29 @@ public class MapInfo {
     public void setGeoTopLeft(Coordinates geoTopLeft) {
         this.geoTopLeft = geoTopLeft;
     }
-    
+
     public Coordinates getGeoBottomRight() {
         return geoBottomRight;
     }
-    
+
     public void setGeoBottomRight(Coordinates geoBottomRight) {
         this.geoBottomRight = geoBottomRight;
     }
-    
+
     @Override
     public boolean equals(Object other) {
-        if(other == this) {
+        if (other == this) {
             return true;
         }
-        if(!(other instanceof MapInfo)) {
+        if (!(other instanceof MapInfo)) {
             return false;
         }
         MapInfo mapInfo = (MapInfo) other;
-        return elementDB.equals(mapInfo.elementDB) 
-                && geographicalOperator.equals(mapInfo.geographicalOperator)    //TODO: add compares
-                && addressOperator.equals(mapInfo.addressOperator)
-                && geoTopLeft.equals(mapInfo.geoTopLeft)
+        return elementDB.equals(mapInfo.elementDB)
+                && geographicalOperator.equals(mapInfo.geographicalOperator) // TODO: add compares
+                && addressOperator.equals(mapInfo.addressOperator) && geoTopLeft.equals(mapInfo.geoTopLeft)
                 && geoBottomRight.equals(mapInfo.geoBottomRight);
     }
-               
+
 
 }

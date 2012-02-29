@@ -1,5 +1,7 @@
 package kit.route.a.lot.common;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 public class Util {
@@ -161,6 +163,25 @@ public class Util {
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+    
+    /**
+     * If list1 and list2 share an element at their end this element is returned.
+     * Otherwise null is returned.
+     * 
+     * @param list1
+     * @param list2
+     * @return the shared element if existent, null otherwise
+     */
+    public static <T> T getSharedElementAtEnd(List<T> list1, List<T> list2) {
+        for (int i = 0; i < list1.size(); i += list1.size() - 1) {
+            for (int j = 0; j < list2.size(); j += list2.size() - 1) {
+                if (list1.get(i).equals(list2.get(j))) {
+                    return list1.get(i);
+                }
+            }
+        }
+        return null;
     }
     
 }
