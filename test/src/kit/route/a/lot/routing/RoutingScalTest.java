@@ -1,10 +1,7 @@
 package kit.route.a.lot.routing;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,19 +13,24 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.OSMLoader;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 public class RoutingScalTest {
     static OSMLoader loader;
     static RoutingGraph graph;
     
-    //System.out.println("Calculated route in " + (duration / 1000) + "s");
-    
     @BeforeClass
-    public static void initialize() throws Exception {
+    public static void setUp() {
+        PropertyConfigurator.configure("config/log4j.conf");
+    }
+    
+    @Before
+    public void initialize() throws Exception {
+        State.getInstance().resetMap();
         loader = new OSMLoader(State.getInstance());
         loader.importMap(new File("./test/resources/karlsruhe_big.osm"), new Progress());
         Precalculator.precalculate(new Progress());
