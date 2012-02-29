@@ -25,6 +25,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -65,7 +66,7 @@ public class GUI extends JFrame {
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea, routingSpeedTab, speedTabTopArea, routingButtonPanel, importOptions, availableMaps;
-    private JTextField fieldStartNode, fieldEndNode;
+    private JTextField fieldStartNode, fieldEndNode, navComp;
     private JSpinner fieldSpeed;
     private JPopupMenu popupSearchCompletions;
     private JButton buttonAddNavNode, buttonOptimizeRoute;
@@ -256,6 +257,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     popupIndex = 0;
+                    navComp = fieldStartNode;
                     Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldStartNode.getText()));
                 } else {
@@ -283,6 +285,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
                     popupIndex = countNavNodes() - 1;
+                    navComp = fieldEndNode;
                     Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(fieldEndNode.getText()));
                 } else {
@@ -604,6 +607,7 @@ public class GUI extends JFrame {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
                     popupIndex = pos;
+                    navComp = waypointField;
                     Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                             new TextEvent(waypointField.getText()));
                 }
@@ -728,6 +732,7 @@ public class GUI extends JFrame {
             popupSearchCompletions.add(item);
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    navComp.setText(item.getText());
                     Listener.fireEvent(ADD_NAVNODE,
                             new NavNodeNameEvent(item.getText(), popupIndex));
                 }
