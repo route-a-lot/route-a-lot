@@ -69,7 +69,7 @@ public class Precalculator {
                     e.printStackTrace();
                 }
             }
-            logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000));
+            logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000, true));
         } else {
             graph.setAllArcFlags();
             logger.error("Failed to do precalculation");
@@ -86,8 +86,8 @@ public class Precalculator {
                 startPeriod = currentTime;
                 logger.info("Calculation of ArcFlags at " + (finishedIds * 100 / graph.getIDCount()) + "%");
                 long elapsedTime = (currentTime - startTime) / 1000;
-                logger.info("Elapsed time: " + formatSeconds(elapsedTime) + " - estimated time remaining: "
-                        + formatSeconds((long)(elapsedTime  * ((graph.getIDCount() / (double) finishedIds) - 1))));
+                logger.info("Elapsed time: " + formatSeconds(elapsedTime, true) + " - estimated time remaining: "
+                        + formatSeconds((long)(elapsedTime  * ((graph.getIDCount() / (double) finishedIds) - 1)), true));
             }
         }
     }

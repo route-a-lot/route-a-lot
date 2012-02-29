@@ -68,7 +68,7 @@ public class OSMLoader {
      *            the osm File to be imported
      * @param progress 
      */
-    public void importMap(File file, Progress p) {
+    public void importMap(File file, Progress progress) {
         // TODO handle progress
         logger.info("Importing " + file);
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -134,7 +134,7 @@ public class OSMLoader {
                 return;
             }
         }
-        p.addProgress(0.05);
+        progress.addProgress(0.001);
 
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
@@ -984,7 +984,7 @@ public class OSMLoader {
         try {
             inputStream.close();
             inputStream = new BufferedInputStream(new ProgressInputStream(
-                    new FileInputStream(file), p.createSubProgress(0.6), file.length()));
+                    new FileInputStream(file), progress.createSubProgress(0.899), file.length()));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         } catch (IOException e) {
@@ -1025,7 +1025,7 @@ public class OSMLoader {
             uniqueEdgeStartIDs[i] = uniqueEdgeStartIds.get(i);
             uniqueEdgeEndIDs[i] = uniqueEdgeEndIds.get(i);
         }
-        p.addProgress(0.15);
+        progress.addProgress(0.04);
         
         for (int i = 0; i < startIDs.length; i++) {
             if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
@@ -1038,11 +1038,11 @@ public class OSMLoader {
                 logger.error("Added an edge with weight < 0");
             }
         }
-        p.addProgress(0.05);
+        progress.addProgress(0.01);
 
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
         state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
-        p.addProgress(0.15);
+        progress.addProgress(0.05);
     }
     
 }

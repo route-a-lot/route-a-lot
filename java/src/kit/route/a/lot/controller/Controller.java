@@ -288,13 +288,13 @@ public class Controller {
         } else {
             state.resetMap();
             System.gc();
-            new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.005));
-            Precalculator.precalculate(p.createSubProgress(0.994));
+            new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.0004));
+            Precalculator.precalculate(p.createSubProgress(0.9995));
             state.getMapInfo().compactifyDatastructures();
             state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
                     + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {
-                MapIO.saveMap(state.getLoadedMapFile(), p.createSubProgress(0.001));
+                MapIO.saveMap(state.getLoadedMapFile(), p.createSubProgress(0.0001));
             } catch (IOException e) {
                 logger.error("Could not save imported map to file.");
             }

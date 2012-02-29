@@ -201,7 +201,7 @@ public class GUI extends JFrame {
                                     * ((100 - progress) / progress));
                 progressBar.setValue(Util.clip((int) progress, 0, 100));
                 progressBar.setString((active) ? "" : progressBar.getValue()
-                        + "%, noch " + Util.formatSecondsRegular(time));
+                        + "%, noch " + Util.formatSeconds(time, false));
             }
         });
         JPanel statusBar = new JPanel();
@@ -722,7 +722,7 @@ public class GUI extends JFrame {
      */
     public void showRouteValues(int length, int duration) {
         String output = String.format("%1$3.1f km / ", length / 1000f);
-        routeValues.setText("(" + output + Util.formatSecondsRegular(duration) + ")");
+        routeValues.setText("(" + output + Util.formatSeconds(duration, false) + ")");
     }
     
     /**

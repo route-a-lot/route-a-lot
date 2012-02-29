@@ -127,33 +127,25 @@ public class Util {
         return result;
     }
     
-    public static String formatSeconds(long dSeconds) {
+    public static String formatSeconds(long dSeconds, boolean exact) {
         int iSeconds = (int) dSeconds;
         int seconds = iSeconds % 60;
         int minutes = iSeconds / 60 % 60;
         int hours = iSeconds / 3600 % 24;
         int days = iSeconds / 86400;
-        String sSeconds = "";
-        String sMinutes = "";
-        String sHours = "";
-        String sDays = "";
-        if (days == 0) {
-            if (hours == 0) {
-                if (minutes == 0) {
-                    sSeconds = seconds + "s";
-                    return sSeconds;
-                } else {
-                    sMinutes = minutes + "min " + sSeconds;
-                    return sMinutes;
-                }
-            } else {
-                sHours = hours + "h " + sMinutes;
-                return sHours;
-            }
-        } else {
-            sDays = days + "d " + sHours;
-            return sDays;
+        String sSeconds = seconds + "s";
+        if (days == 0 && hours == 0 && minutes == 0) {
+            return sSeconds;
         }
+        String sMinutes = minutes + "min " + sSeconds;
+        if (days == 0 && hours == 0) {
+            return sMinutes;
+        }
+        String sHours = hours + "h " + (exact ? sMinutes : minutes + "min ");
+        if (days == 0) {
+            return sHours;
+        }
+        return days + "d " + (exact ? sHours : hours + "h ");
     }
     
     public static  void printMemoryInformation() {
