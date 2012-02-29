@@ -26,7 +26,7 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 200;
-    private static final boolean THREADED = true;
+    private static final boolean THREADED = false;
     
     /**
      * A cache storing tiles that were previously drawn.
@@ -218,7 +218,6 @@ public class Renderer {
                 graphics.setColor(new Color(0, true));
                 graphics.fillRect(0, 0, width, height);
                 
-                // TODO refactor: its not very good using the method from Street better would be for example Util again
                 routeNodes = Street.simplifyNodes(routeNodes, Projection.getZoomFactor(detail) * 3);
                 float currentRouteSize = routeSize / Projection.getZoomFactor(detail / 2);
                 float currentRouteSizeUnderlay = (routeSize + 2) / Projection.getZoomFactor(detail / 2);

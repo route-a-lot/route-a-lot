@@ -8,8 +8,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -38,6 +44,8 @@ public class MapInfo {
     
     private static boolean useDirectFile = false;
     private File outputFile;
+    
+    Map<String, Collection<Street>> streetsForAddress = new HashMap<String, Collection<Street>>();
 
     public MapInfo() {
         elementDB = new ArrayElementDB();
@@ -126,13 +134,10 @@ public class MapInfo {
                 street.setNodes(nodes);
                 elementDB.addMapElement(street);
             } else {
-                for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = getNode(ids.get(i));
+                if (!findAndChangeStreetIfPossible(ids, name, wayInfo)) {
+//                    elementDB.addMapElement(street);
+//                    geographicalOperator.addToBaseLayer(street);
                 }
-                street.setNodes(nodes);
-                elementDB.addMapElement(street);
-                geographicalOperator.addToBaseLayer(street);
-                addressOperator.add(street);
             }
         } else {
             Area area = new Area(name, wayInfo);
@@ -155,6 +160,73 @@ public class MapInfo {
     }
 
     /**
+     * Searches for a street that has the same street name as wayInfo
+     *      if a street is found and the street and the given id list share an id the found street is changed and true returned
+     * 
+     * @param ids
+     * @param wayInfo
+     * @return true if the street was changed
+     */
+    private boolean findAndChangeStreetIfPossible(List<Integer> ids, String name, WayInfo wayInfo) {
+        String streetName = wayInfo.getAddress().getStreet();
+        Collection<Street> streets = streetsForAddress.get(streetName);
+        
+        Street street = new Street(name, wayInfo);
+        Node[] nodes = new Node[ids.size()];
+        for (int i = 0; i < ids.size(); i++) {
+            nodes[i] = getNode(ids.get(i));
+        }
+        street.setNodes(nodes);
+
+        if (streets == null) {
+            streets = new HashSet<Street>();
+            streetsForAddress.put(streetName, streets);
+        } else {
+            for (Street otherStreet : streets) {
+                if (mergeStreetsIfPossible(street, otherStreet)) {
+                    streets.remove(otherStreet);
+                }
+            }
+        }
+        streets.add(street);
+        addressOperator.add(street);
+        return false;
+    }
+
+    private boolean mergeStreetsIfPossible(Street resultStreet, Street otherStreet) {
+        Node[] resultNodes = resultStreet.getNodes();
+        List<Integer> resultIds = new ArrayList<Integer>(resultNodes.length);
+        Node[] otherNodes = otherStreet.getNodes();
+        List<Integer> otherIds = new ArrayList<Integer>(otherNodes.length);
+        Node[] newNodes = new Node[otherNodes.length + resultNodes.length];
+        for (int i = 0; i < otherNodes.length; i++) {
+            newNodes[i] = otherNodes[i];
+            otherIds.add(otherNodes[i].getID());
+        }
+        if (idListsShareAnId(otherIds, resultIds)) {
+            Iterator<Integer> idsIterator = resultIds.iterator();
+            for (int i = otherNodes.length; i < newNodes.length; i++) {
+                newNodes[i] = getNode(idsIterator.next());
+            }
+            resultStreet.setNodes(newNodes);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean idListsShareAnId(List<Integer> list1, List<Integer> list2) {
+        // TODO algorithm could be in n*log n instead of n^2, but it has to be performance tested, if that would really be faster
+        for (Integer int1 : list1) {
+            for (Integer int2 : list2) {
+                if (int1.equals(int2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Adds a point of interest to the data structures.
      * 
      * @param position
@@ -170,6 +242,7 @@ public class MapInfo {
         POINode newPOI = new POINode(position, description, id);
         elementDB.addNode(id, newPOI);
         geographicalOperator.addToOverlay(newPOI);      
+        addressOperator.add(newPOI);
     }
 
     /**
@@ -332,6 +405,13 @@ public class MapInfo {
     
     public void lastElementAdded() {
         if (!useDirectFile) {
+            for (Collection<Street> streets : streetsForAddress.values()) {
+                for (Street street : streets) {
+                    addressOperator.add(street);
+                    elementDB.addMapElement(street);
+                    geographicalOperator.addToBaseLayer(street);
+                }
+            }
             return;
         }
         ((FileElementDB) elementDB).lastElementAdded();
