@@ -14,7 +14,8 @@ public class StringTrie<T>{
     private StringTrie<T> [] children;
     private T word;
     private int count;
-    private boolean suffix; 
+    private boolean suffix;
+    private final String VALUE = "";
 
     /**
     * Konstruktor
@@ -28,6 +29,18 @@ public class StringTrie<T>{
         this.suffix = false;
     
     }
+    /**
+     * Konstruktor
+     */
+     public StringTrie() {
+
+         this.value = VALUE;
+         this.children = new StringTrie[27]; 
+         this.word = null;
+         this.count = 0;
+         this.suffix = false;
+     
+     }
    
     /*
     * build fügt den ersten Knoten in die Kinder der Wurzel ein
