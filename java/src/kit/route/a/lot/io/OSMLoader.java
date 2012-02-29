@@ -875,7 +875,7 @@ public class OSMLoader {
                 } else if (qName.equalsIgnoreCase("osm")) {
                     String version = attributes.getValue("version");
                     if (!version.equals("0.6")) {
-                        logger.debug("OSM-Version is " + version);
+                        logger.warn("OSM-Version is " + version);
                     }
                 } else {
                     logger.trace("Element start ignored: " + qName);

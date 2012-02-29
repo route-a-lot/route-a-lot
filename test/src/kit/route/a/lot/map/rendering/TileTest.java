@@ -36,7 +36,7 @@ public class TileTest {
         assertArrayEquals(expectedNodesOther, otherTile.getRelevantNodesForStreet(allNodes));
     }
     
-    @Test
+//    @Test
     public void testPrerenderPerformance() {
         MapInfoMock mapInfoMock = new MapInfoMock();;
         Tile myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
