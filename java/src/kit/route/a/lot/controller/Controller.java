@@ -83,7 +83,7 @@ public class Controller {
         final Progress p = new Progress();
         
         // REGISTER LISTENERS
-        addGUIListeners(); 
+        addListeners(); 
         
         // IMPORT HEIGHT DATA    
         Util.startTimer();
@@ -114,7 +114,7 @@ public class Controller {
         p.finish();
     }
     
-    private void addGUIListeners() {
+    private void addListeners() {
         Listener.addListener(ADD_NAVNODE, new Listener() {
             public void handleEvent(Event e) {
                 if (e instanceof PositionNumberEvent) {
@@ -277,6 +277,12 @@ public class Controller {
                     currentTask = null;
                     Listener.fireEvent(Listener.PROGRESS, new FloatEvent(100));
                 }
+            }      
+        });
+        Listener.addListener(NEW_ROUTE, new Listener() {
+            public void handleEvent(Event e) {
+                calculateRoute();
+                guiHandler.updateNavNodes(state.getNavigationNodes());
             }      
         });
     }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import static kit.route.a.lot.common.Util.*;
@@ -21,11 +22,44 @@ public class Router {
     }
     
     public static void optimizeRoute(List<Selection> navigationNodes, Progress p) {
+        int MAX = 12;
         int size = navigationNodes.size();
         int faculty = fak(size - 1);
         if (size < 4) {
             return;
         }
+
+        
+        // Greedy
+        int[] permutation = new int[size - 2];
+        int from = 0;
+        int length;
+        boolean[] seen = new boolean[size];
+        int tmp = -1;
+        int total = 0;
+        for (int i = 0; i < size - 2; i++) {
+            int min = -1;
+            seen[from] = true;
+            for (int j = 1; j < size - 1; j++) {
+                length = fromAToB(navigationNodes.get(from), navigationNodes.get(j)).getLength();
+                if ((min == -1 || min > length) && !seen[j]) {
+                    min = length;
+                    tmp = j;
+                }
+            }
+            if (tmp == -1)
+                logger.fatal("Debug me!");
+            from = tmp;
+            total += min;
+            permutation[i] = from;
+        }
+        int min = totalLength(navigationNodes);
+        if (total < min) {
+            setSelection(navigationNodes, permutation);
+            min = total;
+        }
+        
+        // perfect
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         double progressRatio = ((double) faculty) / (faculty + (size * size * size));
         for (int j = 0; j < size; j++) {
@@ -41,70 +75,6 @@ public class Router {
                 }  
             }  
         }
-        
-        
-        /*
-        
-        // Note:    - works on undirected graph's only, so it might give false results.
-        // Double MST
-        boolean[] seen = new boolean[size];
-        seen[0] = true;
-        int[] edges = new int[(size - 1) * 2];    // you need exactly n-1 edges for a MST with n nodes (we need each edge twice)
-        for (int i = 0; i < (size - 1) * 2; i++) {
-            int min = -1;
-            int shortest = -1;
-            for (int j = 0; j < size*size; j++) {
-                if ((min == -1 || min > routes[j / size][j % size])     // We found a (shorter) edge
-                        && (seen[j % size] == false && seen[j / size] == true)) {   // Prim's algorithm
-                    min = routes[j / size][j % size];
-                    shortest = j;
-                }
-            }
-            if (shortest == -1) {
-                // This should NOT happen
-                logger.fatal("Debug me!");
-                return;
-            }
-            seen[shortest / size] = seen[shortest % size] = true;
-            edges[i] = shortest;
-            edges[++i] = (shortest % size) * size + (shortest / size );   // add the reverse-edge.
-        }
-        
-        // We have all edges in both directions (=> almost an Eulerian circle/path)
-        int from = 0;
-        int[] choosen = new int[size];
-        seen = new boolean[size];
-        seen[0] = true;
-        int tmp = -1;   // temporary starting-vertex (for skipping already visited nodes)
-        int h = 0;  // counter for number of found edges
-        int i = 0;
-        while (h < size - 1) {
-            while(edges[i] / size != from)
-                i++;
-            seen[from] = true;
-            if (seen[edges[i] % size] || edges[i] % size == size - 1) {
-                // Skip seen and the last node(s)
-                tmp = tmp == -1 ? tmp = edges[i] / size: tmp;   // Only replace tmp if it hasn't been replaced yet
-                from = edges[i] % size;
-                continue;   // Note that tmp and i stay unchanged
-            }
-            tmp = tmp == -1 ? from : tmp;
-            choosen[h++] = tmp * size + (edges[i] % size);
-            from = edges[i] % size;
-            i = 0;
-            tmp = -1;
-        }
-        // add edge to target
-        choosen[h] = from * size + size - 1;
-        int permutation[] = new int[size - 2];
-        for (i = 0; i < size - 1; i++)
-            permutation[i] = choosen[i] % size;
-        setSelection(navigationNodes, permutation);
-        
-        /*/
-        int[] result = null;  // The shortest permutation (so far)
-        int resultLength = -1;  
-        
         for (int f = 0; f < faculty; f++) {
             p.addProgress(progressRatio / faculty);
             // Iterate over all permutations
@@ -125,18 +95,16 @@ public class Router {
                 // We're still missing the length from the start to the permutation as well 
                 // as from the permutation to  the target.
                 currentLength += routes[0][current[0]] + routes[current[current.length - 1]][size - 1];
-                if ((currentLength < resultLength) || (resultLength == -1)) {
+                if (currentLength < min) {
                     // We got a shorter permutation!
                     logger.debug("Length of shortest permutation (so far) "
                             + printPermutation(current) + " :" + currentLength);
-                    result = current;
-                    resultLength = currentLength;
+                    setSelection(navigationNodes, current);
+                    min = currentLength;
                 }
             }
         }
-        setSelection(navigationNodes, result);
-       // result.toString();    //result can be null, if no route was found
-        p.finish();//*/
+        p.finish();
     }
     
     private static String printPermutation(int[] permutation) {
@@ -161,7 +129,7 @@ public class Router {
             navigationNodes.add(oldNodes[mapping[i]]);
         }
         navigationNodes.add(oldNodes[oldNodes.length - 1]);
-        
+        Listener.fireEvent(Listener.NEW_ROUTE, null);
         logger.debug("Old ordering: " + Arrays.toString(oldNodes));
         logger.debug("New ordering: " + navigationNodes.toString());
     }
@@ -187,6 +155,19 @@ public class Router {
         }
         // // System.out.println(route.size());
         return result;
+    }
+    
+    private static int totalLength(List<Selection> navigationNodes){
+        int length = 0;
+        Selection prev = navigationNodes.get(0);
+        for (Selection navPoint : navigationNodes) {
+            if (prev == navPoint) {
+                continue;
+            }
+            logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
+            length += fromAToB(prev, navPoint).getLength();
+        }
+        return length;
     }
 
     private static Route fromAToB(Selection a, Selection b) {
