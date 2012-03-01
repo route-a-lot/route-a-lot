@@ -94,10 +94,10 @@ public class Street extends MapElement implements Comparable<Street> {
                         node2.getLatitude());
         // coord.sys. begins in upper left corner
         Rectangle2D.Float box =
-                new Rectangle2D.Float(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()) - 10,
-                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()) - 10, Math.abs(bottomRight
-                                .getLongitude() - topLeft.getLongitude()) + 20, Math.abs(topLeft
-                                .getLatitude() - bottomRight.getLatitude()) + 20);
+                new Rectangle2D.Float(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()),
+                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()), Math.abs(bottomRight
+                                .getLongitude() - topLeft.getLongitude()), Math.abs(topLeft
+                                .getLatitude() - bottomRight.getLatitude()));
         return box.contains(node1.getLongitude(), node1.getLatitude())
                 || box.contains(node2.getLongitude(), node2.getLatitude()) || box.intersectsLine(edge);
         // TODO pos -> neg (e.g. -180° -> 180°)

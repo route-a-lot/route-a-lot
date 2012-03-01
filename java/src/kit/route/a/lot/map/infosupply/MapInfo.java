@@ -395,7 +395,7 @@ public class MapInfo {
         geoBottomRight = Coordinates.loadFromInput(input);
         elementDB.loadFromInput(input);
         geographicalOperator.loadFromInput(input);
-        //addressOperator.loadFromInput(input);
+     //   addressOperator.loadFromInput(input);
     }
 
     /**
@@ -411,7 +411,7 @@ public class MapInfo {
         geoBottomRight.saveToOutput(output);
         elementDB.saveToOutput(output);
         geographicalOperator.saveToOutput(output);
-        //addressOperator.saveToOutput(output);
+      //  addressOperator.saveToOutput(output);
     }
 
     public void lastElementAdded() {
