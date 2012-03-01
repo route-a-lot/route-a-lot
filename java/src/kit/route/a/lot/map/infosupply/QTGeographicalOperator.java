@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import static kit.route.a.lot.common.OSMType.*;
@@ -28,7 +29,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     private static final float BASE_LAYER_MULTIPLIER = 3;
     private static final int NUM_LEVELS = 9;
-    public static boolean DRAW_FRAMES = false;
+    public static final boolean DRAW_FRAMES = false;
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     private QuadTree zoomlevels[] = new QuadTree[NUM_LEVELS];
@@ -58,8 +59,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
             bottomRight.setLongitude(zoomlevels[0].getBottomRight().getLongitude());
         }
     }
-    
-    
+       
     
     @Override
     public void addToBaseLayer(MapElement element) {
@@ -119,7 +119,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         /*if (logger.isTraceEnabled()) {
             logger.trace("called: getBaseLayer()");
             logger.trace(" upLeft: " + upLeft);
@@ -138,29 +138,17 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         HashSet<MapElement> elements = new HashSet<MapElement>();
         zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryOverlay(upLeft, bottomRight, elements, exact);
         return elements;
     }
        
     @Override
-    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact) {
+    public Set<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact) {
         return getBaseLayer(0, pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), exact);
     }    
-    
-    /*private Collection<MapElement> getOverlay(Coordinates pos, float radius) {
-        Coordinates UL = new Coordinates(pos.getLatitude() - radius, pos.getLongitude() - radius);
-        Coordinates BR = new Coordinates(pos.getLatitude() + radius, pos.getLongitude() + radius);
-        return getOverlay(0, UL, BR);
-    }
-    
-    @Override
-    public void getOverlayAndBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> baseLayer, Set<MapElement> overlay) {
-        zoomlevels[zoomlevel].addBaseLayerAndOverlayElementsToCollection(upLeft, bottomRight, baseLayer, overlay);
-    }*/
-    
+       
     
     @Override
     public Selection select(Coordinates pos) {
@@ -231,6 +219,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
           
 
     @Override
+    public void compactifyDatastructures() {
+        for (int i = 0; i < zoomlevels.length; i++) {
+            zoomlevels[i].compactifyDataStructures();
+        }
+    } 
+    
+    
+    @Override
     public void loadFromInput(DataInput input) throws IOException {
         logger.debug("Loading " + zoomlevels.length + " zoomlevels...");
         for(int i = 0; i < zoomlevels.length; i++) {
@@ -248,20 +244,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
 
-    @Override
-    public void compactifyDatastructures() {
-        for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i].compactifyDataStructures();
-        }
-    } 
-       
-    /**
-     * Prints a string representing the quadtree.
-     */
-    public void printQuadTree() {
-        System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
-    }
-    
     public boolean equals(Object other) {
         if(other == this) {
             return true;
@@ -271,6 +253,13 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         QTGeographicalOperator comparee = (QTGeographicalOperator) other;
         return java.util.Arrays.equals(zoomlevels, comparee.zoomlevels);
-        
     }
+       
+    /**
+     * Prints a string representing the quadtree.
+     */
+    public void printQuadTree() {
+        System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
+    }
+    
 }

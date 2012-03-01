@@ -9,8 +9,8 @@ import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -91,9 +91,9 @@ public class Tile {
     }
 
     public void prerender() {
-        // query quadtree elements
-        Collection<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if
-                                                                                                     // true is faster
+        // query quadtree elements, TODO test if true is faster
+        Set<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false);
+                                                                                                     
         if (map.size() == 0) {
             return;
         }
@@ -114,7 +114,7 @@ public class Tile {
         // draw base layer elements
 
         for (MapElement element : map) {
-            if (element instanceof Area) {
+            if ((element instanceof Area) && (!((Area) element).getWayInfo().isBuilding())) {
                 draw((Area) element);
             }
         }
@@ -126,10 +126,20 @@ public class Tile {
             }
         }
         for (MapElement element : map) {
-            if (element instanceof Street) {
+            if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
                 draw((Street) element, true);
             }
-        }
+        }        
+        for (MapElement element : map) {
+            if ((element instanceof Street) && (((Street) element).getDrawingSize() >= 20)) {
+                draw((Street) element, true);
+            }
+        }     
+        for (MapElement element : map) {
+            if ((element instanceof Area) && (((Area) element).getWayInfo().isBuilding())) {
+                draw((Area) element);
+            }
+        }       
         for (MapElement element : map) {
             if (element instanceof Street) {
                 drawStreetArrows((Street) element);
@@ -145,7 +155,7 @@ public class Tile {
     }
 
     public void drawPOIs() {
-        Collection<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
+        Set<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }

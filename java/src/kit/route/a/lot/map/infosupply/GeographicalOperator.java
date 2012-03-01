@@ -3,7 +3,7 @@ package kit.route.a.lot.map.infosupply;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -48,7 +48,7 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all base layer MapElements in the queried section
      */
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
+    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
 
     /**
      * Retrieves all MapElements belonging to the overlay of the given
@@ -59,21 +59,11 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all overlay MapElements in the queried section
      */
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
+    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
     
-    public Collection<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact);
+    public Set<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact);
     
-    /*/**
-     * Returns the overlay corresponding to the last base layer query.
-     * 
-     * @param upLeft the northwestern corner of the queried boundary
-     * @param bottomRight the southeastern corner of the queried boundary
-     * @return a list containing all overlay MapElements in the queried section
-     *
-    public void getOverlayAndBaseLayer(int zoomLevel, Coordinates upLeft,
-            Coordinates bottomRight, Set<MapElement> baseLayer, Set<MapElement> overlay);*/
-
-    
+  
     /**
      * Selects the map element nearest to the given position, incrementally increasing
      * the search radius if needed.
@@ -92,6 +82,13 @@ public interface GeographicalOperator {
     
     
     /**
+     * Reduces memory consumption by trimming all internal capacities to the actually used size.
+     * Should be called when further change in the data structures is unlikely.
+     */
+    public void compactifyDatastructures();
+    
+    
+    /**
      * Loads the geographic representation of a map from the stream.
      * 
      * @param stream the source stream.
@@ -106,11 +103,5 @@ public interface GeographicalOperator {
      * @throws IOException a stream write error occurred
      */
     public void saveToOutput(DataOutput output) throws IOException;
-    
-    /**
-     * Reduces memory consumption by trimming all internal capacities to the actually used size.
-     * Should be called when further change in the data structures is unlikely.
-     */
-    public void compactifyDatastructures();
-    
+       
 }

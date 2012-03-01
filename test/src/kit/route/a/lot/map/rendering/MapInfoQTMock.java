@@ -1,6 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
-import java.util.Collection;
+import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
@@ -25,12 +25,12 @@ public class MapInfoQTMock extends MapInfoMock {
     }
     
     @Override
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         return operator.getBaseLayer(zoomlevel, upLeft, bottomRight, exact);
     }
     
     @Override
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {  
+    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {  
         return operator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
     }
     

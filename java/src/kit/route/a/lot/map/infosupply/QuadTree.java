@@ -12,28 +12,52 @@ import kit.route.a.lot.map.MapElement;
 
 public abstract class QuadTree {
 
-    // private static final byte DESCRIPTOR_QUADTREE_NULL = 0;
     private static final byte DESCRIPTOR_QUADTREE_NODE = 1;
     private static final byte DESCRIPTOR_QUADTREE_LEAF = 2;
 
     protected Coordinates upLeft;
     protected Coordinates bottomRight;
 
+    
     public QuadTree(Coordinates upLeft, Coordinates bottomRight) {
         this.upLeft = upLeft;
         this.bottomRight = bottomRight;
     }
     
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof QuadTree)) {
-            return false;
-        }
-        QuadTree comparee = (QuadTree) other;
-        return upLeft.equals(comparee.upLeft) && bottomRight.equals(comparee.bottomRight);
+    
+    /**
+     * Returns the {@link Coordinates} of the northwestern corner of the QuadTree area.
+     * @return the nortwestern quad tree corner
+     */
+    public Coordinates getUpLeft() {
+        return upLeft;
     }
+
+    /**
+     * Returns the {@link Coordinates} of the southeastern corner of the QuadTree area.
+     * @return the southeastern quad tree corner
+     */
+    public Coordinates getBottomRight() {
+        return bottomRight;
+    }
+    
+
+    /**
+     * Adds the map element to the quad tree overlay, sorting it into all leaves that are intersected. Returns
+     * false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one leaf).
+     * @param element the map element
+     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
+     */
+    protected abstract boolean addToOverlay(MapElement element);
+
+    /**
+     * Adds the map element to the quad tree base layer, sorting it into all leaves that are intersected.
+     * Returns false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one
+     * leaf).
+     * @param element the map element
+     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
+     */
+    protected abstract boolean addToBaseLayer(MapElement element);
 
     protected abstract void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements, boolean exact);
@@ -55,64 +79,18 @@ public abstract class QuadTree {
                                                            width, height);
         return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
     }
-
-    /**
-     * Returns the {@link Coordinates} of the northwestern corner of the QuadTree area.
-     * 
-     * @return the nortwestern quad tree corner
-     */
-    public Coordinates getUpLeft() {
-        return upLeft;
-    }
-
-    /**
-     * Returns the {@link Coordinates} of the southeastern corner of the QuadTree area.
-     * 
-     * @return the southeastern quad tree corner
-     */
-    public Coordinates getBottomRight() {
-        return bottomRight;
-    }
-
-    /**
-     * Adds the map element to the quad tree overlay, sorting it into all leaves that are intersected. Returns
-     * false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one leaf).
-     * 
-     * @param element
-     *            the map element
-     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
-     */
-    protected abstract boolean addToOverlay(MapElement element);
-
-    /**
-     * Adds the map element to the quad tree base layer, sorting it into all leaves that are intersected.
-     * Returns false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one
-     * leaf).
-     * 
-     * @param element
-     *            the map element
-     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
-     */
-    protected abstract boolean addToBaseLayer(MapElement element);
-
-    /**
-     * Go ask someone else. TODO what is this for?
-     * 
-     * @param offset
-     *            some offset
-     * @param last
-     *            a neat list
-     * @return the print output
-     */
-    public abstract String toString(int offset, List<Integer> last);
-
+    
     /**
      * Returns the number of {@link MapElement}s in the quad tree.
-     * 
      * @return the number of {@link MapElement}s in the quad tree
      */
-    public abstract int countElements();
+    public abstract int countElements();    
+    
+    public abstract void clear();
+    
+    protected abstract void compactifyDataStructures();
 
+    
     /**
      * Loads a new quad tree from the given stream.
      * 
@@ -183,8 +161,23 @@ public abstract class QuadTree {
      */
     protected abstract void save(DataOutput output) throws IOException;
     
-    protected abstract void compactifyDataStructures();
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof QuadTree)) {
+            return false;
+        }
+        QuadTree comparee = (QuadTree) other;
+        return upLeft.equals(comparee.upLeft) && bottomRight.equals(comparee.bottomRight);
+    }
 
-    public abstract void clear();
-
+    /**
+     * Go ask someone else. TODO what is this for?
+     * @param offset some offset
+     * @param last a neat list
+     * @return the print output
+     */
+    public abstract String toString(int offset, List<Integer> last);
 }

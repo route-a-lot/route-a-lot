@@ -13,29 +13,18 @@ import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 
 public class QTLeaf extends QuadTree {
-
+    
+    private static final int MAX_SIZE = 64;
+    
     private MapElement[] overlay;
     private MapElement[] baseLayer;
+      
     
-    private static final int MAX_SIZE = 64;     //elements per Leaf -> performance-tests
-        
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
         clear();
     }
     
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof QTLeaf)) {
-            return false;
-        }
-        QTLeaf comparee = (QTLeaf) other;
-        return super.equals(other) 
-                && java.util.Arrays.equals(overlay, comparee.overlay)
-                && java.util.Arrays.equals(baseLayer, comparee.overlay);
-    }
 
     @Override
     protected boolean addToOverlay(MapElement element) {
@@ -68,6 +57,35 @@ public class QTLeaf extends QuadTree {
         return true;
     }
     
+    @Override
+    protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
+        Set<MapElement> elememts, boolean exact) {
+        if(isInBounds(upLeft, bottomRight)) {
+            if (QTGeographicalOperator.DRAW_FRAMES) {
+                State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.blue);
+            }
+            for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {
+                if (!exact || baseLayer[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
+                    elememts.add(baseLayer[i]);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
+            Set<MapElement> elememts, boolean exact) {
+        if(isInBounds(upLeft, bottomRight)) {
+            for (int i = 0; i < countArrayElementsSize(overlay); i++) {
+                if (!exact || overlay[i].isInBounds(upLeft, bottomRight)) {
+                    elememts.add(overlay[i]);
+                }
+            }
+        }
+        
+    }
+
+    
     protected QTNode splitLeaf() {
         QTNode result = new QTNode(getUpLeft(), getBottomRight());
         for(int i = 0; i < countArrayElementsSize(baseLayer); i++) {
@@ -80,20 +98,8 @@ public class QTLeaf extends QuadTree {
     }
     
     @Override
-    public String toString(int offset, List<Integer> last) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" " + countElements() + "\n");
-        return stringBuilder.toString();
-    }
-    
-    private int countArrayElementsSize(MapElement[] elements) {
-        int size = 0;
-        for(int i = 0; i < elements.length; i++) {
-            if (elements[i] != null) {
-                size++;
-            }
-        }
-        return size;
+    public int countElements() {
+        return countArrayElementsSize(overlay) + countArrayElementsSize(baseLayer);
     }
     
     /**
@@ -113,12 +119,28 @@ public class QTLeaf extends QuadTree {
         return returnArray;
     }
     
-    @Override
-    public int countElements() {
-        return countArrayElementsSize(overlay) + countArrayElementsSize(baseLayer);
+    private int countArrayElementsSize(MapElement[] elements) {
+        int size = 0;
+        for(int i = 0; i < elements.length; i++) {
+            if (elements[i] != null) {
+                size++;
+            }
+        }
+        return size;
     }
     
+    @Override
+    public void clear() {
+        overlay = new MapElement[1];
+        baseLayer = new MapElement[1];
+    }
     
+    @Override
+    protected void compactifyDataStructures() {
+        overlay = Arrays.copyOf(overlay, countArrayElementsSize(overlay));
+        baseLayer = Arrays.copyOf(baseLayer, countArrayElementsSize(baseLayer));
+    }
+
 
     @Override
     protected void load(DataInput input) throws IOException {
@@ -155,44 +177,26 @@ public class QTLeaf extends QuadTree {
             }
         }
     }
-
-    @Override
-    protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
-        Set<MapElement> elememts, boolean exact) {
-        if(isInBounds(upLeft, bottomRight)) {
-            if (QTGeographicalOperator.DRAW_FRAMES) {
-                State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.blue);
-            }
-            for (int i = 0; i < countArrayElementsSize(baseLayer); i++) {
-                if (!exact || baseLayer[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
-                    elememts.add(baseLayer[i]);
-                }
-            }
+    
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
         }
-    }
-
-    @Override
-    protected void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts, boolean exact) {
-        if(isInBounds(upLeft, bottomRight)) {
-            for (int i = 0; i < countArrayElementsSize(overlay); i++) {
-                if (!exact || overlay[i].isInBounds(upLeft, bottomRight)) {
-                    elememts.add(overlay[i]);
-                }
-            }
+        if(!(other instanceof QTLeaf)) {
+            return false;
         }
-        
+        QTLeaf comparee = (QTLeaf) other;
+        return super.equals(other) 
+                && java.util.Arrays.equals(overlay, comparee.overlay)
+                && java.util.Arrays.equals(baseLayer, comparee.overlay);
     }
 
     @Override
-    protected void compactifyDataStructures() {
-        overlay = Arrays.copyOf(overlay, countArrayElementsSize(overlay));
-        baseLayer = Arrays.copyOf(baseLayer, countArrayElementsSize(baseLayer));
+    public String toString(int offset, List<Integer> last) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(" " + countElements() + "\n");
+        return stringBuilder.toString();
     }
-
-    @Override
-    public void clear() {
-        overlay = new MapElement[1];
-        baseLayer = new MapElement[1];
-    }
+    
 }

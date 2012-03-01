@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
@@ -357,7 +358,7 @@ public class MapInfo {
      *            the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
-    public Collection<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight, exact);
     }
 
@@ -372,8 +373,8 @@ public class MapInfo {
      *            the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
-    public Collection<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        Collection<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
+    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        Set<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
         for (MapElement ele : elementDB.getFavorites()) {
             if (ele.isInBounds(upLeft, bottomRight)) {
                 overlay.add(ele);
