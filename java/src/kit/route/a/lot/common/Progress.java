@@ -25,7 +25,7 @@ public class Progress {
     
     synchronized public void addProgress(double addProgress) {
         progress += addProgress;
-        if (Thread.currentThread().isInterrupted()) {
+        if (Thread.interrupted()) {
             throw new IllegalStateException();
         }
         if (parent != null) {

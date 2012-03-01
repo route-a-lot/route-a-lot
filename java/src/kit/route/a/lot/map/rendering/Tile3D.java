@@ -23,6 +23,7 @@ import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.POINode;
@@ -54,6 +55,11 @@ public class Tile3D extends Tile {
     private int textureID = -1, heightTextureID = -1, displaylistID = -1;
     private static int grainTextureID = -1;
     
+    // Temporary variables (only guaranteed to be valid when rendering):
+    Projection projection;
+    IHeightmap heightmap;
+    
+    
     /**
      * Creates a new quadratic 3D tile. Needed resources will not
      * be allocated here, but instead as soon as needed.
@@ -81,7 +87,7 @@ public class Tile3D extends Tile {
     @Override
     public void prerender() {
         super.prerender();
-        Projection projection = ProjectionFactory.getCurrentProjection();
+        projection = ProjectionFactory.getCurrentProjection();
         State.getInstance().getLoadedHeightmap().reduceSection(
                 projection.getGeoCoordinates(topLeft),
                 projection.getGeoCoordinates(bottomRight),
@@ -105,6 +111,9 @@ public class Tile3D extends Tile {
      * @param gl
      */
     public void render(GL gl) {
+        projection = ProjectionFactory.getCurrentProjection();
+        heightmap = State.getInstance().getLoadedHeightmap();
+        
         // BUILD TEXTURES IF NECESSARY
         if (!gl.glIsTexture(textureID)) {
             textureID = createTexture(gl, getImage(), false);
@@ -168,6 +177,9 @@ public class Tile3D extends Tile {
         }
         float[] yellow = new float[]{0.7f, 0.7f, 0};
         for (MapElement element : elements) {
+            if (!element.isInBounds(topLeft, bottomRight)) {
+                continue;
+            }
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
                 if ((poi.getInfo().getName() != null)
@@ -186,8 +198,7 @@ public class Tile3D extends Tile {
     }
     
     private void renderPin(GL gl, Coordinates position, float[] color, float size) {
-        Coordinates dimensions = position.clone().subtract(topLeft).scale(1 / tileSize);
-        float height = getHeights()[(int)dimensions.getLongitude()][(int)dimensions.getLatitude()];
+        float height = heightmap.getHeight(projection.getGeoCoordinates(position));
         gl.glPushMatrix();
         double[] model = new double[16];
         gl.glGetDoublev(GL_MODELVIEW_MATRIX, model, 0);
