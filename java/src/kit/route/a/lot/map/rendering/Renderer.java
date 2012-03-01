@@ -27,7 +27,7 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;
-    private static final boolean THREADED = false;
+    private static final boolean THREADED = true;
     private static final int DRAW_BUFFER = 200;
     private static final float ROUTE_SIZE = 20;
     
@@ -286,46 +286,6 @@ public class Renderer {
                 }
             }
         }
-        
-        
-//        for (int i = 0; i < navPoints.size(); i++) {
-//            Selection navSelection = navPoints.get(i);
-//            Node from = mapInfo.getNode(navSelection.getFrom());
-//            Node to = mapInfo.getNode(navSelection.getTo());
-//            Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
-//                    to.getPos(), navSelection.getRatio());
-//            boolean drawedFrom = false;
-//            boolean drawedTo = false;
-//            if (idIsInRoute(from.getID(), drawnRoute) && idIsInRoute(to.getID(), drawnRoute)) {
-//                if (navSelection.getRatio() < 0.5) {
-//                    drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-//                } else {
-//                    drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-//                }
-//            } else {
-//                if (idIsInRoute(from.getID(), drawnRoute)) {
-//                    drawLineBetweenCoordinates(from.getPos(), nodeOnEdge, detail, graphics);
-//                    drawedFrom = true;
-//                }
-//                if (idIsInRoute(to.getID(), drawnRoute)) {
-//                    drawLineBetweenCoordinates(to.getPos(), nodeOnEdge, detail, graphics);
-//                    drawedTo = true;
-//                }
-//            }
-//            if (drawedFrom && drawedTo && (i == 0 || i == navPoints.size() - 1)) {
-//                System.out.println("ERROR: Drawed whole selection a the end of the route.");
-//            }
-//            drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
-//        }
-    }
-    
-    private boolean idIsInRoute(int id, Integer[] route) {
-        for (int i = 0; i < route.length; i++) {
-            if (route[i].equals(id)) {
-                return true;
-            }
-        }
-        return false;
     }
     
     private void adjustBorderCoordinates(Coordinates topLeft, Coordinates bottomRight, Coordinates point, int detail) {

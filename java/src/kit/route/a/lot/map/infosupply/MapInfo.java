@@ -434,6 +434,7 @@ public class MapInfo {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        streetsForAddress = null;
     }
 
     public void printQuadTree() {
