@@ -94,13 +94,13 @@ public class Tile3D extends Tile {
                 getHeights(), HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
-        for (int x = 0; x < HEIGHT_RESOLUTION; x++) {
-            for (int y = 0; y < HEIGHT_RESOLUTION; y++) {
+        for (int x = 0; x < heights.length; x++) {
+            for (int y = 0; y < heights[x].length; y++) {
                 if (heights[x][y] < minHeight) {
-                    minHeight = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
+                    minHeight = heights[x][y];
                 }
                 if (heights[x][y] > maxHeight) {
-                    maxHeight = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
+                    maxHeight = heights[x][y];
                 }
             }
         }
@@ -158,15 +158,12 @@ public class Tile3D extends Tile {
                     gl.glEnd();
                 }
                 gl.glDisable(GL_TEXTURE_2D);
-                gl.glActiveTexture(GL_TEXTURE1);
-                gl.glDisable(GL_TEXTURE_2D);
                 gl.glActiveTexture(GL_TEXTURE0);
                 renderPOIs(gl);
-            gl.glEndList();
-        }   
+            gl.glEndList(); 
+        }    
     }
-    
-    
+        
     private void renderPOIs(GL gl) {
         Collection<MapElement> elements = State.getInstance().getMapInfo()
                     .getOverlay(detailLevel, topLeft, bottomRight, false);
@@ -342,4 +339,41 @@ public class Tile3D extends Tile {
         }
     }
    
+    public void renderBox(GL gl) {
+        gl.glDisable(GL_TEXTURE_2D);
+        int c1 = Math.abs(this.hashCode()) % 256;
+        int c2 = Math.abs(getImage().hashCode()) % 256;
+        gl.glColor4f(c1 / 256f, c2 / 256f, ((c1 + c2) * 34) % 256 / 256f, 0.3f);
+        gl.glPushMatrix();
+        gl.glTranslatef(topLeft.getLongitude(), topLeft.getLatitude(), minHeight);
+        gl.glScalef(bottomRight.getLongitude() - topLeft.getLongitude(),
+                    bottomRight.getLatitude() - topLeft.getLatitude(),
+                    maxHeight - minHeight);
+        gl.glBegin(GL_QUADS);
+            gl.glVertex3f(0, 0, 0);
+            gl.glVertex3f(0, 1, 0);
+            gl.glVertex3f(1, 1, 0);
+            gl.glVertex3f(1, 0, 0);
+            
+            gl.glVertex3f(0, 0, 1);
+            gl.glVertex3f(0, 1, 1);
+            gl.glVertex3f(1, 1, 1);
+            gl.glVertex3f(1, 0, 1);
+        gl.glEnd();
+        gl.glColor4f(1,1,0,0.2f);
+        gl.glBegin(GL_QUAD_STRIP);
+            gl.glVertex3f(0, 0, 0);
+            gl.glVertex3f(0, 0, 1);             
+            gl.glVertex3f(0, 1, 0);
+            gl.glVertex3f(0, 1, 1);           
+            gl.glVertex3f(1, 1, 0);
+            gl.glVertex3f(1, 1, 1);            
+            gl.glVertex3f(1, 0, 0);
+            gl.glVertex3f(1, 0, 1);     
+            gl.glVertex3f(0, 0, 0);
+            gl.glVertex3f(0, 0, 1);
+        gl.glEnd();
+        gl.glPopMatrix();
+    }
+    
 }

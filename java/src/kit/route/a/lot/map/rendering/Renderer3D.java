@@ -30,11 +30,12 @@ public class Renderer3D extends Renderer {
 
     private static final Logger logger = Logger.getLogger(Renderer3D.class);
     
+    private static final boolean DRAW_BOXES = false;
     private static final float
-        HEIGHT_SCALE_FACTOR = 0.6f, // factor multiplied on all height values
+        HEIGHT_SCALE_FACTOR = 4, // factor multiplied on all height values
         VIEW_HEIGHT_ADAPTION = 0.2f, // [0..1] how fast camera height adapts to ground height
-        ROUTE_HEIGHT_OFFSET = 10f, // [meters] height value added to route display
-        ROUTE_WIDTH = 10f; // [pixels] width of the line that is used for route display
+        ROUTE_HEIGHT_OFFSET = 0, // [meters] height value added to route display
+        ROUTE_WIDTH = 10; // [pixels] width of the line that is used for route display
     
     private float viewHeight = Float.NEGATIVE_INFINITY;
     private boolean cacheResetScheduled = false;
@@ -74,7 +75,7 @@ public class Renderer3D extends Renderer {
         
         // FINAL CAMERA TRANSFORMATIONS
         //gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (context.getDetailLevel() + 1));
-        gl.glScalef(1, 1, 4);
+        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR);
         float centerHeight = heightmap.getHeight(projection.getGeoCoordinates(center));
         viewHeight = (viewHeight == Float.NEGATIVE_INFINITY) ? centerHeight
                 : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
@@ -84,11 +85,26 @@ public class Renderer3D extends Renderer {
         frustum = new Frustum(gl);
         tilesRendered = 0;
         Set<Point> testedTiles = new HashSet<Point>();
-        testTile(testedTiles,
-                (int) (center.getLongitude() / tileSize),
-                (int) (center.getLatitude() / tileSize), tileSize);
+        int x = (int) (center.getLongitude() / tileSize);
+        int y = (int) (center.getLatitude() / tileSize);
+        testTile(testedTiles, x+1, y+1, tileSize);
+        testTile(testedTiles, x+1, y-1, tileSize);
+        testTile(testedTiles, x-1, y-1, tileSize);
+        testTile(testedTiles, x-1, y+1, tileSize);
         logger.debug("Tiles rendered/tested: " + tilesRendered + " / " + testedTiles.size());
+        
         drawRoute();
+        
+        // Draw boxes
+        if (DRAW_BOXES) {
+            for (Point pos: testedTiles) {
+                Coordinates topLeft = new Coordinates(pos.y * tileSize, pos.x * tileSize);
+                Tile3D tile = (Tile3D) cache.queryCache(topLeft, tileSize, context.getDetailLevel());
+                if (tile != null) {
+                    tile.renderBox(gl);
+                }
+            }
+        }
     }
     
     /**
@@ -101,15 +117,11 @@ public class Renderer3D extends Renderer {
      */
     private void testTile(Set<Point> testedTiles, int x, int y, int tileSize) {
         // ABORT IF TILE HAS ALREADY BEEN TESTED
-        Point pos = new Point(x, y);
-        if (testedTiles.contains(pos)) {
+        if (!testedTiles.add(new Point(x, y))) {
             return;
         }
-        testedTiles.add(pos);
-        // TEST (AND IF POSITIVE RENDER) TILE
-        boolean rendered = renderTile(x, y, tileSize);
-        // TEST NEIGHBORING 8 TILES
-        if (rendered) {
+        // TEST (AND IF POSITIVE RENDER) TILE, TEST NEIGHBORING 8 TILES
+        if (renderTile(x, y, tileSize)) {
             tilesRendered++;
             testTile(testedTiles, x+1, y-1, tileSize);
             testTile(testedTiles, x+1, y,   tileSize);
