@@ -13,10 +13,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -75,7 +73,7 @@ public class GUI extends JFrame {
     
     // ROUTING TAB
     private JPanel routingTab, routingTabTopArea, waypointArea, routingSpeedTab,
-                speedTabTopArea, routingButtonPanel, importOptions, availableMaps;
+                    routingButtonPanel, importOptions, availableMaps;
     private JTextField fieldStartNode, fieldEndNode, navComp;
     private JSpinner fieldSpeed;
     private JPopupMenu popupSearchCompletions;
@@ -117,6 +115,7 @@ public class GUI extends JFrame {
     public GUI() {
         super("Route-A-Lot");  
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        installLookAndFeel();
         List<Image> icons = new LinkedList<Image>();
         URL icon16 = ClassLoader.getSystemResource("icon_sral_16.png");
         URL icon32 = ClassLoader.getSystemResource("icon_sral_32.png");
@@ -642,12 +641,6 @@ public class GUI extends JFrame {
      * Opens a dialog for route file selection. Fires an event.
      */
     private void loadRouteFileChooser() {
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-        } catch (UnsupportedLookAndFeelException e) {
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         JFileChooser dialog = new JFileChooser();
         int returnValue = dialog.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -900,5 +893,19 @@ public class GUI extends JFrame {
             "an Zwischenhalten viel Zeit.", "Warnung",
             JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
             null, options, options[0]) == JOptionPane.OK_OPTION);
+    }
+
+    private void installLookAndFeel() {
+        try {
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
     }
 }

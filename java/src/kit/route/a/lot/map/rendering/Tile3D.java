@@ -117,10 +117,7 @@ public class Tile3D extends Tile {
         // BUILD TEXTURES IF NECESSARY
         if (!gl.glIsTexture(textureID)) {
             textureID = createTexture(gl, getImage(), false);
-        }
-        //if (!gl.glIsTexture(heightTextureID)) {
-        //    createHeightTexture(gl);
-        //}      
+        }  
         if (!gl.glIsTexture(grainTextureID)) {
             createGrainTexture(gl);
         }
@@ -130,13 +127,10 @@ public class Tile3D extends Tile {
         } else {
             displaylistID = gl.glGenLists(1);
             gl.glNewList(displaylistID, GL_COMPILE_AND_EXECUTE);
-                //gl.glActiveTexture(GL_TEXTURE0);
-                //gl.glEnable(GL_TEXTURE_2D);
-                //gl.glBindTexture(GL_TEXTURE_2D, heightTextureID);
-                gl.glActiveTexture(GL_TEXTURE1);
+                gl.glActiveTexture(GL_TEXTURE0);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glBindTexture(GL_TEXTURE_2D, grainTextureID);
-                gl.glActiveTexture(GL_TEXTURE2);
+                gl.glActiveTexture(GL_TEXTURE1);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
                 gl.glBindTexture(GL_TEXTURE_2D, textureID);
@@ -152,12 +146,11 @@ public class Tile3D extends Tile {
                         for (int i = 0; i < 2; i++) {
                             pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                             pos.setLongitude(topLeft.getLongitude() + (x + i) * stepSize);
-                            //gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / hRes, y / hRes);
-                            gl.glMultiTexCoord2f(GL_TEXTURE1, (x + i) / (float) GRAIN_RESOLUTION, y / (float) GRAIN_RESOLUTION);
-                            gl.glMultiTexCoord2f(GL_TEXTURE2, (x + i) / hRes, y / hRes);
+                            gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / (float) GRAIN_RESOLUTION, y / (float) GRAIN_RESOLUTION);
+                            gl.glMultiTexCoord2f(GL_TEXTURE1, (x + i) / hRes, y / hRes);
                             float height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER];
                             getHeightColor(color, height);
-                            float shade = getShade(x, y, stepSize);
+                            float shade = getShade(x + i, y, stepSize);
                             gl.glColor3f(color[0] * shade, color[1] * shade, color[2] * shade);
                             gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), height);
                         }
@@ -230,32 +223,6 @@ public class Tile3D extends Tile {
         glu.gluDeleteQuadric(quadric);     
         gl.glPopMatrix();  
     }
-    
-    /**
-     * Creates the height coloring and shading texture for this tile.
-     * @param gl the current OpenGL context
-     */
-    private void createHeightTexture(GL gl) {
-        BufferedImage heightImage = new BufferedImage(HEIGHT_RESOLUTION, HEIGHT_RESOLUTION,
-                BufferedImage.TYPE_INT_RGB);
-        float stepSize = (bottomRight.getLatitude() - topLeft.getLatitude()) / (float) (HEIGHT_RESOLUTION - 1);
-        Coordinates pos = new Coordinates();
-        float[] color = new float[3];
-        for (int x = 0; x < HEIGHT_RESOLUTION; x++) { 
-            for (int y = 0; y < HEIGHT_RESOLUTION; y++) {            
-                    pos.setLatitude(topLeft.getLatitude() + y * stepSize);
-                    pos.setLongitude(topLeft.getLongitude() + x * stepSize);
-                    float height = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
-                    getHeightColor(color, height);
-                    /*float shade = getShade(x, y, stepSize);
-                    color[0] *= shade;
-                    color[1] *= shade;
-                    color[2] *= shade;*/
-                    heightImage.setRGB(x, y, Util.RGBToInt(color));
-            }
-        }
-        heightTextureID = createTexture(gl, heightImage, false);
-    } 
     
     private float getShade(int x, int y, float stepSize) {
         float height = heights[x][y];
