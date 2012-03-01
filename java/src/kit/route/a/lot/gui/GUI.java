@@ -386,7 +386,6 @@ public class GUI extends JFrame {
                     } else {
                         popupIndex = countNavNodes();
                     }
-                    System.out.println("\n" + popupIndex + "\n");
                     navComp = fieldEndNode;
                     if (fieldEndNode.getText().length() > 2) {
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
@@ -706,7 +705,6 @@ public class GUI extends JFrame {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
                     popupIndex = pos;
-                    System.out.println("\n" + popupIndex + "\n");
                     navComp = waypointField;
                     if (waypointField.getText().length() > 2) {
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,

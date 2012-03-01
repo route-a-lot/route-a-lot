@@ -72,7 +72,6 @@ public class Router {
         }
         if (total != 0) {
             total += fromAToB(origNodes.get(permutation[permutation.length - 1]), origNodes.get(origNodes.size() - 1)).getLength();
-            System.out.println(totalLength(navigationNodes));
             min = totalLength(navigationNodes);
             if (min == 0 || total < min) {
                 setSelection(origNodes, permutation, navigationNodes);
@@ -80,15 +79,6 @@ public class Router {
             }   
         }        
         
-        for (Selection a : origNodes) {
-            System.out.println(a.getTo());
-        }
-        
-        
-        for (Selection a : State.getInstance().getNavigationNodes()) {
-            System.out.println(a.getTo());
-        }
-
         long faculty = fak(size - 1);
         if (faculty < 0) {
             logger.warn("To many stopovers, aborting");
@@ -140,9 +130,6 @@ public class Router {
             }
         }
         p.finish();
-        for (Selection a : State.getInstance().getNavigationNodes()) {
-            System.out.println(a.getTo());
-        }
     }
     
     private static String printPermutation(int[] permutation) {
