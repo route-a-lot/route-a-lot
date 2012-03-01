@@ -32,32 +32,62 @@ public class Router {
         // Greedy
         int[] permutation = new int[size - 2];
         int from = 0;
-        int length;
+        int length = Integer.MAX_VALUE;
         boolean[] seen = new boolean[size];
         int tmp = -1;
         int total = 0;
+        Route tempRoute;
         for (int i = 0; i < size - 2; i++) {
+            tmp = -1;
             int min = -1;
             seen[from] = true;
+            length = Integer.MAX_VALUE;
             for (int j = 1; j < size - 1; j++) {
-                length = fromAToB(origNodes.get(from), origNodes.get(j)).getLength();
-                if ((min == -1 || min > length) && !seen[j]) {
+                if (seen[j]) {
+                    continue;
+                }
+                if ((tempRoute = fromAToB(origNodes.get(from), origNodes.get(j))) != null) {
+                    length = tempRoute.getLength();
+                }
+                if (length != Integer.MAX_VALUE && (min == -1 || min > length)) {
                     min = length;
                     tmp = j;
                 }
             }
-            if (tmp == -1)
+            if (tmp == -1) {
+                total = 0;
                 logger.fatal("Debug me!");
+                break;
+            }
             from = tmp;
             total += min;
             permutation[i] = from;
+//            permutation[i] = tmp;
+//            seen[tmp] = true;
+//            total += min;
         }
-        int min = totalLength(navigationNodes);
-        if (total < min) {
-            setSelection(origNodes, permutation, navigationNodes);
-            min = total;
+        int min = Integer.MAX_VALUE;
+        if (fromAToB(origNodes.get(permutation[permutation.length - 1]), origNodes.get(origNodes.size() - 1)) == null) {
+            total = 0;
+        }
+        if (total != 0) {
+            total += fromAToB(origNodes.get(permutation[permutation.length - 1]), origNodes.get(origNodes.size() - 1)).getLength();
+            System.out.println(totalLength(navigationNodes));
+            min = totalLength(navigationNodes);
+            if (min == 0 || total < min) {
+                setSelection(origNodes, permutation, navigationNodes);
+                min = total;
+            }   
+        }        
+        
+        for (Selection a : origNodes) {
+            System.out.println(a.getTo());
         }
         
+        
+        for (Selection a : State.getInstance().getNavigationNodes()) {
+            System.out.println(a.getTo());
+        }
 
         long faculty = fak(size - 1);
         if (faculty < 0) {
@@ -110,6 +140,9 @@ public class Router {
             }
         }
         p.finish();
+        for (Selection a : State.getInstance().getNavigationNodes()) {
+            System.out.println(a.getTo());
+        }
     }
     
     private static String printPermutation(int[] permutation) {
@@ -170,7 +203,11 @@ public class Router {
                 continue;
             }
             logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
+            if (fromAToB(prev, navPoint) == null) {
+                return 0;
+            }
             length += fromAToB(prev, navPoint).getLength();
+            prev = navPoint;
         }
         return length;
     }
