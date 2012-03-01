@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Node;

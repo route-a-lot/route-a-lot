@@ -3,14 +3,8 @@ package kit.route.a.lot.io;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.controller.State;
-import kit.route.a.lot.heightinfo.IHeightmap;
-import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.routing.RoutingGraph;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;

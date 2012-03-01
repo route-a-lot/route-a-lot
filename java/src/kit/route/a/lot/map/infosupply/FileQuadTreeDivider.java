@@ -96,9 +96,9 @@ public class FileQuadTreeDivider {
             return result;
         };
 
-        public int getSize() {
+        /*public int getSize() {
             return size;
-        }
+        }*/
         
         public Coordinates getTopLeft() {
             return topLeft;

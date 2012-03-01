@@ -17,7 +17,7 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class MapIOTest {
 
-   private static Logger logger = Logger.getLogger(MapIOTest.class);
+   static Logger logger = Logger.getLogger(MapIOTest.class);
    private File sralMap;
    private Progress p;    
     
@@ -54,7 +54,7 @@ public class MapIOTest {
         try {
             MapIO.saveMap(sralMap, p.createSubProgress(0.3));
         } catch (IOException e) {
-            assertTrue(false && true);
+            assertTrue(false);
         }
         MapInfo original = state.getMapInfo();
         state.setMapInfo(new MapInfo());

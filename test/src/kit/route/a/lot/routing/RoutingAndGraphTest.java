@@ -166,8 +166,6 @@ public class RoutingAndGraphTest {
             stream.readInt();
         }
 
-        int fail = 0;
-
         ArrayList<Selection> selections;
         for (int i = 0; i < TARGETS_OPT; i++) { // test all saved routes
             selections = new ArrayList<Selection>();

@@ -5,12 +5,9 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.StringTrie;
 import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.Street;
 
 public class TrieAddressOperator implements AddressOperator {
 

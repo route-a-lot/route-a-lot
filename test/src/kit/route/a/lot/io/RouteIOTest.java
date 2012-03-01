@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import kit.route.a.lot.common.Coordinates;
@@ -13,9 +12,6 @@ import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
-import kit.route.a.lot.routing.Router;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;

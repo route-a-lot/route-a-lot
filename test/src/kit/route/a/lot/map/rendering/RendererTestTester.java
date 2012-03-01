@@ -81,10 +81,8 @@ public class RendererTestTester {
     
     
     public static void main(String[] args) {
-        
-        RendererTestTester tester = new RendererTestTester();
-        
-
+        //RendererTestTester tester = 
+        new RendererTestTester();
     }
 
 }

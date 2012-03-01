@@ -1,11 +1,5 @@
 package kit.route.a.lot.common;
 
-import static org.junit.Assert.assertTrue;
-
-import javax.swing.JFrame;
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.awt.Graphics;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

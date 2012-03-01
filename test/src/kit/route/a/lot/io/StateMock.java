@@ -1,6 +1,5 @@
 package kit.route.a.lot.io;
 
-import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 import kit.route.a.lot.routing.RoutingGraph;
@@ -23,7 +22,7 @@ class StateMock extends State {
         if(!(other instanceof State)) {
             return false;
         }
-        State comparee = (State) other;
+        //State comparee = (State) other;
         return super.equals(other);
     }
     

@@ -8,13 +8,11 @@ import java.util.Collection;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 
 import static org.junit.Assert.*;
@@ -75,8 +73,8 @@ public class MapInfoTest {
                 info.getBaseLayer(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f), false);
 
         assertEquals(2, a.size());
-        POINode favorit1 = new POINode(new Coordinates(10.0f, 15.0f), new POIDescription("derp", 0, "home"));
-        POINode favorit2 = new POINode(new Coordinates(20.0f, 25.0f), new POIDescription("derpina", 0, "home"));
+        //POINode favorit1 = new POINode(new Coordinates(10.0f, 15.0f), new POIDescription("derp", 0, "home"));
+        //POINode favorit2 = new POINode(new Coordinates(20.0f, 25.0f), new POIDescription("derpina", 0, "home"));
         info.addFavorite(new Coordinates(10.0f, 15.0f), new POIDescription("derp", 0, "home"));
         info.addFavorite(new Coordinates(20.0f, 25.0f), new POIDescription("derpina", 0, "home"));
         info.addFavorite(new Coordinates(0.0f, 0.0f), new POIDescription("foo", 0, "deletable"));
