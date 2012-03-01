@@ -155,7 +155,7 @@ public class Controller {
                 currentTask = executorService.submit(new Runnable() {
                     public void run() {
                         Progress p = new Progress();
-                        optimizeRoute(p);
+                        optimizeRoute(p.createSubProgress(1));
                         p.finish();
                     }   
                 });

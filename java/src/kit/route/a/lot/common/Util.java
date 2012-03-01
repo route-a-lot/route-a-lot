@@ -25,7 +25,7 @@ public class Util {
         return result;
     }*/
     
-    public static int[] permutation(int p, int n) {
+    public static int[] permutation(int p, long n) {
         // returns the nth permutation of all integers below p (and above 0).
         if (p < 0) {
             logger.warn("Can't calculate parmutations for " + p + ", returning null.");
@@ -34,11 +34,11 @@ public class Util {
         if (p == 1) {
             return new int[] {1};
         } else {
-            return insert(permutation(p-1, n / p), p, n % p);
+            return insert(permutation(p-1, n / p), p, (int) n % p);
         }
     }
     
-    public static int fak(int i) {
+    public static long fak(int i) {
         if (i <= 1) {
             return 1;
         } else {

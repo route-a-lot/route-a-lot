@@ -22,9 +22,8 @@ public class Router {
     }
     
     public static void optimizeRoute(List<Selection> navigationNodes, Progress p) {
-        int MAX = 12;
         int size = navigationNodes.size();
-        int faculty = fak(size - 1);
+        ArrayList<Selection> origNodes = new ArrayList<Selection>(navigationNodes);
         if (size < 4) {
             return;
         }
@@ -41,7 +40,7 @@ public class Router {
             int min = -1;
             seen[from] = true;
             for (int j = 1; j < size - 1; j++) {
-                length = fromAToB(navigationNodes.get(from), navigationNodes.get(j)).getLength();
+                length = fromAToB(origNodes.get(from), origNodes.get(j)).getLength();
                 if ((min == -1 || min > length) && !seen[j]) {
                     min = length;
                     tmp = j;
@@ -55,10 +54,16 @@ public class Router {
         }
         int min = totalLength(navigationNodes);
         if (total < min) {
-            setSelection(navigationNodes, permutation);
+            setSelection(origNodes, permutation, navigationNodes);
             min = total;
         }
         
+
+        long faculty = fak(size - 1);
+        if (faculty < 0) {
+            logger.warn("To many stopovers, aborting");
+            return;
+        }
         // perfect
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         double progressRatio = ((double) faculty) / (faculty + (size * size * size));
@@ -66,7 +71,7 @@ public class Router {
             for (int i = 0; i < size; i++) {
                 p.addProgress((1 - progressRatio) / (size * size));
                 // Fill the Matrix
-                Route route = fromAToB(navigationNodes.get(j), navigationNodes.get(i));
+                Route route = fromAToB(origNodes.get(j), origNodes.get(i));
                 if (route == null) {
                     logger.warn("Ignoring route ...");
                     routes[j][i] = -1;
@@ -75,14 +80,14 @@ public class Router {
                 }  
             }  
         }
-        for (int f = 0; f < faculty; f++) {
+        for (long f = 0; f < faculty; f++) {
             p.addProgress(progressRatio / faculty);
             // Iterate over all permutations
             boolean isRouteable = true;
             int[] current = permutation(size - 2, f);
             int currentLength = 0;
             for (int i = 0; i < current.length - 1; i++) {
-                int routeLength = routes[current[i]][current[i+1]];
+                long routeLength = routes[current[i]][current[i+1]];
                 if (routeLength >= 0) {
                     currentLength += routeLength;
                 } else {
@@ -99,7 +104,7 @@ public class Router {
                     // We got a shorter permutation!
                     logger.debug("Length of shortest permutation (so far) "
                             + printPermutation(current) + " :" + currentLength);
-                    setSelection(navigationNodes, current);
+                    setSelection(origNodes, current, navigationNodes);
                     min = currentLength;
                 }
             }
@@ -115,23 +120,23 @@ public class Router {
         return result;
     }
 
-    private static void setSelection(List<Selection> navigationNodes, int[] mapping) {
+    private static void setSelection(List<Selection> original, int[] mapping, List<Selection> navigationNodes) {
         // Reorders the navigationNodes
         if (mapping == null) {
             logger.warn("Got empty mapping, something failed.");
             return;
         }
         logger.info("remapping NavNodes: " + printPermutation(mapping));
-        Selection[] oldNodes = navigationNodes.toArray(new Selection[navigationNodes.size()]);
         navigationNodes.clear();
-        navigationNodes.add(oldNodes[0]);
+        navigationNodes.add(original.get(0));
         for (int i = 0; i < mapping.length; i++) {
-            navigationNodes.add(oldNodes[mapping[i]]);
+            navigationNodes.add(original.get(mapping[i]));
         }
-        navigationNodes.add(oldNodes[oldNodes.length - 1]);
+        navigationNodes.add(original.get(original.size() - 1));
         Listener.fireEvent(Listener.NEW_ROUTE, null);
-        logger.debug("Old ordering: " + Arrays.toString(oldNodes));
+        logger.debug("Old ordering: " + original.toString());
         logger.debug("New ordering: " + navigationNodes.toString());
+        return;
     }
 
     private static List<Integer> simpleRoute(List<Selection> navigationNodes){
