@@ -26,9 +26,12 @@ public class TrieAddressOperator implements AddressOperator {
             return null;
         }
         ArrayList<String> completions = new ArrayList<String>();
+       
         for (MapElement element : mapElements.search(expression)) {
-            completions.add(element.getName());
-        }        
+            String name = element.getName();
+            if(!(name == null || name.length() == 0) )
+                completions.add(element.getName());
+            }       
         return completions;
     }
 
@@ -36,30 +39,22 @@ public class TrieAddressOperator implements AddressOperator {
     public Selection select(String address) {
         // TODO Auto-generated method stub
             ArrayList<MapElement> targets = mapElements.search(address);
-            System.out.println("anzahl gefundener Strassen: " + targets.size() );
             if(targets == null || targets.size() == 0){
                 return null;
             }
             
-            Street target = (Street)targets.remove(0);
-            Node[] nodes = target.getNodes(); 
-            if(nodes == null || nodes.length == 0){
-                return null;
-            } else {
-               int index = (nodes.length)/2;  
-               return target.getSelection(target.getNodes()[index].getPos());
-            }
+           return targets.remove(0).getSelection();            
     }
  
     @Override
     public void add(MapElement element) {
-        if(element instanceof Street){
-            mapElements.insert(element.getName(),element);
-            System.out.println(element.getName());
-        }
+           mapElements.insert(element.getName(), element);
+    }
+    @Override
+    public void compactify(){
+        mapElements.compactify();
     }
     
-
    @Override
     public void loadFromInput(DataInput input) throws IOException {
        mapElements = StringTrie.loadFromInput(input);
