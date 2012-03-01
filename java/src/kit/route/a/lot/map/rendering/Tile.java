@@ -18,13 +18,12 @@ import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
-import kit.route.a.lot.map.infosupply.MapInfo;
-
 import org.apache.log4j.Logger;
 
 
@@ -33,13 +32,13 @@ public class Tile {
     private static Logger logger = Logger.getLogger(Tile.class);
     private static final int POI_SIZE = 8;
     
-    protected Coordinates topLeft, bottomRight;   
+    protected Coordinates topLeft, bottomRight;
+    protected int detailLevel, tileSize;  
+    
     private BufferedImage image = null;
-    protected int detailLevel, tileSize;
+    private boolean finished = false;
     
-    protected MapInfo mapInfo;
-    
-    // the image's graphics object (only valid during prerendering / POI drawing)
+    // Temporary variable (only guaranteed to be valid when rendering):
     private Graphics2D graphics;
 
     /**
@@ -53,13 +52,12 @@ public class Tile {
         this.bottomRight = topLeft.clone().add(tileSize, tileSize);
         this.detailLevel = detailLevel;
         this.tileSize = tileSize;
-        mapInfo = StateMock.getInstance().getMapInfo();
+    }
+
+    public Tile(Coordinates topLeft, int tileSize, int detailLevel, MapInfoMock mapInfoMock) {
+        this(topLeft, tileSize, detailLevel);
     }
     
-    public Tile(Coordinates topLeft, int tileSize, int detailLevel, MapInfo mapInfo) {
-        this(topLeft, tileSize, detailLevel);
-        this.mapInfo = mapInfo;
-    }
 
     /**
      * Returns the rendered tile image. If nothing was rendered so far,
@@ -69,20 +67,28 @@ public class Tile {
     protected BufferedImage getImage() {
         if (image == null) {
             image = new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel),
-                tileSize / Projection.getZoomFactor(detailLevel),
-                BufferedImage.TYPE_INT_ARGB);
+                tileSize / Projection.getZoomFactor(detailLevel), BufferedImage.TYPE_INT_ARGB);
         }
         return image;
     }
     
+    public boolean isFinished() {
+        return finished;
+    }
+    
+    public void markAsFinished() {
+        finished = true;
+    }
+    
     public void prerender() {
-        //QUERY QUADTREE ELEMENTS
-        Collection<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
+        // query quadtree elements
+        Collection<MapElement> map = State.getInstance().getMapInfo().getBaseLayer(
+                                    detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
         if (map.size() == 0) {
             return;
         }
            
-        //PREPARE IMAGE
+        // prepare image
         image = null;
         graphics = getImage().createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -90,13 +96,13 @@ public class Tile {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        //COLOR TILE BACKGROUND
-//        int c1 = Math.abs(this.hashCode()) % 256;
-//        int c2 = Math.abs(getImage().hashCode()) % 256;
-//        graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
-//        graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize / Projection.getZoomFactor(detailLevel));
-        //
-        //DRAW BASE LAYER ELEMENTS
+        // color tile background
+        // int c1 = Math.abs(this.hashCode()) % 256;
+        // int c2 = Math.abs(getImage().hashCode()) % 256;
+        // graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
+        // graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize / Projection.getZoomFactor(detailLevel));
+        
+        // draw base layer elements
         for (MapElement element : map) {
             if (element instanceof Area) {
                 draw((Area) element);
@@ -129,7 +135,8 @@ public class Tile {
     }
     
     public void drawPOIs() {
-        Collection<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
+        Collection<MapElement> elements = State.getInstance().getMapInfo().getOverlay(
+                                         detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }

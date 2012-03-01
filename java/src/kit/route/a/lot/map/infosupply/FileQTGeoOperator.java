@@ -38,7 +38,7 @@ public class FileQTGeoOperator {
                 allRoots[detail][layer] = divider.buildDividedQuadTree(subtreeSet);
                 FileQuadTree[] subtrees = subtreeSet.toArray(new FileQuadTree[subtreeSet.size()]);
                 
-                // pich each subtree to the current root tree
+                // pick each subtree of the current root tree
                 for (int i = 0; i < subtrees.length; i++) {
                     // add all relevant elements
                     for (MapElement ele : layers[layer]) {

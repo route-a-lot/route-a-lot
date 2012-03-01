@@ -38,7 +38,7 @@ public class TileTest {
     
 //    @Test
     public void testPrerenderPerformance() {
-        MapInfoMock mapInfoMock = new MapInfoMock();;
+        MapInfoMock mapInfoMock = new MapInfoMock();
         Tile myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
         long start;
         long duration;

@@ -12,7 +12,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Context2D;
@@ -25,26 +26,29 @@ import kit.route.a.lot.map.*;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
 public class Renderer {
-    protected static final int BASE_TILE_SIZE = 200;
+    protected static final int BASE_TILE_SIZE = 256;
     private static final boolean THREADED = false;
+    private static final int DRAW_BUFFER = 200;
+    private static final float ROUTE_SIZE = 20;
+    
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
     
     /**
      * A cache storing tiles that were previously drawn.
      */
     protected RenderCache cache;
-    protected State state;
     
+    // Route caching:
     private BufferedImage routeImage = null;
     private Coordinates routeTopLeft = new Coordinates();
     private Coordinates routeBottomRight = new Coordinates();
     private Integer[] drawnRoute = new Integer[0];
     private int drawnRouteDetail = -1;
-    private static final int drawBuffer = 200;
-    private static final float routeSize = 20;
-
     
-    
+    // Temporary variable (only guaranteed to be valid when rendering):
     public Context2D myContext;
+    
+    
     
     /**
      * Creates a new renderer.
@@ -55,11 +59,8 @@ public class Renderer {
 
     /**
      * Renders a map viewing rectangle using the given rendering context.
-     * 
-     * @param context
-     *            the rendering context
-     * @param detail
-     *            level of detail of the map view
+     * @param context the rendering context
+     * @param detail level of detail of the map view
      */
     public void render(Context context) {
         if (!(context instanceof Context2D)) {
@@ -67,7 +68,6 @@ public class Renderer {
         }
         Context2D ctx = (Context2D) context;
         myContext = ctx;
-        state = State.getInstance();
         int detail = context.getDetailLevel();
         int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
         // FILL BACKGROUND
@@ -84,7 +84,7 @@ public class Renderer {
             for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates(k * tileSize, i * tileSize);
                 Tile currentTile = prerenderTile(topLeft, tileSize, detail);
-                if (currentTile.getImage() != null) {
+                if (currentTile.isFinished()) {
                     drawImage(ctx, topLeft, currentTile.getImage(), detail);
                 }
             }
@@ -101,35 +101,35 @@ public class Renderer {
 
     /**
      * If necessary, renders and caches the tile with the specified data
-     * 
      * @return the rendered tile
      */
     private Tile prerenderTile(Coordinates topLeft, int tileSize, int detail) {
         Tile tile = cache.queryCache(topLeft, tileSize, detail);
         if (tile == null) {
             final Tile newTile = new Tile(topLeft, tileSize, detail);
+            cache.addToCache(newTile);
             if (THREADED) {
-                new Thread() {
+                executorService.submit(new Runnable() {
                     public void run() {
                         newTile.prerender();
                         newTile.drawPOIs();
+                        newTile.markAsFinished();
                         Listener.fireEvent(Listener.TILE_RENDERED, null);
-                    }
-                }.start();
+                    }   
+                });
             } else {
                 newTile.prerender();
                 newTile.drawPOIs();
-            }
-            cache.addToCache(newTile);
+                newTile.markAsFinished();
+            }            
             return newTile;
         }
         return tile;
     }
 
     /**
-     * Chooses an so far uncached tile in proximity of the visible map viewing rectangle, subsequently drawing
-     * and caching it.
-     * 
+     * Chooses an so far uncached tile in proximity of the visible map viewing rectangle,
+     * subsequently drawing and caching it.
      * @return true if a tile was drawn
      * 
      */
@@ -141,6 +141,7 @@ public class Renderer {
      * Draws the given route on the given rendering context.
      */
     private void drawRoute(Context2D context, int detail) {
+        State state = State.getInstance();
         MapInfo mapInfo = state.getMapInfo();
         Integer[] route = state.getCurrentRoute().toArray(new Integer[state.getCurrentRoute().size()]);
         List<Selection> navPoints = state.getNavigationNodes();
@@ -189,17 +190,17 @@ public class Renderer {
                 }
                 
                 // adjust border coordinates if the route is bigger than the context window
-                if (routeTopLeft.getLatitude() < context.getTopLeft().getLatitude() - drawBuffer) {
-                    routeTopLeft.setLatitude(context.getTopLeft().getLatitude() - drawBuffer);
+                if (routeTopLeft.getLatitude() < context.getTopLeft().getLatitude() - DRAW_BUFFER) {
+                    routeTopLeft.setLatitude(context.getTopLeft().getLatitude() - DRAW_BUFFER);
                 }
-                if (routeTopLeft.getLongitude() < context.getTopLeft().getLongitude() - drawBuffer) {
-                    routeTopLeft.setLongitude(context.getTopLeft().getLongitude() - drawBuffer);
+                if (routeTopLeft.getLongitude() < context.getTopLeft().getLongitude() - DRAW_BUFFER) {
+                    routeTopLeft.setLongitude(context.getTopLeft().getLongitude() - DRAW_BUFFER);
                 }
-                if (routeBottomRight.getLatitude() > context.getBottomRight().getLatitude() + drawBuffer) {
-                    routeBottomRight.setLatitude(context.getBottomRight().getLatitude() + drawBuffer);
+                if (routeBottomRight.getLatitude() > context.getBottomRight().getLatitude() + DRAW_BUFFER) {
+                    routeBottomRight.setLatitude(context.getBottomRight().getLatitude() + DRAW_BUFFER);
                 }
-                if (routeBottomRight.getLongitude() > context.getBottomRight().getLongitude() + drawBuffer) {
-                    routeBottomRight.setLongitude(context.getBottomRight().getLongitude() + drawBuffer);
+                if (routeBottomRight.getLongitude() > context.getBottomRight().getLongitude() + DRAW_BUFFER) {
+                    routeBottomRight.setLongitude(context.getBottomRight().getLongitude() + DRAW_BUFFER);
                 }
 
                 Coordinates dimensions = routeBottomRight.clone().subtract(routeTopLeft);
@@ -219,8 +220,8 @@ public class Renderer {
                 graphics.fillRect(0, 0, width, height);
                 
                 routeNodes = Street.simplifyNodes(routeNodes, Projection.getZoomFactor(detail) * 3);
-                float currentRouteSize = routeSize / Projection.getZoomFactor(detail / 2);
-                float currentRouteSizeUnderlay = (routeSize + 2) / Projection.getZoomFactor(detail / 2);
+                float currentRouteSize = ROUTE_SIZE / Projection.getZoomFactor(detail / 2);
+                float currentRouteSizeUnderlay = (ROUTE_SIZE + 2) / Projection.getZoomFactor(detail / 2);
                 
                 // draw route shadow
                 graphics.setStroke(new BasicStroke(currentRouteSizeUnderlay, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -330,7 +331,7 @@ public class Renderer {
     private void adjustBorderCoordinates(Coordinates topLeft, Coordinates bottomRight, Coordinates point, int detail) {
         float curLat = point.getLatitude();
         float curLon = point.getLongitude();
-        float buffer = routeSize * Projection.getZoomFactor(detail / 2);
+        float buffer = ROUTE_SIZE * Projection.getZoomFactor(detail / 2);
         if (curLat - buffer < topLeft.getLatitude()) {
             topLeft.setLatitude(curLat - buffer);
         }
@@ -398,7 +399,7 @@ public class Renderer {
     }
     
     private void drawNavPoints(Context2D context, int detail) {
-        List<Selection> points = state.getNavigationNodes();
+        List<Selection> points = State.getInstance().getNavigationNodes();
         int size = 7;
 
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -474,10 +475,6 @@ public class Renderer {
             return;
         }
         drawRect(myContext, topLeft, width, height, detail, c);
-    }
-    
-    public void redraw() {
-        render(myContext);
     }
     
     public void resetCache() {

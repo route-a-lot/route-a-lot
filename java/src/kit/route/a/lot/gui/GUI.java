@@ -22,6 +22,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -116,21 +117,25 @@ public class GUI extends JFrame {
     public GUI() {
         super("Route-A-Lot");  
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        URL iconFile = ClassLoader.getSystemResource("icon_sral_16.png");
-        if (iconFile != null) {
-            setIconImage(new ImageIcon(iconFile).getImage());
+        List<Image> icons = new LinkedList<Image>();
+        URL icon16 = ClassLoader.getSystemResource("icon_sral_16.png");
+        URL icon32 = ClassLoader.getSystemResource("icon_sral_32.png");
+        URL icon64 = ClassLoader.getSystemResource("icon_sral_64.png");
+        
+        if (icon16 != null) {
+            icons.add(new ImageIcon(icon16).getImage());
         }
-        iconFile = ClassLoader.getSystemResource("icon_sral_32.png");
-        if (iconFile != null) {
-            setIconImage(new ImageIcon(iconFile).getImage());
+        if (icon32 != null) {
+            icons.add(new ImageIcon(icon32).getImage());
         }
-        iconFile = ClassLoader.getSystemResource("icon_sral_64.png");
-        if (iconFile != null) {
-            setIconImage(new ImageIcon(iconFile).getImage());
+        if (icon64 != null) {
+            icons.add(new ImageIcon(icon64).getImage());
         }
-        iconFile = ClassLoader.getSystemResource("icon_delete.png");
-        if (iconFile != null) {
-            xIcon = new ImageIcon(iconFile);
+        setIconImages(icons);
+
+        URL icon_delete = ClassLoader.getSystemResource("icon_delete.png");
+        if (icon_delete != null) {
+            xIcon = new ImageIcon(icon_delete);
         }
         setVisible(true);
     }

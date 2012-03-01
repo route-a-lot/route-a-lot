@@ -58,7 +58,7 @@ public class Controller {
     private static final String SRAL_EXT = ".sral";
     
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
-    private /*Thread*/ Future<?> currentTask;
+    private Future<?> currentTask;
             
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
@@ -143,7 +143,6 @@ public class Controller {
                         p.finish(); 
                     }   
                 });
-                //currentTask.start();
             } 
         });  
         Listener.addListener(OPTIMIZE_ROUTE, new Listener() {
@@ -155,7 +154,6 @@ public class Controller {
                         p.finish();
                     }   
                 });
-                //currentTask.start();
             } 
         });
         Listener.addListener(DELETE_NAVNODE, new Listener() {
@@ -178,8 +176,7 @@ public class Controller {
                         p.finish(); 
                         setViewToMapCenter();
                     }   
-                });
-                //currentTask.start();               
+                });          
             }    
         });
         Listener.addListener(ADD_FAVORITE, new Listener() {
