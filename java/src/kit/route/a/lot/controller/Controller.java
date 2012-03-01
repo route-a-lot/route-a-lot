@@ -80,7 +80,7 @@ public class Controller {
     }
     
     private Controller() {
-        Progress p = new Progress();
+        final Progress p = new Progress();
         
         // REGISTER LISTENERS
         addGUIListeners(); 
@@ -100,7 +100,12 @@ public class Controller {
         if (state.getLoadedMapFile() == null) {
             if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
                 p.addProgress(-0.3);
-                importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
+                currentTask = executorService.submit(new Runnable() {
+                    public void run() {
+                        importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
+                    }   
+                });
+                
                 logger.info("Imported default map: " + Util.stopTimer());
             } else {
                 logger.warn("No map loaded");

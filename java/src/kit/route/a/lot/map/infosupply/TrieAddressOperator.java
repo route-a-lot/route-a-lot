@@ -14,20 +14,21 @@ import kit.route.a.lot.map.Street;
 
 public class TrieAddressOperator implements AddressOperator {
 
-    private StringTrie<MapElement> mapElements;
-    private StringTrie<String> adressDict;
+    private StringTrie mapElements;
     
     public TrieAddressOperator(){
-        this.mapElements = new StringTrie<MapElement>();
-        this.adressDict = new StringTrie<String>();
+        this.mapElements = new StringTrie();
     }
 
     @Override
     public ArrayList<String> suggestCompletions(String expression) {
-        ArrayList<String> completions = null;
-        if(expression.length() > 2){
-            completions = adressDict.search(expression);
+        if(expression.length() < 3) {
+            return null;
         }
+        ArrayList<String> completions = new ArrayList<String>();
+        for (MapElement element : mapElements.search(expression)) {
+            completions.add(element.getName());
+        }        
         return completions;
     }
 
@@ -55,19 +56,18 @@ public class TrieAddressOperator implements AddressOperator {
         if(element instanceof Street){
             mapElements.insert(element.getName(),element);
             System.out.println(element.getName());
-            adressDict.insert(element.getName(), element.getName());
         }
     }
     
 
    @Override
     public void loadFromInput(DataInput input) throws IOException {
-    //    mapElements = StringTrie.loadFromInput(input);
+       mapElements = StringTrie.loadFromInput(input);
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-      //  mapElements.saveToOutput(output);
+        mapElements.saveToOutput(output);
     }
     
     

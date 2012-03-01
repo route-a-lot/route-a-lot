@@ -1,5 +1,8 @@
 package kit.route.a.lot.common;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.lang.String;
 import java.lang.Character;
 import java.util.ArrayList;
@@ -7,45 +10,44 @@ import java.text.Collator;
 import java.util.Locale;
 import java.lang.ClassCastException;
 
-public class StringTrie<T>{
+import kit.route.a.lot.map.MapElement;
 
+public class StringTrie {
+    
+    private final static String EMPTY = "";
     
     private String value;
-    private StringTrie<T> [] children;
-    private T word;
-    private int count;
+    private MapElement word;
     private boolean suffix;
-    private final String VALUE = "";
+    private int count;
+    private StringTrie[] children;   
 
     /**
     * Konstruktor
     */
     public StringTrie(String value) {
-
         this.value = value;
         this.children = new StringTrie[27]; 
         this.word = null;
         this.count = 0;
-        this.suffix = false;
-    
+        this.suffix = false;   
     }
+    
     /**
      * Konstruktor
      */
-     public StringTrie() {
-
-         this.value = VALUE;
+    public StringTrie() {
+         this.value = EMPTY;
          this.children = new StringTrie[27]; 
          this.word = null;
          this.count = 0;
-         this.suffix = false;
-     
+         this.suffix = false;    
      }
    
     /*
     * build fügt den ersten Knoten in die Kinder der Wurzel ein
     */
-    public void insert(String str, T element){
+    public void insert(String str, MapElement element){
         if (str == null || (str.length() == 0) || element == null) {
             return;
         } else {
@@ -61,10 +63,10 @@ public class StringTrie<T>{
         }
 
         /* falls es noch keine Einträge gibt neuen Knoten erstellen */
-        StringTrie<T> child;
+        StringTrie child;
 
         if ( children[index] == null ) {
-            child = new StringTrie<T>("");
+            child = new StringTrie("");
             count++;
         } else {
             child = children[index];
@@ -79,7 +81,7 @@ public class StringTrie<T>{
     * fügt die Blätter rekursiv ein
     *
     */
-    private StringTrie<T> insert(StringTrie<T> parent, String str, T element) {
+    private StringTrie insert(StringTrie parent, String str, MapElement element) {
         if (str.length() == 0){
             /*markiere Wortende*/
             parent.setSuffix(true);
@@ -105,10 +107,10 @@ public class StringTrie<T>{
             }
         
         }
-        StringTrie<T> child;
+        StringTrie child;
         /* neuen Knoten einfügen, bei erster Traversierung */
         if ( parent.children[index] == null) {
-            child = new StringTrie<T>("");
+            child = new StringTrie("");
             
            // parent.setCount();
         } else {
@@ -147,28 +149,17 @@ public class StringTrie<T>{
     /*
     * Setter Methode für Wort
     */
-    public void setWord(T word){
+    public void setWord(MapElement word){
         this.word = word;
     }
     /*
     * Getter-Methode für Wort
     *
     */
-    public T getWord(){
+    public MapElement getWord(){
         return word;
     }
-    /*
-    * Setter Methode für count
-    */
-    public void setCount(int count){
-        this.count = count;
-    }
-    /*
-    * Getter Methode für count
-    */
-    public int getCount(){
-        return count;
-    }
+    
     /*
     * Setter Methode suffix
     */
@@ -184,10 +175,10 @@ public class StringTrie<T>{
     /*
     * Tiefensuche
     */
-    public ArrayList<T> depthFirstSearch( ArrayList<T> words, StringTrie<T> child){
+    public ArrayList<MapElement> depthFirstSearch(ArrayList<MapElement> words, StringTrie child){
         
             if (child.getSuffix()) {
-                T element = child.getWord();
+                MapElement element = child.getWord();
                 TraverseNonTreeEdge(element, words);
             } else {
                 TraverseTreeEdge(child, words);
@@ -197,17 +188,17 @@ public class StringTrie<T>{
     }   
     
     //public void TraverseTreeEdge(Node child, String str, String tmp, ArrayList<String> words){
-    public void TraverseTreeEdge(StringTrie<T> child, ArrayList<T> words){
+    public void TraverseTreeEdge(StringTrie child, ArrayList<MapElement> words){
 
         StringTrie[] children = child.getChildren();
-        for(StringTrie<T> node: children) {
+        for(StringTrie node: children) {
             if( !(node == null) ) {
                 depthFirstSearch(words, node);
             }
         }
     }
 
-    public void TraverseNonTreeEdge(T element,  ArrayList<T> words){
+    public void TraverseNonTreeEdge(MapElement element,  ArrayList<MapElement> words){
             words.add(element);
     }
        
@@ -243,7 +234,7 @@ public class StringTrie<T>{
     if(prefix.length() == 0){ 
         return children;
     } else {
-        StringTrie<T> nextNeighbor = children[index];
+        StringTrie nextNeighbor = children[index];
         if(!(nextNeighbor == null) ){
             dfsStartNodes = nextNeighbor.getStartNodes(prefix.substring(1));
         } else {
@@ -299,7 +290,7 @@ public class StringTrie<T>{
     * sucht Worte die mit dem Parameter praefix beginnen
     * und gibt diese als ArrayList zurück
     */
-    public ArrayList<T> search(String prefix){
+    public ArrayList<MapElement> search(String prefix){
         if(prefix == null){
             return  null;
         } else {
@@ -310,8 +301,8 @@ public class StringTrie<T>{
             System.out.println("No words found");
             return null;
         }
-        ArrayList<T> words = new ArrayList<T>();
-        for(StringTrie<T> node: children){
+        ArrayList<MapElement> words = new ArrayList<MapElement>();
+        for(StringTrie node: children){
             if(!(node == null)) {
                 depthFirstSearch(words, node);
             }
@@ -326,8 +317,8 @@ public class StringTrie<T>{
         /*Breitensuche: Liste initialisieren*/
         String value;
                 String otherValue;
-        ArrayList<StringTrie<T>> allChildren = new ArrayList<StringTrie<T>>();
-        for(StringTrie<T> node: children){
+        ArrayList<StringTrie> allChildren = new ArrayList<StringTrie>();
+        for(StringTrie node: children){
             if(node != null && !(node.getSuffix()) ){
                 allChildren.add(node);
                 /*Sprung in dfsComp*/
@@ -335,10 +326,10 @@ public class StringTrie<T>{
             }
         }
         while(allChildren.size() > 0){
-            StringTrie<T> node = allChildren.remove(0);
-            node.setCount(node.countChild(node));
-                    if(node.getCount() == 1 ){
-                    StringTrie<T> child = getChild(node);
+            StringTrie node = allChildren.remove(0);
+            node.count = node.countChild(node);
+                    if(node.count == 1 ){
+                    StringTrie child = getChild(node);
                                         value = node.getValue();
                                         if(!(child.getSuffix()) ){
                                             otherValue = child.getValue();
@@ -348,7 +339,7 @@ public class StringTrie<T>{
                     }
             }
             StringTrie[] nextLayer = node.getChildren();
-            for(StringTrie<T> child: nextLayer){
+            for(StringTrie child: nextLayer){
                 if(child != null && !(child.getSuffix() ) ){
                                     allChildren.add(child);
                             }
@@ -364,8 +355,8 @@ public class StringTrie<T>{
     /*
     * gibt einziges Kind zurück
     */
-    private StringTrie<T> getChild(StringTrie<T> node){
-        for(StringTrie<T> child: node.getChildren()){
+    private StringTrie getChild(StringTrie node){
+        for(StringTrie child: node.getChildren()){
             if(!(child == null)){
                 return child;
             }
@@ -373,9 +364,9 @@ public class StringTrie<T>{
         return null;
     }
         
-    private int countChild(StringTrie<T> node){
+    private int countChild(StringTrie node){
         int count = 0;
-        for(StringTrie<T> child: node.getChildren()){
+        for(StringTrie child: node.getChildren()){
                         if(!(child == null)){
                 if(!(child.getSuffix() ) ){
                                     count++;
@@ -387,22 +378,29 @@ public class StringTrie<T>{
                 
    
 
-    /*public static StringTrie loadFromInput(DataInput input) throws IOException {      
+    public static StringTrie loadFromInput(DataInput input) throws IOException {      
         StringTrie result = new StringTrie();
-        int treeSize = input.readInt();
-        for(int i = 0; i < treeSize; i++) {
-            result.tree.add(MapElement.loadFromInput(input, true));
-        }
-        result.maxLength = input.readInt();
+        result.value = input.readUTF();
+        result.word = MapElement.loadFromInput(input, true);
+        result.suffix = input.readBoolean();
+        result.count = input.readInt();
+        int len = input.readInt();
+        for (int i = 0; i < len; i++) {
+            result.children[i] = loadFromInput(input);
+        }    
         return result;
     }
     
     public void saveToOutput(DataOutput output) throws IOException {
-        output.writeInt(tree.size());
-        for(MapElement element: tree) {
-            MapElement.saveToOutput(output, element, true);
-        }
-        output.writeInt(maxLength);          
+        System.out.println("save" + value);
+        output.writeUTF(value);
+        //MapElement.saveToOutput(output, word, true);
+        output.writeBoolean(suffix);
+        output.writeInt(count); 
+        output.writeInt(children.length);
+        for (int i = 0; i < children.length; i++) {
+            children[i].saveToOutput(output);
+        }        
     }
-    */
+    
 }

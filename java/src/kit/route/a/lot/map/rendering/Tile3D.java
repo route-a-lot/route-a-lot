@@ -118,9 +118,9 @@ public class Tile3D extends Tile {
         if (!gl.glIsTexture(textureID)) {
             textureID = createTexture(gl, getImage(), false);
         }
-        if (!gl.glIsTexture(heightTextureID)) {
-            createHeightTexture(gl);
-        }      
+        //if (!gl.glIsTexture(heightTextureID)) {
+        //    createHeightTexture(gl);
+        //}      
         if (!gl.glIsTexture(grainTextureID)) {
             createGrainTexture(gl);
         }
@@ -130,9 +130,9 @@ public class Tile3D extends Tile {
         } else {
             displaylistID = gl.glGenLists(1);
             gl.glNewList(displaylistID, GL_COMPILE_AND_EXECUTE);
-                gl.glActiveTexture(GL_TEXTURE0);
-                gl.glEnable(GL_TEXTURE_2D);
-                gl.glBindTexture(GL_TEXTURE_2D, heightTextureID);
+                //gl.glActiveTexture(GL_TEXTURE0);
+                //gl.glEnable(GL_TEXTURE_2D);
+                //gl.glBindTexture(GL_TEXTURE_2D, heightTextureID);
                 gl.glActiveTexture(GL_TEXTURE1);
                 gl.glEnable(GL_TEXTURE_2D);
                 gl.glBindTexture(GL_TEXTURE_2D, grainTextureID);
@@ -142,6 +142,7 @@ public class Tile3D extends Tile {
                 gl.glBindTexture(GL_TEXTURE_2D, textureID);
                 
                 gl.glColor3f(1,1,1);
+                float[] color = new float[3];
                 float hRes = HEIGHT_RESOLUTION - 1;
                 float stepSize = (bottomRight.getLatitude() - topLeft.getLatitude()) / hRes;
                 Coordinates pos = new Coordinates();
@@ -151,10 +152,14 @@ public class Tile3D extends Tile {
                         for (int i = 0; i < 2; i++) {
                             pos.setLatitude(topLeft.getLatitude() + y * stepSize);
                             pos.setLongitude(topLeft.getLongitude() + (x + i) * stepSize);
-                            gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / hRes, y / hRes);
+                            //gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / hRes, y / hRes);
                             gl.glMultiTexCoord2f(GL_TEXTURE1, (x + i) / (float) GRAIN_RESOLUTION, y / (float) GRAIN_RESOLUTION);
                             gl.glMultiTexCoord2f(GL_TEXTURE2, (x + i) / hRes, y / hRes);
-                            gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER]);
+                            float height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER];
+                            getHeightColor(color, height);
+                            float shade = getShade(x, y, stepSize);
+                            gl.glColor3f(color[0] * shade, color[1] * shade, color[2] * shade);
+                            gl.glVertex3f(pos.getLongitude(), pos.getLatitude(), height);
                         }
                     }
                     gl.glEnd();
@@ -242,26 +247,29 @@ public class Tile3D extends Tile {
                     pos.setLongitude(topLeft.getLongitude() + x * stepSize);
                     float height = heights[x + HEIGHT_BORDER][y + HEIGHT_BORDER];
                     getHeightColor(color, height);
-                    float min = height, max = height;
-                    for (int i = -1; i < 2; i++) {
-                        for (int k = -1; k < 2; k++) {
-                            height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER + k];
-                            min = Math.min(min, height);
-                            max = Math.max(max, height);
-                        }
-                    }
-                    
-                    float shade = 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize,
-                                                0, MAX_SLOPE_SHADE_VALUE);
+                    /*float shade = getShade(x, y, stepSize);
                     color[0] *= shade;
                     color[1] *= shade;
-                    color[2] *= shade;
+                    color[2] *= shade;*/
                     heightImage.setRGB(x, y, Util.RGBToInt(color));
             }
         }
         heightTextureID = createTexture(gl, heightImage, false);
     } 
     
+    private float getShade(int x, int y, float stepSize) {
+        float height = heights[x][y];
+        float min = height, max = height;
+        for (int i = -1; i < 2; i++) {
+            for (int k = -1; k < 2; k++) {
+                height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER + k];
+                min = Math.min(min, height);
+                max = Math.max(max, height);
+            }
+        }       
+        return 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, MAX_SLOPE_SHADE_VALUE);
+    }
+
     /**
      * Creates the random noise texture that will be used as detail texture on the tiles.
      * @param gl
