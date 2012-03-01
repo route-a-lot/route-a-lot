@@ -38,7 +38,10 @@ public interface AddressOperator {
      */
     void add(MapElement element);
     
-    
+    /**
+     * 
+     */
+    void compactify();
     /**
      * Operation loadFromStream
      * 
