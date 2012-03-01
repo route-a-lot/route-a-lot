@@ -381,25 +381,32 @@ public class StringTrie {
     public static StringTrie loadFromInput(DataInput input) throws IOException {      
         StringTrie result = new StringTrie();
         result.value = input.readUTF();
-        result.word = MapElement.loadFromInput(input, true);
+        result.word = (input.readBoolean()) ? MapElement.loadFromInput(input, true) : null;
         result.suffix = input.readBoolean();
         result.count = input.readInt();
         int len = input.readInt();
         for (int i = 0; i < len; i++) {
-            result.children[i] = loadFromInput(input);
-        }    
+            if (input.readBoolean()) {
+                result.children[i] = loadFromInput(input);
+            }
+        }
         return result;
     }
     
     public void saveToOutput(DataOutput output) throws IOException {
-        System.out.println("save" + value);
         output.writeUTF(value);
-        //MapElement.saveToOutput(output, word, true);
+        output.writeBoolean(word != null);
+        if (word != null) {
+            MapElement.saveToOutput(output, word, true);
+        }
         output.writeBoolean(suffix);
         output.writeInt(count); 
         output.writeInt(children.length);
         for (int i = 0; i < children.length; i++) {
-            children[i].saveToOutput(output);
+            output.writeBoolean(children[i] != null);
+            if (children[i] != null) {
+                children[i].saveToOutput(output);
+            }
         }        
     }
     
