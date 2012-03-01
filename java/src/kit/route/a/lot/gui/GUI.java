@@ -193,14 +193,25 @@ public class GUI extends JFrame {
             }           
         });
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setPreferredSize(new Dimension(this.getWidth(), 80));
-        buttonPanel.add(new JLabel("Route:"));
-        buttonPanel.add(buttonLoadRoute);
-        buttonPanel.add(buttonSaveRoute);
-        buttonPanel.add(buttonExportKML);
-        buttonPanel.add(buttonSwitchMapMode);
-        buttonPanel.add(zoomSlider);
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setPreferredSize(new Dimension(this.getWidth() + 60, 80));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(5, 20, 5, 20));
+        JPanel routePanel = new JPanel();
+        routePanel.setLayout(new BoxLayout(routePanel, BoxLayout.X_AXIS));
+        routePanel.setBorder(BorderFactory.createTitledBorder("Route"));
+        routePanel.add(buttonLoadRoute);
+        routePanel.add(Box.createHorizontalStrut(5));
+        routePanel.add(buttonSaveRoute);
+        routePanel.add(Box.createHorizontalStrut(5));
+        routePanel.add(buttonExportKML);
+        JPanel mapPanel =  new JPanel();
+        mapPanel.setLayout(new BoxLayout(mapPanel, BoxLayout.X_AXIS));
+        mapPanel.setBorder(BorderFactory.createTitledBorder("Anzeige"));
+        mapPanel.add(buttonSwitchMapMode);
+        mapPanel.add(Box.createHorizontalStrut(10));
+        mapPanel.add(zoomSlider);
+        buttonPanel.add(routePanel, BorderLayout.WEST);
+        buttonPanel.add(mapPanel, BorderLayout.EAST);
 
         // PROGRESS ELEMENTS
         progressBar = new JProgressBar();

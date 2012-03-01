@@ -256,6 +256,18 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * Opens the map context menu if appropriate. Fires a WhatWasClicked event.
      */
     private void checkPopup(MouseEvent me) {
+        if(me.getClickCount() == 2 && isMouseButtonPressed(me, 1)) {
+            Coordinates clickDiff = getPosition(me.getX(), me.getY()).subtract(center);
+            int oldZoom = zoomlevel;
+            setZoomlevel(zoomlevel - 1);
+            if(zoomlevel < 0) {
+                zoomlevel = 0;
+            }
+            if (zoomlevel != oldZoom) {
+                center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
+                render();
+            }      
+        }
         clickEvent = me;
         Listener.fireEvent(POSITION_CLICKED,
                 new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
