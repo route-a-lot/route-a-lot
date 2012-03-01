@@ -374,7 +374,7 @@ public class GUI extends JFrame {
                     if (countNavNodes() == 1) {
                         popupIndex = 1;
                     } else {
-                        popupIndex = countNavNodes() - 1;
+                        popupIndex = countNavNodes();
                     }
                     System.out.println("\n" + popupIndex + "\n");
                     navComp = fieldEndNode;
