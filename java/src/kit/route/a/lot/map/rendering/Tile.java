@@ -76,7 +76,8 @@ public class Tile {
      */
     protected BufferedImage getImage() {
         if (image == null) {
-            image = new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel), tileSize
+            image =
+                    new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel), tileSize
                             / Projection.getZoomFactor(detailLevel), BufferedImage.TYPE_INT_ARGB);
         }
         return image;
@@ -250,7 +251,7 @@ public class Tile {
      *            the street to be drawn
      */
     private void draw(Street street, boolean top) {
-        Node[] nodes = getRelevantNodesForStreet(street.getNodes());
+        Node[] nodes = getRelevantNodesForStreet(street.getNodes(), street.getDrawingSize());
         int nPoints = nodes.length;
         int[] xPoints = new int[nPoints];
         int[] yPoints = new int[nPoints];
@@ -498,12 +499,15 @@ public class Tile {
         return streetLength;
     }
 
-    protected Node[] getRelevantNodesForStreet(Node[] streetNodes) {
+    protected Node[] getRelevantNodesForStreet(Node[] streetNodes, int drawingSize) {
         List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
         int start = 0;
+        drawingSize += 2;
+        Coordinates extendedTopLeft = topLeft.clone().add(-drawingSize, -drawingSize);
+        Coordinates extendedBottomRight = bottomRight.clone().add(drawingSize, drawingSize);
         while (start < streetNodes.length - 1
-                && !Street.isEdgeInBounds(streetNodes[start].getPos(), streetNodes[start + 1].getPos(), topLeft,
-                        bottomRight)) {
+                && !Street.isEdgeInBounds(streetNodes[start].getPos(), streetNodes[start + 1].getPos(),
+                        extendedTopLeft, extendedBottomRight)) {
             start++;
         }
         int end = streetNodes.length - 1;

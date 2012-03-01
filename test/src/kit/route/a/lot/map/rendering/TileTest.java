@@ -30,10 +30,10 @@ public class TileTest {
         expectedNodesSmall[0] = new Node(new Coordinates(50, 50));
         expectedNodesSmall[1] = new Node(new Coordinates(150, 50));
         Node[] expectedNodesOther = new Node[0];
-        assertArrayEquals(allNodes, bigTile.getRelevantNodesForStreet(allNodes));
-        assertArrayEquals(expectedNodesMedium, mediumTile.getRelevantNodesForStreet(allNodes));
-        assertArrayEquals(expectedNodesSmall, smallTile.getRelevantNodesForStreet(allNodes));
-        assertArrayEquals(expectedNodesOther, otherTile.getRelevantNodesForStreet(allNodes));
+        assertArrayEquals(allNodes, bigTile.getRelevantNodesForStreet(allNodes, 0));
+        assertArrayEquals(expectedNodesMedium, mediumTile.getRelevantNodesForStreet(allNodes, 0));
+        assertArrayEquals(expectedNodesSmall, smallTile.getRelevantNodesForStreet(allNodes, 0));
+        assertArrayEquals(expectedNodesOther, otherTile.getRelevantNodesForStreet(allNodes, 0));
     }
     
 //    @Test

@@ -75,7 +75,7 @@ public class Street extends MapElement implements Comparable<Street> {
     public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
         boolean inBounds = false;
         int i = 1;
-        int drawingSize = getDrawingSize();
+        int drawingSize = getDrawingSize() + 2;
         Coordinates extendedTopLeft = topLeft.clone().add(-drawingSize, -drawingSize);
         Coordinates extendedBottomRight = bottomRight.clone().add(drawingSize, drawingSize);
         while (i < nodes.length && inBounds == false) {
