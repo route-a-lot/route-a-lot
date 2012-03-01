@@ -89,7 +89,7 @@ public class Coordinates {
     }
     
     /**
-     * Multiplies latitude and longitude by factor and sets them to this products.
+     * Multiplies latitude and longitude by factor and sets them to the results.
      * 
      * @param factor
      * @return this
@@ -113,6 +113,8 @@ public class Coordinates {
     
     /**
      * Sets latitude to -latitude and longitude to -longitude.
+     * I.e. draws the vector by 180 degrees.
+     * 
      * @return this
      */
     public Coordinates invert() {
@@ -121,9 +123,23 @@ public class Coordinates {
         return this;
     }
     
+    /**
+     * Rotates the given vector by angle.
+     * @param angle angle given in degrees
+     * @return
+     */
     public Coordinates rotate(int angle) {
-        double cos = Math.cos(Math.toRadians(angle));
-        double sin = Math.sin(Math.toRadians(angle));
+        return rotate(Math.toRadians(angle));
+    }
+    
+    /**
+     * Rotates the given vector by angle.
+     * @param angle angle given in radians
+     * @return
+     */
+    public Coordinates rotate(double angle) {
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
         double oldLatitude = latitude;
         latitude = (float) Math.toDegrees(sin * longitude + cos * oldLatitude);
         longitude = (float) Math.toDegrees(cos * longitude - sin * oldLatitude);
@@ -143,6 +159,13 @@ public class Coordinates {
         return pos1.clone().subtract(pos2).getLength();
     }
     
+    /**
+     * Returns the angel between pos1 and pos2 in radians.
+     * 
+     * @param pos1
+     * @param pos2
+     * @return
+     */
     public static double getAngle(Coordinates pos1, Coordinates pos2) {
         return Math.acos((pos1.latitude * pos2.latitude + pos1.longitude * pos2.longitude)
                           / (pos1.getLength() * pos2.getLength()));

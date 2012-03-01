@@ -33,23 +33,27 @@ public class Tile {
 
     private static Logger logger = Logger.getLogger(Tile.class);
     private static final int POI_SIZE = 8;
-    
+
     protected Coordinates topLeft, bottomRight;
-    protected int detailLevel, tileSize;  
-    
+    protected int detailLevel, tileSize;
+
     private BufferedImage image = null;
     private boolean finished = false;
-    
+
     private MapInfo mapInfo;
-    
+
     // Temporary variable (only guaranteed to be valid when rendering):
     private Graphics2D graphics;
 
     /**
      * Creates an new (empty) tile using a calculated resolution
-     * @param topLeft the north western corner of the tile
-     * @param bottomRight the south eastern corner of the tile
-     * @param detailLevel the desired level of detail
+     * 
+     * @param topLeft
+     *            the north western corner of the tile
+     * @param bottomRight
+     *            the south eastern corner of the tile
+     * @param detailLevel
+     *            the desired level of detail
      */
     public Tile(Coordinates topLeft, int tileSize, int detailLevel) {
         this.topLeft = topLeft;
@@ -63,51 +67,52 @@ public class Tile {
         this(topLeft, tileSize, detailLevel);
         this.mapInfo = mapInfo;
     }
-    
+
 
     /**
-     * Returns the rendered tile image. If nothing was rendered so far,
-     * returns an empty tile image.
+     * Returns the rendered tile image. If nothing was rendered so far, returns an empty tile image.
+     * 
      * @return the tile image
      */
     protected BufferedImage getImage() {
         if (image == null) {
-            image = new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel),
-                tileSize / Projection.getZoomFactor(detailLevel), BufferedImage.TYPE_INT_ARGB);
+            image = new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel), tileSize
+                            / Projection.getZoomFactor(detailLevel), BufferedImage.TYPE_INT_ARGB);
         }
         return image;
     }
-    
+
     public boolean isFinished() {
         return finished;
     }
-    
+
     public void markAsFinished() {
         finished = true;
     }
-    
+
     public void prerender() {
         // query quadtree elements
-        Collection<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
+        Collection<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if
+                                                                                                     // true is faster
         if (map.size() == 0) {
             return;
         }
-           
+
         // prepare image
         image = null;
         graphics = getImage().createGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // color tile background
         // int c1 = Math.abs(this.hashCode()) % 256;
         // int c2 = Math.abs(getImage().hashCode()) % 256;
         // graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
-        // graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize / Projection.getZoomFactor(detailLevel));
-        
+        // graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize /
+        // Projection.getZoomFactor(detailLevel));
+
         // draw base layer elements
+
         for (MapElement element : map) {
             if (element instanceof Area) {
                 draw((Area) element);
@@ -124,21 +129,21 @@ public class Tile {
             if (element instanceof Street) {
                 draw((Street) element, true);
             }
-        }        
+        }
         for (MapElement element : map) {
             if (element instanceof Street) {
                 drawStreetArrows((Street) element);
             }
-        }        
+        }
         for (MapElement element : map) {
             if (element instanceof Street) {
                 drawStreetNames((Street) element);
             }
         }
-       
+
         graphics.dispose();
     }
-    
+
     public void drawPOIs() {
         Collection<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
@@ -150,9 +155,8 @@ public class Tile {
         for (MapElement element : elements) {
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
-                if ((poi.getInfo().getName() == null)
-                     || (poi.getInfo().getName().length() == 0)
-                     || (poi.getInfo().getCategory() == OSMType.FAVOURITE)){
+                if ((poi.getInfo().getName() == null) || (poi.getInfo().getName().length() == 0)
+                        || (poi.getInfo().getCategory() == OSMType.FAVOURITE)) {
                     continue;
                 }
                 drawPoint(poi.getPos(), POI_SIZE);
@@ -168,20 +172,24 @@ public class Tile {
         }
         graphics.dispose();
     }
-    
-    
+
+
     /**
      * Draws a regular node on the tile.
-     * @param poi the node to be drawn
+     * 
+     * @param poi
+     *            the node to be drawn
      */
     private void draw(Node node) {
         graphics.setColor(Color.LIGHT_GRAY);
         drawPoint(node.getPos(), 3);
     }
-  
+
     /**
      * Draws an area on the tile.
-     * @param area the area to be drawn.
+     * 
+     * @param area
+     *            the area to be drawn.
      */
     private void draw(Area area) {
         int[] xPoints, yPoints;
@@ -209,13 +217,13 @@ public class Tile {
                     graphics.setColor(Color.GREEN);
                     break;
                 default:
-//                     System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
+                    // System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
                     return;
-//                    graphics.setColor(Color.WHITE);
+                    // graphics.setColor(Color.WHITE);
             }
         } else {
             return;
-//            graphics.setColor(Color.WHITE);
+            // graphics.setColor(Color.WHITE);
         }
 
         graphics.fillPolygon(xPoints, yPoints, nPoints);
@@ -224,10 +232,12 @@ public class Tile {
         graphics.setColor(Color.BLACK);
         graphics.drawPolygon(xPoints, yPoints, nPoints);
     }
-    
+
     /**
      * Draws a street on the tile, taking the street type into consideration.
-     * @param street the street to be drawn
+     * 
+     * @param street
+     *            the street to be drawn
      */
     private void draw(Street street, boolean top) {
         Node[] nodes = getRelevantNodesForStreet(street.getNodes());
@@ -262,7 +272,8 @@ public class Tile {
         int basicSize = street.getDrawingSize();
         int size = basicSize / Projection.getZoomFactor(detailLevel);
         if (!top) {
-            graphics.setStroke(new BasicStroke(size + 2/(float)Math.pow(detailLevel + 1, 0.8), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            graphics.setStroke(new BasicStroke(size + 2 / (float) Math.pow(detailLevel + 1, 0.8),
+                    BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         } else {
             graphics.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         }
@@ -272,25 +283,25 @@ public class Tile {
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
-        
+
         graphics.drawPolyline(xPoints, yPoints, nPoints);
-               
+
     }
 
     private void drawPoint(Coordinates globalCoordinates, int size) {
         Coordinates localCoordinates = getLocalCoordinates(globalCoordinates);
-        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
-                (int) localCoordinates.getLatitude() - size / 2, size, size);
+        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2, (int) localCoordinates.getLatitude() - size
+                / 2, size, size);
     }
-      
+
     private void drawStreetArrows(Street street) {
         if (detailLevel > 1 || street.getWayInfo().getOneway() == WayInfo.ONEWAY_NO) {
             return;
         }
-        
+
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
-        
+
         float arrowLength = 12.f / Projection.getZoomFactor(detailLevel);
         float headLength = arrowLength / 2;
         double arrowDistance = 12 * arrowLength;
@@ -300,7 +311,7 @@ public class Tile {
         graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
         for (int i = 1; i < nPoints; i++) {
-            Coordinates from = getLocalCoordinates(nodes[i-1].getPos());
+            Coordinates from = getLocalCoordinates(nodes[i - 1].getPos());
             Coordinates to = getLocalCoordinates(nodes[i].getPos());
             currentDistance += Coordinates.getDistance(from, to);
 
@@ -320,37 +331,37 @@ public class Tile {
                 Coordinates headRight = vector.clone().rotate(150).normalize().scale(headLength).add(arrowEnd);
 
                 graphics.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(),
-                                  (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
+                        (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
                 graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
-                                  (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
+                        (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
                 graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
-                                  (int) headRight.getLongitude(), (int) headRight.getLatitude());
+                        (int) headRight.getLongitude(), (int) headRight.getLatitude());
             }
         }
     }
-    
+
     private void drawStreetNames(Street street) {
         Address curAddress = street.getWayInfo().getAddress();
         if (detailLevel > 3 || curAddress == null) {
             return;
         }
-        
+
         String curStreetName = curAddress.getStreet();
         if (curStreetName == null || curStreetName.equals("")) {
             return;
         }
-        
+
         if (detailLevel == 3 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY) {
             return;
         }
-        
+
         if (detailLevel == 2 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_SECONDARY) {
             return;
         }
-        
+
         if (detailLevel == 1 && street.getWayInfo().getType() != OSMType.HIGHWAY_PRIMARY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_MOTORWAY
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_SECONDARY
@@ -360,10 +371,10 @@ public class Tile {
                 && street.getWayInfo().getType() != OSMType.HIGHWAY_LIVING_STREET) {
             return;
         }
-        
+
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
-        
+
         float streetNameLength = graphics.getFontMetrics().stringWidth(curAddress.getStreet());
         double streetNameDistance = 512;
 
@@ -371,18 +382,23 @@ public class Tile {
         graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
         int i = 1;
-        double distanceToStart = -streetNameDistance / 2;
-        Coordinates from = getLocalCoordinates(nodes[i-1].getPos());
+        double distanceToFrom = -streetNameDistance / 1.3;
+        Coordinates from = getLocalCoordinates(nodes[i - 1].getPos());
         Coordinates to = getLocalCoordinates(nodes[i].getPos());
         double currentLength = Coordinates.getDistance(from, to);
+        double remainingStreetLength = calculateStreetLength(nodes);
         while (i < nPoints) {
-            if (distanceToStart + streetNameDistance <= currentLength) {
-                distanceToStart += streetNameDistance;
+            if (distanceToFrom + streetNameDistance <= currentLength) {
+                distanceToFrom += streetNameDistance;
+                remainingStreetLength -= distanceToFrom;
+                if (remainingStreetLength < streetNameLength) {
+                    // System.out.println(curStreetName);
+                    break;
+                }
                 Coordinates vector = to.clone().subtract(from);
-                Coordinates edgeMiddle = vector.clone().scale((float) (distanceToStart / currentLength)).add(from);
+                Coordinates arrowStart = vector.clone().scale((float) (distanceToFrom / currentLength)).add(from);
                 vector.normalize();
-                Coordinates arrowStart = vector.clone().scale(streetNameLength / 2).subtract(edgeMiddle).invert();
-                Coordinates arrowEnd = vector.clone().scale(streetNameLength / 2).add(edgeMiddle);
+                Coordinates arrowEnd = vector.clone().scale(streetNameLength).add(arrowStart);
                 if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
                     Coordinates tmp = arrowStart;
                     arrowStart = arrowEnd;
@@ -393,53 +409,110 @@ public class Tile {
                 if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
                     angle = -angle;
                 }
-                
+
                 Font oldFont = graphics.getFont();
-                graphics.setFont(oldFont.deriveFont(AffineTransform.getRotateInstance(angle)));
+                Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
+                graphics.setFont(newFont);
                 FontMetrics fontMetrics = graphics.getFontMetrics();
                 float descent = fontMetrics.getDescent();
                 float ascent = fontMetrics.getAscent();
-                Coordinates normal = vector.rotate(90).normalize().scale((descent + ascent) / descent);
+                Coordinates normal = vector.clone().rotate(90).normalize().scale((descent + ascent) / descent);
                 arrowStart.add(normal);
-                graphics.drawString(curStreetName, arrowStart.getLongitude(), arrowStart.getLatitude());
-                graphics.setFont(oldFont);
-            } else {
-                while (distanceToStart + streetNameDistance > currentLength) {
-                    distanceToStart -= currentLength;
-                    i++;
-                    if (i < nPoints) {
-                        from = getLocalCoordinates(nodes[i-1].getPos());
+                for (int j = 0; j < curStreetName.length(); j++) {
+                    String character = curStreetName.substring(j, j + 1);
+                    graphics.drawGlyphVector(newFont.createGlyphVector(graphics.getFontRenderContext(), character),
+                            arrowStart.getLongitude(), arrowStart.getLatitude());
+                    int charWidth = graphics.getFontMetrics(oldFont).stringWidth(character);
+                    Coordinates lineVector = new Coordinates(0, 1).rotate(angle).normalize().scale(charWidth);
+                    arrowStart.add(lineVector);
+                    distanceToFrom += charWidth;
+                    while (distanceToFrom > currentLength) {
+                        distanceToFrom -= currentLength;
+                        i++;
+                        if (i == nPoints) {
+                            logger.error("I should not be able to break here. " + curStreetName);
+                            break;
+                        }
+                        from = getLocalCoordinates(nodes[i - 1].getPos());
                         to = getLocalCoordinates(nodes[i].getPos());
                         currentLength = Coordinates.getDistance(from, to);
+                        vector = to.clone().subtract(from);
+                        arrowStart = vector.clone().scale((float) (distanceToFrom / currentLength)).add(from);
+                        vector.normalize();
+                        arrowEnd = vector.clone().scale(streetNameLength).add(arrowStart);
+                        if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
+                            Coordinates tmp = arrowStart;
+                            arrowStart = arrowEnd;
+                            arrowEnd = tmp;
+                            vector.invert();
+                        }
+                        angle = Coordinates.getAngle(vector, new Coordinates(0.f, 1.f));
+                        if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
+                            angle = -angle;
+                        }
+
+                        newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
+                        graphics.setFont(newFont);
+                        fontMetrics = graphics.getFontMetrics();
+                        descent = fontMetrics.getDescent();
+                        ascent = fontMetrics.getAscent();
+                        normal = vector.clone().rotate(90).normalize().scale((descent + ascent) / descent);
+                        arrowStart.add(normal);
+                    }
+                }
+                graphics.setFont(oldFont);
+            } else {
+                while (distanceToFrom + streetNameDistance > currentLength) {
+                    distanceToFrom -= currentLength;
+                    remainingStreetLength -= currentLength;
+                    i++;
+                    if (i < nPoints) {
+                        from = getLocalCoordinates(nodes[i - 1].getPos());
+                        to = getLocalCoordinates(nodes[i].getPos());
+                        currentLength = Coordinates.getDistance(from, to);
+                    } else {
+                        break;
                     }
                 }
             }
         }
     }
-        
+
+    private double calculateStreetLength(Node[] nodes) {
+        double streetLength = 0;
+        for (int j = 1; j < nodes.length; j++) {
+            streetLength +=
+                    Coordinates.getDistance(getLocalCoordinates(nodes[j - 1].getPos()),
+                            getLocalCoordinates(nodes[j].getPos()));
+        }
+        return streetLength;
+    }
+
     protected Node[] getRelevantNodesForStreet(Node[] streetNodes) {
         List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
         int start = 0;
-        while (start < streetNodes.length - 1 && !Street.isEdgeInBounds(streetNodes[start].getPos(),
-                streetNodes[start+1].getPos(), topLeft, bottomRight)) {
+        while (start < streetNodes.length - 1
+                && !Street.isEdgeInBounds(streetNodes[start].getPos(), streetNodes[start + 1].getPos(), topLeft,
+                        bottomRight)) {
             start++;
         }
         int end = streetNodes.length - 1;
-        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(),
-                streetNodes[end].getPos(), topLeft, bottomRight)) {
+        while (end > 1
+                && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(), streetNodes[end].getPos(), topLeft,
+                        bottomRight)) {
             end--;
         }
         for (int i = start; i <= end; i++) {
             relevantNodes.add(streetNodes[i]);
         }
-        
+
         return relevantNodes.toArray(new Node[relevantNodes.size()]);
     }
-    
+
     private Coordinates getLocalCoordinates(Coordinates coordinates) {
         return Renderer.getLocalCoordinates(coordinates, topLeft, detailLevel);
     }
-    
+
     public static long getSpecifier(Coordinates topLeft, int tileSize, int detail) {
         return (long) Math.floor((topLeft.getLongitude() + topLeft.getLatitude() * 10000) * 100000) + tileSize + detail;
     }
