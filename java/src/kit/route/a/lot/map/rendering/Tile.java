@@ -511,9 +511,8 @@ public class Tile {
             start++;
         }
         int end = streetNodes.length - 1;
-        while (end > 1
-                && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(), streetNodes[end].getPos(), topLeft,
-                        bottomRight)) {
+        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(), streetNodes[end].getPos(),
+                extendedTopLeft, extendedBottomRight)) {
             end--;
         }
         for (int i = start; i <= end; i++) {
