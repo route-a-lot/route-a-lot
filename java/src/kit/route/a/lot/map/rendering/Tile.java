@@ -24,6 +24,8 @@ import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
+import kit.route.a.lot.map.infosupply.MapInfo;
+
 import org.apache.log4j.Logger;
 
 
@@ -37,6 +39,8 @@ public class Tile {
     
     private BufferedImage image = null;
     private boolean finished = false;
+    
+    private MapInfo mapInfo;
     
     // Temporary variable (only guaranteed to be valid when rendering):
     private Graphics2D graphics;
@@ -52,10 +56,12 @@ public class Tile {
         this.bottomRight = topLeft.clone().add(tileSize, tileSize);
         this.detailLevel = detailLevel;
         this.tileSize = tileSize;
+        this.mapInfo = State.getInstance().getMapInfo();
     }
 
-    public Tile(Coordinates topLeft, int tileSize, int detailLevel, MapInfoMock mapInfoMock) {
+    public Tile(Coordinates topLeft, int tileSize, int detailLevel, MapInfo mapInfo) {
         this(topLeft, tileSize, detailLevel);
+        this.mapInfo = mapInfo;
     }
     
 
@@ -82,8 +88,7 @@ public class Tile {
     
     public void prerender() {
         // query quadtree elements
-        Collection<MapElement> map = State.getInstance().getMapInfo().getBaseLayer(
-                                    detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
+        Collection<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false); // TODO test if true is faster
         if (map.size() == 0) {
             return;
         }
@@ -135,8 +140,7 @@ public class Tile {
     }
     
     public void drawPOIs() {
-        Collection<MapElement> elements = State.getInstance().getMapInfo().getOverlay(
-                                         detailLevel, topLeft, bottomRight, false);
+        Collection<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }
