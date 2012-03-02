@@ -60,7 +60,7 @@ public class StringTrieTest {
         
         /*Testet ob alle Worte in den Trie eingefügt wurden*/
         for(int i = 0; i < words.length; i++){
-               ArrayList<MapElement> list = trie.search(words[i]);
+               ArrayList<MapElement> list = trie.select(words[i]);
                assertTrue(list.size() > 0);
                // System.out.println(list.remove(0).getName());
             }
