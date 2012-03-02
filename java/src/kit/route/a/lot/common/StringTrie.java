@@ -43,7 +43,58 @@ public class StringTrie {
          this.count = 0;
          this.suffix = false;    
      }
-   
+    /*
+     * neue selcectMethode zur Auswahl eines Navigationspunktes
+     */
+    public ArrayList<MapElement> select(String str){
+        ArrayList<MapElement> words = new ArrayList<MapElement>();
+        if (str.length() == 0) {
+            /*Blättinhalte werden in der DFS in words eingefügt*/
+                    for(StringTrie node: children){
+                            if(!(node == null)) {
+                                    depthFirstSearch(words, node);
+                            }
+                     }
+            return words;
+        } else {
+            /*prefix normalisieren*/
+            str = normalize(str);
+        }
+        
+         
+        char cur = str.charAt(0);
+        int index = Character.getNumericValue(cur) - 10;
+        /* Sonderfälle abfangen */
+        if(index < 0 || index > 25) {
+              System.out.println("ungültiger Character in select");
+          System.exit(0);
+        }
+        /*geändert, an unterschiedliche Zeichenlänge angepasst*/
+        if(!(children[index] == null)){
+                        StringTrie child = children[index];
+                        String value = child.getValue();
+                        if(str.length() < value.length() ){
+                /*str ist nicht im Trie*/
+                                return null;
+                        } else if ( str.length() == value.length() ) {
+                                if(str.toLowerCase().equals(value.toLowerCase())){
+                                        str = "";
+                    
+                                }
+                        } else if (value.length() < str.length()){
+                                if(str.toLowerCase().startsWith(value.toLowerCase(),0)){
+                                        str = str.substring(value.length());                                
+                                }
+                        }
+        } else {
+                return null;
+        }
+    if(!(children[index] == null) ){
+                words = children[index].select(str);
+        }
+
+        return words;
+    }
     /*
     * build fügt den ersten Knoten in die Kinder der Wurzel ein
     */
