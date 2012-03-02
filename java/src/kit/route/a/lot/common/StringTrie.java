@@ -368,10 +368,10 @@ public class StringTrie {
         int count = 0;
         for(StringTrie child: node.getChildren()){
                         if(!(child == null)){
-                if(!(child.getSuffix() ) ){
+               
                                     count++;
-                }
-                        }
+                
+                        }      
                 }
                 return count;
     }
