@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -28,6 +29,7 @@ import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
+import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.io.HeightLoader;
@@ -309,6 +311,21 @@ public class Controller {
                 guiHandler.updateNavNodes(state.getNavigationNodes());
             }      
         });
+        Listener.addListener(SWITCH_NAV_NODES, new Listener() {
+            public void handleEvent(Event event) {
+                switchNavNodes(((SwitchNavNodesEvent)event).getFirstID(), ((SwitchNavNodesEvent)event).getSecondID());
+                calculateRoute();
+            }
+        });
+    }
+    
+    private void switchNavNodes(int one, int two) {
+        if (one >= state.getNavigationNodes().size() || two >= state.getNavigationNodes().size()) {
+            return;
+        }
+        Collections.swap(state.getNavigationNodes(), one, two);
+        calculateRoute();
+        guiHandler.updateNavNodes(state.getNavigationNodes());
     }
     
     private void loadState(Progress p) {
