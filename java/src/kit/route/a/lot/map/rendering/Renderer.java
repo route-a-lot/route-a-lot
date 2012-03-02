@@ -369,10 +369,21 @@ public class Renderer {
         graphics.fillRect(0, 0, size, size);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        graphics.setColor(Color.RED);
+        graphics.setColor(Color.GREEN);
         graphics.fillOval(0, 0, size, size);
-
-        for (Selection point : points) {
+        if (points.size() > 0) {
+            float offset = - size/2 * Projection.getZoomFactor(detail);
+            drawImage(context, points.get(0).getPosition().clone().add(offset, offset), image, detail);
+        }
+        if (points.size() > 1) {
+            graphics.setColor(Color.RED);
+            graphics.fillOval(0, 0, size, size);
+            float offset = - size/2 * Projection.getZoomFactor(detail);
+            drawImage(context, points.get(points.size() - 1).getPosition().clone().add(offset, offset), image, detail);
+        }
+        graphics.setColor(Color.PINK);
+        graphics.fillOval(0, 0, size, size);
+        for (int i = 1; i < points.size() - 1; i++) {
 //            graphics.setColor(Color.ORANGE);
 //            graphics.fillOval(0, 0, 5, 5);
 //            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
@@ -386,7 +397,7 @@ public class Renderer {
 //            context.drawImage(selectedNodeOnEdge, image, detail);
 
             float offset = - size/2 * Projection.getZoomFactor(detail);
-            drawImage(context, point.getPosition().clone().add(offset, offset), image, detail);
+            drawImage(context, points.get(i).getPosition().clone().add(offset, offset), image, detail);
         }
     }
 
