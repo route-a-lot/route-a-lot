@@ -22,6 +22,43 @@ public class WeightCalculator {
     public void setProjection(Projection projection) {
         this.projection = projection;
     }
+    
+    public int calcWeightWithHeightAndHighwayMalus(int fromID, int toID, int wayType) {
+        int weightWithHeight = calcWeightWithHeight(fromID, toID);
+        return weightWithHeight * (getMalus(wayType) * State.getInstance().getHighwayMalus() + 1);
+    }
+    
+    private static int getMalus(int wayType) {
+        int malus = 0;
+        switch (wayType) {
+            case OSMType.HIGHWAY_MOTORWAY:
+            case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
+            case OSMType.HIGHWAY_MOTORWAY_LINK:
+                malus = 4;
+                break;
+            case OSMType.HIGHWAY_PRIMARY:
+            case OSMType.HIGHWAY_PRIMARY_LINK:
+                malus = 3;
+                break;
+            case OSMType.HIGHWAY_SECONDARY:
+            case OSMType.HIGHWAY_SECONDARY_LINK:
+                malus = 2;
+                break;
+            case OSMType.HIGHWAY_TERTIARY:
+            case OSMType.HIGHWAY_TERTIARY_LINK:
+                malus = 1;
+                break;
+            case OSMType.HIGHWAY_RESIDENTIAL:
+            case OSMType.HIGHWAY_LIVING_STREET:
+            case OSMType.HIGHWAY_UNCLASSIFIED:
+                malus = 0;
+                break;
+            case OSMType.HIGHWAY_CYCLEWAY:
+                malus = 0;
+                break;
+        }
+        return malus;
+    }
 
     public int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);

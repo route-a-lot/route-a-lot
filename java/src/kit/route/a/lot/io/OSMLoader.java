@@ -38,6 +38,7 @@ public class OSMLoader {
 
     private ArrayList<Integer> startIds;
     private ArrayList<Integer> endIds;
+    private ArrayList<Integer> wayType;
     private ArrayList<Integer> uniqueEdgeStartIds;
     private ArrayList<Integer> uniqueEdgeEndIds;
     private int maxWayNodeId = -1;
@@ -56,6 +57,7 @@ public class OSMLoader {
         weightCalculator = WeightCalculator.getInstance();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
+        wayType = new ArrayList<Integer>();
         uniqueEdgeStartIds = new ArrayList<Integer>();
         uniqueEdgeEndIds = new ArrayList<Integer>();
     }
@@ -936,7 +938,9 @@ public class OSMLoader {
                             for (int i = 1; i < curWayIds.size() - 1; i++) {
                                 endIds.add(curWayIds.get(i));
                                 startIds.add(curWayIds.get(i));
+                                wayType.add(curWayInfo.getType());
                             }
+                            wayType.add(curWayInfo.getType());
                             endIds.add(curWayIds.get(curWayIds.size() - 1));
                         }
 
@@ -946,10 +950,12 @@ public class OSMLoader {
                             for (int i = curWayIds.size() - 2; i > 0; i--) {
                                 endIds.add(curWayIds.get(i));
                                 startIds.add(curWayIds.get(i));
+                                wayType.add(curWayInfo.getType());
                             }
+                            wayType.add(curWayInfo.getType());
                             endIds.add(curWayIds.get(0));
                         }
-
+                        
                     }
                     
                     if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
@@ -1014,7 +1020,7 @@ public class OSMLoader {
         for (int i = 0; i < countIDs; i++) {
             startIDs[i] = startIds.get(i);
             endIDs[i] = endIds.get(i);
-            weights[i] = weightCalculator.calcWeightWithHeight(startIDs[i], endIDs[i]);
+            weights[i] = weightCalculator.calcWeightWithHeightAndHighwayMalus(startIDs[i], endIDs[i], wayType.get(i));
         }
 
         int countUniqueIDs = uniqueEdgeStartIds.size();
