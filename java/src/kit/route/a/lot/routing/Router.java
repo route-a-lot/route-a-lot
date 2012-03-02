@@ -22,76 +22,77 @@ public class Router {
     }
     
     public static void optimizeRoute(List<Selection> navigationNodes, Progress p) {
-        int size = navigationNodes.size();
-        ArrayList<Selection> origNodes = new ArrayList<Selection>(navigationNodes);
-        if (size < 4) {
+        if (navigationNodes.size() < 4) {
             return;
         }
-
-        
-        // Greedy
-        int[] permutation = new int[size - 2];
-        int from = 0;
-        int length = Integer.MAX_VALUE;
+        optimizeHeuristicNearestNeighbour(navigationNodes, p.createSubProgress(0.1));
+        optimizePerfect(navigationNodes, p.createSubProgress(0.9));
+    }
+    
+    private static void optimizeHeuristicNearestNeighbour(List<Selection> navigationNodes, Progress p) {
+        ArrayList<Selection> origNodes = new ArrayList<Selection>(navigationNodes);
+        int size = navigationNodes.size();
         boolean[] seen = new boolean[size];
-        int tmp = -1;
-        int total = 0;
+        int from = 0;   // prev selection
+        int length;     // length of the current part of the route
+        int tmp = -1;   // temporary start
+        int total = 0;  // total length
+        int min;        // distance to nearest selection
         Route tempRoute;
+        int[] permutation = new int[size - 2];
         for (int i = 0; i < size - 2; i++) {
             tmp = -1;
-            int min = -1;
+            min = -1;
             seen[from] = true;
-            length = Integer.MAX_VALUE;
+            length = -1;
             for (int j = 1; j < size - 1; j++) {
                 if (seen[j]) {
                     continue;
                 }
                 if ((tempRoute = fromAToB(origNodes.get(from), origNodes.get(j))) != null) {
                     length = tempRoute.getLength();
-                }
-                if (length != Integer.MAX_VALUE && (min == -1 || min > length)) {
-                    min = length;
-                    tmp = j;
+                    if (min == -1 || min > length) {
+                        min = length;
+                        tmp = j;
+                    }
                 }
             }
             if (tmp == -1) {
-                total = 0;
-                logger.fatal("Debug me!");
-                break;
+                logger.info("No heuristic optimization found.");
+                return;
             }
+            // Next Node found
+            permutation[i] = tmp;
             from = tmp;
             total += min;
-            permutation[i] = from;
-//            permutation[i] = tmp;
-//            seen[tmp] = true;
-//            total += min;
         }
-        int min = Integer.MAX_VALUE;
-        if (fromAToB(origNodes.get(permutation[permutation.length - 1]), origNodes.get(origNodes.size() - 1)) == null) {
-            total = 0;
-        }
-        if (total != 0) {
-            total += fromAToB(origNodes.get(permutation[permutation.length - 1]), origNodes.get(origNodes.size() - 1)).getLength();
-            min = totalLength(navigationNodes);
-            if (min == 0 || total < min) {
+        min = totalLength(navigationNodes);    // Overall shortest route
+        Route route = fromAToB(origNodes.get(permutation[permutation.length - 1]), origNodes.get(origNodes.size() - 1));
+        if (route != null) {
+            if (min == 0 || total + route.getLength() < min) {
                 setSelection(origNodes, permutation, navigationNodes);
-                min = total;
+                logger.debug("Heuristic: " + navigationNodes);
             }   
-        }        
+        }   
+    }
         
+    private static void optimizePerfect(List<Selection> navigationNodes, Progress p) {
+        ArrayList<Selection> origNodes = new ArrayList<Selection>(navigationNodes);
+        int size = navigationNodes.size();
+        Route route;
+        int min = totalLength(navigationNodes);
         long faculty = fak(size - 1);
         if (faculty < 0) {
             logger.warn("To many stopovers, aborting");
             return;
         }
-        // perfect
         int[][] routes = new int[size][size];   // Matrix containing the length of the shortest routes
         double progressRatio = ((double) faculty) / (faculty + (size * size * size));
         for (int j = 0; j < size; j++) {
             for (int i = 0; i < size; i++) {
                 p.addProgress((1 - progressRatio) / (size * size));
                 // Fill the Matrix
-                Route route = fromAToB(origNodes.get(j), origNodes.get(i));
+                route = fromAToB(origNodes.get(j), origNodes.get(i));
                 if (route == null) {
                     logger.warn("Ignoring route ...");
                     routes[j][i] = -1;
@@ -120,7 +121,7 @@ public class Router {
                 // We're still missing the length from the start to the permutation as well 
                 // as from the permutation to  the target.
                 currentLength += routes[0][current[0]] + routes[current[current.length - 1]][size - 1];
-                if (currentLength < min) {
+                if (currentLength < min || min == 0) {
                     // We got a shorter permutation!
                     logger.debug("Length of shortest permutation (so far) "
                             + printPermutation(current) + " :" + currentLength);

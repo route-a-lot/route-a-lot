@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
