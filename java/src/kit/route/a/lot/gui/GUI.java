@@ -21,6 +21,7 @@ import static kit.route.a.lot.common.Listener.SET_HIGHWAY_MALUS;
 import static kit.route.a.lot.common.Listener.SET_SPEED;
 import static kit.route.a.lot.common.Listener.SWITCH_MAP_MODE;
 import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+import static kit.route.a.lot.common.Listener.SWITCH_NAV_NODES;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -82,6 +83,7 @@ import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
+import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 
 public class GUI extends JFrame {
@@ -125,7 +127,7 @@ public class GUI extends JFrame {
     private long taskStartTime;
     private boolean enterPressed = false;
     private boolean nextNavPoint = false;
-    private Icon deleteIcon, selectStartIcon, selectPitStopIcon, selectDestinationIcon;
+    private Icon deleteIcon, selectStartIcon, selectPitStopIcon, selectDestinationIcon, switchIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
     /**
@@ -142,6 +144,7 @@ public class GUI extends JFrame {
         setIconImages(icons);
 
         deleteIcon = new ImageIcon(ClassLoader.getSystemResource("icon_delete.png"));
+        switchIcon = new ImageIcon(ClassLoader.getSystemResource("UpDown.png"));
         selectStartIcon = new ImageIcon(ClassLoader.getSystemResource("icon_greenarrow.png"));
         selectPitStopIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
         selectDestinationIcon = new ImageIcon(ClassLoader.getSystemResource("icon_redarrow.png"));
@@ -717,11 +720,25 @@ public class GUI extends JFrame {
         final JTextField waypointField = new JTextField(text);
         JButton buttonDeleteWaypoint = new JButton(deleteIcon);
         buttonDeleteWaypoint.setPreferredSize(new Dimension(20, 15));
-        final JPanel row = new JPanel(new BorderLayout());
-        row.add(waypointField, BorderLayout.CENTER);
-        row.add(buttonDeleteWaypoint, BorderLayout.EAST);
-        row.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
-        waypointArea.add(row);
+        final JPanel row1 = new JPanel(new BorderLayout());
+        final JPanel row2 = new JPanel();
+        row1.add(waypointField, BorderLayout.CENTER);
+        row1.add(buttonDeleteWaypoint, BorderLayout.EAST);
+        if(waypointArea.getComponentCount() > 0) {
+            JButton buttonSwitchWaypoints = new JButton(switchIcon);
+            buttonSwitchWaypoints.setMaximumSize(new Dimension(20,15));
+            row2.add(buttonSwitchWaypoints);
+            row1.add(row2, BorderLayout.NORTH);
+            final int pos1 = waypointArea.getComponentCount();
+            buttonSwitchWaypoints.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    Listener.fireEvent(SWITCH_NAV_NODES, new SwitchNavNodesEvent(pos1+1, pos1 + 2));
+                }
+            });
+        }
+        row1.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
+        waypointArea.add(row1);
         routingTab.validate();
 
         final int pos = waypointArea.getComponentCount();
@@ -758,7 +775,7 @@ public class GUI extends JFrame {
         buttonDeleteWaypoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 popupSearchCompletions.setVisible(false);
-                waypointArea.remove(row);
+                waypointArea.remove(row1);
                 if ((waypointField.getText().length() != 0) && (countNavNodes() > pos)) {
                     Listener.fireEvent(DELETE_NAVNODE, new NumberEvent(pos));
                 }

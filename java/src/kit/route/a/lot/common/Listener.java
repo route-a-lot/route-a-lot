@@ -26,9 +26,9 @@ public abstract class Listener {
         LIST_IMPORTED_MAPS = 23, DELETE_IMPORTED_MAP = 24,
         PROGRESS = 25, CANCEL_OPERATION = 26, CLOSE_APPLICATION = 27,
         LIST_SEARCH_COMPLETIONS_START = 28, LIST_SEARCH_COMPLETIONS_PITSTOP = 29,
-        LIST_SEARCH_COMPLETIONS_DESTINATION = 30;
+        LIST_SEARCH_COMPLETIONS_DESTINATION = 30, SWITCH_NAV_NODES = 31;
     
-    private static final int TYPE_COUNT = 31;
+    private static final int TYPE_COUNT = 32;
     
     private static List<Listener>[] lists;
     static {
