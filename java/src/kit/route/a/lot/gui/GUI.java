@@ -1,6 +1,26 @@
 package kit.route.a.lot.gui;
 
-import static kit.route.a.lot.common.Listener.*;
+import static kit.route.a.lot.common.Listener.ADD_NAVNODE;
+import static kit.route.a.lot.common.Listener.CANCEL_OPERATION;
+import static kit.route.a.lot.common.Listener.CLOSE_APPLICATION;
+import static kit.route.a.lot.common.Listener.DELETE_IMPORTED_MAP;
+import static kit.route.a.lot.common.Listener.DELETE_NAVNODE;
+import static kit.route.a.lot.common.Listener.EXPORT_ROUTE;
+import static kit.route.a.lot.common.Listener.IMPORT_OSM;
+import static kit.route.a.lot.common.Listener.LIST_IMPORTED_MAPS;
+import static kit.route.a.lot.common.Listener.LIST_SEARCH_COMPLETIONS_DESTINATION;
+import static kit.route.a.lot.common.Listener.LIST_SEARCH_COMPLETIONS_PITSTOP;
+import static kit.route.a.lot.common.Listener.LIST_SEARCH_COMPLETIONS_START;
+import static kit.route.a.lot.common.Listener.LOAD_MAP;
+import static kit.route.a.lot.common.Listener.LOAD_ROUTE;
+import static kit.route.a.lot.common.Listener.OPTIMIZE_ROUTE;
+import static kit.route.a.lot.common.Listener.PROGRESS;
+import static kit.route.a.lot.common.Listener.SAVE_ROUTE;
+import static kit.route.a.lot.common.Listener.SET_HEIGHT_MALUS;
+import static kit.route.a.lot.common.Listener.SET_HIGHWAY_MALUS;
+import static kit.route.a.lot.common.Listener.SET_SPEED;
+import static kit.route.a.lot.common.Listener.SWITCH_MAP_MODE;
+import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,7 +33,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -59,9 +78,9 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.gui.event.Event;
+import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
-import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 
@@ -106,7 +125,7 @@ public class GUI extends JFrame {
     private long taskStartTime;
     private boolean enterPressed = false;
     private boolean nextNavPoint = false;
-    private Icon deleteIcon, selectIcon;
+    private Icon deleteIcon, selectStartIcon, selectPitStopIcon, selectDestinationIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
     /**
@@ -123,7 +142,9 @@ public class GUI extends JFrame {
         setIconImages(icons);
 
         deleteIcon = new ImageIcon(ClassLoader.getSystemResource("icon_delete.png"));
-        selectIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
+        selectStartIcon = new ImageIcon(ClassLoader.getSystemResource("icon_greenarrow.png"));
+        selectPitStopIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
+        selectDestinationIcon = new ImageIcon(ClassLoader.getSystemResource("icon_redarrow.png"));
         setVisible(true);
     }
 
@@ -343,7 +364,7 @@ public class GUI extends JFrame {
                     editedNavNodeIndex = 0;
                     if (fieldStartNode.getText().length() > 2) {
                         navComp = fieldStartNode;
-                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS_START,
                                 new TextEvent(fieldStartNode.getText()));
                     }
                 } else {
@@ -378,7 +399,7 @@ public class GUI extends JFrame {
                     }
                     if (fieldEndNode.getText().length() > 2) {
                         navComp = fieldEndNode;
-                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS_DESTINATION,
                                 new TextEvent(fieldEndNode.getText()));
                     }
                 } else {
@@ -717,7 +738,7 @@ public class GUI extends JFrame {
                         popupPos = new Point(waypointField.getX(),
                                 waypointField.getY() + waypointField.getHeight());
                         navComp = waypointField;
-                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS_PITSTOP,
                                 new TextEvent(waypointField.getText()));
                     }
                 }
@@ -833,14 +854,26 @@ public class GUI extends JFrame {
      * Opens the search completion popup with the given list of suggestions.
      * @param completions the completion suggestions
      */
-    public void showSearchCompletions(List<String> completions) {
+    public void showSearchCompletions(List<String> completions, int iconNum) {
+        Icon icon = null;
+        switch (iconNum) {
+            case 0:
+                icon = selectStartIcon;
+                break;
+            case 1:
+                icon = selectPitStopIcon;
+                break;
+            case 2:
+                icon = selectDestinationIcon;
+                break;
+        }
         if(completions == null){
             return;
         }
         popupSearchCompletions.setVisible(false);
         popupSearchCompletions.removeAll();
         for (String completion : completions) {
-            final JMenuItem item = new JMenuItem(completion, selectIcon);
+            final JMenuItem item = new JMenuItem(completion, icon);
             popupSearchCompletions.add(item);
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {

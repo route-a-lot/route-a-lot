@@ -257,9 +257,19 @@ public class Controller {
                 setMapMode(!(state.getActiveRenderer() instanceof Renderer3D));
             }         
         });
-        Listener.addListener(LIST_SEARCH_COMPLETIONS, new Listener() {
+        Listener.addListener(LIST_SEARCH_COMPLETIONS_START, new Listener() {
             public void handleEvent(Event e) {
-                passSearchCompletion(((TextEvent) e).getText());
+                passSearchCompletion(((TextEvent) e).getText(), 0);
+            }      
+        });
+        Listener.addListener(LIST_SEARCH_COMPLETIONS_PITSTOP, new Listener() {
+            public void handleEvent(Event e) {
+                passSearchCompletion(((TextEvent) e).getText(), 1);
+            }      
+        });
+        Listener.addListener(LIST_SEARCH_COMPLETIONS_DESTINATION, new Listener() {
+            public void handleEvent(Event e) {
+                passSearchCompletion(((TextEvent) e).getText(), 2);
             }      
         });
         Listener.addListener(DELETE_IMPORTED_MAP, new Listener() {
@@ -540,8 +550,8 @@ public class Controller {
         }
     }
 
-    private void passSearchCompletion(String str) {
-        guiHandler.showSearchCompletion(state.getMapInfo().suggestCompletions(str));
+    private void passSearchCompletion(String str, int iconNum) {
+        guiHandler.showSearchCompletion(state.getMapInfo().suggestCompletions(str), iconNum);
     }
   
     private void updateImportedMapsList() {

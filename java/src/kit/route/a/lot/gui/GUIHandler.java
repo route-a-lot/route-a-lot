@@ -2,6 +2,8 @@ package kit.route.a.lot.gui;
 
 import java.util.List;
 
+import javax.swing.Icon;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;
@@ -54,8 +56,8 @@ public class GUIHandler {
         gui.showRouteValues(length, duration);
     }
     
-    public void showSearchCompletion(List<String> completion) {
-        gui.showSearchCompletions(completion);
+    public void showSearchCompletion(List<String> completion, int iconNum) {
+        gui.showSearchCompletions(completion, iconNum);
     }
     
     public void setMapMode(boolean render3D) {
