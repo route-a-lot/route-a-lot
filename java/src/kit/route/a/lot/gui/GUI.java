@@ -362,7 +362,7 @@ public class GUI extends JFrame {
         fieldStartNode.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 if (enterPressed == false) {
-                    if (isNavigationKey(e)) {
+                    if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
                     }
                     popupPos = new Point(fieldStartNode.getX(), 
@@ -372,6 +372,8 @@ public class GUI extends JFrame {
                         navComp = fieldStartNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS_START,
                                 new TextEvent(fieldStartNode.getText()));
+                    } else if (popupSearchCompletions.isVisible()) {
+                        popupSearchCompletions.setVisible(false);
                     }
                 } else {
                     enterPressed = false;
@@ -396,7 +398,7 @@ public class GUI extends JFrame {
         fieldEndNode.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 if (!enterPressed) {
-                    if (isNavigationKey(e)) {
+                    if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
                     }
                     popupPos = new Point(fieldEndNode.getX(), 
@@ -410,6 +412,8 @@ public class GUI extends JFrame {
                         navComp = fieldEndNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS_DESTINATION,
                                 new TextEvent(fieldEndNode.getText()));
+                    } else if (popupSearchCompletions.isVisible()) {
+                        popupSearchCompletions.setVisible(false);
                     }
                 } else {
                     enterPressed = false;
@@ -756,7 +760,7 @@ public class GUI extends JFrame {
         waypointField.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 if (!enterPressed) {
-                    if (isNavigationKey(e)) {
+                    if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
                     }
                     editedNavNodeIndex = pos;
@@ -766,6 +770,8 @@ public class GUI extends JFrame {
                         navComp = waypointField;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS_PITSTOP,
                                 new TextEvent(waypointField.getText()));
+                    } else if (popupSearchCompletions.isVisible()) {
+                        popupSearchCompletions.setVisible(false);
                     }
                 }
                 enterPressed = false;
