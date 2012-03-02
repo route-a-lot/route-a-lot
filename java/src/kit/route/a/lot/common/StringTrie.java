@@ -310,7 +310,7 @@ public class StringTrie {
     /*
     * Methode zum normalisieren des Textes
     */
-    public String normalize(String str){
+    public static String normalize(String str){
         if(str == null){ 
             return null; 
         }
