@@ -74,7 +74,7 @@ public class Map3D extends Map implements GLEventListener {
         float[] ambient = {1, 0.5f, 0.5f, 0.5f}; 
         gl.glLightfv(GL_LIGHT0, GL_POSITION, FloatBuffer.wrap(lightpos));
         gl.glMaterialfv(GL_FRONT, GL_AMBIENT, FloatBuffer.wrap(ambient));
-        gl.glMaterialf(GL_FRONT, GL_SHININESS, 0.6f);    
+        gl.glMaterialf(GL_FRONT, GL_SHININESS, 0.4f);    
     }
     
     @Override

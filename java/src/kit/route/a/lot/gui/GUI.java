@@ -111,8 +111,6 @@ public class GUI extends JFrame {
 
     /**
      * Creates the GUI window, using the given view center coordinates.
-     * @param listeners
-     * @param view center geo coordinates (possibly mercator projected)
      */
     public GUI() {
         super("Route-A-Lot");  

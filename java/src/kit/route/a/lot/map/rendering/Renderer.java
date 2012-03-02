@@ -30,6 +30,9 @@ public class Renderer {
     private static final boolean THREADED = true;
     private static final int DRAW_BUFFER = 200;
     private static final float ROUTE_SIZE = 20;
+    private static final BufferedImage STARTNODE = createNavNodeImage(new Color(52, 151, 50), 14);
+    private static final BufferedImage WAYNODE = createNavNodeImage(new Color(179, 186, 62), 12);
+    private static final BufferedImage ENDNODE = createNavNodeImage(new Color(151, 50, 55), 14);
     
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
     
@@ -360,8 +363,16 @@ public class Renderer {
     
     private void drawNavPoints(Context2D context, int detail) {
         List<Selection> points = State.getInstance().getNavigationNodes();
-        int size = 7;
-
+        int i = 0;
+        for (Selection point : points) {
+            BufferedImage image = (i == 0) ? STARTNODE : (i == points.size() - 1) ? ENDNODE : WAYNODE;
+            float offset = - image.getHeight()/2 * Projection.getZoomFactor(detail);
+            drawImage(context, point.getPosition().clone().add(offset, offset), image, detail);
+            i++;
+        }
+    }
+    
+    private static BufferedImage createNavNodeImage(Color color, int size) {
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
         graphics.setComposite(AlphaComposite.Src);
@@ -369,37 +380,14 @@ public class Renderer {
         graphics.fillRect(0, 0, size, size);
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        graphics.setColor(Color.GREEN);
+        graphics.setColor(Color.BLACK);
         graphics.fillOval(0, 0, size, size);
-        if (points.size() > 0) {
-            float offset = - size/2 * Projection.getZoomFactor(detail);
-            drawImage(context, points.get(0).getPosition().clone().add(offset, offset), image, detail);
-        }
-        if (points.size() > 1) {
-            graphics.setColor(Color.RED);
-            graphics.fillOval(0, 0, size, size);
-            float offset = - size/2 * Projection.getZoomFactor(detail);
-            drawImage(context, points.get(points.size() - 1).getPosition().clone().add(offset, offset), image, detail);
-        }
-        graphics.setColor(Color.PINK);
-        graphics.fillOval(0, 0, size, size);
-        for (int i = 1; i < points.size() - 1; i++) {
-//            graphics.setColor(Color.ORANGE);
-//            graphics.fillOval(0, 0, 5, 5);
-//            Node from = state.getLoadedMapInfo().getNode(point.getFrom());
-//            Node to = state.getLoadedMapInfo().getNode(point.getTo());
-//            context.drawImage(from.getPos(), image, detail);
-//            context.drawImage(to.getPos(), image, detail);
-//            
-//            Coordinates selectedNodeOnEdge = getSelectedNodeOnEdge(from, to, point.getRatio());
-//            graphics.setColor(Color.CYAN);
-//            graphics.fillOval(0, 0, 5, 5);
-//            context.drawImage(selectedNodeOnEdge, image, detail);
-
-            float offset = - size/2 * Projection.getZoomFactor(detail);
-            drawImage(context, points.get(i).getPosition().clone().add(offset, offset), image, detail);
-        }
+        graphics.setColor(color);
+        graphics.fillOval(1, 1, size-2, size-2);
+        return image;
     }
+    
+
 
     private void drawImage(Context2D context, Coordinates topLeft, Image image, int detail) {
         int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())

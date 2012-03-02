@@ -39,6 +39,7 @@ public class Tile3D extends Tile {
         GRAIN_INTENSITY = 0.05f, // [0..1] darkest value of grain texture (% of black)
         SLOPE_SHADE_FACTOR = 0.6f, // factor multiplied on all slope shades
         MAX_SLOPE_SHADE_VALUE = 0.6f; // [0..1] upper limit of slope shade (1 = black)
+    private static final float[] COLOR_POI = {1, 1, 0}; //{0.898f, 0.741f, 0.392f};
     
     // [meters] heights that specific colors (s.b.) will be mapped to
     private static final float[] COLOR_STAGES =
@@ -170,7 +171,6 @@ public class Tile3D extends Tile {
         if (elements.size() == 0) {
             return;
         }
-        float[] yellow = new float[]{0.7f, 0.7f, 0};
         for (MapElement element : elements) {
             if (!element.isInBounds(topLeft, bottomRight)) {
                 continue;
@@ -180,13 +180,13 @@ public class Tile3D extends Tile {
                 if ((poi.getInfo().getName() != null)
                      && (poi.getInfo().getName().length() > 0)
                      && (poi.getInfo().getCategory() != OSMType.FAVOURITE)){
-                    renderPin(gl, poi.getPos(), yellow, 1f);
+                    renderPin(gl, poi.getPos(), COLOR_POI, 1f);
                 } 
             }
             if (element instanceof Area) {
                 Selection selection = ((Area) element).getSelection();
                 if (selection != null) {
-                    renderPin(gl, selection.getPosition(), yellow, 1f);
+                    renderPin(gl, selection.getPosition(), COLOR_POI, 1f);
                 }
             }
         }
@@ -214,6 +214,7 @@ public class Tile3D extends Tile {
         gl.glTranslatef(0, 0, 0.6f);
         
         gl.glColor3f(color[0], color[1], color[2]);
+        gl.glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
         glu.gluSphere(quadric, 0.12, 8, 8);
         //glu.gluCylinder(quadric, 0.2, 0.1, 0.5, 8, 1);
         gl.glDisable(GL_LIGHTING);

@@ -33,6 +33,8 @@ public class Tile {
 
     private static Logger logger = Logger.getLogger(Tile.class);
     private static final int POI_SIZE = 8;
+    private static final Color POI_BORDER_COLOR = new Color(196, 161, 80);
+    private static final Color POI_COLOR = new Color(229, 189, 100);
 
     protected Coordinates topLeft, bottomRight;
     protected int detailLevel, tileSize;
@@ -161,8 +163,6 @@ public class Tile {
             return;
         }
         graphics = getImage().createGraphics();
-        graphics.setColor(Color.ORANGE);
-
         for (MapElement element : elements) {
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
@@ -170,11 +170,17 @@ public class Tile {
                         || (poi.getInfo().getCategory() == OSMType.FAVOURITE)) {
                     continue;
                 }
-                drawPoint(poi.getPos(), POI_SIZE);
+                graphics.setColor(POI_BORDER_COLOR);
+                drawPoint(poi.getPos(), POI_SIZE + 2);
+                graphics.setColor(POI_COLOR);
+                drawPoint(poi.getPos(), POI_SIZE);       
             }
             if (element instanceof Area) {
                 Selection selection = ((Area) element).getSelection();
                 if (selection != null) {
+                    graphics.setColor(POI_BORDER_COLOR);
+                    drawPoint(selection.getPosition(), POI_SIZE + 2);
+                    graphics.setColor(POI_COLOR);
                     drawPoint(selection.getPosition(), POI_SIZE);
                 } else {
                     logger.warn("POI area returned null as selection");

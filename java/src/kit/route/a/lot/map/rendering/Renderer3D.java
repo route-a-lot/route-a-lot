@@ -36,6 +36,9 @@ public class Renderer3D extends Renderer {
         VIEW_HEIGHT_ADAPTION = 0.2f, // [0..1] how fast camera height adapts to ground height
         ROUTE_HEIGHT_OFFSET = 0, // [meters] height value added to route display
         ROUTE_WIDTH = 10; // [pixels] width of the line that is used for route display
+    private static final float[] COLOR_STARTNODE = {0.2039f, 0.5922f, 0.1961f};
+    private static final float[] COLOR_WAYNODE = {0.7843f, 0.8235f, 0.145f};
+    private static final float[] COLOR_ENDNODE = {0.5921f, 0.196f, 0.2157f};
     
     private float viewHeight = Float.NEGATIVE_INFINITY;
     private boolean cacheResetScheduled = false;
@@ -225,13 +228,12 @@ public class Renderer3D extends Renderer {
         gl.glEnable(GL.GL_DEPTH_TEST);
 
         // FLAGS
-        renderFlag(navNodes.get(0).getPosition(), new float[]{0, 0.8f, 0}, 0.9f);
+        renderFlag(navNodes.get(0).getPosition(), COLOR_STARTNODE, 0.9f);
         if (navNodes.size() > 1) { 
-            renderFlag(navNodes.get(navNodes.size() - 1).getPosition(),
-                    new float[]{0.8f, 0, 0}, 0.9f);
+            renderFlag(navNodes.get(navNodes.size() - 1).getPosition(), COLOR_ENDNODE, 0.9f);
         }
         for (int i = 1; i < navNodes.size() - 1; i++) {
-            renderFlag(navNodes.get(i).getPosition(), new float[]{1, 1, 0}, 0.7f);
+            renderFlag(navNodes.get(i).getPosition(), COLOR_WAYNODE, 0.7f);
         }
     }
     
