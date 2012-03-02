@@ -61,4 +61,9 @@ public class POINode extends Node {
         output.writeInt(getInfo().getCategory());       
         output.writeUTF(getInfo().getDescription());
     }
+    
+    public String getName() {
+        return getInfo().getName();
+    }
+    
 }

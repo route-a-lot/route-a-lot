@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -116,8 +117,14 @@ public class Controller {
                         importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
                     }   
                 });
-                
-                logger.info("Imported default map: " + Util.stopTimer());
+                try {
+                    currentTask.get();
+                    logger.info("Imported default map: " + Util.stopTimer());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             } else {
                 logger.warn("No map loaded");
             }

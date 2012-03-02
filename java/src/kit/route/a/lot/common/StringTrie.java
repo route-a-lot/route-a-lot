@@ -105,6 +105,10 @@ public class StringTrie {
             /* normalisieren für die sortierung*/
             str = normalize(str);
         }
+        
+        if (str.length() == 0) {
+            return;
+        }
        
         char cur = str.charAt(0);
         int index = Character.getNumericValue(cur) - 10;

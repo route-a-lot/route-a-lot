@@ -357,8 +357,11 @@ public class GUI extends JFrame {
             }
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+            public void keyTyped(KeyEvent e) {
                 if (enterPressed == false) {
+                    if (isNavigationKey(e)) {
+                        return;
+                    }
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     editedNavNodeIndex = 0;
@@ -388,8 +391,11 @@ public class GUI extends JFrame {
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+            public void keyTyped(KeyEvent e) {
                 if (!enterPressed) {
+                    if (isNavigationKey(e)) {
+                        return;
+                    }
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
                     if (countNavNodes() == 1) {
@@ -731,8 +737,11 @@ public class GUI extends JFrame {
         });
 
         waypointField.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
+            public void keyTyped(KeyEvent e) {
                 if (!enterPressed) {
+                    if (isNavigationKey(e)) {
+                        return;
+                    }
                     editedNavNodeIndex = pos;
                     if (waypointField.getText().length() > 2) {
                         popupPos = new Point(waypointField.getX(),
@@ -756,6 +765,19 @@ public class GUI extends JFrame {
                 repaint();
             }
         });
+    }
+    
+    private boolean isNavigationKey(KeyEvent e) {
+        switch (e.getKeyChar()) {
+            case KeyEvent.VK_UP:
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_TAB:
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**
