@@ -20,7 +20,7 @@ public static void main(String[]args){
    String line;
    StringTrie trie = new StringTrie();
    String[] words = null;
-   ArrayList<MapElement> list = new ArrayList<MapElement>();
+
 
     try{
         File file = new File("test/resources/Text");
@@ -55,37 +55,44 @@ public static void main(String[]args){
         }
             trie.compactify();
         /*Testet ob alle Worte in den Trie eingefügt wurden*/
-        int auswahl = 0;
-        for(int i = 0; i < words.length; i++){
-                System.out.println(words[i]);
-                
+            ArrayList<MapElement> wordArray = new ArrayList<MapElement>();
+            int counter = 0;        
+            int anzahl = 0;
+            for(int i = 0; i < words.length; i++){
                 if(words[i].length() > 0){
-                    list = trie.search(words[i]);
-                    System.out.println(list);
+                String word = StringTrie.normalize(words[i]);
+                wordArray = trie.select(words[i]);
+                boolean bool = false;
+                if(!(wordArray == null)){
+                      // System.out.println("Size: " + wordArray.size() );
+                               for(int j = 0; j < wordArray.size(); j++){
+                                        //System.out.print( wordArray.get(j)+" ");
+                        String found = StringTrie.normalize(wordArray.get(j).getName() );
+                    //  System.out.println("gesucht: " + words[i]);
+                    //  System.out.println("gefunden: " + wordArray.get(j) );
+                        if( found.equals(word)){
+                            bool = true;
+                            counter++;
+                            /*Suche beenden wenn Schleife gefunden*/
+                            j = wordArray.size();   
+                            System.out.println(word);
+                        } 
+                                }
                 } else {
-                    list = new ArrayList<MapElement>();
+                    anzahl++;
+                    System.out.println(words[i]);
                 }
-                Iterator<MapElement> iterator = list.iterator();
-                MapElement possibleTarget = new MapElementMock("");
-                boolean found = false;
-                while(iterator.hasNext() && !found){
-                    possibleTarget = iterator.next();
-                    if(possibleTarget.getName().toLowerCase().equals(words[i].toLowerCase())){
-                       // System.out.println("gefunden: "+possibleTarget.getName());
-                       // System.out.println("gesucht: " + words[i]);
-                        found = true;
+                    if(bool == false){
+                    
+                    System.out.println(words[i]);
+                    
+                        anzahl++;
                     }
                 }
-               
-                if( !(possibleTarget.getName().toLowerCase().equals(words[i].toLowerCase()) ) ){
-                    auswahl++;
-                     System.out.println("gefunden: "+possibleTarget.getName());
-                     System.out.println("gesucht: " + words[i]);
-                }
             }
-        System.out.println("nicht passende Elemente ausgewählt " + auswahl);
-
-
+            System.out.println("nicht gefundene Worte: " + anzahl);
+            System.out.println("gefundene Worte: " + counter);
+            System.out.println("Größe des Wordarrays: " + words.length);
 }//end main
 
 	
