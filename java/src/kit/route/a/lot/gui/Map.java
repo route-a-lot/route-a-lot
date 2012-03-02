@@ -12,8 +12,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -126,11 +128,15 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         descriptionMenu.add(labelPOIDescription);
         
         // CONTEXT MENU
+        URL startIcon = ClassLoader.getSystemResource("icon_greenarrow.png");
+        URL endIcon = ClassLoader.getSystemResource("icon_redarrow.png");
+        URL stopoverIcon = ClassLoader.getSystemResource("icon_yellowarrow.png");
+        URL favoriteIcon = ClassLoader.getSystemResource("icon_bluecircle.png");
         popUpName = new JLabel();
-        startItem = new JMenuItem(TEXT_AS_START);
-        endItem = new JMenuItem(TEXT_AS_DESTINATION);
-        stopoverItem = new JMenuItem(TEXT_AS_WAYPOINT);
-        addFavoriteItem = new JMenuItem(TEXT_AS_FAVORITE);  
+        startItem = new JMenuItem(TEXT_AS_START, new ImageIcon(startIcon));
+        endItem = new JMenuItem(TEXT_AS_DESTINATION, new ImageIcon(endIcon));
+        stopoverItem = new JMenuItem(TEXT_AS_WAYPOINT, new ImageIcon(stopoverIcon));
+        addFavoriteItem = new JMenuItem(TEXT_AS_FAVORITE, new ImageIcon(favoriteIcon));  
         deleteFavoriteItem = new JMenuItem(TEXT_DEL_FAVORITE);
         deleteNavPoint = new JMenuItem(TEXT_DELETE_NAVNODE);
         startItem.setBackground(Color.WHITE);

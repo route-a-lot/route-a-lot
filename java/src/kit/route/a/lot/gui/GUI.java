@@ -104,7 +104,7 @@ public class GUI extends JFrame {
     private int editedNavNodeIndex, numNavNodes = 0;
     private long taskStartTime;
     private boolean enterPressed = false;
-    private Icon xIcon;
+    private Icon deleteIcon, selectIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
     /**
@@ -116,26 +116,14 @@ public class GUI extends JFrame {
         super("Route-A-Lot");  
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         installLookAndFeel();
-        List<Image> icons = new LinkedList<Image>();
-        URL icon16 = ClassLoader.getSystemResource("icon_sral_16.png");
-        URL icon32 = ClassLoader.getSystemResource("icon_sral_32.png");
-        URL icon64 = ClassLoader.getSystemResource("icon_sral_64.png");
-        
-        if (icon16 != null) {
-            icons.add(new ImageIcon(icon16).getImage());
-        }
-        if (icon32 != null) {
-            icons.add(new ImageIcon(icon32).getImage());
-        }
-        if (icon64 != null) {
-            icons.add(new ImageIcon(icon64).getImage());
-        }
+        List<Image> icons = new LinkedList<Image>();     
+        icons.add(new ImageIcon(ClassLoader.getSystemResource("icon_sral_16.png")).getImage());
+        icons.add(new ImageIcon(ClassLoader.getSystemResource("icon_sral_32.png")).getImage());
+        icons.add(new ImageIcon(ClassLoader.getSystemResource("icon_sral_64.png")).getImage());
         setIconImages(icons);
 
-        URL icon_delete = ClassLoader.getSystemResource("icon_delete.png");
-        if (icon_delete != null) {
-            xIcon = new ImageIcon(icon_delete);
-        }
+        deleteIcon = new ImageIcon(ClassLoader.getSystemResource("icon_delete.png"));
+        selectIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
         setVisible(true);
     }
 
@@ -227,7 +215,7 @@ public class GUI extends JFrame {
             }
         });
         mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
-        buttonCancelOperation = new JButton(xIcon);
+        buttonCancelOperation = new JButton(deleteIcon);
         buttonCancelOperation.setPreferredSize(new Dimension(20, 15));
         buttonCancelOperation.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -678,7 +666,7 @@ public class GUI extends JFrame {
      */
     private void addWaypointField(String text) {
         final JTextField waypointField = new JTextField(text);
-        JButton buttonDeleteWaypoint = new JButton(xIcon);
+        JButton buttonDeleteWaypoint = new JButton(deleteIcon);
         buttonDeleteWaypoint.setPreferredSize(new Dimension(20, 15));
         final JPanel row = new JPanel(new BorderLayout());
         row.add(waypointField, BorderLayout.CENTER);
@@ -828,7 +816,7 @@ public class GUI extends JFrame {
         }
         popupSearchCompletions.removeAll();
         for (String completion : completions) {
-            final JMenuItem item = new JMenuItem(completion);
+            final JMenuItem item = new JMenuItem(completion, selectIcon);
             popupSearchCompletions.add(item);
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
