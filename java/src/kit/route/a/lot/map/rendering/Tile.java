@@ -445,6 +445,7 @@ public class Tile {
                     }
                     while (distanceToFrom > currentLength) {
                         distanceToFrom -= currentLength;
+                        remainingStreetLength -= currentLength;
                         i++;
                         if (i == nPoints) {
                             logger.error("I should not be able to break here. " + curStreetName);
