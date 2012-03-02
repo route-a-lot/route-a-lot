@@ -50,8 +50,6 @@ public class ComplexInfoSupplier {
         length += Street.getDistanceInMeter(startSelection, navNodes.get(0).getPosition());
         length += Street.getDistanceInMeter(endSelection, navNodes.get(navNodes.size() - 1).getPosition());
         
-        System.out.println(Street.getDistanceInMeter(startSelection, mapInfo.getNodePosition(route.get(0))));
-        
         for(int i = 1; i < route.size() - 1; i++){
             
             if(route.get(i) == -1) {

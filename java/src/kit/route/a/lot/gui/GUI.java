@@ -101,7 +101,7 @@ public class GUI extends JFrame {
 
     // NON-COMPONENT ATTRIBUTES
     private Point popupPos;
-    private int popupIndex, numNavNodes = 0;
+    private int editedNavNodeIndex, numNavNodes = 0;
     private long taskStartTime;
     private boolean enterPressed = false;
     private Icon xIcon;
@@ -342,8 +342,8 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
-                Listener.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new NavNodeNameEvent(fieldStartNode.getText(), 0));
+                Listener.fireEvent(ADD_NAVNODE,
+                        new NavNodeNameEvent(fieldStartNode.getText(), editedNavNodeIndex));
             }
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
@@ -351,7 +351,7 @@ public class GUI extends JFrame {
                 if (enterPressed == false) {
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
-                    popupIndex = 0;
+                    editedNavNodeIndex = 0;
                     navComp = fieldStartNode;
                     if (fieldStartNode.getText().length() > 2) {
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
@@ -372,8 +372,8 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
-                Listener.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new NavNodeNameEvent(fieldEndNode.getText(), countNavNodes() - 1));
+                Listener.fireEvent(ADD_NAVNODE,
+                        new NavNodeNameEvent(fieldEndNode.getText(), editedNavNodeIndex));
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
@@ -382,9 +382,9 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldEndNode.getX(), 
                             fieldEndNode.getY() + fieldEndNode.getHeight());
                     if (countNavNodes() == 1) {
-                        popupIndex = 1;
+                        editedNavNodeIndex = 1;
                     } else {
-                        popupIndex = countNavNodes();
+                        editedNavNodeIndex = countNavNodes();
                     }
                     navComp = fieldEndNode;
                     if (fieldEndNode.getText().length() > 2) {
@@ -693,8 +693,8 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent arg0) {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
-                Listener.fireEvent(SHOW_NAVNODE_DESCRIPTION,
-                        new NavNodeNameEvent(waypointField.getText(), pos));
+                Listener.fireEvent(ADD_NAVNODE,
+                        new NavNodeNameEvent(waypointField.getText(), editedNavNodeIndex));
                 repaint();
             }
         });
@@ -704,7 +704,7 @@ public class GUI extends JFrame {
                 if (!enterPressed) {
                     popupPos = new Point(waypointField.getX(),
                             waypointField.getY() + waypointField.getHeight());
-                    popupIndex = pos;
+                    editedNavNodeIndex = pos;
                     navComp = waypointField;
                     if (waypointField.getText().length() > 2) {
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
@@ -834,7 +834,7 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent e) {
                     navComp.setText(item.getText());
                     Listener.fireEvent(ADD_NAVNODE,
-                            new NavNodeNameEvent(item.getText(), popupIndex));
+                            new NavNodeNameEvent(item.getText(), editedNavNodeIndex));
                 }
             });
         }
@@ -895,7 +895,7 @@ public class GUI extends JFrame {
 
     private void installLookAndFeel() {
         try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {

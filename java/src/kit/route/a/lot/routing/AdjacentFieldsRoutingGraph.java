@@ -232,8 +232,10 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         Collection<Integer> relevantEdges = new ArrayList<Integer>();
         long flags = 0;
         for (byte area: destAreas) {
-            // create bitmask
-            flags |= 1 << area;
+            if (area != Byte.MIN_VALUE) {
+                // create bitmask
+                flags |= 1 << area;
+            }
         }
         for (int i = edgesPos[node]; i < edgesPos[node+1]; i++) {
             // filter edges
@@ -287,7 +289,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     public byte getAreaID(int node) {
         if (node > edgesPos.length) {
             logger.warn("Node " + String.valueOf(node) + " does not exist, aborting");
-            return (Byte) null;
+            return Byte.MIN_VALUE;
         }
         return areaID[node];
     }

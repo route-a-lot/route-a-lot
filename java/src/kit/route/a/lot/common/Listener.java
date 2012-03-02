@@ -16,7 +16,7 @@ public abstract class Listener {
         LOAD_MAP = 2, EXPORT_ROUTE = 3,
         LOAD_ROUTE = 4, SAVE_ROUTE = 5, 
         POSITION_CLICKED = 6, OPTIMIZE_ROUTE = 7,
-        SHOW_POI_DESCRIPTION = 8, SHOW_NAVNODE_DESCRIPTION = 9,            
+        SHOW_POI_DESCRIPTION = 8, NEW_ROUTE = 9,       
         ADD_FAVORITE = 10, DELETE_FAVORITE = 11,
         ADD_NAVNODE = 12, DELETE_NAVNODE = 13,
         LIST_SEARCH_COMPLETIONS = 14, SET_SPEED = 15,      
@@ -24,10 +24,9 @@ public abstract class Listener {
         SWITCH_MAP_MODE = 19, RENDER = 20,
         SET_HIGHWAY_MALUS = 21, SET_HEIGHT_MALUS = 22,
         LIST_IMPORTED_MAPS = 23, DELETE_IMPORTED_MAP = 24,
-        PROGRESS = 25, CANCEL_OPERATION = 26, CLOSE_APPLICATION = 27,
-        NEW_ROUTE = 28;
+        PROGRESS = 25, CANCEL_OPERATION = 26, CLOSE_APPLICATION = 27;
     
-    private static final int TYPE_COUNT = 29;
+    private static final int TYPE_COUNT = 28;
     
     private static List<Listener>[] lists;
     static {

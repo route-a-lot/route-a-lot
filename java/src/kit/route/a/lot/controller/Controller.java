@@ -123,6 +123,7 @@ public class Controller {
                 } else {  
                     NavNodeNameEvent event = (NavNodeNameEvent) e;
                     addNavNode(event.getName(), event.getIndex());
+                    //getNavNodeFromText(((TextEvent) e).getText());
                 }
             }            
         });
@@ -249,11 +250,6 @@ public class Controller {
             public void handleEvent(Event e) {
                 passSearchCompletion(((TextEvent) e).getText());
             }      
-        });
-        Listener.addListener(SHOW_NAVNODE_DESCRIPTION, new Listener() {
-            public void handleEvent(Event e) {
-                getNavNodeFromText(((TextEvent) e).getText());
-            }  
         });
         Listener.addListener(DELETE_IMPORTED_MAP, new Listener() {
             public void handleEvent(Event e) {
@@ -413,7 +409,6 @@ public class Controller {
     
     private void addNavNode(String name, int position) {
         Selection newSel = state.getMapInfo().select(name);
-        System.out.println("added " + newSel.getName());
         if (newSel != null) {
             if (state.getNavigationNodes().size() == 0) {
              state.getNavigationNodes().add(newSel);   
@@ -433,22 +428,13 @@ public class Controller {
                 state.getNavigationNodes().remove(position);
                 state.getNavigationNodes().add(position, newSel);
             }
-            System.err.println(position);
+            //System.err.println(position);
         }
         guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();
         // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
         //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
         // }
-    }
-
-    private void getNavNodeFromText(String str) {
-        Selection sel = state.getMapInfo().select(str);
-        if (sel != null) {
-            state.getNavigationNodes().add(state.getNavigationNodes().size() - 1, sel);
-            guiHandler.updateNavNodes(state.getNavigationNodes());
-            calculateRoute();
-        }
     }
     
     private void deleteNavNode(int pos) {

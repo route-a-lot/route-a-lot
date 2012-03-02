@@ -56,8 +56,12 @@ public class MapInfo {
         geoTopLeft = new Coordinates();
         geoBottomRight = new Coordinates();
         if (useDirectFile) {
-            outputFile = new File("elements.tmp");
-            outputFile.deleteOnExit();
+            try {
+                outputFile = File.createTempFile("elements", null);
+                outputFile.deleteOnExit();         
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             elementDB = new FileElementDB(outputFile);
         }
     }
@@ -396,7 +400,7 @@ public class MapInfo {
         geoBottomRight = Coordinates.loadFromInput(input);
         elementDB.loadFromInput(input);
         geographicalOperator.loadFromInput(input);
-     //   addressOperator.loadFromInput(input);
+        addressOperator.loadFromInput(input);
     }
 
     /**
@@ -412,7 +416,7 @@ public class MapInfo {
         geoBottomRight.saveToOutput(output);
         elementDB.saveToOutput(output);
         geographicalOperator.saveToOutput(output);
-      //  addressOperator.saveToOutput(output);
+        addressOperator.saveToOutput(output);
     }
 
     public void lastElementAdded() {

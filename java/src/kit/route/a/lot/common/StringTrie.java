@@ -362,7 +362,7 @@ public class StringTrie {
         StringTrie[] children = getStartNodes(prefix);
         if(children == null) {
             System.out.println("No words found");
-            return null;
+            return new ArrayList<MapElement>();
         }
         ArrayList<MapElement> words = new ArrayList<MapElement>();
         for(StringTrie node: children){
