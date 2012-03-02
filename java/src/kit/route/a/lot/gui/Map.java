@@ -70,7 +70,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     public Map(GUI parentGUI) {
         gui = parentGUI;
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
+        setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 5));
         setBackground(Color.BLACK);
         add(canvas = createCanvas(), BorderLayout.CENTER);
         canvas.addMouseMotionListener(this);
