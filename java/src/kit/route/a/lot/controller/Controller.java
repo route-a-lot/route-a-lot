@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -66,7 +67,14 @@ public class Controller {
     
     public static void main(String[] args) {
         // ENVIRONMENT SETUP
-        PropertyConfigurator.configure("config/log4j.conf");
+        File log4jConfigFile = new File("config/log4j.conf");
+        if (log4jConfigFile.exists()) {
+            PropertyConfigurator.configure("config/log4j.conf");
+        } else {
+            Properties properties = new Properties();
+            properties.put("log4j.rootLogger", "FATAL");
+            PropertyConfigurator.configure(properties);
+        }
         String arch = System.getProperty("os.arch").toLowerCase();
         int archbits = (arch.equals("i386") || arch.equals("x86")) ? 32 : 64;
         try {
@@ -74,6 +82,9 @@ public class Controller {
         } catch (IOException e) {
             logger.error("Could not load library path for " + arch + ".");
             return;
+        }
+        if (!SRAL_DIRECTORY.exists()) {
+            SRAL_DIRECTORY.mkdir();
         }
         // SYSTEM SETUP
         new Controller();
