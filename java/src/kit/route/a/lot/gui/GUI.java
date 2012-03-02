@@ -722,13 +722,13 @@ public class GUI extends JFrame {
         buttonDeleteWaypoint.setPreferredSize(new Dimension(20, 15));
         final JPanel row1 = new JPanel(new BorderLayout());
         final JPanel row2 = new JPanel();
+        row2.setLayout(new BoxLayout(row2, BoxLayout.X_AXIS));
         row1.add(waypointField, BorderLayout.CENTER);
-        row1.add(buttonDeleteWaypoint, BorderLayout.EAST);
+        row2.add(buttonDeleteWaypoint);
         if(waypointArea.getComponentCount() > 0) {
             JButton buttonSwitchWaypoints = new JButton(switchIcon);
-            buttonSwitchWaypoints.setMaximumSize(new Dimension(20,15));
+            buttonSwitchWaypoints.setPreferredSize(new Dimension(20,15));
             row2.add(buttonSwitchWaypoints);
-            row1.add(row2, BorderLayout.NORTH);
             final int pos1 = waypointArea.getComponentCount();
             buttonSwitchWaypoints.addActionListener(new ActionListener() {
                 @Override
@@ -737,6 +737,7 @@ public class GUI extends JFrame {
                 }
             });
         }
+        row1.add(row2, BorderLayout.EAST);
         row1.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
         waypointArea.add(row1);
         routingTab.validate();
