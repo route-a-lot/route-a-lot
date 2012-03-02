@@ -21,6 +21,7 @@ import java.util.Set;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
@@ -206,10 +207,23 @@ public class MapInfo {
         if (sharedId != null) {
             Node[] newNodes = new Node[otherNodes.length + resultNodes.length - 1];
 
-            int resultStart = resultIds.get(0).equals(sharedId) ? resultIds.size() - 1 : 0;
-            int resultStep = resultIds.get(0).equals(sharedId) ? -1 : 1;
-            int otherStart = otherIds.get(0).equals(sharedId) ? 1 : otherIds.size() - 2;
-            int otherStep = otherIds.get(0).equals(sharedId) ? 1 : -1;
+            boolean resultBackwards = resultIds.get(0).equals(sharedId);
+            boolean otherBackwards = otherIds.get(0).equals(sharedId);
+            
+            if (resultBackwards != otherBackwards) {
+                int oneway = resultStreet.getWayInfo().getOneway();
+                if (oneway != otherStreet.getWayInfo().getOneway()) {
+                    logger.error("Oneway of streets to merge is not equal.");
+                }
+                if (oneway != WayInfo.ONEWAY_NO) {
+                    return false;
+                }
+            }
+            
+            int resultStart = resultBackwards ? resultIds.size() - 1 : 0;
+            int resultStep = resultBackwards ? -1 : 1;
+            int otherStart = otherBackwards ? 1 : otherIds.size() - 2;
+            int otherStep = otherBackwards ? 1 : -1;
 
             int newNodeCount = 0;
             for (int i = resultStart; i < resultIds.size() && i >= 0; i += resultStep) {
