@@ -89,8 +89,6 @@ import kit.route.a.lot.gui.event.TextEvent;
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
-    private static final int OPTIMIZE_WARN_LIMIT = 12;
-
     public static final int END_POSITION = -1;
     
     // ROUTING TAB
@@ -459,10 +457,8 @@ public class GUI extends JFrame {
         buttonOptimizeRoute.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonOptimizeRoute.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if ((countNavNodes() < OPTIMIZE_WARN_LIMIT) || getUserConfirmation()) {
-                    startTask();
-                    Listener.fireEvent(OPTIMIZE_ROUTE, null);
-                }               
+                startTask();
+                Listener.fireEvent(OPTIMIZE_ROUTE, null);            
             }
         });
 
@@ -975,15 +971,6 @@ public class GUI extends JFrame {
     private void setActive(boolean value) {
         active = value;
         getGlassPane().setVisible(!value);
-    }
-    
-    private boolean getUserConfirmation() {
-        String[] options = {"Fortfahren", "Abbrechen"};
-        return (JOptionPane.showOptionDialog(this,
-            "Die Optimierung benötigt bei einer großen Zahl " +
-            "an Zwischenhalten viel Zeit.", "Warnung",
-            JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE,
-            null, options, options[0]) == JOptionPane.OK_OPTION);
     }
 
     private void installLookAndFeel() {
