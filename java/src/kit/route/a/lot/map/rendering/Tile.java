@@ -94,7 +94,7 @@ public class Tile {
     public void prerender() {
         // query quadtree elements, TODO test if true is faster
         Set<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false);
-                                                                                                     
+
         if (map.size() == 0) {
             return;
         }
@@ -106,11 +106,11 @@ public class Tile {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // color tile background
-        // int c1 = Math.abs(this.hashCode()) % 256;
-        // int c2 = Math.abs(getImage().hashCode()) % 256;
-        // graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
-        // graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize /
-        // Projection.getZoomFactor(detailLevel));
+//         int c1 = Math.abs(this.hashCode()) % 256;
+//         int c2 = Math.abs(getImage().hashCode()) % 256;
+//         graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
+//         graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize /
+//         Projection.getZoomFactor(detailLevel));
 
         // draw base layer elements
 
@@ -130,17 +130,17 @@ public class Tile {
             if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
                 draw((Street) element, true);
             }
-        }        
+        }
         for (MapElement element : map) {
             if ((element instanceof Street) && (((Street) element).getDrawingSize() >= 20)) {
                 draw((Street) element, true);
             }
-        }     
+        }
         for (MapElement element : map) {
             if ((element instanceof Area) && (((Area) element).getWayInfo().isBuilding())) {
                 draw((Area) element);
             }
-        }       
+        }
         for (MapElement element : map) {
             if (element instanceof Street) {
                 drawStreetArrows((Street) element);
@@ -358,6 +358,7 @@ public class Tile {
         }
 
         String curStreetName = curAddress.getStreet();
+        
         if (curStreetName == null || curStreetName.equals("")) {
             return;
         }
@@ -386,7 +387,7 @@ public class Tile {
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
 
-        float streetNameLength = graphics.getFontMetrics().stringWidth(curAddress.getStreet());
+        float streetNameLength = graphics.getFontMetrics().stringWidth(curStreetName);
         double streetNameDistance = 512;
 
         graphics.setColor(Color.DARK_GRAY);
@@ -398,6 +399,7 @@ public class Tile {
         Coordinates to = getLocalCoordinates(nodes[i].getPos());
         double currentLength = Coordinates.getDistance(from, to);
         double remainingStreetLength = calculateStreetLength(nodes);
+        boolean drawBackwards = false;
         while (i < nPoints) {
             if (distanceToFrom + streetNameDistance <= currentLength) {
                 distanceToFrom += streetNameDistance;
@@ -410,33 +412,37 @@ public class Tile {
                 Coordinates arrowStart = vector.clone().scale((float) (distanceToFrom / currentLength)).add(from);
                 vector.normalize();
                 Coordinates arrowEnd = vector.clone().scale(streetNameLength).add(arrowStart);
-                if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
-                    Coordinates tmp = arrowStart;
-                    arrowStart = arrowEnd;
-                    arrowEnd = tmp;
-                    vector.invert();
-                }
                 double angle = Coordinates.getAngle(vector, new Coordinates(0.f, 1.f));
+                if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
+                    drawBackwards = true;
+                }
+//                graphics.drawOval((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(), 2, 2);
                 if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
                     angle = -angle;
                 }
 
                 Font oldFont = graphics.getFont();
-                Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
+                Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(drawBackwards ? angle + Math.PI : angle));
                 graphics.setFont(newFont);
                 FontMetrics fontMetrics = graphics.getFontMetrics();
                 float descent = fontMetrics.getDescent();
                 float ascent = fontMetrics.getAscent();
-                Coordinates normal = vector.clone().rotate(90).normalize().scale((descent + ascent) / descent);
+                Coordinates normal = vector.clone().rotate(drawBackwards ? 270 : 90).normalize().scale((descent + ascent) / descent);
                 arrowStart.add(normal);
-                for (int j = 0; j < curStreetName.length(); j++) {
+                int j = drawBackwards ? curStreetName.length() - 1 : 0;
+                int jStep = drawBackwards ? -1 : 1;
+                for (; j < curStreetName.length() && j >= 0; j += jStep) {
                     String character = curStreetName.substring(j, j + 1);
-                    graphics.drawGlyphVector(newFont.createGlyphVector(graphics.getFontRenderContext(), character),
-                            arrowStart.getLongitude(), arrowStart.getLatitude());
+                    if (!drawBackwards) {
+                        drawCharacterToCoordinates(arrowStart, newFont, character);
+                    }
                     int charWidth = graphics.getFontMetrics(oldFont).stringWidth(character);
                     Coordinates lineVector = new Coordinates(0, 1).rotate(angle).normalize().scale(charWidth);
                     arrowStart.add(lineVector);
                     distanceToFrom += charWidth;
+                    if (drawBackwards) {
+                        drawCharacterToCoordinates(arrowStart, newFont, character);
+                    }
                     while (distanceToFrom > currentLength) {
                         distanceToFrom -= currentLength;
                         i++;
@@ -451,23 +457,18 @@ public class Tile {
                         arrowStart = vector.clone().scale((float) (distanceToFrom / currentLength)).add(from);
                         vector.normalize();
                         arrowEnd = vector.clone().scale(streetNameLength).add(arrowStart);
-                        if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
-                            Coordinates tmp = arrowStart;
-                            arrowStart = arrowEnd;
-                            arrowEnd = tmp;
-                            vector.invert();
-                        }
                         angle = Coordinates.getAngle(vector, new Coordinates(0.f, 1.f));
+//                        graphics.drawOval((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(), 2, 2);
                         if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
                             angle = -angle;
                         }
 
-                        newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(angle));
+                        newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(drawBackwards ? angle + Math.PI : angle));
                         graphics.setFont(newFont);
                         fontMetrics = graphics.getFontMetrics();
                         descent = fontMetrics.getDescent();
                         ascent = fontMetrics.getAscent();
-                        normal = vector.clone().rotate(90).normalize().scale((descent + ascent) / descent);
+                        normal = vector.clone().rotate(drawBackwards ? 270 : 90).normalize().scale((descent + ascent) / descent);
                         arrowStart.add(normal);
                     }
                 }
@@ -487,6 +488,11 @@ public class Tile {
                 }
             }
         }
+    }
+
+    private void drawCharacterToCoordinates(Coordinates arrowStart, Font newFont, String character) {
+        graphics.drawGlyphVector(newFont.createGlyphVector(graphics.getFontRenderContext(), character),
+                arrowStart.getLongitude(), arrowStart.getLatitude());
     }
 
     private double calculateStreetLength(Node[] nodes) {
