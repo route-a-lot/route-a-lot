@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -104,6 +105,7 @@ public class GUI extends JFrame {
     private int editedNavNodeIndex, numNavNodes = 0;
     private long taskStartTime;
     private boolean enterPressed = false;
+    private boolean nextNavPoint = false;
     private Icon deleteIcon, selectIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
@@ -328,6 +330,7 @@ public class GUI extends JFrame {
         fieldStartNode = new JTextField();
         fieldStartNode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                popupSearchCompletions.setVisible(false);
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
@@ -340,8 +343,8 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     editedNavNodeIndex = 0;
-                    navComp = fieldStartNode;
                     if (fieldStartNode.getText().length() > 2) {
+                        navComp = fieldStartNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                                 new TextEvent(fieldStartNode.getText()));
                     }
@@ -358,6 +361,7 @@ public class GUI extends JFrame {
         fieldEndNode = new JTextField();
         fieldEndNode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
+                popupSearchCompletions.setVisible(false);
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
@@ -374,8 +378,8 @@ public class GUI extends JFrame {
                     } else {
                         editedNavNodeIndex = countNavNodes();
                     }
-                    navComp = fieldEndNode;
                     if (fieldEndNode.getText().length() > 2) {
+                        navComp = fieldEndNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                                 new TextEvent(fieldEndNode.getText()));
                     }
@@ -391,7 +395,27 @@ public class GUI extends JFrame {
         buttonAddNavNode.setAlignmentX(JButton.CENTER_ALIGNMENT);
         buttonAddNavNode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                addWaypointField("");
+                
+//                if(fieldStartNode.getText().equals("") || fieldEndNode.getText().equals("")) {
+//                    nextNavPoint = true;
+//                } else {
+//                    nextNavPoint = false;
+//                }
+//                
+//                if(waypointArea.getComponentCount() > 0) {
+//                    System.out.println(waypointArea.getComponentCount());
+//                    for(int i = 0; i < waypointArea.getComponentCount() || !nextNavPoint; i++) {
+//                        if(((JTextField) ((JPanel) waypointArea.getComponent(i)).getComponent(0)).getText().equals("")) {
+//                            nextNavPoint = true;
+//                        } else {
+//                            nextNavPoint = false;
+//                        }
+//                    }
+//                }
+//                
+//                if(!nextNavPoint) {
+                    addWaypointField("");
+//                }
                 repaint();
             }
         });
@@ -690,11 +714,11 @@ public class GUI extends JFrame {
         waypointField.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 if (!enterPressed) {
-                    popupPos = new Point(waypointField.getX(),
-                            waypointField.getY() + waypointField.getHeight());
                     editedNavNodeIndex = pos;
-                    navComp = waypointField;
                     if (waypointField.getText().length() > 2) {
+                        popupPos = new Point(waypointField.getX(),
+                                waypointField.getY() + waypointField.getHeight());
+                        navComp = waypointField;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                                 new TextEvent(waypointField.getText()));
                     }
@@ -705,6 +729,7 @@ public class GUI extends JFrame {
 
         buttonDeleteWaypoint.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                popupSearchCompletions.setVisible(false);
                 waypointArea.remove(row);
                 if ((waypointField.getText().length() != 0) && (countNavNodes() > pos)) {
                     Listener.fireEvent(DELETE_NAVNODE, new NumberEvent(pos));
@@ -814,19 +839,23 @@ public class GUI extends JFrame {
         if(completions == null){
             return;
         }
+        popupSearchCompletions.setVisible(false);
         popupSearchCompletions.removeAll();
         for (String completion : completions) {
             final JMenuItem item = new JMenuItem(completion, selectIcon);
             popupSearchCompletions.add(item);
             item.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
+                    navComp.setFocusable(false);
                     navComp.setText(item.getText());
                     Listener.fireEvent(ADD_NAVNODE,
                             new NavNodeNameEvent(item.getText(), editedNavNodeIndex));
+                    navComp.setFocusable(true);
                 }
             });
         }
         popupSearchCompletions.show(routingTabTopArea, popupPos.x, popupPos.y);
+        navComp.grabFocus();
         repaint();
     }
 

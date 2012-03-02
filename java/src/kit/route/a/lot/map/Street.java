@@ -237,7 +237,7 @@ public class Street extends MapElement implements Comparable<Street> {
 
     @Override
     public Selection getSelection() {
-        if (nodes.length < 2 || !wayInfo.isRoutable()) {
+        if (nodes.length < 2) {
             return null;
         }
         /*int start = nodes[nodes.length / 2 - 1].getID();
