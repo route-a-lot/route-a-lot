@@ -32,7 +32,7 @@ public class WeightCalculator {
         float fromHeight = heightmap.getHeight(from) / 100;
         float toHeight = heightmap.getHeight(to) / 100;
 
-        float heightDifference = Math.abs(fromHeight - toHeight);
+        float heightDifference = Math.abs(fromHeight - toHeight) * State.getInstance().getHeightMalus();
 
         int weight = (int) Math.sqrt(Math.pow(flatWeight, 2) + Math.pow(heightDifference, 2));
         return weight;
