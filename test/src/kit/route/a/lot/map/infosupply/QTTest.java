@@ -75,7 +75,7 @@ public class QTTest {
     
     @Test
     public void testGetLayers() {
-        assertEquals(2, operator.getBaseLayer(0, new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), true).size());
+        assertEquals(3, operator.getBaseLayer(0, new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), true).size());
         assertEquals(1, operator.getOverlay(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
         operator.compactifyDatastructures();
         assertEquals(7, operator.getBaseLayer(new Coordinates(5.5f, 5.5f), 2, false).size());

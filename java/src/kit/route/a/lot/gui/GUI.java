@@ -724,7 +724,6 @@ public class GUI extends JFrame {
         final JPanel row2 = new JPanel();
         row2.setLayout(new BoxLayout(row2, BoxLayout.X_AXIS));
         row1.add(waypointField, BorderLayout.CENTER);
-        row2.add(buttonDeleteWaypoint);
         if(waypointArea.getComponentCount() > 0) {
             JButton buttonSwitchWaypoints = new JButton(switchIcon);
             buttonSwitchWaypoints.setPreferredSize(new Dimension(20,15));
@@ -737,6 +736,7 @@ public class GUI extends JFrame {
                 }
             });
         }
+        row2.add(buttonDeleteWaypoint);
         row1.add(row2, BorderLayout.EAST);
         row1.add(Box.createVerticalStrut(5), BorderLayout.SOUTH);
         waypointArea.add(row1);

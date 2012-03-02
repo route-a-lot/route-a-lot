@@ -2,6 +2,7 @@ package kit.route.a.lot.map.rendering;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.awt.Container;
@@ -38,7 +39,7 @@ public class RendererPerformanceTest {
    
     
     
-    @Test
+    @Ignore
     public void test() {
         
         fenster = new JFrame("RendererPerformance");

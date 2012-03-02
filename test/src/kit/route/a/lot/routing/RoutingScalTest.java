@@ -16,6 +16,7 @@ import kit.route.a.lot.io.OSMLoader;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -39,7 +40,7 @@ public class RoutingScalTest {
         System.out.println("import abgeschlossen");
     }
     
-    @Test
+    @Ignore
     public void routingFromAToBSeizuireTest() throws Exception {
         int tries = 10000;
         double startTime;
@@ -238,7 +239,7 @@ public class RoutingScalTest {
         writer.close();
     }
     
-    @Test
+    @Ignore
     public void fromAtoBScalTestInFile() throws Exception{
         int maxLength = 0;
         double maxValue = Double.MIN_VALUE;
@@ -322,7 +323,7 @@ public class RoutingScalTest {
     }
     
     
-    @Test
+    @Ignore
     public void optimizedRoutingScalTest() throws Exception{
         FileWriter writer = new FileWriter(new File("OptimizedRoutingScalTEstResult.txt"), false);
         List<Selection> selections;
