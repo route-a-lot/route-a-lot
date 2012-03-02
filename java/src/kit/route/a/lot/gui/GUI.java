@@ -733,7 +733,7 @@ public class GUI extends JFrame {
             buttonSwitchWaypoints.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent arg0) {
-                    Listener.fireEvent(SWITCH_NAV_NODES, new SwitchNavNodesEvent(pos1+1, pos1 + 2));
+                    Listener.fireEvent(SWITCH_NAV_NODES, new SwitchNavNodesEvent(pos1, pos1 + 1));
                 }
             });
         }
