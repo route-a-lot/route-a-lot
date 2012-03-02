@@ -224,6 +224,18 @@ public class StringTrie {
         return suffix;
     }
     /*
+     * Setter Methode für count
+     */
+     public void setCount(int count){
+         this.count = count;
+     }
+     /*
+     * Getter Methode für count
+     */
+     public int getCount(){
+         return count;
+     }
+    /*
     * Tiefensuche
     */
     public ArrayList<MapElement> depthFirstSearch(ArrayList<MapElement> words, StringTrie child){
@@ -362,46 +374,52 @@ public class StringTrie {
     }
     
     /*
-    * kompaktifizieren des Tries, Breitensuche
-    */
-    public void compactify(){
-        /*Breitensuche: Liste initialisieren*/
-        String value;
-                String otherValue;
-        ArrayList<StringTrie> allChildren = new ArrayList<StringTrie>();
-        for(StringTrie node: children){
-            if(node != null && !(node.getSuffix()) ){
-                allChildren.add(node);
-                /*Sprung in dfsComp*/
-                //dfsCompact(node);
-            }
-        }
-        while(allChildren.size() > 0){
-            StringTrie node = allChildren.remove(0);
-            node.count = node.countChild(node);
-                    if(node.count == 1 ){
-                    StringTrie child = getChild(node);
-                                        value = node.getValue();
-                                        if(!(child.getSuffix()) ){
-                                            otherValue = child.getValue();
-                        node.setValue( value + otherValue );
-                                                node.setChildren( child.getChildren() );
-                        
-                    }
-            }
-            StringTrie[] nextLayer = node.getChildren();
-            for(StringTrie child: nextLayer){
-                if(child != null && !(child.getSuffix() ) ){
-                                    allChildren.add(child);
-                            }
+     * kompaktifizieren des Tries, Breitensuche
+     */
+     public void compactify(){
+         /*Breitensuche: Liste initialisieren*/
+         String value;
+         String otherValue;
+         ArrayList<StringTrie> allChildren = new ArrayList<StringTrie>();
+         for(StringTrie node: children){
+             if(node != null && !(node.getSuffix()) ){
+                 allChildren.add(node);
+                 /*Sprung in dfsComp*/
+                 //dfsCompact(node);
+             }
+         }
+         while(allChildren.size() > 0){
+             StringTrie node = allChildren.remove(0);
+             node.setCount(node.countChild(node));
+             
+                     if(node.getCount() == 1 ){
+             //System.out.println("Kinder == 1, Value: " + node.getValue() );
+                     StringTrie child = getChild(node);
+                                         value = node.getValue();
+                                         if(!(child.getSuffix()) ){
+                                             otherValue = child.getValue();
+                         node.setValue( value + otherValue );
+                         //System.out.println("neuer Knotenwert: " + node.getValue());
+                                                 node.setChildren( child.getChildren() );
+                         allChildren.add(node);
+                         
+                     }
+             } else {
+             //System.out.println("Kinder > 1, Value: " + node.getValue() );
+             StringTrie[] nextLayer = node.getChildren();
+                 for(StringTrie child: nextLayer){
+                     if(child != null && !(child.getSuffix() ) ){
+                                         allChildren.add(child);
+                                 }
 
-            }
-            
-        }//end while
-        
-    
-    }
-                    
+                 }   
+             }
+             
+         }//end while
+         
+     
+     }
+                     
 
     /*
     * gibt einziges Kind zurück
