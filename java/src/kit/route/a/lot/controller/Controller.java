@@ -349,6 +349,7 @@ public class Controller {
             try {
                 MapIO.loadMap(file, p);
                 state.setLoadedMapFile(file);
+                state.getActiveRenderer().resetCache();
             } catch (IOException e) {
                 logger.error("Map could not be loaded.");
             }
