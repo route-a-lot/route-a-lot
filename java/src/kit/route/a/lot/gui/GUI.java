@@ -394,26 +394,26 @@ public class GUI extends JFrame {
         buttonAddNavNode.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 
-//                if(fieldStartNode.getText().equals("") || fieldEndNode.getText().equals("")) {
-//                    nextNavPoint = true;
-//                } else {
-//                    nextNavPoint = false;
-//                }
-//                
-//                if(waypointArea.getComponentCount() > 0) {
-//                    System.out.println(waypointArea.getComponentCount());
-//                    for(int i = 0; i < waypointArea.getComponentCount() || !nextNavPoint; i++) {
-//                        if(((JTextField) ((JPanel) waypointArea.getComponent(i)).getComponent(0)).getText().equals("")) {
-//                            nextNavPoint = true;
-//                        } else {
-//                            nextNavPoint = false;
-//                        }
-//                    }
-//                }
-//                
-//                if(!nextNavPoint) {
+                if(fieldStartNode.getText().equals("") || fieldEndNode.getText().equals("")) {
+                    nextNavPoint = true;
+                } else {
+                    nextNavPoint = false;
+                }
+                
+                if(waypointArea.getComponentCount() > 0) {
+                    System.out.println(waypointArea.getComponentCount());
+                    for(int i = 0; i < waypointArea.getComponentCount() && !nextNavPoint; i++) {
+                        if(((JTextField) ((JPanel) waypointArea.getComponent(i)).getComponent(0)).getText().equals("")) {
+                            nextNavPoint = true;
+                        } else {
+                            nextNavPoint = false;
+                        }
+                    }
+                }
+                
+                if(!nextNavPoint) {
                     addWaypointField("");
-//                }
+                }
                 repaint();
             }
         });
