@@ -465,6 +465,7 @@ public class MapInfo {
     public void compactifyDatastructures() {
         // todo pack elementdb as well?
         geographicalOperator.compactifyDatastructures();
+        addressOperator.compactify();
     }
 
     public void swapNodeIds(int id1, int id2) {
