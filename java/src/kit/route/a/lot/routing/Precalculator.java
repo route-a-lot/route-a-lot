@@ -40,6 +40,7 @@ public class Precalculator {
     private static long startTime, startPeriod, currentTime;
     
     public static void precalculate(final Progress p) {
+        finishedIds = 0;
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
         logger.info("Starting precalculation...");
