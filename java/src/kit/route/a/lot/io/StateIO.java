@@ -59,7 +59,9 @@ public class StateIO {
         // miscellaneous data  
         state.setClickRadius(stream.readInt());
         state.setHeightMalus(stream.readInt());
+        state.setHeightMalus(0);
         state.setHighwayMalus(stream.readInt());
+        state.setHighwayMalus(0);
         state.setSpeed(stream.readInt());
         boolean render3D = stream.readBoolean();
         if (LOAD_MAP_MODE) {

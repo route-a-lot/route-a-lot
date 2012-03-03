@@ -368,6 +368,7 @@ public class Controller {
             }
             setViewToMapCenter();
             updateImportedMapsList();
+            state.getActiveRenderer().resetCache();
         }    
         p.finish();
     }

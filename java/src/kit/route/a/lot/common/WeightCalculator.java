@@ -61,8 +61,8 @@ public class WeightCalculator {
     }
 
     public int calcWeightWithHeight(int fromID, int toID) {
-        Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
-        Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
+        Coordinates from = projection.getGeoCoordinates(State.getInstance().getMapInfo().getNodePosition(fromID));
+        Coordinates to = projection.getGeoCoordinates(State.getInstance().getMapInfo().getNodePosition(toID));
         IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
 
         int flatWeight = calcWeight(fromID, toID);
