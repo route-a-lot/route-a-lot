@@ -287,14 +287,18 @@ public class StringTrie {
         }
     /*geändert, an unterschiedliche Zeichenlänge angepasst*/
     if(value.length() > 1){
-        if(prefix.length() < ( value.length() - 1) ){
+        if(prefix.length() <= ( value.length() - 1) ){
             if (value.startsWith(prefix,1)){
                 return children;
             } else {
                 return null;
             }
         } else {
-            prefix = prefix.substring( (value.length() - 1) );
+            /*-----------------------------------------------------*/
+            if(prefix.startsWith(value.substring(1))){
+                prefix = prefix.substring( (value.length() - 1) );
+            /*------------------------------------------------------*/
+            }
         }
     }
     /*Falls Präfix abgearbeitet ist gibt Kindknoten für Tiefensuche zurück*/
