@@ -301,6 +301,15 @@ public class StringTrie {
     if(prefix.length() == 0){ 
         return children;
     } else {
+        /*--------------------------------------------------*/
+        cur = prefix.charAt(0); 
+        index = Character.getNumericValue(cur) - 10;
+        /* Sonderfälle abfangen */
+            if(index < 0 || index > 25) {
+                System.out.println("Zeichen "+ cur + "ist nicht in alphabet enthalten");
+                System.exit(0);    
+            }
+            /*-----------------------------------------------*/
         StringTrie nextNeighbor = children[index];
         if(!(nextNeighbor == null) ){
             dfsStartNodes = nextNeighbor.getStartNodes(prefix.substring(1));
@@ -363,6 +372,7 @@ public class StringTrie {
         } else {
             prefix = normalize(prefix);
         }
+        if(prefix.length() == 0){ return null;}
         StringTrie[] children = getStartNodes(prefix);
         if(children == null) {
             System.out.println("No words found");
