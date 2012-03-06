@@ -21,8 +21,11 @@ import kit.route.a.lot.map.POINode;
 
 public class FileElementDB extends ArrayElementDB {
     
-    private boolean isSavingNodes = false;
-    private boolean isSavingElements = false;
+    private int currentAction = 0;
+    private static final int SAVING_NODES = 1;
+    private static final int SWAPPING_IDS = 2;
+    private static final int SAVING_ELEMENTS = 3;
+    
     private int nodesCount = 0;
     private long nodesCountPointer = 0;
     private int elementsCount = 0;
@@ -54,35 +57,33 @@ public class FileElementDB extends ArrayElementDB {
 
     @Override
     public void addMapElement(MapElement element) {
-        if (!isSavingElements) {
-            if (isSavingNodes) {
-                isSavingNodes = false;
-                isSavingElements = true;
-                try {
-                    nodePositionStream.close();
-                    nodePositionRAF = new RandomAccessFile(nodePositionFile, "rw");
-                    elementsCountPointer = randAccessFile.getFilePointer();
-                    randAccessFile.writeInt(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                return;
+        if (currentAction == SWAPPING_IDS) {
+            currentAction = SAVING_ELEMENTS;
+            try {
+                nodePositionStream.close();
+                nodePositionRAF = new RandomAccessFile(nodePositionFile, "rw");
+                elementsCountPointer = randAccessFile.getFilePointer();
+                randAccessFile.writeInt(0);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        try {
-            MapElement.saveToOutput(randAccessFile, element, false);
-            elementsCount++;
-        } catch (IOException e) {
-            e.printStackTrace();
+        
+        if (currentAction == SAVING_ELEMENTS) {
+            try {
+                MapElement.saveToOutput(randAccessFile, element, false);
+                elementsCount++;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void addNode(int nodeID, Node node) {
         try {
-            if (!isSavingNodes && !isSavingElements) {
-                isSavingNodes = true;
+            if (currentAction == 0) {
+                currentAction = SAVING_NODES;
                 nodesCountPointer = randAccessFile.getFilePointer();
                 randAccessFile.writeInt(0);
             }
@@ -147,28 +148,27 @@ public class FileElementDB extends ArrayElementDB {
 
     @Override
     public void swapNodeIDs(int id1, int id2) {
-        if (!isSavingElements) {
-            return;
+        if (currentAction == SAVING_NODES) {
+            currentAction = SWAPPING_IDS;
         }
-        try {
-            long posOnEntering = randAccessFile.getFilePointer();
-            
-            nodePositionRAF.seek(id1 * 8);  // 8 == length of long
-            long posNode1 = nodePositionRAF.readLong();
-            randAccessFile.seek(posNode1 + 1);
-            randAccessFile.writeInt(id2);
-            nodePositionRAF.seek(id2 * 8);
-            long posNode2 = nodePositionRAF.readLong();
-            nodePositionRAF.seek(id2 * 8);
-            nodePositionRAF.writeLong(posNode1);
-            nodePositionRAF.seek(id1 * 8);
-            nodePositionRAF.writeLong(posNode2);
-            randAccessFile.seek(posNode2 + 1);
-            randAccessFile.writeInt(id1);
-            
-            randAccessFile.seek(posOnEntering);
-        } catch (IOException e) {
-            e.printStackTrace();
+        
+        if (currentAction == SWAPPING_IDS) {
+            try {
+                nodePositionRAF.seek(id1 * 8);  // 8 == length of long
+                long posNode1 = nodePositionRAF.readLong();
+                randAccessFile.seek(posNode1 + 1);
+                randAccessFile.writeInt(id2);
+                nodePositionRAF.seek(id2 * 8);
+                long posNode2 = nodePositionRAF.readLong();
+                nodePositionRAF.seek(id2 * 8);
+                nodePositionRAF.writeLong(posNode1);
+                nodePositionRAF.seek(id1 * 8);
+                nodePositionRAF.writeLong(posNode2);
+                randAccessFile.seek(posNode2 + 1);
+                randAccessFile.writeInt(id1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     

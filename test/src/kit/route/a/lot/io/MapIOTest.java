@@ -54,14 +54,14 @@ public class MapIOTest {
         try {
             MapIO.saveMap(sralMap, p.createSubProgress(0.3));
         } catch (IOException e) {
-            assertTrue(false);
+            fail();
         }
         MapInfo original = state.getMapInfo();
         state.setMapInfo(new MapInfo());
         try {
             MapIO.loadMap(sralMap, p.createSubProgress(1));
         } catch (IOException e) {
-            assertFalse(false || true);
+            fail();
         }
         //assertTrue(original.equals(state.getMapInfo()));
     }

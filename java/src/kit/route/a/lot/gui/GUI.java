@@ -15,7 +15,6 @@ import static kit.route.a.lot.common.Listener.LOAD_MAP;
 import static kit.route.a.lot.common.Listener.LOAD_ROUTE;
 import static kit.route.a.lot.common.Listener.OPTIMIZE_ROUTE;
 import static kit.route.a.lot.common.Listener.PROGRESS;
-import static kit.route.a.lot.common.Listener.RENDER;
 import static kit.route.a.lot.common.Listener.SAVE_ROUTE;
 import static kit.route.a.lot.common.Listener.SET_HEIGHT_MALUS;
 import static kit.route.a.lot.common.Listener.SET_HIGHWAY_MALUS;
@@ -76,7 +75,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
@@ -88,7 +86,6 @@ import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
-import kit.route.a.lot.gui.event.RenderEvent;
 import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
 import kit.route.a.lot.gui.event.TextEvent;
 import kit.route.a.lot.map.rendering.Renderer;
@@ -239,8 +236,8 @@ public class GUI extends JFrame {
         mapPanel.add(buttonSwitchMapMode);
         mapPanel.add(Box.createHorizontalStrut(10));
         mapPanel.add(zoomSlider);
-        mapPanel.add(Box.createHorizontalStrut(10));
-        mapPanel.add(buttonDrawAreas);
+//        mapPanel.add(Box.createHorizontalStrut(10));
+//        mapPanel.add(buttonDrawAreas);
         buttonPanel.add(routePanel, BorderLayout.WEST);
         buttonPanel.add(mapPanel, BorderLayout.EAST);
 

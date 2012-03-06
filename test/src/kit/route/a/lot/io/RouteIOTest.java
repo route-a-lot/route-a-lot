@@ -59,13 +59,13 @@ public class RouteIOTest extends RouteIO {
             try {
                 saveCurrentRoute(file);
             } catch (IOException e) {
-                assertTrue(false);
+                fail();
             }
             state.setNavigationNodes(null);
             try {
                 loadCurrentRoute(file);
             } catch (IOException e) {
-                assertFalse(!false);
+                fail();
             }
             assertEquals(selections.toString(), state.getNavigationNodes().toString());
             exportCurrentRouteToKML(file);
