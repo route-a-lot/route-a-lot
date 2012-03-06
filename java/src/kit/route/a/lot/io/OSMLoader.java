@@ -22,6 +22,7 @@ import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.ProjectionFactory;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
@@ -764,6 +765,9 @@ public class OSMLoader {
                                     || key.equalsIgnoreCase("construction")) {
                                 // ignore
                             } else {
+                                if (ignoredKeys % 10000 == 0) {
+                                    Util.printMemoryInformation();
+                                }
                                 ignoredKeys++;
                                 logger.debug("Key ignored: " + key + ", value = " + value + " : "
                                         + ignoredKeys);

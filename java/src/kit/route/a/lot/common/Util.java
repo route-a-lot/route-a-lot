@@ -150,14 +150,14 @@ public class Util {
         return days + "d " + (exact ? sHours : hours + "h ");
     }
     
-    public static  void printMemoryInformation() {
+    public static void printMemoryInformation() {
         System.out.println("Total used memory: " + humanReadableByteCount(Runtime.getRuntime().totalMemory(), false));
         System.out.println("Maximal available memory: " + humanReadableByteCount(Runtime.getRuntime().maxMemory(), false));
         System.out.println("Unused memory: " + humanReadableByteCount(Runtime.getRuntime().freeMemory(), false));
     }
     
     // copied from http://stackoverflow.com/questions/3758606/how-to-convert-byte-size-into-human-readable-format-in-java
-    private static String humanReadableByteCount(long bytes, boolean si) {
+    public static String humanReadableByteCount(long bytes, boolean si) {
         int unit = si ? 1000 : 1024;
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));

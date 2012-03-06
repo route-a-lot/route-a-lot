@@ -333,6 +333,20 @@ public class GUI extends JFrame {
         routeValues = new JLabel();
         showRouteValues(0, 0);
         
+        final JProgressBar memoryConsumption = new JProgressBar(0, 100);
+        memoryConsumption.setStringPainted(true);
+        Timer memoryConsumptionTimer = new Timer("memory consumption timer");
+        memoryConsumptionTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long maxMemory = Runtime.getRuntime().maxMemory();
+                long totalMemory = Runtime.getRuntime().totalMemory();
+                memoryConsumption.setValue((int) (100 * ((double) totalMemory / maxMemory)));
+                memoryConsumption.setString(humanReadableByteCount(totalMemory, true)
+                        + " / " + humanReadableByteCount(maxMemory, true));
+            }
+        }, 200, 500);
+        
         JPanel statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
         statusBar.add(new JLabel("Route:"));
@@ -340,7 +354,8 @@ public class GUI extends JFrame {
         statusBar.add(routeValues);    
         statusBar.add(Box.createHorizontalGlue());
         statusBar.add(mouseCoordinatesDisplay);
-        statusBar.add(Box.createHorizontalStrut(10));
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(memoryConsumption);
         
         // FRAME LAYOUT
         setLayout(new BorderLayout());
