@@ -157,7 +157,7 @@ public class MapInfo {
                 if (streets == null) {
                     streets = new HashSet<Street>();
                     streetsForAddress.put(mapId, streets);
-                } else {
+                } else if (!"".equals(wayInfo.getAddress().getStreet())) {
                     Iterator<Street> streetsIterator = streets.iterator();
                     while (streetsIterator.hasNext()) {
                         if (mergeStreetsIfPossible(street, streetsIterator.next())) {

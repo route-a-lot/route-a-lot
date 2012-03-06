@@ -174,8 +174,8 @@ public class Util {
      * @return the shared element if existent, null otherwise
      */
     public static <T> T getSharedElementAtEnd(List<T> list1, List<T> list2) {
-        for (int i = 0; i < list1.size(); i += list1.size() - 1) {
-            for (int j = 0; j < list2.size(); j += list2.size() - 1) {
+        for (int i = 0; i < list1.size(); i += list1.size() > 1 ? list1.size() - 1 : 1) {
+            for (int j = 0; j < list2.size(); j += list2.size() > 1 ? list2.size() - 1 : 1) {
                 if (list1.get(i).equals(list2.get(j))) {
                     return list1.get(i);
                 }
