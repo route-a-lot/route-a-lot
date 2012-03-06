@@ -12,6 +12,9 @@ import kit.route.a.lot.map.MapElement;
 
 public interface GeographicalOperator {
 
+    public final static int NUM_LEVELS = 10;
+    public static final float LAYER_MULTIPLIER = 3;
+    
     /**
      * Defines the map boundary, in the process creating the (empty) zoom level layers.
      * 

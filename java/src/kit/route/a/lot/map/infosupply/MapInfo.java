@@ -21,7 +21,6 @@ import java.util.Set;
 
 import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
@@ -75,14 +74,30 @@ public class MapInfo {
         geographicalOperator.setBounds(upLeft, bottomRight);
     }
 
+    public Coordinates getGeoTopLeft() {
+        return geoTopLeft;
+    }
+
+    public void setGeoTopLeft(Coordinates geoTopLeft) {
+        this.geoTopLeft = geoTopLeft;
+    }
+
+    public Coordinates getGeoBottomRight() {
+        return geoBottomRight;
+    }
+
+    public void setGeoBottomRight(Coordinates geoBottomRight) {
+        this.geoBottomRight = geoBottomRight;
+    }
+ 
+    
+    
+    
+    
     /**
      * Sets the entire area of the map.
-     * 
-     * @param upLeft
-     *            the upper left corner of the map
-     * 
-     * @param bottomRight
-     *            the bottom right corner of the area
+     * @param upLeft the upper left corner of the map
+     * @param bottomRight the bottom right corner of the area
      */
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
         geographicalOperator.setBounds(upLeft, bottomRight);
@@ -90,21 +105,17 @@ public class MapInfo {
 
     /**
      * Writes the topLeft and bottomRight values of the current map to the given variables.
-     * 
      */
     public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
         geographicalOperator.getBounds(upLeft, bottomRight);
     }
+    
 
-
+    
     /**
      * Adds a node to the data structures.
-     * 
-     * @param position
-     *            the position of the node
-     * 
-     * @param id
-     *            the unique id of the node
+     * @param position the position of the node
+     * @param id the unique id of the node
      */
     public void addNode(Coordinates position, int id, Address address) {
         Node newNode = new Node(position, id);
@@ -119,18 +130,11 @@ public class MapInfo {
 
     /**
      * Adds a way the the data structures.
-     * 
-     * @param ids
-     *            the id's of the nodes in the Way (builds edges)
-     * 
-     * @param name
-     *            the name of the street
-     * 
-     * @param type
-     *            the type of the street
+     * @param ids the id's of the nodes in the Way (builds edges)
+     * @param name the name of the street
+     * @param type the type of the street
      */
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
-
         if (wayInfo.isStreet()) {
             Street street = new Street(name, wayInfo);
             Node[] nodes = new Node[ids.size()];
@@ -282,6 +286,46 @@ public class MapInfo {
     }
 
 
+    
+    public void swapNodeIds(int id1, int id2) {
+        elementDB.swapNodeIDs(id1, id2);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Swapping node " + id1 + " and " + id2);
+        }
+    }
+    
+    public void lastElementAdded() {
+        if (!useDirectFile) {
+            for (Collection<Street> streets : streetsForAddress.values()) {
+                for (Street street : streets) {
+                    addressOperator.add(street);
+                    elementDB.addMapElement(street);
+                    geographicalOperator.addToBaseLayer(street);
+                }
+            }
+            return;
+        }
+        ((FileElementDB) elementDB).lastElementAdded();
+        elementDB = new ArrayElementDB();
+        try {
+            elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(new FileInputStream(outputFile))));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        streetsForAddress = null;
+    }
+    
+     /**
+     * Returns the coordinates of a given node id.
+     * @param nodeID the id of the node
+     * @return the coordinates of the node correspondenting to the give id.
+     */
+    public Coordinates getNodePosition(int nodeID) {
+        return elementDB.getNode(nodeID).getPos();
+    }   
+    
     public POIDescription getFavoriteDescription(Coordinates position, int detailLevel, int radius) {
         return elementDB.getFavoriteDescription(position, detailLevel, radius);
     }
@@ -301,38 +345,6 @@ public class MapInfo {
         return geographicalOperator.getPOIDescription(pos, radius, detailLevel);
     }
 
-    /**
-     * Returns the coordinates of a given node id.
-     * 
-     * @param nodeID
-     *            the id of the node
-     * @return the coordinates of the node correspondenting to the give id.
-     */
-    public Coordinates getNodePosition(int nodeID) {
-        return elementDB.getNode(nodeID).getPos();
-    }
-
-    /**
-     * Returns the Node with the given ID.
-     * 
-     * @param nodeID
-     *            the id of the node
-     * @return the corresponding node object.
-     */
-    public Node getNode(int nodeID) {
-        return elementDB.getNode(nodeID);
-    }
-
-    /**
-     * Returns the MapElement (but no Node!) with the given ID.
-     * 
-     * @param nodeID
-     *            the id of the node
-     * @return the corresponding node object.
-     */
-    public MapElement getMapElement(int elementID) {
-        return elementDB.getMapElement(elementID);
-    }
 
     /**
      * Operation suggestCompletions
@@ -401,6 +413,11 @@ public class MapInfo {
         return overlay;
     }
 
+    public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius, boolean exact) {
+        return geographicalOperator.getBaseLayer(pos, radius, exact);
+    }
+    
+    
     /**
      * Loads the map from the given stream.
      * 
@@ -433,29 +450,7 @@ public class MapInfo {
         addressOperator.saveToOutput(output);
     }
 
-    public void lastElementAdded() {
-        if (!useDirectFile) {
-            for (Collection<Street> streets : streetsForAddress.values()) {
-                for (Street street : streets) {
-                    addressOperator.add(street);
-                    elementDB.addMapElement(street);
-                    geographicalOperator.addToBaseLayer(street);
-                }
-            }
-            return;
-        }
-        ((FileElementDB) elementDB).lastElementAdded();
-        elementDB = new ArrayElementDB();
-        try {
-            elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(new FileInputStream(outputFile))));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        streetsForAddress = null;
-    }
-
+    
     public void printQuadTree() {
         if (geographicalOperator instanceof QTGeographicalOperator) {
             ((QTGeographicalOperator) geographicalOperator).printQuadTree();
@@ -468,32 +463,6 @@ public class MapInfo {
         addressOperator.compactify();
     }
 
-    public void swapNodeIds(int id1, int id2) {
-        elementDB.swapNodeIDs(id1, id2);
-        if (logger.isTraceEnabled()) {
-            logger.trace("Swapping node " + id1 + " and " + id2);
-        }
-    }
-
-    public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius, boolean exact) {
-        return geographicalOperator.getBaseLayer(pos, radius, exact);
-    }
-
-    public Coordinates getGeoTopLeft() {
-        return geoTopLeft;
-    }
-
-    public void setGeoTopLeft(Coordinates geoTopLeft) {
-        this.geoTopLeft = geoTopLeft;
-    }
-
-    public Coordinates getGeoBottomRight() {
-        return geoBottomRight;
-    }
-
-    public void setGeoBottomRight(Coordinates geoBottomRight) {
-        this.geoBottomRight = geoBottomRight;
-    }
 
     @Override
     public boolean equals(Object other) {
@@ -510,5 +479,27 @@ public class MapInfo {
                 && geoBottomRight.equals(mapInfo.geoBottomRight);
     }
 
+    
+    /**
+     * Returns the Node with the given ID.
+     * @param nodeID the id of the node
+     * @return the corresponding node object.
+     */
+    public Node getNode(int nodeID) {
+        return elementDB.getNode(nodeID);
+    }
 
+    /**
+     * Returns the MapElement (but no Node!) with the given ID.
+     * @param nodeID the id of the node
+     * @return the corresponding node object.
+     */
+    public MapElement getMapElement(int elementID) {
+        return elementDB.getMapElement(elementID);
+    }
+    
+    ElementDB getElementDB() {
+        return elementDB;
+    }
+    
 }

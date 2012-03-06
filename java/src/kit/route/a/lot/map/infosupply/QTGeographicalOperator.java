@@ -27,8 +27,6 @@ import org.apache.log4j.Logger;
 public class QTGeographicalOperator implements GeographicalOperator {
 
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
-    private static final float BASE_LAYER_MULTIPLIER = 3;
-    private static final int NUM_LEVELS = 9;
     public static final boolean DRAW_FRAMES = false;
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
@@ -95,7 +93,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         for (int detail = 1; detail < maxZoomlevel; detail++) {
             MapElement reduced = element.getReduced(detail,
-                    Projection.getZoomFactor(detail) * BASE_LAYER_MULTIPLIER);
+                    Projection.getZoomFactor(detail) * LAYER_MULTIPLIER);
             if (reduced == null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("Ignoring " + element + " for zoomlevel " + detail);

@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
@@ -18,7 +19,7 @@ import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 
 
-public class FileElementDB extends ArrayElementDB implements ElementDB {
+public class FileElementDB extends ArrayElementDB {
     
     private boolean isSavingNodes = false;
     private boolean isSavingElements = false;
@@ -169,7 +170,17 @@ public class FileElementDB extends ArrayElementDB implements ElementDB {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+    }
+    
+    @Override
+    public Iterator<Node> getAllNodes() {
+        // TODO
+        return null;
     }
 
+    @Override
+    public Iterator<MapElement> getAllMapElements() {
+        // TODO
+        return null;
+    }
 }

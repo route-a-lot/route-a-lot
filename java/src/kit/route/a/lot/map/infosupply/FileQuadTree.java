@@ -64,15 +64,17 @@ public class FileQuadTree {
     
     public void addElement(MapElement element) {
         if (element.isInBounds(topLeft, bottomRight)) {
-            loadIfNeeded();
-            if (elements != null) {
+            if (children != null) {
+                for (FileQuadTree child : children) {
+                    child.addElement(element);
+                }
+            } else {
+                if (elements == null) {
+                    elements = new ArrayList<MapElement>();
+                }
                 elements.add(element);
                 if (elements.size() > MAX_SIZE) {
                     split();
-                }
-            } else {
-                for (FileQuadTree child : children) {
-                    child.addElement(element);
                 }
             }
         }
@@ -80,19 +82,25 @@ public class FileQuadTree {
 
     public void queryElements(Coordinates topLeft, Coordinates bottomRight, Set<MapElement> target) {
         if (isInBounds(topLeft, bottomRight)) {
-            loadIfNeeded();
-            if (elements != null) {
-                target.addAll(elements);
-            } else {
+            if ((children == null) && (elements == null)) {
+                try {
+                    load();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            if (children != null) {
                 for (FileQuadTree child : children) {
                     child.queryElements(topLeft, bottomRight, target);
-                }
+                } 
+            } else if (elements != null) {
+                target.addAll(elements);
             }
         }
     }
         
     public void split() {
-        loadIfNeeded();
         children = new FileQuadTree[4];
         Coordinates dim = bottomRight.clone().subtract(topLeft).scale(0.5f);
         for (int i = 0; i < 4; i++) {
@@ -116,22 +124,6 @@ public class FileQuadTree {
                 bottomRight.getLongitude() - topLeft.getLongitude(),
                 bottomRight.getLatitude() - topLeft.getLatitude());      
         return bounds.contains(rect) || rect.contains(bounds) || rect.intersects(bounds);
-    }
-    
-    
-    /**
-     * Checks whether this Quadtree hasn't been loaded so far.
-     * If not loaded yet, the Quadtree will be loaded now.
-     */
-    private void loadIfNeeded() {
-        if ((children == null) && (elements == null)) {
-            try {
-                load();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        
     }
     
     /**
@@ -161,7 +153,13 @@ public class FileQuadTree {
     }
     
     public void unload() {
+        for (MapElement element : elements) {
+        //    elementDB.releaseElement(element.getID()); 
+        }
         elements = null;
+        for (FileQuadTree child : children) {
+            child.unload();
+        }
         children = null;
     }
     

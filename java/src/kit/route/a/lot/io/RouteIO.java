@@ -156,7 +156,7 @@ public class RouteIO {
                 if (route.get(i) == -1) {
                     continue;
                 }
-                Coordinates localCoordinates = mapInfo.getNode(route.get(i)).getPos();
+                Coordinates localCoordinates = mapInfo.getNodePosition(route.get(i));
                 Coordinates geoCoordinates = projection.getGeoCoordinates(localCoordinates);
                 
                 coordinatesSB.append(geoCoordinates.getLongitude() + "," + geoCoordinates.getLatitude());

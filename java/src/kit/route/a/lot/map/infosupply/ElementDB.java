@@ -4,6 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.map.Node;
@@ -75,4 +77,8 @@ public interface ElementDB {
     
     public boolean equals (Object o);
 
+    public Iterator<Node> getAllNodes();
+
+    public Iterator<MapElement> getAllMapElements();    
+    
 }

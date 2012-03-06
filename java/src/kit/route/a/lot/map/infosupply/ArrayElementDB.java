@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
@@ -169,6 +170,16 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public ArrayList<POINode> getFavorites() {
         return favorites;
+    }
+
+    @Override
+    public Iterator<Node> getAllNodes() {
+        return nodes.iterator();
+    }
+
+    @Override
+    public Iterator<MapElement> getAllMapElements() {
+        return mapElements.iterator();
     }
 
 }
