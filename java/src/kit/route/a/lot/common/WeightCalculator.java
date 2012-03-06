@@ -25,39 +25,42 @@ public class WeightCalculator {
     
     public int calcWeightWithHeightAndHighwayMalus(int fromID, int toID, int wayType) {
         int weightWithHeight = calcWeightWithHeight(fromID, toID);
-        return weightWithHeight * (getMalus(wayType) * State.getInstance().getHighwayMalus() + 1);
+        return (int) (weightWithHeight * (getMalusFactor(wayType, State.getInstance().getHighwayMalus())));
     }
     
-    private static int getMalus(int wayType) {
-        int malus = 0;
+    private static double getMalusFactor(int wayType, int malus) {
+        if (malus == 0) {
+            return 1;
+        }
+        float malusFactor = 0.03f;
         switch (wayType) {
             case OSMType.HIGHWAY_MOTORWAY:
             case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
             case OSMType.HIGHWAY_MOTORWAY_LINK:
-                malus = 4;
+                malusFactor = 2.f;
                 break;
             case OSMType.HIGHWAY_PRIMARY:
             case OSMType.HIGHWAY_PRIMARY_LINK:
-                malus = 3;
+                malusFactor = 1f;
                 break;
             case OSMType.HIGHWAY_SECONDARY:
             case OSMType.HIGHWAY_SECONDARY_LINK:
-                malus = 2;
+                malusFactor = 0.5f;
                 break;
             case OSMType.HIGHWAY_TERTIARY:
             case OSMType.HIGHWAY_TERTIARY_LINK:
-                malus = 1;
+                malusFactor = 0.25f;
                 break;
             case OSMType.HIGHWAY_RESIDENTIAL:
             case OSMType.HIGHWAY_LIVING_STREET:
             case OSMType.HIGHWAY_UNCLASSIFIED:
-                malus = 0;
+                malusFactor = 0.02f;
                 break;
             case OSMType.HIGHWAY_CYCLEWAY:
-                malus = 0;
+                malusFactor = 0;
                 break;
         }
-        return malus;
+        return 1 + malusFactor / 150 * Math.pow(7, malus);
     }
     
     private static void print(String string) {
