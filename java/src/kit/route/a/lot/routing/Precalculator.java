@@ -1,5 +1,9 @@
 package kit.route.a.lot.routing;
 
+import static kit.route.a.lot.common.Util.formatSeconds;
+
+import java.awt.Color;
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,12 +21,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.log4j.Logger;
-
+import kit.route.a.lot.common.Context2D;
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
+import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.Node;
+import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.map.rendering.Renderer;
 
-import static kit.route.a.lot.common.Util.formatSeconds;
+import org.apache.log4j.Logger;
 
 
 public class Precalculator {
@@ -199,5 +208,32 @@ public class Precalculator {
         logger.info("Areas successfully created");
         p.addProgress(0.1);
         return true;  
+    }
+    
+    /**
+     * Draws the calculated areas on the given graphics.
+     * 
+     */
+    public static void drawAreas(Coordinates topLeft, Coordinates bottomRight, int detailLevel, Graphics graphics) {
+        graph = State.getInstance().getLoadedGraph();
+        int idCount = graph.getIDCount();
+        Color[] colors = new Color[63];
+        for (int i = 0; i < colors.length; i++) {
+            colors[i] = new Color((i * 389) % 256, (i * 211) % 256, (i * 109) % 256);
+        }
+        MapInfo mapInfo = State.getInstance().getMapInfo();
+        int size = 256;
+        Coordinates extendedTopLeft = topLeft.clone().add(-size, -size);
+        Coordinates extendedBottomRight = bottomRight.clone().add(size, size);
+        size /= Projection.getZoomFactor(detailLevel);
+        for (int i = 0; i < idCount; i++) {
+            Node node = mapInfo.getNode(i);
+            if (!node.isInBounds(extendedTopLeft, extendedBottomRight)) {
+                continue;
+            }
+            Coordinates localCoordinates = Renderer.getLocalCoordinates(node.getPos(), topLeft, detailLevel);
+            graphics.setColor(colors[graph.getAreaID(i)]);
+            graphics.fillOval((int) localCoordinates.getLongitude() - size/2, (int) localCoordinates.getLatitude() - size/2, size, size);
+        }
     }
 }

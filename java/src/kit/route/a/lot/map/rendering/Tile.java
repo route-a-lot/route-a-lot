@@ -25,6 +25,7 @@ import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 import kit.route.a.lot.map.Street;
 import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.routing.Precalculator;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +45,7 @@ public class Tile {
 
     private MapInfo mapInfo;
 
-    // Temporary variable (only guaranteed to be valid when rendering):
+    /** Temporary variable (only guaranteed to be valid when rendering) */
     private Graphics2D graphics;
 
     /**
@@ -100,6 +101,7 @@ public class Tile {
         if (map.size() == 0) {
             return;
         }
+        
 
         // prepare image
         image = null;
@@ -152,6 +154,10 @@ public class Tile {
             if (element instanceof Street) {
                 drawStreetNames((Street) element);
             }
+        }
+        
+        if (State.getInstance().getActiveRenderer().drawAreas) {
+            Precalculator.drawAreas(topLeft, bottomRight, detailLevel, graphics);
         }
 
         graphics.dispose();

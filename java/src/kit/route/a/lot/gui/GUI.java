@@ -15,13 +15,15 @@ import static kit.route.a.lot.common.Listener.LOAD_MAP;
 import static kit.route.a.lot.common.Listener.LOAD_ROUTE;
 import static kit.route.a.lot.common.Listener.OPTIMIZE_ROUTE;
 import static kit.route.a.lot.common.Listener.PROGRESS;
+import static kit.route.a.lot.common.Listener.RENDER;
 import static kit.route.a.lot.common.Listener.SAVE_ROUTE;
 import static kit.route.a.lot.common.Listener.SET_HEIGHT_MALUS;
 import static kit.route.a.lot.common.Listener.SET_HIGHWAY_MALUS;
 import static kit.route.a.lot.common.Listener.SET_SPEED;
 import static kit.route.a.lot.common.Listener.SWITCH_MAP_MODE;
-import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
 import static kit.route.a.lot.common.Listener.SWITCH_NAV_NODES;
+import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+import static kit.route.a.lot.common.Util.humanReadableByteCount;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,6 +45,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -55,7 +59,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
@@ -73,18 +76,22 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.Util;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.FloatEvent;
 import kit.route.a.lot.gui.event.NavNodeNameEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
+import kit.route.a.lot.gui.event.RenderEvent;
 import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
 import kit.route.a.lot.gui.event.TextEvent;
+import kit.route.a.lot.map.rendering.Renderer;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -116,6 +123,7 @@ public class GUI extends JFrame {
     
     // STATUS BAR
     private JLabel routeValues, mouseCoordinatesDisplay;
+
     private JProgressBar progressBar;
     private JButton buttonCancelOperation;
 
@@ -201,6 +209,18 @@ public class GUI extends JFrame {
                 }
             }           
         });
+        
+        JButton buttonDrawAreas = new JButton("Draw Areas");
+        buttonDrawAreas.addActionListener(new ActionListener() {
+            
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                Renderer renderer = State.getInstance().getActiveRenderer();
+                renderer.drawAreas = !renderer.drawAreas;
+                renderer.resetCache();
+                map.repaint();
+            }
+        });
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setPreferredSize(new Dimension(this.getWidth() + 60, 80));
@@ -219,6 +239,8 @@ public class GUI extends JFrame {
         mapPanel.add(buttonSwitchMapMode);
         mapPanel.add(Box.createHorizontalStrut(10));
         mapPanel.add(zoomSlider);
+        mapPanel.add(Box.createHorizontalStrut(10));
+        mapPanel.add(buttonDrawAreas);
         buttonPanel.add(routePanel, BorderLayout.WEST);
         buttonPanel.add(mapPanel, BorderLayout.EAST);
 
@@ -236,7 +258,6 @@ public class GUI extends JFrame {
                         + "%, noch " + Util.formatSeconds(time, false));
             }
         });
-        mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
         buttonCancelOperation = new JButton(deleteIcon);
         buttonCancelOperation.setPreferredSize(new Dimension(20, 15));
         buttonCancelOperation.addActionListener(new ActionListener() {
@@ -262,8 +283,6 @@ public class GUI extends JFrame {
         // tabArea.setMnemonicAt(1, KeyEvent.VK_1);
         // tabArea.setMnemonicAt(1, KeyEvent.VK_2);
 
-        routeValues = new JLabel();
-        showRouteValues(0, 0);
         
         JPanel progressArea = new JPanel(new BorderLayout());       
         progressArea.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -308,11 +327,12 @@ public class GUI extends JFrame {
         setGlassPane(glass);
         
 
-        
-       
-        
-        
         // STATUS BAR
+        mouseCoordinatesDisplay = new JLabel(new Coordinates().toString());
+        
+        routeValues = new JLabel();
+        showRouteValues(0, 0);
+        
         JPanel statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
         statusBar.add(new JLabel("Route:"));

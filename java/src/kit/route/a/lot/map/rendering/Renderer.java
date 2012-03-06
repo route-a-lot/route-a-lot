@@ -24,6 +24,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.*;
 import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.route.a.lot.routing.Precalculator;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;
@@ -51,6 +52,7 @@ public class Renderer {
     // Temporary variable (only guaranteed to be valid when rendering):
     public Context2D myContext;
     
+    public boolean drawAreas = false;
     
     
     /**
@@ -324,7 +326,7 @@ public class Renderer {
      * @param detail level of detail / zoomlevel
      * @return corresponding set of local coordinates
      */
-    protected static Coordinates getLocalCoordinates(Coordinates global, Coordinates topLeft, int detail) {
+    public static Coordinates getLocalCoordinates(Coordinates global, Coordinates topLeft, int detail) {
         return global.clone().subtract(topLeft).scale(1f / Projection.getZoomFactor(detail));
     }
     
