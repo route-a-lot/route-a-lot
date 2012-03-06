@@ -359,6 +359,7 @@ public class GUI extends JFrame {
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
+                System.out.println(fieldStartNode.getText());
                 if (enterPressed == false) {
                     if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
@@ -366,10 +367,10 @@ public class GUI extends JFrame {
                     popupPos = new Point(fieldStartNode.getX(), 
                             fieldStartNode.getY() + fieldStartNode.getHeight());
                     editedNavNodeIndex = 0;
-                    if (fieldStartNode.getText().length() > 2) {
+                    if (fieldStartNode.getText().length() > 1) {
                         navComp = fieldStartNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS_START,
-                                new TextEvent(fieldStartNode.getText()));
+                                new TextEvent(fieldStartNode.getText() + e.getKeyChar()));
                     } else if (popupSearchCompletions.isVisible()) {
                         popupSearchCompletions.setVisible(false);
                     }
@@ -406,10 +407,10 @@ public class GUI extends JFrame {
                     } else {
                         editedNavNodeIndex = countNavNodes();
                     }
-                    if (fieldEndNode.getText().length() > 2) {
+                    if (fieldEndNode.getText().length() > 1) {
                         navComp = fieldEndNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS_DESTINATION,
-                                new TextEvent(fieldEndNode.getText()));
+                                new TextEvent(fieldEndNode.getText() + e.getKeyChar()));
                     } else if (popupSearchCompletions.isVisible()) {
                         popupSearchCompletions.setVisible(false);
                     }
@@ -761,12 +762,12 @@ public class GUI extends JFrame {
                         return;
                     }
                     editedNavNodeIndex = pos;
-                    if (waypointField.getText().length() > 2) {
+                    if (waypointField.getText().length() > 1) {
                         popupPos = new Point(waypointField.getX(),
                                 waypointField.getY() + waypointField.getHeight());
                         navComp = waypointField;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS_PITSTOP,
-                                new TextEvent(waypointField.getText()));
+                                new TextEvent(waypointField.getText() + e.getKeyChar()));
                     } else if (popupSearchCompletions.isVisible()) {
                         popupSearchCompletions.setVisible(false);
                     }

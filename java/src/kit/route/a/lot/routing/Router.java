@@ -199,8 +199,11 @@ public class Router {
         }
         return length;
     }
-
+    
     private static Route fromAToB(Selection a, Selection b) {
+        if (a.isOnSameEdge(b)) {
+            return new Route(-1, 0);
+        }
         // ToDo: rename?
         // Renderer renderer = State.getInstance().getController.getRender();
         RoutingGraph graph = State.getInstance().getLoadedGraph();

@@ -59,6 +59,10 @@ public class WeightCalculator {
         }
         return malus;
     }
+    
+    private static void print(String string) {
+        System.out.println(string);
+    }
 
     public int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = projection.getGeoCoordinates(State.getInstance().getMapInfo().getNodePosition(fromID));
@@ -66,14 +70,27 @@ public class WeightCalculator {
         IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
 
         int flatWeight = calcWeight(fromID, toID);
-        float fromHeight = heightmap.getHeight(from) / 100;
-        float toHeight = heightmap.getHeight(to) / 100;
+        float fromHeight = heightmap.getHeight(from) * 100;
+        float toHeight = heightmap.getHeight(to) * 100;
 
-        float heightDifference = Math.abs(fromHeight - toHeight) * State.getInstance().getHeightMalus();
+        double heightDifference = Math.pow(Math.abs(fromHeight - toHeight), 2) * getHeightMalusFactor(State.getInstance().getHeightMalus());
+        if (toHeight < fromHeight) {
+            heightDifference = 0;
+        }
 
         int weight = (int) Math.sqrt(Math.pow(flatWeight, 2) + Math.pow(heightDifference, 2));
+//        print("Way from " + fromID + " to " + toID);
+//        print("flatWeight: " + flatWeight);
+//        print("weight with height: " + weight);
         return weight;
     }// end calcHeightWeight
+    
+    private static double getHeightMalusFactor(int heightMalus) {
+        if (heightMalus == 0) {
+            return 0;
+        }
+        return Math.pow(2, State.getInstance().getHeightMalus());
+    }
 
 
     public int calcWeight(int fromID, int toID) {

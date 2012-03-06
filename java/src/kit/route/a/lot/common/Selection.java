@@ -36,6 +36,11 @@ public class Selection {
                     && position == comparee.position
                     && name == comparee.name;
         }
+        
+        public boolean isOnSameEdge(Selection other) {
+            boolean oneDirection = fromID == other.fromID && toID == other.toID;
+            return oneDirection || (fromID == other.toID && toID == other.fromID);
+        }
     
     	public String getName() {
     	    return name;
