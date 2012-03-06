@@ -183,7 +183,7 @@ public class MapInfo {
                 }
                 area.setNodes(nodes);
                 elementDB.addMapElement(area);
-                geographicalOperator.addToBaseLayer(area);
+                geographicalOperator.addElement(area);
             }
         }
     }
@@ -257,7 +257,7 @@ public class MapInfo {
     public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
         POINode newPOI = new POINode(position, description, id);
         elementDB.addNode(id, newPOI);
-        geographicalOperator.addToOverlay(newPOI);
+        geographicalOperator.addElement(newPOI);
         addressOperator.add(newPOI);
     }
 
@@ -300,7 +300,7 @@ public class MapInfo {
                 for (Street street : streets) {
                     addressOperator.add(street);
                     elementDB.addMapElement(street);
-                    geographicalOperator.addToBaseLayer(street);
+                    geographicalOperator.addElement(street);
                 }
             }
             return;
@@ -388,35 +388,9 @@ public class MapInfo {
      *            the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
-    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        return geographicalOperator.getBaseLayer(zoomlevel, upLeft, bottomRight, exact);
-    }
-
-    /**
-     * Return the, to given coordinates, belonging MapElements of the overlay.
-     * 
-     * @param zoomlevel
-     *            the zoomlevel of the view
-     * @param upLeft
-     *            the coordinates of the upper left corner of the view
-     * @param bottomRight
-     *            the coordinates of the bottom right corner of the view
-     * @return the correspondending mapElements
-     */
-    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        Set<MapElement> overlay = geographicalOperator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
-        for (MapElement ele : elementDB.getFavorites()) {
-            if (ele.isInBounds(upLeft, bottomRight)) {
-                overlay.add(ele);
-            }
-        }
-        return overlay;
-    }
-
-    public Collection<MapElement> getBaseLayerForPositionAndRadius(Coordinates pos, float radius, boolean exact) {
-        return geographicalOperator.getBaseLayer(pos, radius, exact);
-    }
-    
+    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        return geographicalOperator.queryElements(zoomlevel, upLeft, bottomRight, exact);
+    } 
     
     /**
      * Loads the map from the given stream.

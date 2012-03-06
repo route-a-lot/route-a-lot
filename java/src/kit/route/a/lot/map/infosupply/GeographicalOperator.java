@@ -34,13 +34,7 @@ public interface GeographicalOperator {
      * Adds a {@link MapElement} to the base layer.
      * @param element the MapElement to be added
      */
-    public void addToBaseLayer(MapElement element);
-
-    /**
-     * Adds a {@link MapElement} to the overlay.
-     * @param element the MapElement to be added
-     */
-    public void addToOverlay(MapElement element);
+    public void addElement(MapElement element);
     
     /**
      * Retrieves all MapElements belonging to the base layer of the given
@@ -51,22 +45,8 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all base layer MapElements in the queried section
      */
-    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
+    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
 
-    /**
-     * Retrieves all MapElements belonging to the overlay of the given
-     * zoom level within the given boundary.
-     * 
-     * @param zoomlevel the zoom level
-     * @param upLeft the northwestern corner of the boundary
-     * @param bottomRight the southeastern corner of the boundary
-     * @return a list containing all overlay MapElements in the queried section
-     */
-    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
-    
-    public Set<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact);
-    
-  
     /**
      * Selects the map element nearest to the given position, incrementally increasing
      * the search radius if needed.

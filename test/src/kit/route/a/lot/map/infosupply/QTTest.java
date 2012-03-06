@@ -40,8 +40,8 @@ public class QTTest {
             area.setNodes(areaNode);
             String s = "" + i;
             POINode favorite = new POINode(new Coordinates(0.0f+i, 0.0f+i), new POIDescription(s, 0, s));
-            operator.addToBaseLayer(area);
-            operator.addToOverlay(favorite);
+            operator.addElement(area);
+            operator.addElement(favorite);
         }
         WayInfo wayinfo1 = new WayInfo();
         WayInfo wayinfo2 = new WayInfo();
@@ -65,8 +65,8 @@ public class QTTest {
         node2[3].setID(23);
         street1.setNodes(node1);
         street2.setNodes(node2);
-        operator.addToBaseLayer(street1);
-        operator.addToBaseLayer(street2);
+        operator.addElement(street1);
+        operator.addElement(street2);
     }
 
     @After
@@ -75,11 +75,11 @@ public class QTTest {
     
     @Test
     public void testGetLayers() {
-        assertEquals(3, operator.getBaseLayer(0, new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), true).size());
-        assertEquals(1, operator.getOverlay(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
+        assertEquals(4, operator.queryElements(0, new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), true).size());
+        assertEquals(1, operator.queryElements(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
         operator.compactifyDatastructures();
-        assertEquals(7, operator.getBaseLayer(new Coordinates(5.5f, 5.5f), 2, false).size());
-        assertEquals(1, operator.getOverlay(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
+        assertEquals(7, operator.queryElements(0, new Coordinates(3.5f, 3.5f), new Coordinates(7.5f, 7.5f), false).size());
+        assertEquals(1, operator.queryElements(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
         String s = "" + 2;
         assertEquals(s, operator.getPOIDescription(new Coordinates(2.0f, 2.0f), 0.3f, 0).getName());
         assertTrue(22 == operator.select(new Coordinates(25.5f, 2.9f)).getFrom());

@@ -95,7 +95,7 @@ public class Tile {
 
     public void prerender() {
         // query quadtree elements, TODO test if true is faster
-        Set<MapElement> map = mapInfo.getBaseLayer(detailLevel, topLeft, bottomRight, false);
+        Set<MapElement> map = mapInfo.queryElements(detailLevel, topLeft, bottomRight, false);
 
         if (map.size() == 0) {
             return;
@@ -158,7 +158,7 @@ public class Tile {
     }
 
     public void drawPOIs() {
-        Set<MapElement> elements = mapInfo.getOverlay(detailLevel, topLeft, bottomRight, false);
+        Set<MapElement> elements = mapInfo.queryElements(detailLevel, topLeft, bottomRight, false);
         if (elements.size() == 0) {
             return;
         }

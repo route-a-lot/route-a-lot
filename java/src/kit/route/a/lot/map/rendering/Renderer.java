@@ -333,7 +333,7 @@ public class Renderer {
      */
     private void drawOverlay(Context2D context, int detail) {
         MapInfo mapInfo = State.getInstance().getMapInfo();
-        Collection<MapElement> elements = mapInfo.getOverlay(detail, context.getTopLeft(), context.getBottomRight(), false); // TODO test if true is faster
+        Collection<MapElement> elements = mapInfo.queryElements(detail, context.getTopLeft(), context.getBottomRight(), false); // TODO test if true is faster
 
         int size = 8;
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);

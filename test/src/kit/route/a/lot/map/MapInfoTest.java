@@ -71,7 +71,7 @@ public class MapInfoTest {
         info.addWay(aids, "Fußballplatz", new WayInfo());
 
         Collection<MapElement> a =
-                info.getBaseLayer(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f), false);
+                info.queryElements(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f), false);
 
         assertEquals(1, a.size());
         //POINode favorit1 = new POINode(new Coordinates(10.0f, 15.0f), new POIDescription("derp", 0, "home"));
@@ -80,9 +80,9 @@ public class MapInfoTest {
         info.addFavorite(new Coordinates(20.0f, 25.0f), new POIDescription("derpina", 0, "home"));
         info.addFavorite(new Coordinates(0.0f, 0.0f), new POIDescription("foo", 0, "deletable"));
         info.deleteFavorite(new Coordinates(3.0f, 3.0f), 0, 1);
-        assertTrue(2 == info.getOverlay(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
+        assertTrue(2 == info.queryElements(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
         info.compactifyDatastructures();
-        assertTrue(2 == info.getOverlay(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
+        assertTrue(2 == info.queryElements(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
         assertTrue(info.getFavoriteDescription(new Coordinates(10.3f, 15.3f), 0, 1).getName().equals("derp"));
         info.printQuadTree();
         info.addPOI(new Coordinates(7.0f, 6.7f), 12, new POIDescription("nirvana", 0, "ja das gibt es wirklich"), new Address());

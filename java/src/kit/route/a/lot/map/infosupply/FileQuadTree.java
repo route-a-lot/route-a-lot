@@ -1,37 +1,35 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.awt.geom.Rectangle2D;
+import java.io.DataInput;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.map.MapElement;
 
 
-public class FileQuadTree {
-    
-    private static final int MAX_SIZE = 64;
-    
+public class FileQuadTree extends QuadTree {
+       
     private RandomAccessFile source = null;
     private long sourcePointer = 0;
     
-    private Coordinates topLeft, bottomRight;
     private FileQuadTree[] children = null;
     private ArrayList<MapElement> elements = null;    
     
     public FileQuadTree(Coordinates topLeft, Coordinates bottomRight,
             RandomAccessFile source, long sourcePointer) {
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
+        super(topLeft, bottomRight);
         this.source = source;
         this.sourcePointer = sourcePointer;
     }
     
     public FileQuadTree(Coordinates topLeft, Coordinates bottomRight) {
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
+        super(topLeft, bottomRight);
         this.elements = new ArrayList<MapElement>();
     }
     
@@ -62,7 +60,8 @@ public class FileQuadTree {
         return (elements == null) ? -1 : elements.size();
     }
     
-    public void addElement(MapElement element) {
+    @Override
+    public boolean addElement(MapElement element) {
         if (element.isInBounds(topLeft, bottomRight)) {
             if (children != null) {
                 for (FileQuadTree child : children) {
@@ -78,9 +77,10 @@ public class FileQuadTree {
                 }
             }
         }
+        return true;
     }
 
-    public void queryElements(Coordinates topLeft, Coordinates bottomRight, Set<MapElement> target) {
+    public void queryElements(Coordinates topLeft, Coordinates bottomRight, Set<MapElement> target, boolean exact) {
         if (isInBounds(topLeft, bottomRight)) {
             if ((children == null) && (elements == null)) {
                 try {
@@ -92,10 +92,18 @@ public class FileQuadTree {
             }
             if (children != null) {
                 for (FileQuadTree child : children) {
-                    child.queryElements(topLeft, bottomRight, target);
+                    child.queryElements(topLeft, bottomRight, target, exact);
                 } 
             } else if (elements != null) {
-                target.addAll(elements);
+                if (exact) {
+                    for (MapElement element : elements) {
+                        if (element.isInBounds(topLeft, bottomRight)) {
+                            target.add(element);
+                        }
+                    }
+                } else {
+                    target.addAll(elements);
+                }
             }
         }
     }
@@ -113,19 +121,7 @@ public class FileQuadTree {
         }
         elements = null;
     }
-
-    private boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        Rectangle2D.Float bounds = new Rectangle2D.Float(
-                this.topLeft.getLongitude(), this.topLeft.getLatitude(),
-                this.bottomRight.getLongitude() - this.topLeft.getLongitude(),
-                this.bottomRight.getLatitude() - this.topLeft.getLatitude());
-        Rectangle2D.Float rect = new Rectangle2D.Float(
-                topLeft.getLongitude(), topLeft.getLatitude(),
-                bottomRight.getLongitude() - topLeft.getLongitude(),
-                bottomRight.getLatitude() - topLeft.getLatitude());      
-        return bounds.contains(rect) || rect.contains(bounds) || rect.intersects(bounds);
-    }
-    
+   
     /**
      * Loads this Quadtree node or leaf from the source.
      * Direct sub nodes may be created, but won't be loaded.
@@ -207,6 +203,38 @@ public class FileQuadTree {
                 child.compactifyDataStructures();
             }
         }
+    }
+
+     
+
+    @Override
+    public int countElements() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public void clear() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected void load(DataInput input) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    protected void save(DataOutput output) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public String toString(int offset, List<Integer> last) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

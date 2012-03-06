@@ -17,21 +17,12 @@ public class MapInfoQTMock extends MapInfoMock {
     }
 
     public void addToBaseLayer(MapElement element) {
-        operator.addToBaseLayer(element);
-    }
-    
-    public void addToOverlay(MapElement element) {
-        operator.addToOverlay(element);
+        operator.addElement(element);
     }
     
     @Override
-    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        return operator.getBaseLayer(zoomlevel, upLeft, bottomRight, exact);
+    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        return operator.queryElements(zoomlevel, upLeft, bottomRight, exact);
     }
-    
-    @Override
-    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {  
-        return operator.getOverlay(zoomlevel, upLeft, bottomRight, exact);
-    }
-    
+
 }

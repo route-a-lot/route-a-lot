@@ -12,15 +12,16 @@ import kit.route.a.lot.map.MapElement;
 
 public abstract class QuadTree {
 
+    protected static final int MAX_SIZE = 64;
+    
     private static final byte DESCRIPTOR_QUADTREE_NODE = 1;
     private static final byte DESCRIPTOR_QUADTREE_LEAF = 2;
 
-    protected Coordinates upLeft;
-    protected Coordinates bottomRight;
+    protected Coordinates topLeft,  bottomRight;
 
     
-    public QuadTree(Coordinates upLeft, Coordinates bottomRight) {
-        this.upLeft = upLeft;
+    public QuadTree(Coordinates topLeft, Coordinates bottomRight) {
+        this.topLeft = topLeft;
         this.bottomRight = bottomRight;
     }
     
@@ -30,7 +31,7 @@ public abstract class QuadTree {
      * @return the nortwestern quad tree corner
      */
     public Coordinates getUpLeft() {
-        return upLeft;
+        return topLeft;
     }
 
     /**
@@ -41,15 +42,6 @@ public abstract class QuadTree {
         return bottomRight;
     }
     
-
-    /**
-     * Adds the map element to the quad tree overlay, sorting it into all leaves that are intersected. Returns
-     * false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one leaf).
-     * @param element the map element
-     * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
-     */
-    protected abstract boolean addToOverlay(MapElement element);
-
     /**
      * Adds the map element to the quad tree base layer, sorting it into all leaves that are intersected.
      * Returns false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one
@@ -57,20 +49,16 @@ public abstract class QuadTree {
      * @param element the map element
      * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
      */
-    protected abstract boolean addToBaseLayer(MapElement element);
+    protected abstract boolean addElement(MapElement element);
 
-    protected abstract void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
+    protected abstract void queryElements(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements, boolean exact);
-    
-    protected abstract void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elements, boolean exact);
-    
 
     protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
-        double width = Math.abs(this.bottomRight.getLongitude() - this.upLeft.getLongitude());
-        double height = Math.abs(this.upLeft.getLatitude() - this.bottomRight.getLatitude());
-        Rectangle2D.Double thiss = new Rectangle2D.Double(Math.min(this.upLeft.getLongitude(), this.bottomRight.getLongitude()), 
-                                                          Math.min(this.upLeft.getLatitude(), this.bottomRight.getLatitude()), 
+        double width = Math.abs(this.bottomRight.getLongitude() - this.topLeft.getLongitude());
+        double height = Math.abs(this.topLeft.getLatitude() - this.bottomRight.getLatitude());
+        Rectangle2D.Double thiss = new Rectangle2D.Double(Math.min(this.topLeft.getLongitude(), this.bottomRight.getLongitude()), 
+                                                          Math.min(this.topLeft.getLatitude(), this.bottomRight.getLatitude()), 
                                                           width, height);
         width = Math.abs(bottomRight.getLongitude() - upLeft.getLongitude());
         height = Math.abs(upLeft.getLatitude() - bottomRight.getLatitude());
@@ -127,7 +115,7 @@ public abstract class QuadTree {
      */
     public static void saveToOutput(DataOutput output, QuadTree tree) throws IOException {
         output.writeLong(0); // TODO: reserved for skip value => implement
-        tree.upLeft.saveToOutput(output);
+        tree.topLeft.saveToOutput(output);
         tree.bottomRight.saveToOutput(output);
         if (tree instanceof QTNode) {
             output.writeByte(DESCRIPTOR_QUADTREE_NODE);
@@ -170,7 +158,7 @@ public abstract class QuadTree {
             return false;
         }
         QuadTree comparee = (QuadTree) other;
-        return upLeft.equals(comparee.upLeft) && bottomRight.equals(comparee.bottomRight);
+        return topLeft.equals(comparee.topLeft) && bottomRight.equals(comparee.bottomRight);
     }
 
     /**

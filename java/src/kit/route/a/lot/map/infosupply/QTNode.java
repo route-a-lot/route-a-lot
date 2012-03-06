@@ -24,26 +24,14 @@ public class QTNode extends QuadTree {
     }
 
     
-    @Override
-    protected boolean addToOverlay(MapElement element) {
-        if(element.isInBounds(getUpLeft(), getBottomRight())) {
-            for (int i = 0; i < children.length; i++) {
-                if (!children[i].addToOverlay(element)) {
-                    children[i] = ((QTLeaf) children[i]).splitLeaf();
-                    children[i].addToOverlay(element); //l.o.
-                }
-            }
-        }
-        return true;
-    }
 
     @Override
-    protected boolean addToBaseLayer(MapElement element) {
-        if(element.isInBounds(upLeft, bottomRight)) {
+    protected boolean addElement(MapElement element) {
+        if(element.isInBounds(topLeft, bottomRight)) {
             for (int i = 0; i < children.length; i++) {
-                if (!children[i].addToBaseLayer(element)) {
+                if (!children[i].addElement(element)) {
                     children[i] = ((QTLeaf) children[i]).splitLeaf();
-                    children[i].addToBaseLayer(element);  //we cant't add this directly in QTLeaf (array -> outOfBounds)
+                    children[i].addElement(element);  //we cant't add this directly in QTLeaf (array -> outOfBounds)
                 }
             }
         }
@@ -51,28 +39,17 @@ public class QTNode extends QuadTree {
     }
      
     @Override
-    protected void queryBaseLayer(Coordinates upLeft, Coordinates bottomRight,
+    protected void queryElements(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements, boolean exact) {
         if (isInBounds(upLeft, bottomRight)) {
             if (QTGeographicalOperator.DRAW_FRAMES) {
-                State.getInstance().getActiveRenderer().addFrameToDraw(this.upLeft, this.bottomRight, Color.black);
+                State.getInstance().getActiveRenderer().addFrameToDraw(this.topLeft, this.bottomRight, Color.black);
             }
             for(QuadTree qt : children) {
-                qt.queryBaseLayer(upLeft, bottomRight, elements, exact);
+                qt.queryElements(upLeft, bottomRight, elements, exact);
           
             }    
         }
-    }
-
-    @Override
-    protected void queryOverlay(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elememts, boolean exact) {
-        if (isInBounds(upLeft, bottomRight)) {
-            for(QuadTree qt : children) {
-                qt.queryOverlay(upLeft, bottomRight, elememts, exact);
-            }    
-        }
-        
     }
 
 
@@ -87,13 +64,13 @@ public class QTNode extends QuadTree {
     
     @Override
     public void clear() {
-        float widthHalf = (bottomRight.getLongitude() - upLeft.getLongitude()) / 2;
-        float heightHalf = (bottomRight.getLatitude() - upLeft.getLatitude()) / 2;
-        Coordinates middleMiddle = upLeft.clone().add(heightHalf, widthHalf);
-        children[0] = new QTLeaf(upLeft, middleMiddle);
-        children[1] = new QTLeaf(upLeft.clone().add(0, widthHalf),
+        float widthHalf = (bottomRight.getLongitude() - topLeft.getLongitude()) / 2;
+        float heightHalf = (bottomRight.getLatitude() - topLeft.getLatitude()) / 2;
+        Coordinates middleMiddle = topLeft.clone().add(heightHalf, widthHalf);
+        children[0] = new QTLeaf(topLeft, middleMiddle);
+        children[1] = new QTLeaf(topLeft.clone().add(0, widthHalf),
                             bottomRight.clone().add(-heightHalf, 0));
-        children[2] = new QTLeaf(upLeft.clone().add(heightHalf, 0),
+        children[2] = new QTLeaf(topLeft.clone().add(heightHalf, 0),
                             bottomRight.clone().add(0, -widthHalf));
         children[3] = new QTLeaf(middleMiddle, bottomRight); 
     }

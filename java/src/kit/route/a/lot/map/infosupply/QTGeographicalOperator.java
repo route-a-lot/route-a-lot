@@ -30,7 +30,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public static final boolean DRAW_FRAMES = false;
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
-    private QuadTree zoomlevels[] = new QuadTree[NUM_LEVELS];
+    protected QuadTree zoomlevels[];
     
     
     public QTGeographicalOperator() {
@@ -60,8 +60,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
        
     
     @Override
-    public void addToBaseLayer(MapElement element) {
-        zoomlevels[0].addToBaseLayer(element);
+    public void addElement(MapElement element) {
+        zoomlevels[0].addElement(element);
         
         int maxZoomlevel = NUM_LEVELS;
         if (element instanceof Area) {
@@ -99,25 +99,15 @@ public class QTGeographicalOperator implements GeographicalOperator {
                     logger.trace("Ignoring " + element + " for zoomlevel " + detail);
                 }
             } else {
-                if (!zoomlevels[detail].addToBaseLayer(reduced)) {
+                if (!zoomlevels[detail].addElement(reduced)) {
                     logger.error("Reduced element could not be added to the quadtree.");
                 }
             }
         }
     }
-
-    @Override
-    public void addToOverlay(MapElement element) {
-        for (int i = 0; i < NUM_LEVELS; i++) {
-            MapElement reduced = element.getReduced(i, 0);
-            if (reduced != null) {
-                zoomlevels[i].addToOverlay(reduced);
-            }
-        }
-    }
     
     @Override
-    public Set<MapElement> getBaseLayer(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
         /*if (logger.isTraceEnabled()) {
             logger.trace("called: getBaseLayer()");
             logger.trace(" upLeft: " + upLeft);
@@ -131,23 +121,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
             State.getInstance().getActiveRenderer().addFrameToDraw(upLeft, bottomRight, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryBaseLayer(upLeft, bottomRight, elements, exact);
+        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryElements(upLeft, bottomRight, elements, exact);
         return elements;
     }
-    
-    @Override
-    public Set<MapElement> getOverlay(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryOverlay(upLeft, bottomRight, elements, exact);
-        return elements;
-    }
-       
-    @Override
-    public Set<MapElement> getBaseLayer(Coordinates pos, float radius, boolean exact) {
-        return getBaseLayer(0, pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), exact);
-    }    
-       
-    
+   
     @Override
     public Selection select(Coordinates pos) {
 //        drawFrames = true;
@@ -176,7 +153,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * @return a {@link Selection} derived from the nearest map element
      */
     private Selection select(Coordinates pos, float radius) {
-        Collection<MapElement> elements = getBaseLayer(pos, radius, true);
+        Collection<MapElement> elements = queryElements(0,
+                pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), true);
         
         // find element nearest to pos
         MapElement closestElement = null;
@@ -202,7 +180,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         float closestDistance = (Projection.getZoomFactor(detailLevel) + 1) *  radius;
         Coordinates UL = pos.clone().add(-closestDistance, -closestDistance);
         Coordinates BR = pos.clone().add(closestDistance, closestDistance);
-        Collection<MapElement> elements = getOverlay(0, UL, BR, true);
+        Collection<MapElement> elements = queryElements(0, UL, BR, true);
         for (MapElement element : elements) {
             if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
                 float newDistance = (float) Coordinates.getDistance(pos, ((POINode) element).getPos());
