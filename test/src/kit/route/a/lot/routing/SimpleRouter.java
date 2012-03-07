@@ -34,7 +34,7 @@ public class SimpleRouter {
     }
     
     private static Route fromAToB(Selection a, Selection b) {
-        if (a == null || b == null) {
+        if (a == null || b == null || a.isOnSameEdge(b)) {
             return null;
         }
         List<Integer> newRoute = new ArrayList<Integer>();
