@@ -405,7 +405,7 @@ public class Tile {
                 distanceToFrom += streetNameDistance;
                 remainingStreetLength -= distanceToFrom;
                 if (remainingStreetLength < streetNameLength) {
-                    // System.out.println(curStreetName);
+                    // no (more) space for street name
                     break;
                 }
                 Coordinates vector = to.clone().subtract(from);
@@ -415,8 +415,9 @@ public class Tile {
                 double angle = Coordinates.getAngle(vector, new Coordinates(0.f, 1.f));
                 if (arrowEnd.getLongitude() < arrowStart.getLongitude()) {
                     drawBackwards = true;
+                } else {
+                    drawBackwards = false;
                 }
-//                graphics.drawOval((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(), 2, 2);
                 if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
                     angle = -angle;
                 }
@@ -459,7 +460,6 @@ public class Tile {
                         vector.normalize();
                         arrowEnd = vector.clone().scale(streetNameLength).add(arrowStart);
                         angle = Coordinates.getAngle(vector, new Coordinates(0.f, 1.f));
-//                        graphics.drawOval((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(), 2, 2);
                         if (arrowEnd.getLatitude() < arrowStart.getLatitude()) {
                             angle = -angle;
                         }
