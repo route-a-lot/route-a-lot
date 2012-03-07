@@ -1,6 +1,5 @@
 package kit.route.a.lot.map.infosupply;
 
-import java.awt.geom.Rectangle2D;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -21,6 +20,17 @@ public class FileQuadTree extends QuadTree {
     private FileQuadTree[] children = null;
     private ArrayList<MapElement> elements = null;    
     
+    
+    // CONSTRUCTORS
+    
+    /**
+     * Creates a new read only quad tree, which will be
+     * loaded from the given file and position on first access.
+     * @param topLeft
+     * @param bottomRight
+     * @param source
+     * @param sourcePointer
+     */
     public FileQuadTree(Coordinates topLeft, Coordinates bottomRight,
             RandomAccessFile source, long sourcePointer) {
         super(topLeft, bottomRight);
@@ -28,27 +38,25 @@ public class FileQuadTree extends QuadTree {
         this.sourcePointer = sourcePointer;
     }
     
+    /**
+     * Creates a new empty quad tree, which may subsequently
+     * be filled with elements.
+     * @param topLeft
+     * @param bottomRight
+     */
     public FileQuadTree(Coordinates topLeft, Coordinates bottomRight) {
         super(topLeft, bottomRight);
         this.elements = new ArrayList<MapElement>();
     }
+
+    
+    // GETTERS & SETTERS
     
     /**
-     * Returns the {@link Coordinates} of the northwestern corner of the QuadTree area.
-     * @return the nortwestern quad tree corner
+     * Sets/replaces the n-th child quad tree of this quad tree.
+     * @param index
+     * @param child
      */
-    public Coordinates getTopLeft() {
-        return topLeft;
-    }
-
-    /**
-     * Returns the {@link Coordinates} of the southeastern corner of the QuadTree area.
-     * @return the southeastern quad tree corner
-     */
-    public Coordinates getBottomRight() {
-        return bottomRight;
-    }
- 
     public void setChild(int index, FileQuadTree child) {
         if (children == null) {
             split();
@@ -56,22 +64,34 @@ public class FileQuadTree extends QuadTree {
         children[index] = child;
     } 
     
+    /**
+     * Returns the number of elements stored in this specific quad tree leaf.
+     * Returns -1 if the quad tree is a node or not loaded.
+     */
+    @Override
     public int getSize() {
         return (elements == null) ? -1 : elements.size();
     }
     
+    
+    // BASIC OPERATIONS
+    
+    /**
+     * Adds a map element to the quad tree.
+     */
     @Override
     public boolean addElement(MapElement element) {
+        if (source != null) {
+            throw new IllegalStateException();
+        }
         if (element.isInBounds(topLeft, bottomRight)) {
             if (children != null) {
                 for (FileQuadTree child : children) {
                     child.addElement(element);
                 }
             } else {
-                if (elements == null) {
-                    elements = new ArrayList<MapElement>();
-                }
                 elements.add(element);
+                element.registerUse();
                 if (elements.size() > MAX_SIZE) {
                     split();
                 }
@@ -80,11 +100,18 @@ public class FileQuadTree extends QuadTree {
         return true;
     }
 
-    public void queryElements(Coordinates topLeft, Coordinates bottomRight, Set<MapElement> target, boolean exact) {
+    /**
+     * Adds (at least) all elements within the given boundaries to the target list.
+     * If the flag <code>exact</code> is set, only elements that really are inside
+     * the boundaries are added.
+     */
+    @Override
+    public void queryElements(Coordinates topLeft, Coordinates bottomRight,
+                                Set<MapElement> target, boolean exact) {
         if (isInBounds(topLeft, bottomRight)) {
             if ((children == null) && (elements == null)) {
                 try {
-                    load();
+                    loadNode();
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
@@ -107,34 +134,28 @@ public class FileQuadTree extends QuadTree {
             }
         }
     }
+       
+    
+    // I/O OPERATIONS
         
-    public void split() {
-        children = new FileQuadTree[4];
-        Coordinates dim = bottomRight.clone().subtract(topLeft).scale(0.5f);
-        for (int i = 0; i < 4; i++) {
-            Coordinates origin = topLeft.clone().add(
-                    dim.getLatitude() * (i % 2), dim.getLongitude() * (i / 2));
-            children[i] = new FileQuadTree(origin, origin.clone().add(dim));
-            for (MapElement element : elements) {
-                children[i].addElement(element);
-            }
-        }
-        elements = null;
-    }
-   
     /**
-     * Loads this Quadtree node or leaf from the source.
+     * Loads this quad tree node or leaf from the source.
      * Direct sub nodes may be created, but won't be loaded.
      * @throws IOException
      */
-    public void load() throws IOException {
+    public void loadNode() throws IOException {
+        if (source == null) {
+            throw new IllegalStateException();
+        }
         source.seek(sourcePointer);
         source.seek(source.readLong()); // allow indirect addressing
         if (source.readBoolean()) {
             int size = source.readByte();
             elements = new ArrayList<MapElement>(size);
             for (int i = 0; i < size; i++) {
-                elements.add(MapElement.loadFromInput(source, true));
+                MapElement element = MapElement.loadFromInput(source, true);
+                element.registerUse();
+                elements.add(element);               
             }
         } else {
             children = new FileQuadTree[4];
@@ -147,26 +168,18 @@ public class FileQuadTree extends QuadTree {
         }
         
     }
-    
-    public void unload() {
-        for (MapElement element : elements) {
-        //    elementDB.releaseElement(element.getID()); 
-        }
-        elements = null;
-        for (FileQuadTree child : children) {
-            child.unload();
-        }
-        children = null;
-    }
-    
+       
     /**
-     * Saves the Quadtree to the given output. All nodes and leaves of the
-     * Quadtree are saved as well. This method will potentially override
+     * Saves the quad tree to the given output. All nodes and leaves of the
+     * quad tree are saved as well. This method will potentially override
      * all data after the current position.
      * @param output
      * @throws IOException
      */
-    public void save(RandomAccessFile output) throws IOException {  
+    public void saveTree(RandomAccessFile output) throws IOException {  
+        if (output == null) {
+            throw new IllegalArgumentException();
+        }
         boolean alreadySaved = output.equals(source) && (sourcePointer >= 0);
         source = output;
         sourcePointer = source.getFilePointer();
@@ -189,11 +202,40 @@ public class FileQuadTree extends QuadTree {
                 output.seek(mark + i * 8);
                 output.writeLong(pos);
                 output.seek(pos);
-                children[i].save(output);
+                children[i].saveTree(output);
             }
         }
     }
+
+    @Override
+    protected void load(DataInput input) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void save(DataOutput output) throws IOException {
+        throw new UnsupportedOperationException();
+    }
     
+    /**
+     * Removes this complete quad tree from the RAM. All contained elements will be released as well.
+     */
+    @Override
+    public void unload() {
+        for (MapElement element : elements) {
+            element.unregisterUse();
+        }
+        elements = null;
+        for (FileQuadTree child : children) {
+            child.unload();
+        }
+        children = null;
+    }
+    
+    /**
+     * Reduces memory footprint by cutting all arrays to actual content size.
+     */
+    @Override
     public void compactifyDataStructures() {
         if (elements != null) {
             elements.trimToSize();
@@ -205,36 +247,35 @@ public class FileQuadTree extends QuadTree {
         }
     }
 
-     
-
-    @Override
-    public int countElements() {
-        // TODO Auto-generated method stub
-        return 0;
+    
+    // MISCELLANEOUS
+    
+    /**
+     * Turns a leaf into a node, distributing it's elements to the new sub leafs.
+     */
+    private void split() {
+        if (children != null || source != null) {
+            throw new IllegalStateException();
+        }
+        children = new FileQuadTree[4];
+        Coordinates dim = bottomRight.clone().subtract(topLeft).scale(0.5f);
+        for (int i = 0; i < 4; i++) {
+            Coordinates origin = topLeft.clone().add(
+                    dim.getLatitude() * (i % 2), dim.getLongitude() * (i / 2));
+            children[i] = new FileQuadTree(origin, origin.clone().add(dim));
+            for (MapElement element : elements) {
+                children[i].addElement(element);
+            }
+        }
+        for (MapElement element : elements) {
+            element.unregisterUse();
+        }
+        elements = null;
     }
-
-    @Override
-    public void clear() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    protected void load(DataInput input) throws IOException {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    protected void save(DataOutput output) throws IOException {
-        // TODO Auto-generated method stub
-        
-    }
-
+    
     @Override
     public String toString(int offset, List<Integer> last) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 
 }

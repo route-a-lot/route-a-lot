@@ -2,8 +2,6 @@ package kit.route.a.lot.gui;
 
 import java.util.List;
 
-import javax.swing.Icon;
-
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.RouteDescription;

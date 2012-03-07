@@ -18,15 +18,30 @@ public class QTNode extends QuadTree {
     private QuadTree[] children = new QuadTree[4];  
 
     
+    // CONSTRUCTOR
+    
     public QTNode(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
-        clear();            
+        unload();            
     }
 
     
+    // GETTERS & SETTERS
+    
+    @Override
+    public int getSize() {
+        int countElements = 0;
+        for (QuadTree child: children) {
+            countElements += child.getSize();
+        }
+        return countElements;
+    }
+    
+    
+    // BASIC OPERATIONS
 
     @Override
-    protected boolean addElement(MapElement element) {
+    public boolean addElement(MapElement element) {
         if(element.isInBounds(topLeft, bottomRight)) {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addElement(element)) {
@@ -39,7 +54,7 @@ public class QTNode extends QuadTree {
     }
      
     @Override
-    protected void queryElements(Coordinates upLeft, Coordinates bottomRight,
+    public void queryElements(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements, boolean exact) {
         if (isInBounds(upLeft, bottomRight)) {
             if (QTGeographicalOperator.DRAW_FRAMES) {
@@ -53,35 +68,7 @@ public class QTNode extends QuadTree {
     }
 
 
-    @Override
-    public int countElements() {
-        int countElements = 0;
-        for (QuadTree child: children) {
-            countElements += child.countElements();
-        }
-        return countElements;
-    }
-    
-    @Override
-    public void clear() {
-        float widthHalf = (bottomRight.getLongitude() - topLeft.getLongitude()) / 2;
-        float heightHalf = (bottomRight.getLatitude() - topLeft.getLatitude()) / 2;
-        Coordinates middleMiddle = topLeft.clone().add(heightHalf, widthHalf);
-        children[0] = new QTLeaf(topLeft, middleMiddle);
-        children[1] = new QTLeaf(topLeft.clone().add(0, widthHalf),
-                            bottomRight.clone().add(-heightHalf, 0));
-        children[2] = new QTLeaf(topLeft.clone().add(heightHalf, 0),
-                            bottomRight.clone().add(0, -widthHalf));
-        children[3] = new QTLeaf(middleMiddle, bottomRight); 
-    }
-    
-    @Override
-    protected void compactifyDataStructures() {
-        for(QuadTree qt : children) {
-            qt.compactifyDataStructures();
-        }
-    }
-    
+    // I/O OPERATIONS
     
     @Override
     protected void load(DataInput input) throws IOException {
@@ -97,6 +84,28 @@ public class QTNode extends QuadTree {
         }
     }
     
+    @Override
+    public void unload() {
+        float widthHalf = (bottomRight.getLongitude() - topLeft.getLongitude()) / 2;
+        float heightHalf = (bottomRight.getLatitude() - topLeft.getLatitude()) / 2;
+        Coordinates middleMiddle = topLeft.clone().add(heightHalf, widthHalf);
+        children[0] = new QTLeaf(topLeft, middleMiddle);
+        children[1] = new QTLeaf(topLeft.clone().add(0, widthHalf),
+                            bottomRight.clone().add(-heightHalf, 0));
+        children[2] = new QTLeaf(topLeft.clone().add(heightHalf, 0),
+                            bottomRight.clone().add(0, -widthHalf));
+        children[3] = new QTLeaf(middleMiddle, bottomRight); 
+    }
+    
+    @Override
+    public void compactifyDataStructures() {
+        for(QuadTree qt : children) {
+            qt.compactifyDataStructures();
+        }
+    }
+    
+    
+    // MISCELLANEOUS
     
     public boolean equals(Object other) {
         if(other == this) {
@@ -115,7 +124,7 @@ public class QTNode extends QuadTree {
             return "this seems like a good point to stop printing...\n";
         }
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("'" + countElements() + "'\n");
+        stringBuilder.append("'" + getSize() + "'\n");
         
         printOffset(offset, last, stringBuilder);
         stringBuilder.append("├──");

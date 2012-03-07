@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 
@@ -17,34 +18,54 @@ public class QTLeaf extends QuadTree {
     private MapElement[] elements;
       
     
+    // CONSTRUCTOR
+    
     public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
         super(upLeft, bottomRight);
-        clear();
+        unload();
     }
+    
+    
+    // GETTERS & SETTERS
 
     @Override
-    protected boolean addElement(MapElement element) {
-        if (element.isInBounds(getUpLeft(), getBottomRight())) {
-            int size = countArrayElementsSize(elements);
+    public int getSize() {
+        return Util.getElementCount(elements);
+    }
+    
+    
+    // BASIC OPERATIONS
+    
+    @Override
+    public boolean addElement(MapElement element) {
+        if (element.isInBounds(getTopLeft(), getBottomRight())) {
+            int size = getSize();
             if (size >= MAX_SIZE) {
                 return false;
             }
-            if(size == elements.length) {
-                elements = doubleSpace(elements);
+            // if needed double elements array length
+            if(size == elements.length) {        
+                MapElement[] newElements = new MapElement[(elements.length == 0) ? 2 : elements.length * 2];
+                for(int i = 0; i < elements.length; i++) {
+                    newElements[i] = elements[i];
+                }
+                elements = newElements;
             }
+            // add element
             elements[size] = element;
         }
         return true;
     }
     
     @Override
-    protected void queryElements(Coordinates upLeft, Coordinates bottomRight,
+    public void queryElements(Coordinates upLeft, Coordinates bottomRight,
         Set<MapElement> elememts, boolean exact) {
         if(isInBounds(upLeft, bottomRight)) {
             if (QTGeographicalOperator.DRAW_FRAMES) {
-                State.getInstance().getActiveRenderer().addFrameToDraw(this.topLeft, this.bottomRight, Color.blue);
+                State.getInstance().getActiveRenderer().addFrameToDraw(
+                        this.topLeft, this.bottomRight, Color.blue);
             }
-            for (int i = 0; i < countArrayElementsSize(elements); i++) {
+            for (int i = 0; i < Util.getElementCount(elements); i++) {
                 if (!exact || elements[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
                     elememts.add(elements[i]);
                 }
@@ -53,57 +74,8 @@ public class QTLeaf extends QuadTree {
     }
 
     
-    protected QTNode splitLeaf() {
-        QTNode result = new QTNode(getUpLeft(), getBottomRight());
-        for(int i = 0; i < countArrayElementsSize(elements); i++) {
-            result.addElement(elements[i]);
-        }
-        return result;
-    }
+    // I/O OPERATIONS
     
-    @Override
-    public int countElements() {
-        return countArrayElementsSize(elements);
-    }
-    
-    /**
-     * Returns a new array with the same elements as the given array but twice the size.
-     * If the given array is empty a new array with size of 2 is returned.
-     * @param elements
-     * @return
-     */
-    private MapElement[] doubleSpace(MapElement[] elements) {
-        if (elements.length == 0) {
-            return new MapElement[2];
-        }
-        MapElement[] returnArray = new MapElement[elements.length * 2];
-        for(int i = 0; i < elements.length; i++) {
-            returnArray[i] = elements[i];
-        }
-        return returnArray;
-    }
-    
-    private int countArrayElementsSize(MapElement[] elements) {
-        int size = 0;
-        for(int i = 0; i < elements.length; i++) {
-            if (elements[i] != null) {
-                size++;
-            }
-        }
-        return size;
-    }
-    
-    @Override
-    public void clear() {
-        elements = new MapElement[1];
-    }
-    
-    @Override
-    protected void compactifyDataStructures() {
-        elements = Arrays.copyOf(elements, countArrayElementsSize(elements));
-    }
-
-
     @Override
     protected void load(DataInput input) throws IOException {
         // load each base layer element via type and ID
@@ -117,7 +89,7 @@ public class QTLeaf extends QuadTree {
     @Override
     protected void save(DataOutput output) throws IOException {
         // for each base layer element, save type and ID
-        output.writeInt(countArrayElementsSize(elements));
+        output.writeInt(getSize());
         for (MapElement element: elements) {
             if (element != null) {
                 output.writeBoolean(element.getID() >= 0);
@@ -126,6 +98,26 @@ public class QTLeaf extends QuadTree {
         }
     }
     
+    @Override
+    public void unload() {
+        elements = new MapElement[1];
+    }
+    
+    @Override
+    public void compactifyDataStructures() {
+        elements = Arrays.copyOf(elements, getSize());
+    }
+    
+    
+    // MISCELLANEOUS
+    
+    protected QTNode splitLeaf() {
+        QTNode result = new QTNode(getTopLeft(), getBottomRight());
+        for(int i = 0; i < Util.getElementCount(elements); i++) {
+            result.addElement(elements[i]);
+        }
+        return result;
+    }
     
     public boolean equals(Object other) {
         if(other == this) {
@@ -142,8 +134,8 @@ public class QTLeaf extends QuadTree {
     @Override
     public String toString(int offset, List<Integer> last) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(" " + countElements() + "\n");
+        stringBuilder.append(" " + getSize() + "\n");
         return stringBuilder.toString();
-    }
+    }   
     
 }

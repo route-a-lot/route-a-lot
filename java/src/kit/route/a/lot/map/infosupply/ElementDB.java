@@ -80,5 +80,5 @@ public interface ElementDB {
     public Iterator<Node> getAllNodes();
 
     public Iterator<MapElement> getAllMapElements();    
-    
+
 }

@@ -106,6 +106,16 @@ public class Util {
     }
     
     
+    public static int getElementCount(Object[] elements) {
+        int size = 0;
+        for(Object element : elements) {
+            if (element != null) {
+                size++;
+            }
+        }
+        return size;
+    }
+    
     public static String formatSecondsRegular(int seconds) {
         int sec = seconds % 60;
         int min = seconds / 60 % 60;

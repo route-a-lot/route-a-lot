@@ -49,7 +49,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                         subtrees[i].addElement(elements.next().getReduced(detail, range));
                     }
                     // save subtree and remove it from RAM
-                    subtrees[i].save(output);
+                    subtrees[i].saveTree(output);
                     subtrees[i].unload();
                 }
                 // save complete tree (already saved subtrees will be linked)

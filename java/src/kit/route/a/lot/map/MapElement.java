@@ -23,6 +23,8 @@ public abstract class MapElement{
     /** the map element identifier */
     protected int id = -1;
     
+    private int usesCount = 0;
+    
     /**
      * Returns the name of the map element.
      * @return the name of the map element
@@ -181,8 +183,17 @@ public abstract class MapElement{
 
     //public abstract int compare(MapElement one, MapElement other);
        
-
+    public void registerUse() {
+        usesCount++;
+    }
    
-
+    public void unregisterUse() {
+        usesCount--;
+    }
+    
+    public int getUsesCount() {
+        return usesCount;
+    }
+    
  
 }

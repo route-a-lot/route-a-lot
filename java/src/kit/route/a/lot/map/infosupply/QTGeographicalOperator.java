@@ -49,8 +49,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
         if (upLeft != null) {
-            upLeft.setLatitude(zoomlevels[0].getUpLeft().getLatitude());
-            upLeft.setLongitude(zoomlevels[0].getUpLeft().getLongitude());
+            upLeft.setLatitude(zoomlevels[0].getTopLeft().getLatitude());
+            upLeft.setLongitude(zoomlevels[0].getTopLeft().getLongitude());
         }
         if (bottomRight != null) {
             bottomRight.setLatitude(zoomlevels[0].getBottomRight().getLatitude());

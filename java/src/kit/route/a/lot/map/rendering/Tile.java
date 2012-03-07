@@ -16,7 +16,6 @@ import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
@@ -180,18 +179,7 @@ public class Tile {
                 drawPoint(poi.getPos(), POI_SIZE + 2);
                 graphics.setColor(POI_COLOR);
                 drawPoint(poi.getPos(), POI_SIZE);       
-            }
-            if (element instanceof Area) {
-                Selection selection = ((Area) element).getSelection();
-                if (selection != null) {
-                    graphics.setColor(POI_BORDER_COLOR);
-                    drawPoint(selection.getPosition(), POI_SIZE + 2);
-                    graphics.setColor(POI_COLOR);
-                    drawPoint(selection.getPosition(), POI_SIZE);
-                } else {
-                    logger.warn("POI area returned null as selection");
-                }
-            }
+            } 
         }
         graphics.dispose();
     }

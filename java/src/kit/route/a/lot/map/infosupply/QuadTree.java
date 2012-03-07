@@ -19,6 +19,7 @@ public abstract class QuadTree {
 
     protected Coordinates topLeft,  bottomRight;
 
+    // CONSTRUCTOR
     
     public QuadTree(Coordinates topLeft, Coordinates bottomRight) {
         this.topLeft = topLeft;
@@ -26,11 +27,13 @@ public abstract class QuadTree {
     }
     
     
+    // GETTERS & SETTERS
+    
     /**
      * Returns the {@link Coordinates} of the northwestern corner of the QuadTree area.
      * @return the nortwestern quad tree corner
      */
-    public Coordinates getUpLeft() {
+    public Coordinates getTopLeft() {
         return topLeft;
     }
 
@@ -43,41 +46,28 @@ public abstract class QuadTree {
     }
     
     /**
+     * Returns the number of {@link MapElement}s in the quad tree.
+     * @return the number of {@link MapElement}s in the quad tree
+     */
+    public abstract int getSize(); 
+    
+    
+    // BASIC OPERATIONS
+    
+    /**
      * Adds the map element to the quad tree base layer, sorting it into all leaves that are intersected.
      * Returns false if the quad tree needs to be splitted (only happens if the QuadTree consists of only one
      * leaf).
      * @param element the map element
      * @return false if the quad tree (which is a {@link QTLeaf}) needs to be splitted
      */
-    protected abstract boolean addElement(MapElement element);
+    public abstract boolean addElement(MapElement element);
 
-    protected abstract void queryElements(Coordinates upLeft, Coordinates bottomRight,
+    public abstract void queryElements(Coordinates upLeft, Coordinates bottomRight,
             Set<MapElement> elements, boolean exact);
-
-    protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
-        double width = Math.abs(this.bottomRight.getLongitude() - this.topLeft.getLongitude());
-        double height = Math.abs(this.topLeft.getLatitude() - this.bottomRight.getLatitude());
-        Rectangle2D.Double thiss = new Rectangle2D.Double(Math.min(this.topLeft.getLongitude(), this.bottomRight.getLongitude()), 
-                                                          Math.min(this.topLeft.getLatitude(), this.bottomRight.getLatitude()), 
-                                                          width, height);
-        width = Math.abs(bottomRight.getLongitude() - upLeft.getLongitude());
-        height = Math.abs(upLeft.getLatitude() - bottomRight.getLatitude());
-        Rectangle2D.Double bounce = new Rectangle2D.Double(Math.min(upLeft.getLongitude(), bottomRight.getLongitude()), 
-                                                           Math.min(upLeft.getLatitude(), bottomRight.getLatitude()),  
-                                                           width, height);
-        return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
-    }
+ 
     
-    /**
-     * Returns the number of {@link MapElement}s in the quad tree.
-     * @return the number of {@link MapElement}s in the quad tree
-     */
-    public abstract int countElements();    
-    
-    public abstract void clear();
-    
-    protected abstract void compactifyDataStructures();
-
+    // I/O OPERATIONS
     
     /**
      * Loads a new quad tree from the given stream.
@@ -149,6 +139,26 @@ public abstract class QuadTree {
      */
     protected abstract void save(DataOutput output) throws IOException;
     
+    public abstract void unload();
+    
+    public abstract void compactifyDataStructures();
+    
+    
+    // MISCELLANEOUS
+    
+    protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
+        double width = Math.abs(this.bottomRight.getLongitude() - this.topLeft.getLongitude());
+        double height = Math.abs(this.topLeft.getLatitude() - this.bottomRight.getLatitude());
+        Rectangle2D.Double thiss = new Rectangle2D.Double(Math.min(this.topLeft.getLongitude(), this.bottomRight.getLongitude()), 
+                                                          Math.min(this.topLeft.getLatitude(), this.bottomRight.getLatitude()), 
+                                                          width, height);
+        width = Math.abs(bottomRight.getLongitude() - upLeft.getLongitude());
+        height = Math.abs(upLeft.getLatitude() - bottomRight.getLatitude());
+        Rectangle2D.Double bounce = new Rectangle2D.Double(Math.min(upLeft.getLongitude(), bottomRight.getLongitude()), 
+                                                           Math.min(upLeft.getLatitude(), bottomRight.getLatitude()),  
+                                                           width, height);
+        return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
+    }
     
     public boolean equals(Object other) {
         if(other == this) {
