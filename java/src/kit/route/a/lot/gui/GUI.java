@@ -1017,6 +1017,7 @@ public class GUI extends JFrame {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
         }
     }
 }
