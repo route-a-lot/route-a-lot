@@ -1,23 +1,25 @@
 package kit.route.a.lot.routing;
 
-import java.io.DataInputStream;import java.io.DataOutputStream;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.io.OSMLoader;
 
+import org.apache.log4j.PropertyConfigurator;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 
 public class RoutingAndGraphTest {
@@ -145,9 +147,7 @@ public class RoutingAndGraphTest {
             route = Router.calculateRoute(selections);
             int length = getRouteLength(route, selections);
 
-            if (stream.readInt() != length) {
-                System.out.println("wrong route length");
-            }
+            assertEquals(stream.readInt(), length);
 
         }
     }

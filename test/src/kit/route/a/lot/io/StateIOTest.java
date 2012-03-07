@@ -1,14 +1,12 @@
 package kit.route.a.lot.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.ArrayList;
 
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
+
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;

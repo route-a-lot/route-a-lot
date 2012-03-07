@@ -80,7 +80,7 @@ public class OSMLoaderTest {
         assertEquals(89049038, state.getNodeCount());
     }
 
-    @Test
+    @Ignore
     // test file will not be committed to the repository because it is too big ~2.8G
     public void testImportBadenWuerttemberg() {
         loader.importMap(new File("test/resources/baden-wuerttemberg.osm"), new Progress());
