@@ -2,7 +2,7 @@ package kit.route.a.lot.common;
 
 
 public class POIDescription {
-
+    
     private String name;
     private int category;
     private String description;

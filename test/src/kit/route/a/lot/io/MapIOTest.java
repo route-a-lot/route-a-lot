@@ -56,7 +56,7 @@ public class MapIOTest {
         } catch (IOException e) {
             fail();
         }
-        MapInfo original = state.getMapInfo();
+        //MapInfo original = state.getMapInfo();
         state.setMapInfo(new MapInfo());
         try {
             MapIO.loadMap(sralMap, p.createSubProgress(1));

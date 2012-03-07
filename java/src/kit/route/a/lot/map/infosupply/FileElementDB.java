@@ -117,7 +117,7 @@ public class FileElementDB extends ArrayElementDB {
     }
 
     @Override
-    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius) {
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
         throw new UnsupportedOperationException();
     }
 
@@ -170,12 +170,6 @@ public class FileElementDB extends ArrayElementDB {
                 e.printStackTrace();
             }
         }
-    }
-    
-    @Override
-    public Iterator<Node> getAllNodes() {
-        // TODO
-        return null;
     }
 
     @Override

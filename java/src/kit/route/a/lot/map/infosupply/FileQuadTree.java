@@ -236,13 +236,13 @@ public class FileQuadTree extends QuadTree {
      * Reduces memory footprint by cutting all arrays to actual content size.
      */
     @Override
-    public void compactifyDataStructures() {
+    public void compactify() {
         if (elements != null) {
             elements.trimToSize();
         }
         if (children != null) {
             for (FileQuadTree child : children) {
-                child.compactifyDataStructures();
+                child.compactify();
             }
         }
     }

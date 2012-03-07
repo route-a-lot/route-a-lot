@@ -42,8 +42,8 @@ class MapInfoMock extends MapInfo {
     }
     
     @Override
-    public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
-        addNode(position, id, address);
+    public void addPOI(Coordinates position, POIDescription description, Address address) {
+        addNode(position, -1, address);
     }
     
     @Override

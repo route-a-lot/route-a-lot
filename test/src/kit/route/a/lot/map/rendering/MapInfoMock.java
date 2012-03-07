@@ -12,12 +12,16 @@ public class MapInfoMock extends MapInfo {
     
     private Set<MapElement> baseLayer = new HashSet<MapElement>();
     
-    public void addToBaseLayer(MapElement element) {
+    @Override
+    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+        return baseLayer;
+    }
+    
+    public void addMapElement(MapElement element) {
         baseLayer.add(element);
     }
     
     @Override
-    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        return baseLayer;
+    public void lastElementAdded() {
     }
 }

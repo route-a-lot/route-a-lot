@@ -26,6 +26,7 @@ import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
 import kit.route.a.lot.controller.State;
+import kit.route.a.lot.map.infosupply.MapInfo;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -71,6 +72,7 @@ public class OSMLoader {
      * @param progress 
      */
     public void importMap(File file, Progress progress) {
+        final MapInfo mapInfo = state.getMapInfo();
         // TODO handle progress
         logger.info("Importing " + file);
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -141,9 +143,9 @@ public class OSMLoader {
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
         projection = ProjectionFactory.getNewProjection(topLeft, bottomRight);
-        state.getMapInfo().setBounds(projection.getLocalCoordinates(topLeft),
+        mapInfo.setBounds(projection.getLocalCoordinates(topLeft),
                 projection.getLocalCoordinates(bottomRight));
-        state.getMapInfo().setGeoTopLeft(topLeft);
+        mapInfo.setGeoTopLeft(topLeft);
         logger.debug("Finished calculating bounds: topLeft=" + topLeft + ", bottomRight=" + bottomRight);
 
         osmIds = new long[nodeCount];
@@ -905,7 +907,7 @@ public class OSMLoader {
                             int curId = curWayIds.get(i);
                             if (curId > maxWayNodeId) {
                                 maxWayNodeId++;
-                                state.getMapInfo().swapNodeIds(curId, maxWayNodeId);
+                                mapInfo.swapNodeIds(curId, maxWayNodeId);
                                 long osmId1 = osmIds[curId];
                                 long osmId2 = osmIds[maxWayNodeId];
                                 idMap.remove(osmId1);
@@ -963,7 +965,7 @@ public class OSMLoader {
                     }
                     
                     if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
-                        state.getMapInfo().addWay(curWayIds, curWayName, curWayInfo);
+                        mapInfo.addWay(curWayIds, curWayName, curWayInfo);
                     }
 
                     inWay = false;
@@ -972,13 +974,10 @@ public class OSMLoader {
                     curWayOSMIds = null;
                     curWayName = "";
                 } else if (inNode && qName.equalsIgnoreCase("node")) {
-
+                    mapInfo.addNode(curNodeCoordinates, curNodeId, curAddress);
                     if (curType != 0) {
                         curNodePOIDescription.setCategory(curType);
-                        state.getMapInfo().addPOI(curNodeCoordinates, curNodeId, curNodePOIDescription,
-                                curAddress);
-                    } else {
-                        state.getMapInfo().addNode(curNodeCoordinates, curNodeId, curAddress);
+                        mapInfo.addPOI(curNodeCoordinates, curNodePOIDescription, curAddress);
                     }
 
                     inNode = false;
@@ -1011,7 +1010,7 @@ public class OSMLoader {
             e.printStackTrace();
         }
         
-        state.getMapInfo().lastElementAdded();
+        mapInfo.lastElementAdded();
         
         weightCalculator.setProjection(projection);
 

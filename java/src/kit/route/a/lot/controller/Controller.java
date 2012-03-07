@@ -539,44 +539,36 @@ public class Controller {
 
     private void passElementType(Coordinates pos) {
         float adaptedRadius = (Projection.getZoomFactor(state.getDetailLevel())) * state.getClickRadius();
-        Coordinates topLeft = new Coordinates(pos.getLatitude() - adaptedRadius,
-                pos.getLongitude() - adaptedRadius);       
-        Coordinates bottomRight = new Coordinates(pos.getLatitude() + adaptedRadius,
-                pos.getLongitude() + adaptedRadius);
+        Coordinates topLeft = pos.clone().add(-adaptedRadius, -adaptedRadius);         
+        Coordinates bottomRight = pos.clone().add(adaptedRadius, adaptedRadius);
+        int result = FREEMAPSPACE;
         for (Selection navNode: state.getNavigationNodes()) {
             Node node = new Node(navNode.getPosition());
             if (node.isInBounds(topLeft, bottomRight)) {
-                guiHandler.passElementType(NAVNODE);
-                return;
+                result = NAVNODE;
+                break;
             }
-        }    
-        if (state.getMapInfo().getPOIDescription(pos,
-                state.getClickRadius(), state.getDetailLevel()) != null) {
-            guiHandler.passElementType(POI);
-            return;
-        } 
-        if(state.getMapInfo().getFavoriteDescription(pos,
-                state.getDetailLevel(), state.getClickRadius()) != null) {
-            guiHandler.passElementType(FAVORITE);
-            return;
+        }   
+        if (result == FREEMAPSPACE) {
+            POIDescription description = state.getMapInfo().getPOIDescription(pos,
+                                    state.getClickRadius(), state.getDetailLevel());
+            if (description != null) {
+                result = (description.getCategory() == OSMType.FAVOURITE) ?  FAVORITE : POI;
+            }
         }
-        guiHandler.passElementType(FREEMAPSPACE);
+        guiHandler.passElementType(result);
     }
     
     private void passDescription(Coordinates pos) {   
-        POIDescription description = state.getMapInfo()
-            .getFavoriteDescription(pos, state.getDetailLevel(), state.getClickRadius());
-        if (description == null) {
-            description = state.getMapInfo()
-                .getPOIDescription(pos, state.getClickRadius(), state.getDetailLevel());
-        }
+        POIDescription description = state.getMapInfo().getPOIDescription(pos,
+                        state.getClickRadius(), state.getDetailLevel());
         if (description != null) {
             guiHandler.passDescription(description);
         }
     }
 
     private void passSearchCompletion(String str, int iconNum) {
-        guiHandler.showSearchCompletion(state.getMapInfo().suggestCompletions(str), iconNum);
+        guiHandler.showSearchCompletion(state.getMapInfo().getCompletions(str), iconNum);
     }
   
     private void updateImportedMapsList() {

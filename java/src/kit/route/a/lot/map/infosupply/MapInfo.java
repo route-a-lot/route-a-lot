@@ -37,24 +37,21 @@ public class MapInfo {
 
     private static Logger logger = Logger.getLogger(MapInfo.class);
 
-    private ElementDB elementDB;
-    private GeographicalOperator geographicalOperator;
-    private AddressOperator addressOperator;
+    protected ElementDB elementDB = new ArrayElementDB();
+    private GeographicalOperator geoOperator = new QTGeographicalOperator();
+    private AddressOperator addressOperator = new TrieAddressOperator();
 
-    private Coordinates geoTopLeft;
-    private Coordinates geoBottomRight;
+    private Coordinates geoTopLeft = new Coordinates(), geoBottomRight = new Coordinates();
 
     private static boolean useDirectFile = false;
     private File outputFile;
 
     Map<String, Collection<Street>> streetsForAddress = new HashMap<String, Collection<Street>>();
 
+    
+    // CONSTRUCTOR
+    
     public MapInfo() {
-        elementDB = new ArrayElementDB();
-        geographicalOperator = new QTGeographicalOperator();
-        addressOperator = new TrieAddressOperator();
-        geoTopLeft = new Coordinates();
-        geoBottomRight = new Coordinates();
         if (useDirectFile) {
             try {
                 outputFile = File.createTempFile("elements", null);
@@ -66,14 +63,9 @@ public class MapInfo {
         }
     }
 
-    /**
-     * Constructor
-     */
-    public MapInfo(Coordinates upLeft, Coordinates bottomRight) {
-        this();
-        geographicalOperator.setBounds(upLeft, bottomRight);
-    }
-
+    
+    // GETTERS & SETTERS
+    
     public Coordinates getGeoTopLeft() {
         return geoTopLeft;
     }
@@ -90,27 +82,26 @@ public class MapInfo {
         this.geoBottomRight = geoBottomRight;
     }
  
-    
-    
-    
-    
     /**
      * Sets the entire area of the map.
      * @param upLeft the upper left corner of the map
      * @param bottomRight the bottom right corner of the area
      */
     public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
-        geographicalOperator.setBounds(upLeft, bottomRight);
+        geoOperator.setBounds(upLeft, bottomRight);
     }
 
     /**
      * Writes the topLeft and bottomRight values of the current map to the given variables.
      */
     public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
-        geographicalOperator.getBounds(upLeft, bottomRight);
+        geoOperator.getBounds(upLeft, bottomRight);
     }
     
-
+    
+    // CONSTRUCTIVE OPERATIONS
+    
+    // TODO Funktion, um Nodes zu finden, die nicht gebraucht werden, und löschen
     
     /**
      * Adds a node to the data structures.
@@ -125,8 +116,6 @@ public class MapInfo {
         elementDB.addNode(id, newNode);
         // geographicalOperator.addToBaseLayer(newNode);
     }
-
-    // TODO Funktion, um Nodes zu finden, die nicht gebraucht werden, und löschen
 
     /**
      * Adds a way the the data structures.
@@ -183,11 +172,200 @@ public class MapInfo {
                 }
                 area.setNodes(nodes);
                 elementDB.addMapElement(area);
-                geographicalOperator.addElement(area);
             }
         }
     }
 
+    /**
+     * Adds a point of interest to the data structures.
+     * 
+     * @param position
+     *            the position of the POI
+     * 
+     * @param id
+     *            the unique id of the node
+     * 
+     * @param description
+     *            the description of the POI
+     */
+    public void addPOI(Coordinates position, POIDescription description, Address address) {
+        POINode newPOI = new POINode(position, description);
+        elementDB.addMapElement(newPOI);
+        addressOperator.add(newPOI);
+    }
+
+    /**
+     * Adds a Favorite to the data structures.
+     * 
+     * @param the
+     *            position of the favorite
+     * 
+     * @param description
+     *            a description of the favorite
+     */
+    public void addFavorite(Coordinates pos, POIDescription description) {
+        POINode newFav = new POINode(pos, description);
+        elementDB.addFavorite(newFav);
+    }
+
+    /**
+     * Deletes the favorite in the given area (little area around the coordinate)
+     * 
+     * @param position
+     *            the position of the favorite
+     */
+    public void deleteFavorite(Coordinates position, int detailLevel, int radius) {
+        elementDB.deleteFavorite(position, detailLevel, radius);
+    }
+
+    
+    // DIRECTIVE OPERATIONS
+    
+    public void swapNodeIds(int id1, int id2) {
+        elementDB.swapNodeIDs(id1, id2);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Swapping node " + id1 + " and " + id2);
+        }
+    }
+    
+    public void lastElementAdded() {
+        if (!useDirectFile) {
+            for (Collection<Street> streets : streetsForAddress.values()) {
+                for (Street street : streets) {
+                    addressOperator.add(street);
+                    elementDB.addMapElement(street);
+                }
+            }
+        } else {
+            ((FileElementDB) elementDB).lastElementAdded();
+            elementDB = new ArrayElementDB();
+            try {
+                elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(
+                        new FileInputStream(outputFile))));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            streetsForAddress = null;
+        }
+        geoOperator.fill(elementDB);
+    }
+    
+    
+    // QUERY OPERATIONS
+    
+    /**
+     * Return the MapElements of the base layer that are within the given boundary.
+     * @param zoomlevel the zoomlevel of the view
+     * @param topLeft the coordinates of the upper left corner of the view
+     * @param bottomRight the coordinates of the bottom right corner of the view
+     * @return the correspondending mapElements
+     */
+    public Set<MapElement> queryElements(int zoomlevel, Coordinates topLeft, Coordinates bottomRight, boolean exact) {
+        return geoOperator.queryElements(topLeft, bottomRight, zoomlevel, exact);
+    } 
+    
+    /**
+     * Returns a description of the POI at the given area (little area around the given position)
+     * @param pos the position of the POI
+     * @param radius the maximum distance a POI may have to <code>pos</code>
+     * @param detailLevel the level of detail currently shown
+     * @return the description of the POI
+     */
+    public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
+        POIDescription result = elementDB.getFavoriteDescription(pos, detailLevel, radius);
+        return (result != null) ? result : geoOperator.getPOIDescription(pos, radius, detailLevel);
+    }    
+    
+    /**
+     * Returns a selection to a given coordinate.
+     * @param pos the given coordinate
+     * @return the correspondenting selection
+     */
+    public Selection select(Coordinates pos) {
+        return geoOperator.select(pos);
+    }
+       
+     /**
+     * Returns the coordinates of a given node id.
+     * @param nodeID the id of the node
+     * @return the coordinates of the node correspondenting to the give id.
+     */
+    public Coordinates getNodePosition(int nodeID) {
+        return elementDB.getNode(nodeID).getPos();
+    }   
+
+    /**
+     * Returns the Node with the given ID.
+     * @param nodeID the id of the node
+     * @return the corresponding node object.
+     */
+    public Node getNode(int nodeID) {
+        return elementDB.getNode(nodeID);
+    }
+    
+    /**
+     * Returns the MapElement (but no Node!) with the given ID.
+     * @param nodeID the id of the node
+     * @return the corresponding node object.
+     */
+    public MapElement getMapElement(int elementID) {
+        return elementDB.getMapElement(elementID);
+    }
+    
+    public List<String> getCompletions(String expression) {
+        return addressOperator.getCompletions(expression);
+    }
+
+    public Selection select(String address) {
+        return addressOperator.select(address);
+    }
+
+
+    // I/O OPERATIONS
+    
+    /**
+     * Loads the map from the given stream.
+     * 
+     * @param input
+     *            the source stream.
+     * @throws IOException
+     *             a stream read error occurred
+     */
+    public void loadFromInput(DataInput input) throws IOException {
+        geoTopLeft = Coordinates.loadFromInput(input);
+        geoBottomRight = Coordinates.loadFromInput(input);
+        elementDB.loadFromInput(input);
+        geoOperator.loadFromInput(input);
+        addressOperator.loadFromInput(input);
+    }
+
+    /**
+     * Saves the map to the given stream.
+     * 
+     * @param output
+     *            the destination stream.
+     * @throws IOException
+     *             a stream write error occurred
+     */
+    public void saveToOutput(DataOutput output) throws IOException {
+        geoTopLeft.saveToOutput(output);
+        geoBottomRight.saveToOutput(output);
+        elementDB.saveToOutput(output);
+        geoOperator.saveToOutput(output);
+        addressOperator.saveToOutput(output);
+    }
+
+    public void compactifyDatastructures() {
+        // todo pack elementdb as well?
+        geoOperator.compactify();
+        addressOperator.compactify();
+    }
+        
+    
+    // MISCELLANEOUS
+    
     /**
      * If possible (i.e. streets share a node at their end) the nodes from otherStreet are inserted into resultStreet.
      * 
@@ -241,202 +419,12 @@ public class MapInfo {
         }
         return false;
     }
-
-    /**
-     * Adds a point of interest to the data structures.
-     * 
-     * @param position
-     *            the position of the POI
-     * 
-     * @param id
-     *            the unique id of the node
-     * 
-     * @param description
-     *            the description of the POI
-     */
-    public void addPOI(Coordinates position, int id, POIDescription description, Address address) {
-        POINode newPOI = new POINode(position, description, id);
-        elementDB.addNode(id, newPOI);
-        geographicalOperator.addElement(newPOI);
-        addressOperator.add(newPOI);
-    }
-
-    /**
-     * Adds a Favorite to the data structures.
-     * 
-     * @param the
-     *            position of the favorite
-     * 
-     * @param description
-     *            a description of the favorite
-     */
-    public void addFavorite(Coordinates pos, POIDescription description) {
-        POINode newFav = new POINode(pos, description);
-        elementDB.addFavorite(newFav);
-    }
-
-    /**
-     * Deletes the favorite in the given area (little area around the coordinate)
-     * 
-     * @param position
-     *            the position of the favorite
-     */
-    public void deleteFavorite(Coordinates position, int detailLevel, int radius) {
-        elementDB.deleteFavorite(position, detailLevel, radius);
-    }
-
-
-    
-    public void swapNodeIds(int id1, int id2) {
-        elementDB.swapNodeIDs(id1, id2);
-        if (logger.isTraceEnabled()) {
-            logger.trace("Swapping node " + id1 + " and " + id2);
-        }
-    }
-    
-    public void lastElementAdded() {
-        if (!useDirectFile) {
-            for (Collection<Street> streets : streetsForAddress.values()) {
-                for (Street street : streets) {
-                    addressOperator.add(street);
-                    elementDB.addMapElement(street);
-                    geographicalOperator.addElement(street);
-                }
-            }
-            return;
-        }
-        ((FileElementDB) elementDB).lastElementAdded();
-        elementDB = new ArrayElementDB();
-        try {
-            elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(new FileInputStream(outputFile))));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        streetsForAddress = null;
-    }
-    
-     /**
-     * Returns the coordinates of a given node id.
-     * @param nodeID the id of the node
-     * @return the coordinates of the node correspondenting to the give id.
-     */
-    public Coordinates getNodePosition(int nodeID) {
-        return elementDB.getNode(nodeID).getPos();
-    }   
-    
-    public POIDescription getFavoriteDescription(Coordinates position, int detailLevel, int radius) {
-        return elementDB.getFavoriteDescription(position, detailLevel, radius);
-    }
-
-    /**
-     * Returns a description of the POI at the given area (little area around the given position)
-     * 
-     * @param pos
-     *            the position of the POI
-     * @param radius
-     *            the maximum distance a POI may have to <code>pos</code>
-     * @param detailLevel
-     *            the level of detail currently shown
-     * @return the description of the POI
-     */
-    public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel) {
-        return geographicalOperator.getPOIDescription(pos, radius, detailLevel);
-    }
-
-
-    /**
-     * Operation suggestCompletions
-     * 
-     * @param expression
-     * @return List<String>
-     */
-    public List<String> suggestCompletions(String expression) {
-        return addressOperator.suggestCompletions(expression);
-    }
-
-    /**
-     * Operation select
-     * 
-     * @param address
-     * @return Selection
-     */
-    public Selection select(String address) {
-        return addressOperator.select(address);
-    }
-
-    /**
-     * Returns a selection to a given coordinate.
-     * 
-     * @param pos
-     *            the given coordinate
-     * @return the correspondenting selection
-     */
-    public Selection select(Coordinates pos) {
-        return geographicalOperator.select(pos);
-    }
-
-    /**
-     * Return the, to given coordinates, belonging MapElements of the base layer.
-     * 
-     * @param zoomlevel
-     *            the zoomlevel of the view
-     * @param upLeft
-     *            the coordinates of the upper left corner of the view
-     * @param bottomRight
-     *            the coordinates of the bottom right corner of the view
-     * @return the correspondending mapElements
-     */
-    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
-        return geographicalOperator.queryElements(zoomlevel, upLeft, bottomRight, exact);
-    } 
-    
-    /**
-     * Loads the map from the given stream.
-     * 
-     * @param input
-     *            the source stream.
-     * @throws IOException
-     *             a stream read error occurred
-     */
-    public void loadFromInput(DataInput input) throws IOException {
-        geoTopLeft = Coordinates.loadFromInput(input);
-        geoBottomRight = Coordinates.loadFromInput(input);
-        elementDB.loadFromInput(input);
-        geographicalOperator.loadFromInput(input);
-        addressOperator.loadFromInput(input);
-    }
-
-    /**
-     * Saves the map to the given stream.
-     * 
-     * @param output
-     *            the destination stream.
-     * @throws IOException
-     *             a stream write error occurred
-     */
-    public void saveToOutput(DataOutput output) throws IOException {
-        geoTopLeft.saveToOutput(output);
-        geoBottomRight.saveToOutput(output);
-        elementDB.saveToOutput(output);
-        geographicalOperator.saveToOutput(output);
-        addressOperator.saveToOutput(output);
-    }
-
     
     public void printQuadTree() {
-        if (geographicalOperator instanceof QTGeographicalOperator) {
-            ((QTGeographicalOperator) geographicalOperator).printQuadTree();
+        if (geoOperator instanceof QTGeographicalOperator) {
+            ((QTGeographicalOperator) geoOperator).printQuadTree();
         }
     }
-
-    public void compactifyDatastructures() {
-        // todo pack elementdb as well?
-        geographicalOperator.compactifyDatastructures();
-        addressOperator.compactify();
-    }
-
 
     @Override
     public boolean equals(Object other) {
@@ -448,32 +436,9 @@ public class MapInfo {
         }
         MapInfo mapInfo = (MapInfo) other;
         return elementDB.equals(mapInfo.elementDB)
-                && geographicalOperator.equals(mapInfo.geographicalOperator) // TODO: add compares
+                && geoOperator.equals(mapInfo.geoOperator) // TODO: add compares
                 && addressOperator.equals(mapInfo.addressOperator) && geoTopLeft.equals(mapInfo.geoTopLeft)
                 && geoBottomRight.equals(mapInfo.geoBottomRight);
     }
-
-    
-    /**
-     * Returns the Node with the given ID.
-     * @param nodeID the id of the node
-     * @return the corresponding node object.
-     */
-    public Node getNode(int nodeID) {
-        return elementDB.getNode(nodeID);
-    }
-
-    /**
-     * Returns the MapElement (but no Node!) with the given ID.
-     * @param nodeID the id of the node
-     * @return the corresponding node object.
-     */
-    public MapElement getMapElement(int elementID) {
-        return elementDB.getMapElement(elementID);
-    }
-    
-    ElementDB getElementDB() {
-        return elementDB;
-    }
-    
+  
 }

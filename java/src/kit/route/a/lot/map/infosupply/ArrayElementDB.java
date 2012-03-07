@@ -155,10 +155,10 @@ public class ArrayElementDB implements ElementDB {
     }
 
     @Override
-    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius) {
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
         float adaptedRadius = Projection.getZoomFactor(detailLevel) * radius;
-        Coordinates UL = new Coordinates(pos.getLatitude() - adaptedRadius, pos.getLongitude() - adaptedRadius);
-        Coordinates BR = new Coordinates(pos.getLatitude() + adaptedRadius, pos.getLongitude() + adaptedRadius);      
+        Coordinates UL = pos.clone().add(-adaptedRadius, -adaptedRadius);          
+        Coordinates BR = pos.clone().add(adaptedRadius, adaptedRadius);      
         for (POINode fav : favorites) {
             if(fav.isInBounds(UL, BR)) {
                 return fav.getInfo();

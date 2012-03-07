@@ -141,7 +141,7 @@ public abstract class QuadTree {
     
     public abstract void unload();
     
-    public abstract void compactifyDataStructures();
+    public abstract void compactify();
     
     
     // MISCELLANEOUS

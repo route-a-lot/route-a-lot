@@ -24,7 +24,6 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.*;
 import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.routing.Precalculator;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;

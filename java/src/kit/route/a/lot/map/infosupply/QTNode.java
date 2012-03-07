@@ -45,7 +45,7 @@ public class QTNode extends QuadTree {
         if(element.isInBounds(topLeft, bottomRight)) {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addElement(element)) {
-                    children[i] = ((QTLeaf) children[i]).splitLeaf();
+                    children[i] = ((QTLeaf) children[i]).split();
                     children[i].addElement(element);  //we cant't add this directly in QTLeaf (array -> outOfBounds)
                 }
             }
@@ -98,9 +98,9 @@ public class QTNode extends QuadTree {
     }
     
     @Override
-    public void compactifyDataStructures() {
+    public void compactify() {
         for(QuadTree qt : children) {
-            qt.compactifyDataStructures();
+            qt.compactify();
         }
     }
     

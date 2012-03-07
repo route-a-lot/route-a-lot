@@ -21,11 +21,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.infosupply.MapInfo;

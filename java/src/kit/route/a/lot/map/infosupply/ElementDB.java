@@ -69,7 +69,7 @@ public interface ElementDB {
      */
     public void saveToOutput(DataOutput output) throws IOException;
     
-    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, int radius);
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius);
     
     public void swapNodeIDs(int id1, int id2);
     

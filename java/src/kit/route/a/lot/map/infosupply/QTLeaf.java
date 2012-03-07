@@ -104,15 +104,15 @@ public class QTLeaf extends QuadTree {
     }
     
     @Override
-    public void compactifyDataStructures() {
+    public void compactify() {
         elements = Arrays.copyOf(elements, getSize());
     }
     
     
     // MISCELLANEOUS
     
-    protected QTNode splitLeaf() {
-        QTNode result = new QTNode(getTopLeft(), getBottomRight());
+    protected QTNode split() {
+        QTNode result = new QTNode(topLeft, bottomRight);
         for(int i = 0; i < Util.getElementCount(elements); i++) {
             result.addElement(elements[i]);
         }

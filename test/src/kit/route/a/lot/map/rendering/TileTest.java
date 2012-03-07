@@ -60,11 +60,12 @@ public class TileTest {
         MapElementGenerator generator = new MapElementGenerator();
         for (int i = 0; i < nElements; i++) {
             if (Math.random() < 0.73) {
-                mapInfoMock.addToBaseLayer(generator.generateStreetInBounds(topLeft, bottomRight));
+                mapInfoMock.addMapElement(generator.generateStreetInBounds(topLeft, bottomRight));
             } else {
-                mapInfoMock.addToBaseLayer(generator.generateBuildingInBounds(topLeft, bottomRight));
+                mapInfoMock.addMapElement(generator.generateBuildingInBounds(topLeft, bottomRight));
             }
         }
+        mapInfoMock.lastElementAdded();
     }
 
 }

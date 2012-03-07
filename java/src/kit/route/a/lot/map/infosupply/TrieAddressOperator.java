@@ -18,7 +18,7 @@ public class TrieAddressOperator implements AddressOperator {
     }
 
     @Override
-    public ArrayList<String> suggestCompletions(String expression) {
+    public ArrayList<String> getCompletions(String expression) {
         if(expression.length() < 3) {
             return null;
         }

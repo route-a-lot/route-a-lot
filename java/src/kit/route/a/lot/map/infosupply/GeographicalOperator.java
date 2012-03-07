@@ -15,6 +15,9 @@ public interface GeographicalOperator {
     public final static int NUM_LEVELS = 10;
     public static final float LAYER_MULTIPLIER = 3;
     
+    
+    // GETTERS & SETTERS
+    
     /**
      * Defines the map boundary, in the process creating the (empty) zoom level layers.
      * 
@@ -29,24 +32,29 @@ public interface GeographicalOperator {
      */
     public void getBounds(Coordinates upLeft, Coordinates bottomRight);
 
-
-    /**
-     * Adds a {@link MapElement} to the base layer.
-     * @param element the MapElement to be added
-     */
-    public void addElement(MapElement element);
     
+    // BASIC OPERATIONS
+   
     /**
-     * Retrieves all MapElements belonging to the base layer of the given
+     * Fills the operator with all elements stored in the given element database.
+     */
+    public void fill(ElementDB elementDB);
+        
+    /**
+     * Retrieves all MapElements belonging to the given
      * zoom level within the defined boundary.
      * 
      * @param zoomlevel the zoom level
-     * @param upLeft the northwestern corner of the boundary
+     * @param topLeft the northwestern corner of the boundary
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all base layer MapElements in the queried section
      */
-    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact);
+    public Set<MapElement> queryElements(Coordinates topLeft, Coordinates bottomRight,
+                                        int zoomlevel, boolean exact);
 
+    
+    // ADVANCED OPERATIONS
+    
     /**
      * Selects the map element nearest to the given position, incrementally increasing
      * the search radius if needed.
@@ -64,13 +72,8 @@ public interface GeographicalOperator {
     public POIDescription getPOIDescription(Coordinates pos, float radius, int detailLevel);
     
     
-    /**
-     * Reduces memory consumption by trimming all internal capacities to the actually used size.
-     * Should be called when further change in the data structures is unlikely.
-     */
-    public void compactifyDatastructures();
-    
-    
+    // I/O OPERATIONS
+       
     /**
      * Loads the geographic representation of a map from the stream.
      * 
@@ -87,4 +90,10 @@ public interface GeographicalOperator {
      */
     public void saveToOutput(DataOutput output) throws IOException;
        
+    /**
+     * Reduces memory consumption by trimming all internal capacities to the actually used size.
+     * Should be called when further change in the data structures is unlikely.
+     */
+    public void compactify();
+    
 }

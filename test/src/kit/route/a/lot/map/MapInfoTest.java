@@ -32,7 +32,8 @@ public class MapInfoTest {
     public void setUp() throws Exception {
         topLeft = new Coordinates(0, 0);
         bottomRight = new Coordinates(90, 180);
-        info = new MapInfo(topLeft, bottomRight);
+        info = new MapInfo();
+        info.setBounds(topLeft, bottomRight);
     }
 
     @Test
@@ -83,9 +84,9 @@ public class MapInfoTest {
         assertEquals(1, info.queryElements(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
         info.compactifyDatastructures();
         assertEquals(1, info.queryElements(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
-        assertTrue(info.getFavoriteDescription(new Coordinates(10.3f, 15.3f), 0, 1).getName().equals("derp"));
+        assertTrue(info.getPOIDescription(new Coordinates(10.3f, 15.3f), 1, 0).getName().equals("derp"));
         info.printQuadTree();
-        info.addPOI(new Coordinates(7.0f, 6.7f), 12, new POIDescription("nirvana", 0, "ja das gibt es wirklich"), new Address());
+        info.addPOI(new Coordinates(7.0f, 6.7f), new POIDescription("nirvana", 0, "ja das gibt es wirklich"), new Address());
         info.printQuadTree();
         assertTrue(info.getPOIDescription(new Coordinates(7.0f, 6.7f), 1.0f, 0).getName().equals("nirvana"));
 //        assertTrue(info.select(new Coordinates(2.1f, 2.1f)).getName().equals("Hubert Straße"));

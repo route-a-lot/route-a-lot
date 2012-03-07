@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
@@ -29,17 +30,25 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     public static final boolean DRAW_FRAMES = false;
     
+    protected Coordinates topLeft, bottomRight;
+    
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     protected QuadTree zoomlevels[];
     
+    
+    // CONSTRUCTOR
     
     public QTGeographicalOperator() {
         setBounds(new Coordinates(), new Coordinates());
     }
     
     
+    // GETTERS & SETTERS
+    
     @Override
     public void setBounds(Coordinates topLeft, Coordinates bottomRight) {
+        this.topLeft = topLeft;
+        this.bottomRight = bottomRight;
         zoomlevels = new QuadTree[NUM_LEVELS];
         for (int i = 0; i < NUM_LEVELS; i++) {
             zoomlevels[i] = new QTNode(topLeft, bottomRight);
@@ -49,65 +58,46 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
         if (upLeft != null) {
-            upLeft.setLatitude(zoomlevels[0].getTopLeft().getLatitude());
-            upLeft.setLongitude(zoomlevels[0].getTopLeft().getLongitude());
+            topLeft.setLatitude(this.topLeft.getLatitude());
+            topLeft.setLongitude(this.topLeft.getLongitude());
         }
         if (bottomRight != null) {
-            bottomRight.setLatitude(zoomlevels[0].getBottomRight().getLatitude());
-            bottomRight.setLongitude(zoomlevels[0].getBottomRight().getLongitude());
+            bottomRight.setLatitude(this.bottomRight.getLatitude());
+            bottomRight.setLongitude(this.bottomRight.getLongitude());
         }
     }
        
     
+    // BASIC OPERATIONS
+    
     @Override
-    public void addElement(MapElement element) {
-        zoomlevels[0].addElement(element);
-        
-        int maxZoomlevel = NUM_LEVELS;
-        if (element instanceof Area) {
-            if (((Area) element).getWayInfo().isBuilding()) {
-                maxZoomlevel = 4;
-            }
+    public void fill(ElementDB elementDB) {
+        if (elementDB == null) {
+            throw new IllegalArgumentException();
         }
-        if (element instanceof Street) {
-            WayInfo wayInfo = ((Street) element).getWayInfo();
-            switch (wayInfo.getType()) {
-                case HIGHWAY_MOTORWAY:
-                case HIGHWAY_MOTORWAY_JUNCTION:
-                case HIGHWAY_MOTORWAY_LINK:
-                case HIGHWAY_PRIMARY:
-                case HIGHWAY_PRIMARY_LINK:
-                case HIGHWAY_SECONDARY:
-                case HIGHWAY_SECONDARY_LINK:
-                    break;
-                case HIGHWAY_TERTIARY:
-                case HIGHWAY_TERTIARY_LINK:
-                case HIGHWAY_RESIDENTIAL:
-                case HIGHWAY_LIVING_STREET:
-                case HIGHWAY_CYCLEWAY:
-                    maxZoomlevel = 8;
-                    break;
-                default:
-                    maxZoomlevel = 6;
-            }
-        }
-        for (int detail = 1; detail < maxZoomlevel; detail++) {
-            MapElement reduced = element.getReduced(detail,
-                    Projection.getZoomFactor(detail) * LAYER_MULTIPLIER);
-            if (reduced == null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Ignoring " + element + " for zoomlevel " + detail);
-                }
-            } else {
-                if (!zoomlevels[detail].addElement(reduced)) {
-                    logger.error("Reduced element could not be added to the quadtree.");
+        Iterator<MapElement> elements = elementDB.getAllMapElements();
+        while (elements.hasNext()) {
+            MapElement element = elements.next();
+            zoomlevels[0].addElement(element);
+            int maxLevel = getMaximumZoomlevel(element);
+            for (int level = 1; level < maxLevel; level++) {
+                MapElement reduced = element.getReduced(level,
+                        Projection.getZoomFactor(level) * LAYER_MULTIPLIER);
+                if (reduced == null) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Ignoring " + element + " for zoomlevel " + level);
+                    }
+                } else {
+                    if (!zoomlevels[level].addElement(reduced)) {
+                        logger.error("Reduced element could not be added to the quadtree.");
+                    }
                 }
             }
         }
     }
     
     @Override
-    public Set<MapElement> queryElements(int zoomlevel, Coordinates upLeft, Coordinates bottomRight, boolean exact) {
+    public Set<MapElement> queryElements(Coordinates topLeft, Coordinates bottomRight, int zoomlevel, boolean exact) {
         /*if (logger.isTraceEnabled()) {
             logger.trace("called: getBaseLayer()");
             logger.trace(" upLeft: " + upLeft);
@@ -118,13 +108,17 @@ public class QTGeographicalOperator implements GeographicalOperator {
             logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         }*/    
         if (QTGeographicalOperator.DRAW_FRAMES) {
-            State.getInstance().getActiveRenderer().addFrameToDraw(upLeft, bottomRight, Color.red);
+            State.getInstance().getActiveRenderer().addFrameToDraw(topLeft, bottomRight, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryElements(upLeft, bottomRight, elements, exact);
+        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryElements(
+                topLeft, bottomRight, elements, exact);
         return elements;
     }
    
+    
+    // ADVANCED OPERATIONS
+    
     @Override
     public Selection select(Coordinates pos) {
 //        drawFrames = true;
@@ -153,8 +147,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * @return a {@link Selection} derived from the nearest map element
      */
     private Selection select(Coordinates pos, float radius) {
-        Collection<MapElement> elements = queryElements(0,
-                pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), true);
+        Collection<MapElement> elements = queryElements(
+                pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), 0, true);
         
         // find element nearest to pos
         MapElement closestElement = null;
@@ -180,7 +174,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         float closestDistance = (Projection.getZoomFactor(detailLevel) + 1) *  radius;
         Coordinates UL = pos.clone().add(-closestDistance, -closestDistance);
         Coordinates BR = pos.clone().add(closestDistance, closestDistance);
-        Collection<MapElement> elements = queryElements(0, UL, BR, true);
+        Collection<MapElement> elements = queryElements(UL, BR, 0, true);
         for (MapElement element : elements) {
             if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
                 float newDistance = (float) Coordinates.getDistance(pos, ((POINode) element).getPos());
@@ -194,14 +188,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }    
           
 
-    @Override
-    public void compactifyDatastructures() {
-        for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i].compactifyDataStructures();
-        }
-    } 
-    
-    
+    // I/O OPERATIONS
+     
     @Override
     public void loadFromInput(DataInput input) throws IOException {
         logger.debug("Loading " + zoomlevels.length + " zoomlevels...");
@@ -219,7 +207,48 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
     }
     
-
+    @Override
+    public void compactify() {
+        for (int i = 0; i < zoomlevels.length; i++) {
+            zoomlevels[i].compactify();
+        }
+    } 
+    
+    
+    // MISCELLANEOUS
+    
+    private int getMaximumZoomlevel(MapElement element) {
+        int result = NUM_LEVELS;
+        if (element instanceof Area) {
+            if (((Area) element).getWayInfo().isBuilding()) {
+                result = 4;
+            }
+        }
+        if (element instanceof Street) {
+            WayInfo wayInfo = ((Street) element).getWayInfo();
+            switch (wayInfo.getType()) {
+                case HIGHWAY_MOTORWAY:
+                case HIGHWAY_MOTORWAY_JUNCTION:
+                case HIGHWAY_MOTORWAY_LINK:
+                case HIGHWAY_PRIMARY:
+                case HIGHWAY_PRIMARY_LINK:
+                case HIGHWAY_SECONDARY:
+                case HIGHWAY_SECONDARY_LINK:
+                    break;
+                case HIGHWAY_TERTIARY:
+                case HIGHWAY_TERTIARY_LINK:
+                case HIGHWAY_RESIDENTIAL:
+                case HIGHWAY_LIVING_STREET:
+                case HIGHWAY_CYCLEWAY:
+                    result = 8;
+                    break;
+                default:
+                    result = 6;
+            }
+        }
+        return result;
+    }
+    
     public boolean equals(Object other) {
         if(other == this) {
             return true;
@@ -237,5 +266,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     public void printQuadTree() {
         System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
     }
+
+
     
 }

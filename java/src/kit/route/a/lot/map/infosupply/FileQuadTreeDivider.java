@@ -16,8 +16,8 @@ import kit.route.a.lot.map.Node;
  */
 public class FileQuadTreeDivider {
 
-    CountingQuadTree root = null;
-    boolean refillNeeded = false;
+    private CountingQuadTree root = null;
+    private boolean refillNeeded = false;
     
     public FileQuadTreeDivider(Coordinates topLeft, Coordinates bottomRight) {
         root = new CountingQuadTree(topLeft, bottomRight);

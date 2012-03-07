@@ -2,6 +2,7 @@ package kit.route.a.lot.map.infosupply;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
@@ -28,8 +29,7 @@ public class QTTest {
 
     @Before
     public void setUp() throws Exception {
-        operator = new QTGeographicalOperator();
-        operator.setBounds(new Coordinates(0.0f, 0.0f), new Coordinates(50.0f, 50.0f));
+        ArrayElementDB elementDB = new ArrayElementDB();
         for(int i = 0; i < 10; i++) {
             Area area = new Area(null, new WayInfo());
             Node[] areaNode = new Node[4];
@@ -40,9 +40,10 @@ public class QTTest {
             area.setNodes(areaNode);
             String s = "" + i;
             POINode favorite = new POINode(new Coordinates(0.0f+i, 0.0f+i), new POIDescription(s, 0, s));
-            operator.addElement(area);
-            operator.addElement(favorite);
+            elementDB.addMapElement(area);
+            elementDB.addMapElement(favorite);
         }
+        
         WayInfo wayinfo1 = new WayInfo();
         WayInfo wayinfo2 = new WayInfo();
         wayinfo1.setBicycle(WayInfo.BICYCLE_YES);
@@ -65,8 +66,12 @@ public class QTTest {
         node2[3].setID(23);
         street1.setNodes(node1);
         street2.setNodes(node2);
-        operator.addElement(street1);
-        operator.addElement(street2);
+        elementDB.addMapElement(street1);
+        elementDB.addMapElement(street2);
+        
+        operator = new QTGeographicalOperator();
+        operator.setBounds(new Coordinates(0.0f, 0.0f), new Coordinates(50.0f, 50.0f));
+        operator.fill(elementDB);
     }
 
     @After
@@ -75,11 +80,11 @@ public class QTTest {
     
     @Test
     public void testGetLayers() {
-        assertEquals(4, operator.queryElements(0, new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), true).size());
-        assertEquals(1, operator.queryElements(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
-        operator.compactifyDatastructures();
-        assertEquals(7, operator.queryElements(0, new Coordinates(3.5f, 3.5f), new Coordinates(7.5f, 7.5f), false).size());
-        assertEquals(1, operator.queryElements(0, new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), true).size());
+        assertEquals(4, operator.queryElements(new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), 0, true).size());
+        assertEquals(1, operator.queryElements(new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), 0, true).size());
+        operator.compactify();
+        assertEquals(7, operator.queryElements(new Coordinates(3.5f, 3.5f), new Coordinates(7.5f, 7.5f), 0, false).size());
+        assertEquals(1, operator.queryElements(new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), 0, true).size());
         String s = "" + 2;
         assertEquals(s, operator.getPOIDescription(new Coordinates(2.0f, 2.0f), 0.3f, 0).getName());
         assertTrue(22 == operator.select(new Coordinates(25.5f, 2.9f)).getFrom());

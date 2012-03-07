@@ -3,8 +3,6 @@ package kit.route.a.lot.map.rendering;
 import static org.junit.Assert.*;
 
 import org.junit.Ignore;
-import org.junit.Test;
-
 import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -78,7 +76,8 @@ public class RendererPerformanceTest {
         nodes[2] = node3;
         nodes[3] = node4;
         street.setNodes(nodes);
-        mapInfo.addToBaseLayer(street);
+        mapInfo.addMapElement(street);
+        mapInfo.lastElementAdded();
         long start = System.currentTimeMillis();
         renderer.render(context);
         long duration = System.currentTimeMillis() - start;

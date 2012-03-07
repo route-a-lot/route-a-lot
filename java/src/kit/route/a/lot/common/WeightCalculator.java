@@ -63,9 +63,9 @@ public class WeightCalculator {
         return 1 + malusFactor / 150 * Math.pow(7, malus);
     }
     
-    private static void print(String string) {
-        System.out.println(string);
-    }
+    //private static void print(String string) {
+    //    System.out.println(string);
+    //}
 
     public int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = projection.getGeoCoordinates(State.getInstance().getMapInfo().getNodePosition(fromID));

@@ -17,7 +17,7 @@ public interface AddressOperator {
      *            -
      * @return List<String>
      */
-    List<String> suggestCompletions(String expression);
+    List<String> getCompletions(String expression);
 
     /**
      * Operation select
