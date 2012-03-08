@@ -39,7 +39,7 @@ public class MapInfo {
     private static Logger logger = Logger.getLogger(MapInfo.class);
 
     protected ElementDB elementDB = new ArrayElementDB();
-    private GeographicalOperator geoOperator = new QTGeographicalOperator();
+    private GeographicalOperator geoOperator = new /*FileQTGeoOperator();*/ QTGeographicalOperator();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
     private Bounds geoBounds = new Bounds();

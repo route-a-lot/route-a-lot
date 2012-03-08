@@ -59,7 +59,7 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public void addMapElement(MapElement element) throws IllegalArgumentException {
         if (element instanceof Node && !(element instanceof POINode)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cannot save regular nodes in the map elements database.");
         }
         
         if (mapElements.add(element)) {

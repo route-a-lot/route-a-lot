@@ -3,6 +3,7 @@ package kit.route.a.lot.map.infosupply;
 import java.util.HashSet;
 
 import kit.route.a.lot.common.Bounds;
+import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 
 /**
@@ -17,6 +18,8 @@ import kit.route.a.lot.map.Node;
  */
 public class FileQuadTreeDivider {
 
+    private static final int MAX_SIZE = 512;//16384;
+    
     private CountingQuadTree root = null;
     private boolean refillNeeded = false;
     
@@ -28,8 +31,14 @@ public class FileQuadTreeDivider {
         return root.getBounds();
     }
 
-    public void addNode(Node node) {
+    public void add(Node node) {
         if (!root.add(node)) {
+            refillNeeded = true;
+        }
+    }
+    
+    public void add(MapElement element) {
+        if (!root.add(element)) {
             refillNeeded = true;
         }
     }
@@ -46,7 +55,7 @@ public class FileQuadTreeDivider {
     
     private class CountingQuadTree {
         
-        private static final int MAX_SIZE = 16384;
+        
         private int size = 0;     
         
         private Bounds bounds;
@@ -77,16 +86,16 @@ public class FileQuadTreeDivider {
          * @param node
          * @return false if a split was needed
          */
-        public boolean add(Node node) {
+        public boolean add(MapElement element) {
             boolean result = true;
-            if (node.isInBounds(bounds)) {
+            if (element.isInBounds(bounds)) {
                 if (size++ >= MAX_SIZE) {
                     if (children == null) {
                         createChildren();
                         return false;
                     }
                     for (CountingQuadTree child : children) {
-                        result &= child.add(node);
+                        result &= child.add(element);
                     }
                 }
             }

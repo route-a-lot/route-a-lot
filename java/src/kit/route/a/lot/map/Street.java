@@ -245,6 +245,9 @@ public class Street extends MapElement implements Comparable<Street> {
 
     @Override
     public MapElement getReduced(int detail, float range) {
+        if (detail == 0) {
+            return this;
+        }
         Street result = new Street(name, wayInfo);
         result.setNodes(simplifyNodes(nodes, range));
         if (getLengthOfStreet(result) < range) {

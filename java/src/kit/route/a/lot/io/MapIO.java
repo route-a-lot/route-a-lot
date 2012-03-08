@@ -78,8 +78,7 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        DataOutputStream output = new DataOutputStream(
-                new BufferedOutputStream(new FileOutputStream(file)));
+        DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         //RandomAccessFile output = new RandomAccessFile(file, "rw");
         
         // Write data to stream, abort on error

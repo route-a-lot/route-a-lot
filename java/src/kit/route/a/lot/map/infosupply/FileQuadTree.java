@@ -183,13 +183,15 @@ public class FileQuadTree extends QuadTree {
         if (output == null) {
             throw new IllegalArgumentException();
         }
-        boolean alreadySaved = output.equals(file) && (filePointer >= 0);
+        // already saved:
+        if (output.equals(file) && (filePointer >= 0)) {
+            output.writeLong(filePointer + 8);
+            return;
+        }
         file = output;
         filePointer = file.getFilePointer();
-        output.writeLong(filePointer + Long.SIZE);
-        if (alreadySaved) {
-            return;
-        }   
+        output.writeLong(filePointer + 8);
+        
         output.writeBoolean(elements != null);
         if (elements != null) {
             output.writeByte(elements.size());
@@ -199,10 +201,12 @@ public class FileQuadTree extends QuadTree {
         } else {
             // save children, write each child's position at position mark
             long mark = output.getFilePointer();
-            output.skipBytes(4 * Long.SIZE);
+            for (int i = 0; i < 4; i++) {
+                output.writeLong(0);
+            }
             for (int i = 0; i < 4; i++) {
                 long pos = output.getFilePointer();
-                output.seek(mark + i * Long.SIZE);
+                output.seek(mark + i * 8);
                 output.writeLong(pos);
                 output.seek(pos);
                 children[i].saveTree(output);
@@ -285,9 +289,58 @@ public class FileQuadTree extends QuadTree {
         elements = null;
     }
     
-    @Override
+    /*@Override
     public String toString(int offset, List<Integer> last) {
         throw new UnsupportedOperationException();
+    }*/
+    
+    @Override
+    public String toString(int offset, List<Integer> last) {
+        if ((children == null) && (elements == null)) {
+            try {
+                loadNode();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        if (children != null) {
+            if (offset > 50) {
+                return "this seems like a good point to stop printing...\n";
+            }
+            stringBuilder.append("'" + getSize() + "'\n");
+            
+            printOffset(offset, last, stringBuilder);
+            stringBuilder.append("├──");
+            stringBuilder.append(children[0].toString(offset + 1, last));
+            
+            printOffset(offset, last, stringBuilder);
+            stringBuilder.append("├──");
+            stringBuilder.append(children[1].toString(offset + 1, last));
+            
+            printOffset(offset, last, stringBuilder);
+            stringBuilder.append("├──");
+            stringBuilder.append(children[2].toString(offset + 1, last));
+            
+            printOffset(offset, last, stringBuilder);
+            stringBuilder.append("└──");
+            List<Integer> newLast = new ArrayList<Integer>(last);
+            newLast.add(offset);
+            stringBuilder.append(children[3].toString(offset + 1, newLast));
+        } else {
+            stringBuilder.append(" " + getSize() + "\n");
+        }       
+        return stringBuilder.toString();
+    }
+    
+    private void printOffset(int offset, List<Integer> last, StringBuilder stringBuilder) {
+        for (int i = 0; i < offset; i++) {
+            if (last.contains(i)) {
+                stringBuilder.append("   ");
+            } else {
+                stringBuilder.append("│  ");
+            }
+        }
     }
 
 }

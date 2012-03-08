@@ -33,11 +33,6 @@ public class Coordinates {
         this.longitude = longitude;
     }
     
-    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        return (topLeft.latitude < latitude) && (latitude < bottomRight.latitude) 
-            && (topLeft.longitude < longitude) && (longitude < bottomRight.longitude);
-    }
-    
     @Override
     public String toString() {
         return String.format("Lat %1$3.4f / Lon %2$3.4f", latitude, longitude);

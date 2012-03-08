@@ -772,8 +772,8 @@ public class GUI extends JFrame {
                     }
                     editedNavNodeIndex = pos;
                     if (waypointField.getText().length() > 1) {
-                        popupPos = new Point(waypointField.getX(),
-                                waypointField.getY() + waypointField.getHeight());
+                        popupPos = new Point(waypointArea.getX() + row1.getX(),
+                                waypointArea.getX() + row1.getY() + waypointField.getY() + waypointField.getHeight());
                         navComp = waypointField;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                                 new TextNumberEvent(waypointField.getText() + e.getKeyChar(), 1));
@@ -916,7 +916,6 @@ public class GUI extends JFrame {
         if(completions == null){
             return;
         }
-        popupSearchCompletions.setVisible(false);
         popupSearchCompletions.removeAll();
         for (String completion : completions) {
             final JMenuItem item = new JMenuItem(completion, icon);
@@ -974,6 +973,12 @@ public class GUI extends JFrame {
     }
     
     private void setActive(boolean value) {
+        /*if (active)
+        try {
+            throw new IllegalStateException();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }*/
         active = value;
         getGlassPane().setVisible(!value);
     }

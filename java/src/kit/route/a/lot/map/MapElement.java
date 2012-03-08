@@ -10,7 +10,7 @@ import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
-public abstract class MapElement{
+public abstract class MapElement {
 
     /** constant used in a stream for announcing {@link Node} element data following */
     public static final byte DESCRIPTOR_NODE = 1;
@@ -141,6 +141,9 @@ public abstract class MapElement{
         }
         output.writeByte(descriptor);
         if (asID) {
+            if (element.getID() < 0) {
+                throw new IllegalArgumentException("Cannot save element as ID: " + element.getName());
+            }
             output.writeInt(element.getID());
         } else {
             element.save(output);

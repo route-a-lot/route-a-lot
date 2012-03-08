@@ -239,7 +239,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
                     result = 6;
             }
         }
-        return result;
+        return Util.clip(result, 0, NUM_LEVELS);
     }
     
     public boolean equals(Object other) {

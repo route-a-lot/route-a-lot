@@ -48,4 +48,10 @@ public class ProgressInputStream extends FilterInputStream {
             progress = 0;
         }
     }
+    
+    @Override
+    public void close() throws IOException {
+        p.finish();
+        super.close();
+    }
 }

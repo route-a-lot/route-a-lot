@@ -13,7 +13,7 @@ import kit.route.a.lot.map.MapElement;
 
 public interface GeographicalOperator {
 
-    public final static int NUM_LEVELS = 10;
+    public static final int NUM_LEVELS = 10;
     public static final float LAYER_MULTIPLIER = 3;
     
     

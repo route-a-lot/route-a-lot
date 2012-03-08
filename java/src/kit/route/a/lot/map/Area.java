@@ -130,6 +130,9 @@ public class Area extends MapElement {
 
     @Override
     public MapElement getReduced(int detail, float range) {
+        if (detail == 0) {
+            return this;
+        }
         Coordinates topLeft = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
         Coordinates bottomRight = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
         Coordinates position;
