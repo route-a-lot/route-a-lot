@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
@@ -56,8 +57,9 @@ public class Node extends MapElement {
     }
 
     @Override
-    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        return getPos().isInBounds(topLeft, bottomRight);
+    public boolean isInBounds(Bounds bounds) {
+        return (bounds.getTop() < lat) && (bounds.getBottom() > lat) 
+            && (bounds.getLeft() < lon) && (bounds.getRight() > lon);
     }
 
     @Override

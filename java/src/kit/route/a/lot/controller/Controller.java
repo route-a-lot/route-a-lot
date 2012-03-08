@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
@@ -539,12 +540,11 @@ public class Controller {
 
     private void passElementType(Coordinates pos) {
         float adaptedRadius = (Projection.getZoomFactor(state.getDetailLevel())) * state.getClickRadius();
-        Coordinates topLeft = pos.clone().add(-adaptedRadius, -adaptedRadius);         
-        Coordinates bottomRight = pos.clone().add(adaptedRadius, adaptedRadius);
+        Bounds bounds = new Bounds(pos, adaptedRadius);
         int result = FREEMAPSPACE;
         for (Selection navNode: state.getNavigationNodes()) {
             Node node = new Node(navNode.getPosition());
-            if (node.isInBounds(topLeft, bottomRight)) {
+            if (node.isInBounds(bounds)) {
                 result = NAVNODE;
                 break;
             }
@@ -614,10 +614,9 @@ public class Controller {
         if (state.getMapInfo() == null) {
             return;
         }
-        Coordinates upLeft = new Coordinates();
-        Coordinates bottomRight = new Coordinates();
-        state.getMapInfo().getBounds(upLeft, bottomRight);
-        state.setCenterCoordinates(Coordinates.interpolate(upLeft, bottomRight, 0.5f));
+        Bounds bounds = state.getMapInfo().getBounds();
+        state.setCenterCoordinates(Coordinates.interpolate(bounds.getTopLeft(),
+                bounds.getBottomRight(), 0.5f));
         guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());
     }
     

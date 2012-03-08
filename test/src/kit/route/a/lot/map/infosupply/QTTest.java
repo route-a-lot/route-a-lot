@@ -3,6 +3,7 @@ package kit.route.a.lot.map.infosupply;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
@@ -70,7 +71,7 @@ public class QTTest {
         elementDB.addMapElement(street2);
         
         operator = new QTGeographicalOperator();
-        operator.setBounds(new Coordinates(0.0f, 0.0f), new Coordinates(50.0f, 50.0f));
+        operator.setBounds(new Bounds(0, 50, 0, 50));
         operator.fill(elementDB);
     }
 
@@ -80,11 +81,11 @@ public class QTTest {
     
     @Test
     public void testGetLayers() {
-        assertEquals(4, operator.queryElements(new Coordinates(3.0f, 3.0f), new Coordinates(8.0f, 8.0f), 0, true).size());
-        assertEquals(1, operator.queryElements(new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), 0, true).size());
+        assertEquals(4, operator.queryElements(new Bounds(3, 8, 3, 8), 0, true).size());
+        assertEquals(1, operator.queryElements(new Bounds(4.5f, 5.8f, 3.3f, 6.7f), 0, true).size());
         operator.compactify();
-        assertEquals(7, operator.queryElements(new Coordinates(3.5f, 3.5f), new Coordinates(7.5f, 7.5f), 0, false).size());
-        assertEquals(1, operator.queryElements(new Coordinates(3.3f, 4.5f), new Coordinates(6.7f, 5.8f), 0, true).size());
+        assertEquals(7, operator.queryElements(new Bounds(3.5f, 7.5f, 3.5f, 7.5f), 0, false).size());
+        assertEquals(1, operator.queryElements(new Bounds(4.5f, 5.8f, 3.3f, 6.7f), 0, true).size());
         String s = "" + 2;
         assertEquals(s, operator.getPOIDescription(new Coordinates(2.0f, 2.0f), 0.3f, 0).getName());
         assertTrue(22 == operator.select(new Coordinates(25.5f, 2.9f)).getFrom());
@@ -92,9 +93,7 @@ public class QTTest {
     
     @Test
     public void testGetBounds() {
-        Coordinates coord1 = new Coordinates();
-        Coordinates coord2 = new Coordinates();
-        operator.getBounds(coord1, coord2);
-        assertTrue(50.0f == coord2.getLongitude());
+        Bounds bounds = operator.getBounds();
+        assertTrue(50.0f == bounds.getRight());
     }
 }

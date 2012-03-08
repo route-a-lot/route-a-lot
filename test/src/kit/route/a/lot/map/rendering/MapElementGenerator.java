@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.WayInfo;
@@ -79,31 +80,31 @@ public class MapElementGenerator {
         return node;
     }
     
-    public Node generateNodeInBounds(Coordinates topLeft, Coordinates bottomRight) {
-        double latitude = (bottomRight.getLatitude() - topLeft.getLatitude()) * Math.random() + topLeft.getLatitude();
-        double longitude = (bottomRight.getLongitude() - topLeft.getLongitude()) * Math.random() + topLeft.getLongitude();
+    public Node generateNodeInBounds(Bounds bounds) {
+        double latitude = bounds.getHeight() * Math.random() + bounds.getTop();
+        double longitude = bounds.getWidth() * Math.random() + bounds.getLeft();
         return new Node(new Coordinates((float) latitude, (float) longitude));
     }
     
-    public Street generateStreetInBounds(Coordinates topLeft, Coordinates bottomRight) {
+    public Street generateStreetInBounds(Bounds bounds) {
         Street street = generateStreet();
         Node[] nodes = new Node[(int) Math.random() * 12];
         for (int i = 0; i < nodes.length; i++) {
-            nodes[i] = generateNodeInBounds(topLeft, bottomRight);
+            nodes[i] = generateNodeInBounds(bounds);
         }
         street.setNodes(nodes);
         return street;
     }
     
-    public Area generateBuildingInBounds(Coordinates topLeft, Coordinates bottomRight) {
+    public Area generateBuildingInBounds(Bounds bounds) {
         WayInfo wayInfo = new WayInfo();
         wayInfo.setBuilding(true);
         Area area = new Area(null, wayInfo);
         Node[] nodes = new Node[(int) Math.random() * 8 + 1];
-        nodes[0] = generateNodeInBounds(topLeft, bottomRight);
+        nodes[0] = generateNodeInBounds(bounds);
         for (int i = 1; i < nodes.length - 1; i++) {
-            nodes[i] = generateNodeInBounds(nodes[i - 1].getPos(),
-                    nodes[i - 1].getPos().clone().add((float) (10 * (Math.random() - 0.5)), (float) (10 * (Math.random() - 0.5))));
+            nodes[i] = generateNodeInBounds(new Bounds(nodes[i - 1].getPos(),
+                    nodes[i - 1].getPos().clone().add((float) (10 * (Math.random() - 0.5)), (float) (10 * (Math.random() - 0.5)))));
         }
         nodes[nodes.length - 1] = nodes[0];
         area.setNodes(nodes);

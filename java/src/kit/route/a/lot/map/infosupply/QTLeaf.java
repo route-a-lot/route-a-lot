@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
@@ -20,8 +20,8 @@ public class QTLeaf extends QuadTree {
     
     // CONSTRUCTOR
     
-    public QTLeaf(Coordinates upLeft, Coordinates bottomRight) {
-        super(upLeft, bottomRight);
+    public QTLeaf(Bounds bounds) {
+        super(bounds);
         unload();
     }
     
@@ -38,7 +38,7 @@ public class QTLeaf extends QuadTree {
     
     @Override
     public boolean addElement(MapElement element) {
-        if (element.isInBounds(getTopLeft(), getBottomRight())) {
+        if (element.isInBounds(bounds)) {
             int size = getSize();
             if (size >= MAX_SIZE) {
                 return false;
@@ -58,15 +58,14 @@ public class QTLeaf extends QuadTree {
     }
     
     @Override
-    public void queryElements(Coordinates upLeft, Coordinates bottomRight,
-        Set<MapElement> elememts, boolean exact) {
-        if(isInBounds(upLeft, bottomRight)) {
+    public void queryElements(Bounds area, Set<MapElement> elememts, boolean exact) {
+        if(isInBounds(area)) {
             if (QTGeographicalOperator.DRAW_FRAMES) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(
-                        this.topLeft, this.bottomRight, Color.blue);
+                        this.bounds, Color.blue);
             }
             for (int i = 0; i < Util.getElementCount(elements); i++) {
-                if (!exact || elements[i].isInBounds(upLeft, bottomRight)) {   //TODO test what's faster
+                if (!exact || elements[i].isInBounds(area)) {   //TODO test what's faster
                     elememts.add(elements[i]);
                 }
             }
@@ -112,7 +111,7 @@ public class QTLeaf extends QuadTree {
     // MISCELLANEOUS
     
     protected QTNode split() {
-        QTNode result = new QTNode(topLeft, bottomRight);
+        QTNode result = new QTNode(bounds);
         for(int i = 0; i < Util.getElementCount(elements); i++) {
             result.addElement(elements[i]);
         }

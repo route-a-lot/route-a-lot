@@ -34,7 +34,7 @@ public class MapElementMock extends MapElement {
     }
 
     @Override
-    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+    public boolean isInBounds(Bounds bounds) {
         // TODO Auto-generated method stub
         return false;
     }

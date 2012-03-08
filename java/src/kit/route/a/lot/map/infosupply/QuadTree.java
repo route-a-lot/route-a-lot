@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.awt.geom.Rectangle2D;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.map.MapElement;
 
 public abstract class QuadTree {
@@ -17,33 +17,16 @@ public abstract class QuadTree {
     private static final byte DESCRIPTOR_QUADTREE_NODE = 1;
     private static final byte DESCRIPTOR_QUADTREE_LEAF = 2;
 
-    protected Coordinates topLeft,  bottomRight;
+    protected Bounds bounds;
 
     // CONSTRUCTOR
     
-    public QuadTree(Coordinates topLeft, Coordinates bottomRight) {
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
+    public QuadTree(Bounds bounds) {
+        this.bounds = bounds.clone();
     }
     
     
     // GETTERS & SETTERS
-    
-    /**
-     * Returns the {@link Coordinates} of the northwestern corner of the QuadTree area.
-     * @return the nortwestern quad tree corner
-     */
-    public Coordinates getTopLeft() {
-        return topLeft;
-    }
-
-    /**
-     * Returns the {@link Coordinates} of the southeastern corner of the QuadTree area.
-     * @return the southeastern quad tree corner
-     */
-    public Coordinates getBottomRight() {
-        return bottomRight;
-    }
     
     /**
      * Returns the number of {@link MapElement}s in the quad tree.
@@ -63,8 +46,7 @@ public abstract class QuadTree {
      */
     public abstract boolean addElement(MapElement element);
 
-    public abstract void queryElements(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elements, boolean exact);
+    public abstract void queryElements(Bounds area, Set<MapElement> elements, boolean exact);
  
     
     // I/O OPERATIONS
@@ -80,16 +62,15 @@ public abstract class QuadTree {
     public static QuadTree loadFromInput(DataInput input) throws IOException {
         input.readLong(); // skip value => ignore
 
-        Coordinates upLeft = Coordinates.loadFromInput(input);
-        Coordinates bottomRight = Coordinates.loadFromInput(input);
+        Bounds newBounds = Bounds.loadFromInput(input);
         QuadTree tree;
         byte descriptor = input.readByte();
         switch (descriptor) {
             case DESCRIPTOR_QUADTREE_NODE:
-                tree = new QTNode(upLeft, bottomRight);
+                tree = new QTNode(newBounds);
                 break;
             default:
-                tree = new QTLeaf(upLeft, bottomRight);
+                tree = new QTLeaf(newBounds);
         }
         tree.load(input);
         return tree;
@@ -105,8 +86,7 @@ public abstract class QuadTree {
      */
     public static void saveToOutput(DataOutput output, QuadTree tree) throws IOException {
         output.writeLong(0); // TODO: reserved for skip value => implement
-        tree.topLeft.saveToOutput(output);
-        tree.bottomRight.saveToOutput(output);
+        tree.bounds.saveToOutput(output);
         if (tree instanceof QTNode) {
             output.writeByte(DESCRIPTOR_QUADTREE_NODE);
         } else {
@@ -146,18 +126,14 @@ public abstract class QuadTree {
     
     // MISCELLANEOUS
     
-    protected boolean isInBounds(Coordinates upLeft, Coordinates bottomRight) {
-        double width = Math.abs(this.bottomRight.getLongitude() - this.topLeft.getLongitude());
-        double height = Math.abs(this.topLeft.getLatitude() - this.bottomRight.getLatitude());
-        Rectangle2D.Double thiss = new Rectangle2D.Double(Math.min(this.topLeft.getLongitude(), this.bottomRight.getLongitude()), 
-                                                          Math.min(this.topLeft.getLatitude(), this.bottomRight.getLatitude()), 
-                                                          width, height);
-        width = Math.abs(bottomRight.getLongitude() - upLeft.getLongitude());
-        height = Math.abs(upLeft.getLatitude() - bottomRight.getLatitude());
-        Rectangle2D.Double bounce = new Rectangle2D.Double(Math.min(upLeft.getLongitude(), bottomRight.getLongitude()), 
-                                                           Math.min(upLeft.getLatitude(), bottomRight.getLatitude()),  
-                                                           width, height);
-        return thiss.contains(bounce) || bounce.contains(thiss) || thiss.intersects(bounce);
+    protected boolean isInBounds(Bounds bounds) {
+        Rectangle2D.Float node = new Rectangle2D.Float(
+                this.bounds.getLeft(), this.bounds.getTop(), 
+                this.bounds.getWidth(), this.bounds.getHeight());    
+        Rectangle2D.Float boundary = new Rectangle2D.Float(
+                bounds.getLeft(), bounds.getTop(), 
+                bounds.getWidth(), bounds.getHeight());
+        return node.contains(boundary) || boundary.contains(node) || node.intersects(boundary);
     }
     
     public boolean equals(Object other) {
@@ -168,7 +144,7 @@ public abstract class QuadTree {
             return false;
         }
         QuadTree comparee = (QuadTree) other;
-        return topLeft.equals(comparee.topLeft) && bottomRight.equals(comparee.bottomRight);
+        return bounds.equals(comparee.bounds);
     }
 
     /**

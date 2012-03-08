@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import kit.route.a.lot.common.Address;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
 
@@ -20,8 +21,6 @@ import static org.junit.Assert.*;
 public class MapInfoTest {
 
     public MapInfo info;
-    Coordinates topLeft;
-    Coordinates bottomRight;
 
     @BeforeClass
     public static void setUpClass() {
@@ -30,10 +29,8 @@ public class MapInfoTest {
 
     @Before
     public void setUp() throws Exception {
-        topLeft = new Coordinates(0, 0);
-        bottomRight = new Coordinates(90, 180);
         info = new MapInfo();
-        info.setBounds(topLeft, bottomRight);
+        info.setBounds(new Bounds(0, 180, 0, 90));
     }
 
     @Test
@@ -71,8 +68,7 @@ public class MapInfoTest {
         info.addWay(ids, "Hubert Straße", street);
         info.addWay(aids, "Fußballplatz", new WayInfo());
 
-        Collection<MapElement> a =
-                info.queryElements(0, new Coordinates(5.0f, 1.0f), new Coordinates(1.0f, 5.0f), false);
+        Collection<MapElement> a = info.queryElements(0, new Bounds(1, 5, 5, 1), false);
 
         assertEquals(1, a.size());
         //POINode favorit1 = new POINode(new Coordinates(10.0f, 15.0f), new POIDescription("derp", 0, "home"));
@@ -81,9 +77,9 @@ public class MapInfoTest {
         info.addFavorite(new Coordinates(20.0f, 25.0f), new POIDescription("derpina", 0, "home"));
         info.addFavorite(new Coordinates(0.0f, 0.0f), new POIDescription("foo", 0, "deletable"));
         info.deleteFavorite(new Coordinates(3.0f, 3.0f), 0, 1);
-        assertEquals(1, info.queryElements(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
+        assertEquals(1, info.queryElements(0, new Bounds(0, 30, 0, 25), true).size());
         info.compactifyDatastructures();
-        assertEquals(1, info.queryElements(0, new Coordinates(0.0f, 0.0f), new Coordinates(25.0f, 30.0f), true).size());
+        assertEquals(1, info.queryElements(0, new Bounds(0, 30, 0, 25), true).size());
         assertTrue(info.getPOIDescription(new Coordinates(10.3f, 15.3f), 1, 0).getName().equals("derp"));
         info.printQuadTree();
         info.addPOI(new Coordinates(7.0f, 6.7f), new POIDescription("nirvana", 0, "ja das gibt es wirklich"), new Address());
@@ -95,14 +91,13 @@ public class MapInfoTest {
         info.swapNodeIds(0, 1);
         assertTrue(info.getNodePosition(1).getLatitude() == 2.0f);
 //        assertTrue(info.getBaseLayerForPositionAndRadius(new Coordinates(1.0f, 1.0f), 0.5f, true).size() == 2);
-        info.setGeoTopLeft(new Coordinates(0.1f,0.0f));
-        info.setGeoBottomRight(new Coordinates(50.0f, 75.0f));
+        
+        info.setGeoBounds(new Bounds(0, 75, 0.1f, 50));
         assertTrue(info.getGeoBottomRight().getLongitude() == 75.0f);
         assertTrue(info.getGeoTopLeft().getLatitude() == 0.1f);
-        info.setBounds(new Coordinates(0.0f, 1.0f), new Coordinates(12.3f, 45.6f));
-        Coordinates coord1 = new Coordinates(0.0f, 1.0f);
-        Coordinates coord2 = new Coordinates(12.3f, 45.6f);
-        info.getBounds(coord1, coord2);
-        assertTrue(coord1.getLongitude() == 1.0f);
+        info.setBounds(new Bounds(1, 45.6f, 0, 12.3f));
+        Bounds bounds = new Bounds(1, 45.6f, 0, 12.3f);
+        bounds = info.getBounds();
+        assertTrue(bounds.getLeft() == 1.0f);
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
@@ -72,34 +73,25 @@ public class Street extends MapElement implements Comparable<Street> {
     }
 
     @Override
-    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+    public boolean isInBounds(Bounds bounds) {
         boolean inBounds = false;
-        int i = 1;
-        int drawingSize = getDrawingSize() + 2;
-        Coordinates extendedTopLeft = topLeft.clone().add(-drawingSize, -drawingSize);
-        Coordinates extendedBottomRight = bottomRight.clone().add(drawingSize, drawingSize);
-        while (i < nodes.length && inBounds == false) {
-            if (isEdgeInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), extendedTopLeft, extendedBottomRight)) {
-                inBounds = true;
-            }
-            i++;
+        Bounds extendedBounds = bounds.clone().extend(getDrawingSize() + 2);
+        for (int i = 1; i < nodes.length && !inBounds; i++) {
+            inBounds = isEdgeInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), extendedBounds);
         }
         return inBounds;
     }
 
-    public static boolean isEdgeInBounds(Coordinates node1, Coordinates node2, Coordinates topLeft,
-            Coordinates bottomRight) {
-        Line2D.Float edge =
-                new Line2D.Float(node1.getLongitude(), node1.getLatitude(), node2.getLongitude(),
-                        node2.getLatitude());
+    public static boolean isEdgeInBounds(Coordinates node1, Coordinates node2, Bounds bounds) {
+        Line2D.Float edge = new Line2D.Float(node1.getLongitude(), node1.getLatitude(),
+                                             node2.getLongitude(), node2.getLatitude());
         // coord.sys. begins in upper left corner
-        Rectangle2D.Float box =
-                new Rectangle2D.Float(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()),
-                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()), Math.abs(bottomRight
-                                .getLongitude() - topLeft.getLongitude()), Math.abs(topLeft
-                                .getLatitude() - bottomRight.getLatitude()));
+        Rectangle2D.Float box = new Rectangle2D.Float(
+                bounds.getLeft(), bounds.getTop(),
+                bounds.getWidth(), bounds.getHeight());
         return box.contains(node1.getLongitude(), node1.getLatitude())
-                || box.contains(node2.getLongitude(), node2.getLatitude()) || box.intersectsLine(edge);
+                || box.contains(node2.getLongitude(), node2.getLatitude())
+                || box.intersectsLine(edge);
         // TODO pos -> neg (e.g. -180° -> 180°)
     }
 

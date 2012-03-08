@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
@@ -28,8 +29,6 @@ public class RendererTestTester {
     Graphics g;
     RendererMock renderer;
     MapInfoMock mapInfo;
-    Coordinates topLeft;
-    Coordinates bottomRight;
     int zoomLevel;
     Context2D context;
     
@@ -50,10 +49,8 @@ public class RendererTestTester {
         fenster.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         renderer = new RendererMock();
         mapInfo = (MapInfoMock)renderer.state.getMapInfo();
-        topLeft = new Coordinates(0f,0f);
-        bottomRight = new Coordinates(40f,40f);
         zoomLevel = 0;
-        context = new Context2D(topLeft, bottomRight, zoomLevel, g);
+        context = new Context2D(new Bounds(0, 40, 0, 40), zoomLevel, g);
         /*--------------------*/
         WayInfo wayInfo = new WayInfo();
         wayInfo.setStreet(true);

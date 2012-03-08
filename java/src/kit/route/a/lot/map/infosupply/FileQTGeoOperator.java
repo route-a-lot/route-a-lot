@@ -34,7 +34,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
         
         // << DIVIDE SECTION >>
         // get a subtree division (one is enough as all trees are similar)
-        FileQuadTreeDivider divider = new FileQuadTreeDivider(topLeft, bottomRight); 
+        FileQuadTreeDivider divider = new FileQuadTreeDivider(bounds); 
         // divider cannot store nodes, so we have to add them several times
         do {
             Iterator<Node> nodes = elementDB.getAllNodes();

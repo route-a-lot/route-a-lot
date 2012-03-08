@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
@@ -126,8 +127,8 @@ public class ComplexInfoSupplier {
     
     //returns the streets, which the point of this position is part of
     private static ArrayList<Street> getStreet(Coordinates position) {
-        Collection<MapElement> elements = State.getInstance().getMapInfo().queryElements(
-                0, position.clone().add(-1, -1), position.clone().add(1, 1), true);
+        Collection<MapElement> elements = State.getInstance().getMapInfo()
+                        .queryElements(0, new Bounds(position, 1), true);
         ArrayList<Street> streets = new ArrayList<Street>();
         for (MapElement element : elements) {
             if (element instanceof Street) {

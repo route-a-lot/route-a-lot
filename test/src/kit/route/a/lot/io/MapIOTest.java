@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.*;
 import org.junit.Test;
-import kit.route.a.lot.common.Coordinates;
+
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -44,13 +44,7 @@ public class MapIOTest {
         State state = State.getInstance();
 
         // Controller.setViewToMapCenter() externalized:
-        Coordinates upLeft = new Coordinates();
-        Coordinates bottomRight = new Coordinates();
-        state.getMapInfo().getBounds(upLeft, bottomRight);
-        Coordinates center = new Coordinates();
-        center.setLatitude((upLeft.getLatitude() + bottomRight.getLatitude()) / 2);
-        center.setLongitude((upLeft.getLongitude() + bottomRight.getLongitude()) / 2);
-        state.setCenterCoordinates(center);
+        state.setCenterCoordinates(state.getMapInfo().getBounds().getCenter());
         try {
             MapIO.saveMap(sralMap, p.createSubProgress(0.3));
         } catch (IOException e) {

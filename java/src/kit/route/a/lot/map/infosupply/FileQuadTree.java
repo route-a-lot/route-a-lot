@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.map.MapElement;
 
 
@@ -31,9 +31,8 @@ public class FileQuadTree extends QuadTree {
      * @param source
      * @param sourcePointer
      */
-    public FileQuadTree(Coordinates topLeft, Coordinates bottomRight,
-            RandomAccessFile source, long sourcePointer) {
-        super(topLeft, bottomRight);
+    public FileQuadTree(Bounds bounds, RandomAccessFile source, long sourcePointer) {
+        super(bounds);
         this.source = source;
         this.sourcePointer = sourcePointer;
     }
@@ -44,8 +43,8 @@ public class FileQuadTree extends QuadTree {
      * @param topLeft
      * @param bottomRight
      */
-    public FileQuadTree(Coordinates topLeft, Coordinates bottomRight) {
-        super(topLeft, bottomRight);
+    public FileQuadTree(Bounds bounds) {
+        super(bounds);
         this.elements = new ArrayList<MapElement>();
     }
 
@@ -84,7 +83,7 @@ public class FileQuadTree extends QuadTree {
         if (source != null) {
             throw new IllegalStateException();
         }
-        if (element.isInBounds(topLeft, bottomRight)) {
+        if (element.isInBounds(bounds)) {
             if (children != null) {
                 for (FileQuadTree child : children) {
                     child.addElement(element);
@@ -106,9 +105,8 @@ public class FileQuadTree extends QuadTree {
      * the boundaries are added.
      */
     @Override
-    public void queryElements(Coordinates topLeft, Coordinates bottomRight,
-                                Set<MapElement> target, boolean exact) {
-        if (isInBounds(topLeft, bottomRight)) {
+    public void queryElements(Bounds area, Set<MapElement> target, boolean exact) {
+        if (isInBounds(area)) {
             if ((children == null) && (elements == null)) {
                 try {
                     loadNode();
@@ -119,12 +117,12 @@ public class FileQuadTree extends QuadTree {
             }
             if (children != null) {
                 for (FileQuadTree child : children) {
-                    child.queryElements(topLeft, bottomRight, target, exact);
+                    child.queryElements(area, target, exact);
                 } 
             } else if (elements != null) {
                 if (exact) {
                     for (MapElement element : elements) {
-                        if (element.isInBounds(topLeft, bottomRight)) {
+                        if (element.isInBounds(area)) {
                             target.add(element);
                         }
                     }
@@ -159,11 +157,16 @@ public class FileQuadTree extends QuadTree {
             }
         } else {
             children = new FileQuadTree[4];
-            Coordinates dim = bottomRight.clone().subtract(topLeft).scale(0.5f);
+            float xStep = bounds.getWidth() / 2;
+            float yStep = bounds.getHeight() / 2;
             for (int i = 0; i < 4; i++) {
-                Coordinates origin = topLeft.clone().add(
-                        dim.getLatitude() * (i % 2), dim.getLongitude() * (i / 2));
-                children[i] = new FileQuadTree(origin, origin.clone().add(dim), source, source.readLong());
+                Bounds newBounds = new Bounds(
+                        bounds.getLeft() + xStep * (i / 2),
+                        bounds.getLeft() + xStep * (i / 2 + 1),
+                        bounds.getTop() + yStep * (i % 2),
+                        bounds.getTop() + yStep * (i % 2 + 1)
+                );
+                children[i] = new FileQuadTree(newBounds, source, source.readLong());
             }
         }
         
@@ -258,11 +261,16 @@ public class FileQuadTree extends QuadTree {
             throw new IllegalStateException();
         }
         children = new FileQuadTree[4];
-        Coordinates dim = bottomRight.clone().subtract(topLeft).scale(0.5f);
+        float xStep = bounds.getWidth() / 2;
+        float yStep = bounds.getHeight() / 2;
         for (int i = 0; i < 4; i++) {
-            Coordinates origin = topLeft.clone().add(
-                    dim.getLatitude() * (i % 2), dim.getLongitude() * (i / 2));
-            children[i] = new FileQuadTree(origin, origin.clone().add(dim));
+            Bounds newBounds = new Bounds(
+                    bounds.getLeft() + xStep * (i / 2),
+                    bounds.getLeft() + xStep * (i / 2 + 1),
+                    bounds.getTop() + yStep * (i % 2),
+                    bounds.getTop() + yStep * (i % 2 + 1)
+            );
+            children[i] = new FileQuadTree(newBounds);
             for (MapElement element : elements) {
                 children[i].addElement(element);
             }

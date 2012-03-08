@@ -10,9 +10,9 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -20,49 +20,32 @@ import kit.route.a.lot.map.POINode;
 
 public class ArrayElementDB implements ElementDB {
 
-    private static Logger logger = Logger.getLogger(ArrayElementDB.class);
+    private static Logger logger = Logger.getLogger(ArrayElementDB.class);   
     
-    private ArrayList<Node> nodes = new ArrayList<Node>();
-   
-    private ArrayList<MapElement> mapElements = new ArrayList<MapElement>();
-    
+    private ArrayList<Node> nodes = new ArrayList<Node>();   
+    private ArrayList<MapElement> mapElements = new ArrayList<MapElement>();    
     private ArrayList<POINode> favorites = new ArrayList<POINode>();
  
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof ArrayElementDB)) {
-            return false;
-        }
-        ArrayElementDB arrayElementDB = (ArrayElementDB) other;
-        return nodes.equals(arrayElementDB.nodes)
-                && mapElements.equals(arrayElementDB.mapElements)
-                && favorites.equals(arrayElementDB.favorites);
-    }
+    
+    // GETTERS
     
     @Override
-    public MapElement getMapElement(int id) throws IllegalArgumentException {
-        if (id < 0 || id >= mapElements.size()) { 
-            throw new IllegalArgumentException("Illegal ID: " + id);
-        }
-        return mapElements.get(id);
+    public ArrayList<POINode> getFavorites() {
+        return favorites;
     }
-    
+
     @Override
-    public void addMapElement(MapElement element) throws IllegalArgumentException {
-        if (mapElements.add(element)) {
-            element.assignID(mapElements.size() - 1);
-        }
+    public Iterator<Node> getAllNodes() {
+        return nodes.iterator();
     }
-    
+
     @Override
-    public Node getNode(int id) {
-        if (id < 0 || id >= nodes.size()) { 
-            throw new IllegalArgumentException("Illegal ID: " + id);
-        }
-        return nodes.get(id);
+    public Iterator<MapElement> getAllMapElements() {
+        return mapElements.iterator();
     }
+
+    
+    // CONSTRUCTIVE OPERATIONS
     
     @Override
     public void addNode(int nodeID, Node node) {
@@ -77,6 +60,16 @@ public class ArrayElementDB implements ElementDB {
         //logger.debug("NodeArraySize: " + nodes.size());
     }
     
+    @Override
+    public void addMapElement(MapElement element) throws IllegalArgumentException {
+        if (element instanceof Node && !(element instanceof POINode)) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (mapElements.add(element)) {
+            element.assignID(mapElements.size() - 1);
+        }
+    }
     
     @Override
     public void addFavorite(POINode favorite) {
@@ -86,19 +79,56 @@ public class ArrayElementDB implements ElementDB {
     
     @Override
     public void deleteFavorite(Coordinates pos, int detailLevel, int radius) {
-        Coordinates topLeft = new Coordinates();
-        Coordinates bottomRight = new Coordinates();
-        topLeft.setLatitude(pos.getLatitude() - (detailLevel + 1) * 2 * radius);
-        topLeft.setLongitude(pos.getLongitude() -(detailLevel + 1) * 2 * radius);
-        bottomRight.setLatitude(pos.getLatitude() + (detailLevel + 1) * 2 * radius);
-        bottomRight.setLongitude(pos.getLongitude() + (detailLevel + 1) * 2 * radius);
+        Bounds bounds = new Bounds(pos, (detailLevel + 1) * 2 * radius);
         for (int i = 0; i < favorites.size(); i++) {
-            if(favorites.get(i).isInBounds(topLeft, bottomRight)) {
+            if(favorites.get(i).isInBounds(bounds)) {
                 favorites.remove(i);
             }
         }
     }
+    
+    
+    // QUERY OPERATIONS
+    
+    @Override
+    public Node getNode(int id) {
+        if (id < 0 || id >= nodes.size()) { 
+            throw new IllegalArgumentException("Illegal ID: " + id);
+        }
+        return nodes.get(id);
+    }
+    
+    @Override
+    public MapElement getMapElement(int id) throws IllegalArgumentException {
+        if (id < 0 || id >= mapElements.size()) { 
+            throw new IllegalArgumentException("Illegal ID: " + id);
+        }
+        return mapElements.get(id);
+    }
+   
+    @Override
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
+        Bounds bounds = new Bounds(pos, (detailLevel + 1) * 2 * radius); 
+        for (POINode fav : favorites) {
+            if(fav.isInBounds(bounds)) {
+                return fav.getInfo();
+            }
+        }
+        return null;
+    }
+    
+    
+    // DIRECTIVE OPERATIONS
+    
+    @Override
+    public void swapNodeIDs(int id1, int id2) {  
+        nodes.get(id1).setID(id2);
+        nodes.get(id2).setID(id1);
+        Collections.swap(nodes, id1, id2);
+    }
+    
 
+    // I/O OPERATIONS
     
     @Override
     public void loadFromInput(DataInput input) throws IOException {
@@ -116,7 +146,7 @@ public class ArrayElementDB implements ElementDB {
         for (int i = 0; i < len; i++) {
             MapElement element = MapElement.loadFromInput(input, false);
             mapElements.add(element);
-            element.assignID(i);
+            element.setID(i);
         }
         logger.debug("load favorite array...");
         len = input.readInt();
@@ -124,7 +154,7 @@ public class ArrayElementDB implements ElementDB {
         for (int i = 0; i < len; i++) {
             POINode favorite = (POINode) MapElement.loadFromInput(input, false);
             nodes.add(favorite);
-            favorite.assignID(i); // TODO: necessary?
+            favorite.setID(i); // TODO: necessary?
         }
     }
 
@@ -147,39 +177,20 @@ public class ArrayElementDB implements ElementDB {
         }
     }
 
-    @Override
-    public void swapNodeIDs(int id1, int id2) {  
-        nodes.get(id1).setID(id2);
-        nodes.get(id2).setID(id1);
-        Collections.swap(nodes, id1, id2);
-    }
 
-    @Override
-    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
-        float adaptedRadius = Projection.getZoomFactor(detailLevel) * radius;
-        Coordinates UL = pos.clone().add(-adaptedRadius, -adaptedRadius);          
-        Coordinates BR = pos.clone().add(adaptedRadius, adaptedRadius);      
-        for (POINode fav : favorites) {
-            if(fav.isInBounds(UL, BR)) {
-                return fav.getInfo();
-            }
+    // MISCELLANEOUS
+    
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
         }
-        return null;
-    }
-
-    @Override
-    public ArrayList<POINode> getFavorites() {
-        return favorites;
-    }
-
-    @Override
-    public Iterator<Node> getAllNodes() {
-        return nodes.iterator();
-    }
-
-    @Override
-    public Iterator<MapElement> getAllMapElements() {
-        return mapElements.iterator();
+        if(!(other instanceof ArrayElementDB)) {
+            return false;
+        }
+        ArrayElementDB arrayElementDB = (ArrayElementDB) other;
+        return nodes.equals(arrayElementDB.nodes)
+                && mapElements.equals(arrayElementDB.mapElements)
+                && favorites.equals(arrayElementDB.favorites);
     }
 
 }

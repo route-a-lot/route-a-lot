@@ -12,6 +12,7 @@ import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
 import static kit.route.a.lot.common.OSMType.*;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
@@ -30,7 +31,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
     public static final boolean DRAW_FRAMES = false;
     
-    protected Coordinates topLeft, bottomRight;
+    protected Bounds bounds;
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
     protected QuadTree zoomlevels[];
@@ -39,32 +40,24 @@ public class QTGeographicalOperator implements GeographicalOperator {
     // CONSTRUCTOR
     
     public QTGeographicalOperator() {
-        setBounds(new Coordinates(), new Coordinates());
+        setBounds(new Bounds());
     }
     
     
     // GETTERS & SETTERS
     
     @Override
-    public void setBounds(Coordinates topLeft, Coordinates bottomRight) {
-        this.topLeft = topLeft;
-        this.bottomRight = bottomRight;
+    public void setBounds(Bounds bounds) {
+        this.bounds = bounds.clone();
         zoomlevels = new QuadTree[NUM_LEVELS];
         for (int i = 0; i < NUM_LEVELS; i++) {
-            zoomlevels[i] = new QTNode(topLeft, bottomRight);
+            zoomlevels[i] = new QTNode(bounds);
         }
     }
 
     @Override
-    public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
-        if (upLeft != null) {
-            topLeft.setLatitude(this.topLeft.getLatitude());
-            topLeft.setLongitude(this.topLeft.getLongitude());
-        }
-        if (bottomRight != null) {
-            bottomRight.setLatitude(this.bottomRight.getLatitude());
-            bottomRight.setLongitude(this.bottomRight.getLongitude());
-        }
+    public Bounds getBounds() {
+        return bounds;
     }
        
     
@@ -97,7 +90,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     }
     
     @Override
-    public Set<MapElement> queryElements(Coordinates topLeft, Coordinates bottomRight, int zoomlevel, boolean exact) {
+    public Set<MapElement> queryElements(Bounds area, int zoomlevel, boolean exact) {
         /*if (logger.isTraceEnabled()) {
             logger.trace("called: getBaseLayer()");
             logger.trace(" upLeft: " + upLeft);
@@ -108,11 +101,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
             logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         }*/    
         if (QTGeographicalOperator.DRAW_FRAMES) {
-            State.getInstance().getActiveRenderer().addFrameToDraw(topLeft, bottomRight, Color.red);
+            State.getInstance().getActiveRenderer().addFrameToDraw(bounds, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryElements(
-                topLeft, bottomRight, elements, exact);
+        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryElements(area, elements, exact);
         return elements;
     }
    
@@ -147,8 +139,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
      * @return a {@link Selection} derived from the nearest map element
      */
     private Selection select(Coordinates pos, float radius) {
-        Collection<MapElement> elements = queryElements(
-                pos.clone().add(-radius, -radius), pos.clone().add(radius, radius), 0, true);
+        Collection<MapElement> elements = queryElements(new Bounds(pos, radius), 0, true);
         
         // find element nearest to pos
         MapElement closestElement = null;
@@ -172,9 +163,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         }
         POINode closestElement = null;
         float closestDistance = (Projection.getZoomFactor(detailLevel) + 1) *  radius;
-        Coordinates UL = pos.clone().add(-closestDistance, -closestDistance);
-        Coordinates BR = pos.clone().add(closestDistance, closestDistance);
-        Collection<MapElement> elements = queryElements(UL, BR, 0, true);
+        Collection<MapElement> elements = queryElements(new Bounds(pos, closestDistance), 0, true);
         for (MapElement element : elements) {
             if ((element instanceof POINode) && !((POINode) element).getInfo().getName().equals("")) {
                 float newDistance = (float) Coordinates.getDistance(pos, ((POINode) element).getPos());

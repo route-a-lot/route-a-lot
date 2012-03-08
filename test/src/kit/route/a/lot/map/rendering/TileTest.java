@@ -1,5 +1,6 @@
 package kit.route.a.lot.map.rendering;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Util;
 import kit.route.a.lot.map.Node;
@@ -42,13 +43,11 @@ public class TileTest {
         Tile myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
         long start;
         long duration;
-        Coordinates topLeft = new Coordinates(-20, 0);
-        Coordinates bottomRight = new Coordinates(130, 140);
         for (int count = 1; count < 1000000; count *= 7) {
 //            mapInfoMock = new MapInfoMock();
-            mapInfoMock = new MapInfoQTMock(topLeft, bottomRight);
+            mapInfoMock = new MapInfoQTMock(new Bounds(0, 140, -20, 130));
             myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
-            fillMapInfoMock(mapInfoMock, count, topLeft, bottomRight);
+            fillMapInfoMock(mapInfoMock, count, new Bounds(0, 140, -20, 130));
             start = System.nanoTime();
             myTile.prerender();
             duration = System.nanoTime() - start;
@@ -56,13 +55,13 @@ public class TileTest {
         }
     }
     
-    private void fillMapInfoMock(MapInfoMock mapInfoMock, int nElements, Coordinates topLeft, Coordinates bottomRight) {
+    private void fillMapInfoMock(MapInfoMock mapInfoMock, int nElements, Bounds bounds) {
         MapElementGenerator generator = new MapElementGenerator();
         for (int i = 0; i < nElements; i++) {
             if (Math.random() < 0.73) {
-                mapInfoMock.addMapElement(generator.generateStreetInBounds(topLeft, bottomRight));
+                mapInfoMock.addMapElement(generator.generateStreetInBounds(bounds));
             } else {
-                mapInfoMock.addMapElement(generator.generateBuildingInBounds(topLeft, bottomRight));
+                mapInfoMock.addMapElement(generator.generateBuildingInBounds(bounds));
             }
         }
         mapInfoMock.lastElementAdded();

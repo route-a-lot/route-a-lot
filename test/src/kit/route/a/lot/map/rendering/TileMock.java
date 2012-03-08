@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
@@ -23,16 +24,14 @@ import kit.route.a.lot.map.Street;
 
 public class TileMock {
     
-    private Coordinates topLeft;
-    private Coordinates bottomRight;   
+    private Bounds bounds;
     private BufferedImage image;
     private int detail;
     private int tileDim;
     private StateMock state;
     
     public TileMock(Coordinates topLeft, float tileDim, int detail, StateMock state) {
-        this.topLeft = topLeft;
-        this.bottomRight = topLeft.clone().add(tileDim, tileDim);
+        this.bounds = new Bounds(topLeft, topLeft.clone().add(tileDim, tileDim));
         this.detail = detail;
         this.tileDim = (int) tileDim;
         this.state = state;
@@ -62,9 +61,9 @@ public class TileMock {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        Collection<MapElement> map = state.getMapInfo().queryElements(detail, topLeft, bottomRight, false);
+        Collection<MapElement> map = state.getMapInfo().queryElements(detail, bounds, false);
         /*-----für Test-----------*/
-        System.out.println(state.getMapInfo().queryElements(detail, topLeft, bottomRight, false).size());
+        System.out.println(state.getMapInfo().queryElements(detail, bounds, false).size());
         //long middle = System.nanoTime();
 
         for (MapElement element : map) {
@@ -126,7 +125,8 @@ public class TileMock {
         yPoints = new int[nPoints];
 
         for (int i = 0; i < nPoints; i++) {
-            Coordinates curCoordinates = Renderer.getLocalCoordinates(nodes[i].getPos(), topLeft, detail);
+            Coordinates curCoordinates = Renderer.getLocalCoordinates(nodes[i].getPos(),
+                    bounds.getTop(), bounds.getLeft(), detail);
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
@@ -163,12 +163,12 @@ public class TileMock {
         List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
         int start = 0;
         while (start < streetNodes.length - 1 && !Street.isEdgeInBounds(streetNodes[start].getPos(),
-                streetNodes[start+1].getPos(), topLeft, bottomRight)) {
+                streetNodes[start+1].getPos(), bounds)) {
             start++;
         }
         int end = streetNodes.length - 1;
         while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(),
-                streetNodes[end].getPos(), topLeft, bottomRight)) {
+                streetNodes[end].getPos(), bounds)) {
             end--;
         }
         for (int i = start; i <= end; i++) {
@@ -259,13 +259,14 @@ public class TileMock {
     }
   
     private void drawPoint(Coordinates globalCoordinates, int size, Graphics2D graphics) {
-        Coordinates localCoordinates = Renderer.getLocalCoordinates(globalCoordinates, topLeft, detail);
+        Coordinates localCoordinates = Renderer.getLocalCoordinates(globalCoordinates,
+                bounds.getTop(), bounds.getLeft(), detail);
         graphics.fillOval((int) localCoordinates.getLongitude() - size / 2,
                 (int) localCoordinates.getLatitude() - size / 2, size, size);
     }
     
     private Coordinates getLocalCoordinates(Coordinates coordinates) {
-        return Renderer.getLocalCoordinates(coordinates, topLeft, detail);
+        return Renderer.getLocalCoordinates(coordinates, bounds.getTop(), bounds.getLeft(), detail);
     }
 
 }

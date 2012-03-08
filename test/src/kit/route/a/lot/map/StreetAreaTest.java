@@ -3,6 +3,7 @@ package kit.route.a.lot.map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.controller.State;
@@ -58,19 +59,20 @@ public class StreetAreaTest {
     
     @Test
     public void testIsInBounce() {
-        assertTrue(Street.isEdgeInBounds(street.getNodes()[0].getPos(), street.getNodes()[2].getPos(), new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
-        assertTrue(street.isInBounds(new Coordinates(0.0f, 0.0f), new Coordinates(6.0f, 6.0f)));
-        assertTrue(street.isInBounds(new Coordinates(7.0f, 7.0f), new Coordinates(9.0f, 9.0f)));
-        assertFalse(street.isInBounds(new Coordinates(70.0f, 70.0f), new Coordinates(90.0f, 90.0f)));
-        assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(4.5f, 4.5f)));
-        assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(3.7f, 3.7f)));
-        assertTrue(street.isInBounds(new Coordinates(3.5f, 3.5f), new Coordinates(4.5f, 4.5f)));
-        assertTrue(street2.isInBounds(new Coordinates(2.0f, 2.0f), new Coordinates(3.0f, 3.0f)));
-        assertTrue(area.isInBounds(new Coordinates(1.0f, 1.0f), new Coordinates(6.0f, 6.0f)));
-        assertFalse(area.isInBounds(new Coordinates(7.0f, 7.0f), new Coordinates(9.0f, 9.0f)));
-        assertTrue(area.isInBounds(new Coordinates(4.0f, 4.0f), new Coordinates(6.0f, 6.0f)));
-        assertTrue(area.isInBounds(new Coordinates(5.0f, 3.0f), new Coordinates(5.0f, 4.0f)));
-        assertTrue(area.isInBounds(new Coordinates(2.0f, 2.0f), new Coordinates(3.0f, 3.0f)));
+        assertTrue(Street.isEdgeInBounds(street.getNodes()[0].getPos(),
+                street.getNodes()[2].getPos(), new Bounds(0, 6, 0, 6)));
+               
+        assertTrue(street.isInBounds(new Bounds(0, 6, 0, 6)));
+        assertTrue(street.isInBounds(new Bounds(7, 9, 7, 9)));
+        assertFalse(street.isInBounds(new Bounds(70, 90, 70, 90)));
+        assertTrue(street.isInBounds(new Bounds(3.5f, 4.5f, 3.5f, 4.5f)));
+        assertTrue(street.isInBounds(new Bounds(3.5f, 3.7f, 3.5f, 3.7f)));
+        assertTrue(street2.isInBounds(new Bounds(2, 3, 2, 3)));
+        assertTrue(area.isInBounds(new Bounds(1, 6, 1, 6)));
+        assertFalse(area.isInBounds(new Bounds(7, 9, 7, 9)));
+        assertTrue(area.isInBounds(new Bounds(4, 6, 4, 6)));
+        assertTrue(area.isInBounds(new Bounds(3, 4, 5, 5)));
+        assertTrue(area.isInBounds(new Bounds(2, 3, 2, 3)));
     }
     
     @Test

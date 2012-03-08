@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Projection;
@@ -212,7 +213,7 @@ public class Precalculator {
      * Draws the calculated areas on the given graphics.
      * 
      */
-    public static void drawAreas(Coordinates topLeft, Coordinates bottomRight, int detailLevel, Graphics graphics) {
+    public static void drawAreas(Bounds bounds, int detailLevel, Graphics graphics) {
         graph = State.getInstance().getLoadedGraph();
         int idCount = graph.getIDCount();
         Color[] colors = new Color[63];
@@ -221,15 +222,15 @@ public class Precalculator {
         }
         MapInfo mapInfo = State.getInstance().getMapInfo();
         int size = 256;
-        Coordinates extendedTopLeft = topLeft.clone().add(-size, -size);
-        Coordinates extendedBottomRight = bottomRight.clone().add(size, size);
+        Bounds extendedBounds = bounds.clone().extend(size);
         size /= Projection.getZoomFactor(detailLevel);
         for (int i = 0; i < idCount; i++) {
             Node node = mapInfo.getNode(i);
-            if (!node.isInBounds(extendedTopLeft, extendedBottomRight)) {
+            if (!node.isInBounds(extendedBounds)) {
                 continue;
             }
-            Coordinates localCoordinates = Renderer.getLocalCoordinates(node.getPos(), topLeft, detailLevel);
+            Coordinates localCoordinates = Renderer.getLocalCoordinates(node.getPos(),
+                    bounds.getTop(), bounds.getLeft(), detailLevel);
             graphics.setColor(colors[graph.getAreaID(i)]);
             graphics.fillOval((int) localCoordinates.getLongitude() - size/2, (int) localCoordinates.getLatitude() - size/2, size, size);
         }

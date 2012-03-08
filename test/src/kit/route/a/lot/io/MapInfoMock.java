@@ -3,6 +3,7 @@ package kit.route.a.lot.io;
 import java.util.List;
 
 import kit.route.a.lot.common.Address;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
@@ -47,7 +48,7 @@ class MapInfoMock extends MapInfo {
     }
     
     @Override
-    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
+    public void setBounds(Bounds bounds) {
     }
 
     @Override

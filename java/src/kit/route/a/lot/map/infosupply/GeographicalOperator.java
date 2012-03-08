@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Set;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
@@ -24,13 +25,13 @@ public interface GeographicalOperator {
      * @param upLeft the northwestern corner of the map boundary
      * @param bottomRight the southeastern corner of the map boundary
      */
-    public void setBounds(Coordinates upLeft, Coordinates bottomRight);
+    public void setBounds(Bounds bounds);
     
     /**
      * Writes the topLeft and bottomRight values of the current map to the given variables.
      * 
      */
-    public void getBounds(Coordinates upLeft, Coordinates bottomRight);
+    public Bounds getBounds();
 
     
     // BASIC OPERATIONS
@@ -49,8 +50,7 @@ public interface GeographicalOperator {
      * @param bottomRight the southeastern corner of the boundary
      * @return a list containing all base layer MapElements in the queried section
      */
-    public Set<MapElement> queryElements(Coordinates topLeft, Coordinates bottomRight,
-                                        int zoomlevel, boolean exact);
+    public Set<MapElement> queryElements(Bounds area, int zoomlevel, boolean exact);
 
     
     // ADVANCED OPERATIONS

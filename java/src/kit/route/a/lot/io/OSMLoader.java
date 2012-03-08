@@ -16,6 +16,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import kit.route.a.lot.common.Address;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.POIDescription;
@@ -143,9 +144,10 @@ public class OSMLoader {
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
         projection = ProjectionFactory.getNewProjection(topLeft, bottomRight);
-        mapInfo.setBounds(projection.getLocalCoordinates(topLeft),
-                projection.getLocalCoordinates(bottomRight));
-        mapInfo.setGeoTopLeft(topLeft);
+        mapInfo.setBounds(new Bounds(
+                projection.getLocalCoordinates(topLeft),
+                projection.getLocalCoordinates(bottomRight)));
+        mapInfo.setGeoBounds(new Bounds(topLeft, topLeft));
         logger.debug("Finished calculating bounds: topLeft=" + topLeft + ", bottomRight=" + bottomRight);
 
         osmIds = new long[nodeCount];

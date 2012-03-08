@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import kit.route.a.lot.common.Address;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -32,7 +33,7 @@ public class PerformanceTest {
 //    @Test
     public void testMemoryPerformanceWithNodes() {
         printMemoryInformation();
-        mapInfo.setBounds(new Coordinates(100, 10), new Coordinates(10, 100));
+        mapInfo.setBounds(new Bounds(new Coordinates(100, 10), new Coordinates(10, 100)));
         Random rnd = new Random();
         for (int i = 0; i < 33000000; i++) {
             mapInfo.addNode(new Coordinates(10 + rnd.nextFloat()*90, 10 + rnd.nextFloat()*90), i, new Address());
@@ -51,7 +52,7 @@ public class PerformanceTest {
     
 //    @Test
     public void testMemoryPerformanceWithWays() {
-        mapInfo.setBounds(new Coordinates(100, 10), new Coordinates(10, 100));
+        mapInfo.setBounds(new Bounds(new Coordinates(100, 10), new Coordinates(10, 100)));
         Random rnd = new Random();
         
         List<Integer> ids;
@@ -98,7 +99,7 @@ public class PerformanceTest {
     
     //@Test
     public void testStackOverflow() {
-        mapInfo.setBounds(new Coordinates(100, 10), new Coordinates(10, 100));
+        mapInfo.setBounds(new Bounds(new Coordinates(100, 10), new Coordinates(10, 100)));
         try {
             for(int i = 0; i < 65; i++) {
                 mapInfo.addNode(new Coordinates(40, 40), i, null);

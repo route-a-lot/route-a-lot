@@ -36,6 +36,9 @@ public class FileElementDB extends ArrayElementDB {
     private File nodePositionFile;
     private RandomAccessFile nodePositionRAF;
 
+    
+    // CONSTRUCTOR
+    
     public FileElementDB(File outputFile) {
         try {
             randAccessFile = new RandomAccessFile(outputFile, "rw");
@@ -50,11 +53,45 @@ public class FileElementDB extends ArrayElementDB {
         }
     }
     
+    
+    // GETTERS
+    
     @Override
-    public void addFavorite(POINode favorite) {
-        throw new UnsupportedOperationException();
+    public ArrayList<POINode> getFavorites() {
+        return new ArrayList<POINode>();
     }
-
+    
+    @Override
+    public Iterator<Node> getAllNodes() {
+        // TODO
+        return null;
+    }
+    
+    @Override
+    public Iterator<MapElement> getAllMapElements() {
+        // TODO
+        return null;
+    }
+    
+    
+    // CONSTRUCTIVE OPERATIONS (FAVORITES UNSUPPORTED)
+    
+    @Override
+    public void addNode(int nodeID, Node node) {
+        try {
+            if (currentAction == 0) {
+                currentAction = SAVING_NODES;
+                nodesCountPointer = randAccessFile.getFilePointer();
+                randAccessFile.writeInt(0);
+            }
+            nodePositionStream.writeLong(randAccessFile.getFilePointer());
+            MapElement.saveToOutput(randAccessFile, node, false);
+            nodesCount++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
     @Override
     public void addMapElement(MapElement element) {
         if (currentAction == SWAPPING_IDS) {
@@ -78,22 +115,37 @@ public class FileElementDB extends ArrayElementDB {
             }
         }
     }
+    
+    @Override
+    public void addFavorite(POINode favorite) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
-    public void addNode(int nodeID, Node node) {
-        try {
-            if (currentAction == 0) {
-                currentAction = SAVING_NODES;
-                nodesCountPointer = randAccessFile.getFilePointer();
-                randAccessFile.writeInt(0);
-            }
-            nodePositionStream.writeLong(randAccessFile.getFilePointer());
-            MapElement.saveToOutput(randAccessFile, node, false);
-            nodesCount++;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void deleteFavorite(Coordinates pos, int detailLevel, int radius) {
+        throw new UnsupportedOperationException();
     }
+    
+    
+    // QUERY OPERATIONS (UNSUPPORTED)
+    
+    @Override
+    public Node getNode(int nodeID) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public MapElement getMapElement(int id) {
+        throw new UnsupportedOperationException();
+    }
+        
+    @Override
+    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
+        throw new UnsupportedOperationException();
+    }
+    
+     
+    // DIRECTIVE OPERATIONS
     
     public void lastElementAdded() {
         try {
@@ -109,41 +161,6 @@ public class FileElementDB extends ArrayElementDB {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void deleteFavorite(Coordinates pos, int detailLevel, int radius) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ArrayList<POINode> getFavorites() {
-        return new ArrayList<POINode>();
-    }
-
-    @Override
-    public MapElement getMapElement(int id) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Node getNode(int nodeID) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void loadFromInput(DataInput input) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void saveToOutput(DataOutput output) throws IOException {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -172,10 +189,17 @@ public class FileElementDB extends ArrayElementDB {
         }
     }
 
+
+    // I/O OPERATIONS (UNSUPPORTED)
+
     @Override
-    public Iterator<MapElement> getAllMapElements() {
-        // TODO
-        return null;
+    public void loadFromInput(DataInput input) throws IOException {
+        throw new UnsupportedOperationException();
     }
-    
+
+    @Override
+    public void saveToOutput(DataOutput output) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+  
 }

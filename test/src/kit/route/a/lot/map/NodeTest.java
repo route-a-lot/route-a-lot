@@ -1,6 +1,7 @@
 package kit.route.a.lot.map;
 
 import static org.junit.Assert.*;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 
@@ -35,11 +36,11 @@ public class NodeTest {
     
     @Test
     public void testIsInBounce() {
-        assertTrue(node.isInBounds(new Coordinates(0.0f,0.0f), new Coordinates(10.0f, 10.0f)));
-        assertTrue(poiNode.isInBounds(new Coordinates(0.0f, 0.0f), new Coordinates(10.0f, 10.0f)));
+        assertTrue(node.isInBounds(new Bounds(0, 10, 0, 10)));
+        assertTrue(poiNode.isInBounds(new Bounds(0, 10, 0, 10)));
         assertEquals(new POIDescription("homer", 0, "simpson"), poiNode.getInfo());
-        assertFalse(node.isInBounds(new Coordinates(0.0f,0.0f), new Coordinates(1.0f, 10.0f)));
-        assertFalse(poiNode.isInBounds(new Coordinates(0.0f, 0.0f), new Coordinates(9.0f, 1.0f)));
+        assertFalse(node.isInBounds(new Bounds(0, 10, 0, 1)));
+        assertFalse(poiNode.isInBounds(new Bounds(0, 1, 0, 9)));
     }
     
     @Test

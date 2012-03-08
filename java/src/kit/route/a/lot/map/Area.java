@@ -6,6 +6,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
@@ -65,7 +66,7 @@ public class Area extends MapElement {
     }
 
     @Override
-    public boolean isInBounds(Coordinates topLeft, Coordinates bottomRight) {
+    public boolean isInBounds(Bounds bounds) {
         // TODO there is no float polygon, so I have to think about s.th. else (or leave it the way it is now)
         int x[] = new int[nodes.length];
         int y[] = new int[nodes.length];
@@ -81,13 +82,13 @@ public class Area extends MapElement {
         }
         Polygon area = new Polygon(x, y, nodes.length);
         Rectangle2D.Double box =
-                new Rectangle2D.Double(Math.min(topLeft.getLongitude(), bottomRight.getLongitude()) * 1000 - 1, 
-                        Math.min(topLeft.getLatitude(), bottomRight.getLatitude()) * 1000 - 1,
-                        (Math.abs(bottomRight.getLongitude() - topLeft.getLongitude())) * 1000 + 1,
-                        (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude())) * 1000 + 1);
+                new Rectangle2D.Double(Math.min(bounds.getLeft(), bounds.getRight()) * 1000 - 1, 
+                        Math.min(bounds.getTop(), bounds.getBottom()) * 1000 - 1,
+                        (Math.abs(bounds.getWidth())) * 1000 + 1,
+                        (Math.abs(bounds.getHeight())) * 1000 + 1);
         boolean inside = false;
         for (Node node : nodes) {
-            if (node.isInBounds(topLeft, bottomRight)) {
+            if (node.isInBounds(bounds)) {
                 inside = true;
             }
         }

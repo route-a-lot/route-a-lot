@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 
 import kit.route.a.lot.common.Address;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
@@ -41,7 +42,7 @@ public class MapInfo {
     private GeographicalOperator geoOperator = new QTGeographicalOperator();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
-    private Coordinates geoTopLeft = new Coordinates(), geoBottomRight = new Coordinates();
+    private Bounds geoBounds = new Bounds();
 
     private static boolean useDirectFile = false;
     private File outputFile;
@@ -66,20 +67,16 @@ public class MapInfo {
     
     // GETTERS & SETTERS
     
-    public Coordinates getGeoTopLeft() {
-        return geoTopLeft;
+    public void setGeoBounds(Bounds bounds) {
+        geoBounds = bounds.clone();
     }
-
-    public void setGeoTopLeft(Coordinates geoTopLeft) {
-        this.geoTopLeft = geoTopLeft;
+    
+    public Coordinates getGeoTopLeft() {
+        return geoBounds.getTopLeft();
     }
 
     public Coordinates getGeoBottomRight() {
-        return geoBottomRight;
-    }
-
-    public void setGeoBottomRight(Coordinates geoBottomRight) {
-        this.geoBottomRight = geoBottomRight;
+        return geoBounds.getBottomRight();
     }
  
     /**
@@ -87,15 +84,15 @@ public class MapInfo {
      * @param upLeft the upper left corner of the map
      * @param bottomRight the bottom right corner of the area
      */
-    public void setBounds(Coordinates upLeft, Coordinates bottomRight) {
-        geoOperator.setBounds(upLeft, bottomRight);
+    public void setBounds(Bounds bounds) {
+        geoOperator.setBounds(bounds);
     }
 
     /**
      * Writes the topLeft and bottomRight values of the current map to the given variables.
      */
-    public void getBounds(Coordinates upLeft, Coordinates bottomRight) {
-        geoOperator.getBounds(upLeft, bottomRight);
+    public Bounds getBounds() {
+        return geoOperator.getBounds();
     }
     
     
@@ -157,22 +154,20 @@ public class MapInfo {
                 streets.add(street);
                 addressOperator.add(street);
             }
-        } else {
-            Area area = new Area(name, wayInfo);
+        } else {  
             Node[] nodes = new Node[ids.size()];
             if (useDirectFile) {
                 for (int i = 0; i < ids.size(); i++) {
                     nodes[i] = new Node(ids.get(i));
                 }
-                area.setNodes(nodes);
-                elementDB.addMapElement(area);
             } else {
                 for (int i = 0; i < ids.size(); i++) {
                     nodes[i] = elementDB.getNode(ids.get(i));
-                }
-                area.setNodes(nodes);
-                elementDB.addMapElement(area);
+                } 
             }
+            Area area = new Area(name, wayInfo);
+            area.setNodes(nodes);
+            elementDB.addMapElement(area);
         }
     }
 
@@ -262,8 +257,14 @@ public class MapInfo {
      * @param bottomRight the coordinates of the bottom right corner of the view
      * @return the correspondending mapElements
      */
-    public Set<MapElement> queryElements(int zoomlevel, Coordinates topLeft, Coordinates bottomRight, boolean exact) {
-        return geoOperator.queryElements(topLeft, bottomRight, zoomlevel, exact);
+    public Set<MapElement> queryElements(int zoomlevel, Bounds area, boolean exact) {
+        Set<MapElement> elements = geoOperator.queryElements(area, zoomlevel, exact);
+        for (POINode favorite : elementDB.getFavorites()) {
+            if (favorite.isInBounds(area)) {
+                elements.add(favorite);
+            }
+        }
+        return elements;
     } 
     
     /**
@@ -334,8 +335,7 @@ public class MapInfo {
      *             a stream read error occurred
      */
     public void loadFromInput(DataInput input) throws IOException {
-        geoTopLeft = Coordinates.loadFromInput(input);
-        geoBottomRight = Coordinates.loadFromInput(input);
+        geoBounds = Bounds.loadFromInput(input);
         elementDB.loadFromInput(input);
         geoOperator.loadFromInput(input);
         addressOperator.loadFromInput(input);
@@ -350,8 +350,7 @@ public class MapInfo {
      *             a stream write error occurred
      */
     public void saveToOutput(DataOutput output) throws IOException {
-        geoTopLeft.saveToOutput(output);
-        geoBottomRight.saveToOutput(output);
+        geoBounds.saveToOutput(output);
         elementDB.saveToOutput(output);
         geoOperator.saveToOutput(output);
         addressOperator.saveToOutput(output);
@@ -437,8 +436,8 @@ public class MapInfo {
         MapInfo mapInfo = (MapInfo) other;
         return elementDB.equals(mapInfo.elementDB)
                 && geoOperator.equals(mapInfo.geoOperator) // TODO: add compares
-                && addressOperator.equals(mapInfo.addressOperator) && geoTopLeft.equals(mapInfo.geoTopLeft)
-                && geoBottomRight.equals(mapInfo.geoBottomRight);
+                && addressOperator.equals(mapInfo.addressOperator)
+                && geoBounds.equals(mapInfo.geoBounds);
     }
   
 }

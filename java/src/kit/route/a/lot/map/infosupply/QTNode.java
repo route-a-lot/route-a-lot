@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.infosupply.QuadTree;
@@ -20,8 +20,8 @@ public class QTNode extends QuadTree {
     
     // CONSTRUCTOR
     
-    public QTNode(Coordinates upLeft, Coordinates bottomRight) {
-        super(upLeft, bottomRight);
+    public QTNode(Bounds bounds) {
+        super(bounds);
         unload();            
     }
 
@@ -42,7 +42,7 @@ public class QTNode extends QuadTree {
 
     @Override
     public boolean addElement(MapElement element) {
-        if(element.isInBounds(topLeft, bottomRight)) {
+        if(element.isInBounds(bounds)) {
             for (int i = 0; i < children.length; i++) {
                 if (!children[i].addElement(element)) {
                     children[i] = ((QTLeaf) children[i]).split();
@@ -54,14 +54,13 @@ public class QTNode extends QuadTree {
     }
      
     @Override
-    public void queryElements(Coordinates upLeft, Coordinates bottomRight,
-            Set<MapElement> elements, boolean exact) {
-        if (isInBounds(upLeft, bottomRight)) {
+    public void queryElements(Bounds area, Set<MapElement> elements, boolean exact) {
+        if (isInBounds(area)) {
             if (QTGeographicalOperator.DRAW_FRAMES) {
-                State.getInstance().getActiveRenderer().addFrameToDraw(this.topLeft, this.bottomRight, Color.black);
+                State.getInstance().getActiveRenderer().addFrameToDraw(bounds, Color.black);
             }
             for(QuadTree qt : children) {
-                qt.queryElements(upLeft, bottomRight, elements, exact);
+                qt.queryElements(area, elements, exact);
           
             }    
         }
@@ -86,15 +85,12 @@ public class QTNode extends QuadTree {
     
     @Override
     public void unload() {
-        float widthHalf = (bottomRight.getLongitude() - topLeft.getLongitude()) / 2;
-        float heightHalf = (bottomRight.getLatitude() - topLeft.getLatitude()) / 2;
-        Coordinates middleMiddle = topLeft.clone().add(heightHalf, widthHalf);
-        children[0] = new QTLeaf(topLeft, middleMiddle);
-        children[1] = new QTLeaf(topLeft.clone().add(0, widthHalf),
-                            bottomRight.clone().add(-heightHalf, 0));
-        children[2] = new QTLeaf(topLeft.clone().add(heightHalf, 0),
-                            bottomRight.clone().add(0, -widthHalf));
-        children[3] = new QTLeaf(middleMiddle, bottomRight); 
+        float widthHalf = bounds.getWidth() / 2;
+        float heightHalf = bounds.getHeight() / 2;
+        children[0] = new QTLeaf(bounds.clone().extend(-widthHalf, 0, 0, -heightHalf));
+        children[1] = new QTLeaf(bounds.clone().extend(0, -widthHalf, -heightHalf, 0));
+        children[2] = new QTLeaf(bounds.clone().extend(0, -widthHalf, 0, -heightHalf));
+        children[3] = new QTLeaf(bounds.clone().extend(-widthHalf, 0, -heightHalf, 0)); 
     }
     
     @Override

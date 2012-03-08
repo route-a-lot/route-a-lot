@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.controller.State;
@@ -84,7 +85,7 @@ public abstract class MapElement{
      * @throws IllegalArgumentException either argument is <code>null</code>
      */
     // used by QuadTree
-    public abstract boolean isInBounds(Coordinates topLeft, Coordinates bottomRight);
+    public abstract boolean isInBounds(Bounds bounds);
     
     abstract public MapElement getReduced(int detail, float range);
 

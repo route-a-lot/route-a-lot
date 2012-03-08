@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Context2D;
@@ -43,8 +45,7 @@ public class Renderer {
     
     // Route caching:
     private BufferedImage routeImage = null;
-    private Coordinates routeTopLeft = new Coordinates();
-    private Coordinates routeBottomRight = new Coordinates();
+    private Bounds routeBounds = new Bounds();
     private Integer[] drawnRoute = new Integer[0];
     private int drawnRouteDetail = -1;
     
@@ -72,18 +73,18 @@ public class Renderer {
         }
         Context2D ctx = (Context2D) context;
         myContext = ctx;
+        Bounds bounds = ctx.getBounds();
         int detail = context.getDetailLevel();
         int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
         // FILL BACKGROUND
         Graphics graphics = ((Context2D) context).getGraphics();
         graphics.setColor(new Color(210, 230, 190));
-        graphics.fillRect(0, 0, (int)(ctx.getBottomRight().getLongitude() - ctx.getTopLeft().getLongitude()),
-                                (int)(ctx.getBottomRight().getLatitude() - ctx.getTopLeft().getLatitude()));      
+        graphics.fillRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());      
         // DRAW TILES
-        int maxLon = (int) (ctx.getBottomRight().getLongitude() / tileSize);
-        int maxLat = (int) (ctx.getBottomRight().getLatitude() / tileSize);
-        int minLon = (int) (ctx.getTopLeft().getLongitude() / tileSize);
-        int minLat = (int) (ctx.getTopLeft().getLatitude() / tileSize);
+        int maxLon = (int) (bounds.getRight() / tileSize);
+        int maxLat = (int) (bounds.getBottom() / tileSize);
+        int minLon = (int) (bounds.getLeft() / tileSize);
+        int minLat = (int) (bounds.getTop() / tileSize);
         for (int i = minLon; i <= maxLon; i++) {
             for (int k = minLat; k <= maxLat; k++) {
                 Coordinates topLeft = new Coordinates(k * tileSize, i * tileSize);
@@ -149,13 +150,14 @@ public class Renderer {
         MapInfo mapInfo = state.getMapInfo();
         Integer[] route = state.getCurrentRoute().toArray(new Integer[state.getCurrentRoute().size()]);
         List<Selection> navPoints = state.getNavigationNodes();
-               
+        Bounds bounds = context.getBounds();       
+        
         boolean mustDrawRoute = (!Arrays.equals(route, drawnRoute))
                     || (drawnRouteDetail != detail)
-                    || (routeTopLeft.getLatitude() >= context.getTopLeft().getLatitude())
-                    || (routeTopLeft.getLongitude() >= context.getTopLeft().getLongitude())
-                    || (routeBottomRight.getLatitude() <= context.getBottomRight().getLatitude())
-                    || (routeBottomRight.getLongitude() <= context.getBottomRight().getLongitude());
+                    || (routeBounds.getTop() >= bounds.getTop())
+                    || (routeBounds.getLeft() >= bounds.getLeft())
+                    || (routeBounds.getBottom() <= bounds.getBottom())
+                    || (routeBounds.getRight() <= bounds.getRight());
         
         if (mustDrawRoute) {
             drawnRoute = route;
@@ -170,15 +172,15 @@ public class Renderer {
                 routeImage = null;
             } else {
                 Node[] routeNodes = new Node[size];
-                routeTopLeft = new Coordinates(Float.MAX_VALUE, Float.MAX_VALUE);
-                routeBottomRight = new Coordinates(Float.MIN_VALUE, Float.MIN_VALUE);
+                
+                routeBounds = new Bounds(mapInfo.getNode(drawnRoute[0]).getPos(), 0);
                 
                 // find route bounding rectangle dimensions
                 int pos = 0;
                 for (int i = 0; i < drawnRoute.length; i++) {
                     if (drawnRoute[i] != -1) {
                         routeNodes[pos] = mapInfo.getNode(drawnRoute[i]);
-                        adjustBorderCoordinates(routeTopLeft, routeBottomRight, routeNodes[pos].getPos(), detail);
+                        adjustBorderCoordinates(routeBounds, routeNodes[pos].getPos(), detail);
                         pos++;
                     }
                     
@@ -189,27 +191,16 @@ public class Renderer {
                     Node to = mapInfo.getNode(navSelection.getTo());
                     Coordinates nodeOnEdge = Coordinates.interpolate(
                             from.getPos(), to.getPos(), navSelection.getRatio());
-                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, nodeOnEdge, detail);
-                    adjustBorderCoordinates(routeTopLeft, routeBottomRight, navSelection.getPosition(), detail);
+                    adjustBorderCoordinates(routeBounds, nodeOnEdge, detail);
+                    adjustBorderCoordinates(routeBounds, navSelection.getPosition(), detail);
                 }
                 
                 // adjust border coordinates if the route is bigger than the context window
-                if (routeTopLeft.getLatitude() < context.getTopLeft().getLatitude() - DRAW_BUFFER) {
-                    routeTopLeft.setLatitude(context.getTopLeft().getLatitude() - DRAW_BUFFER);
-                }
-                if (routeTopLeft.getLongitude() < context.getTopLeft().getLongitude() - DRAW_BUFFER) {
-                    routeTopLeft.setLongitude(context.getTopLeft().getLongitude() - DRAW_BUFFER);
-                }
-                if (routeBottomRight.getLatitude() > context.getBottomRight().getLatitude() + DRAW_BUFFER) {
-                    routeBottomRight.setLatitude(context.getBottomRight().getLatitude() + DRAW_BUFFER);
-                }
-                if (routeBottomRight.getLongitude() > context.getBottomRight().getLongitude() + DRAW_BUFFER) {
-                    routeBottomRight.setLongitude(context.getBottomRight().getLongitude() + DRAW_BUFFER);
-                }
+                routeBounds.extend(bounds.getTopLeft(), DRAW_BUFFER);
+                routeBounds.extend(bounds.getBottomRight(), DRAW_BUFFER);               
 
-                Coordinates dimensions = routeBottomRight.clone().subtract(routeTopLeft);
-                int width = (int) dimensions.getLongitude() / Projection.getZoomFactor(detail);
-                int height = (int) dimensions.getLatitude() / Projection.getZoomFactor(detail);
+                int width = (int) routeBounds.getWidth() / Projection.getZoomFactor(detail);
+                int height = (int) routeBounds.getHeight() / Projection.getZoomFactor(detail);
                 if (width <= 0 || height <= 0) {
                     routeImage = null;
                     return;
@@ -251,7 +242,7 @@ public class Renderer {
         }
         
         if (routeImage != null) {
-            drawImage(context, routeTopLeft, routeImage, detail);
+            drawImage(context, routeBounds.getTopLeft(), routeImage, detail);
         }
     }
 
@@ -292,28 +283,15 @@ public class Renderer {
         }
     }
     
-    private void adjustBorderCoordinates(Coordinates topLeft, Coordinates bottomRight, Coordinates point, int detail) {
-        float curLat = point.getLatitude();
-        float curLon = point.getLongitude();
-        float buffer = ROUTE_SIZE * Projection.getZoomFactor(detail / 2);
-        if (curLat - buffer < topLeft.getLatitude()) {
-            topLeft.setLatitude(curLat - buffer);
-        }
-        if (curLat + buffer > bottomRight.getLatitude()) {
-            bottomRight.setLatitude(curLat + buffer);
-        }
-        if (curLon - buffer < topLeft.getLongitude()) {
-            topLeft.setLongitude(curLon - buffer);
-        }
-        if (curLon + buffer > bottomRight.getLongitude()) {
-            bottomRight.setLongitude(curLon + buffer);
-        }
+    private void adjustBorderCoordinates(Bounds bounds, Coordinates point, int detail) {
+        bounds.extend(point, ROUTE_SIZE * Projection.getZoomFactor(detail / 2));
     }
 
     private void drawLineBetweenCoordinates(Coordinates from, Coordinates to, int detail, Graphics2D graphics) {
-        Coordinates start = getLocalCoordinates(from, routeTopLeft, detail);
-        Coordinates end = getLocalCoordinates(to, routeTopLeft, detail);
-        graphics.drawLine((int) start.getLongitude(), (int) start.getLatitude(), (int) end.getLongitude(), (int) end.getLatitude());
+        Coordinates start = getLocalCoordinates(from, routeBounds.getTop(), routeBounds.getLeft(), detail);
+        Coordinates end = getLocalCoordinates(to, routeBounds.getTop(), routeBounds.getLeft(), detail);
+        graphics.drawLine((int) start.getLongitude(), (int) start.getLatitude(),
+                          (int) end.getLongitude(), (int) end.getLatitude());
     }
         
     /**
@@ -325,8 +303,8 @@ public class Renderer {
      * @param detail level of detail / zoomlevel
      * @return corresponding set of local coordinates
      */
-    public static Coordinates getLocalCoordinates(Coordinates global, Coordinates topLeft, int detail) {
-        return global.clone().subtract(topLeft).scale(1f / Projection.getZoomFactor(detail));
+    public static Coordinates getLocalCoordinates(Coordinates global, float top, float left, int detail) {
+        return global.clone().add(-top, -left).scale(1f / Projection.getZoomFactor(detail));
     }
     
     /**
@@ -334,7 +312,8 @@ public class Renderer {
      */
     private void drawOverlay(Context2D context, int detail) {
         MapInfo mapInfo = State.getInstance().getMapInfo();
-        Collection<MapElement> elements = mapInfo.queryElements(detail, context.getTopLeft(), context.getBottomRight(), false); // TODO test if true is faster
+        Collection<MapElement> elements = mapInfo.queryElements(detail, context.getBounds(), false);
+        // TODO test if true is faster
 
         int size = 8;
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -347,17 +326,14 @@ public class Renderer {
         graphics.fillOval(0, 0, size, size);
 
         for (MapElement element : elements) {
-            if (element instanceof Node) {
-                if (element instanceof POINode && (((POINode) element).getInfo().getName() == null 
+            if (element instanceof POINode) {
+                if ((((POINode) element).getInfo().getName() == null 
                         || ((POINode) element).getInfo().getName().equals("")
                         || ((POINode) element).getInfo().getCategory() != OSMType.FAVOURITE)){
                     continue;
                 }
                 float offset = -size/2 * Projection.getZoomFactor(detail);
                 drawImage(context, ((Node) element).getPos().add(offset, offset), image, detail);
-            }
-            if (element instanceof Area) {
-                continue;
             }
         }
     }
@@ -391,18 +367,18 @@ public class Renderer {
 
 
     private void drawImage(Context2D context, Coordinates topLeft, Image image, int detail) {
-        int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
+        int x = (int) ((topLeft.getLongitude() - context.getBounds().getLeft())
                 / Projection.getZoomFactor(detail));
-        int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
+        int y = (int) ((topLeft.getLatitude() - context.getBounds().getTop())
                 / Projection.getZoomFactor(detail));
         ((Context2D) context).getGraphics().drawImage(image, x, y, null);
     }
     
     private void drawRect(Context2D context, Coordinates topLeft, int width, int height, int detail, Color c) {
         int size = 10 / Projection.getZoomFactor(detail);
-        int x = (int) ((topLeft.getLongitude() - context.getTopLeft().getLongitude())
+        int x = (int) ((topLeft.getLongitude() - context.getBounds().getLeft())
                 / Projection.getZoomFactor(detail)) - size/2;
-        int y = (int) ((topLeft.getLatitude() - context.getTopLeft().getLatitude())
+        int y = (int) ((topLeft.getLatitude() - context.getBounds().getTop())
                 / Projection.getZoomFactor(detail)) - size/2;
         int newWidth = width/ Projection.getZoomFactor(detail) - size;
         int newHeight = height/ Projection.getZoomFactor(detail) - size;
@@ -418,13 +394,13 @@ public class Renderer {
         framesToDraw = new HashSet<Object[]>();
     }
     
-    public void addFrameToDraw(Coordinates topLeft, Coordinates bottomRight, Color c) {
+    public void addFrameToDraw(Bounds bounds, Color c) {
         Object[] frame = new Object[3];
-        frame[0] = topLeft;
-        frame[1] = bottomRight;
+        frame[0] = bounds.getTopLeft();
+        frame[1] = bounds.getBottomRight();
         frame[2] = c;
         framesToDraw.add(frame);
-        System.out.println("Added " + topLeft + "  " + bottomRight);
+        System.out.println("Added " + frame[0] + "  " + frame[1]);
         System.out.println("Size: " + framesToDraw.size());
     }
     

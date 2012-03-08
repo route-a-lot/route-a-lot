@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
@@ -33,8 +34,9 @@ public class Map2D extends Map  {
                 Coordinates diff = new Coordinates(getHeight(), getWidth())
                                         .scale(Projection.getZoomFactor(zoomlevel) / 2f);
                 Listener.fireEvent(RENDER,
-                        new RenderEvent(new Context2D(center.clone().subtract(diff),
-                                diff.add(center), zoomlevel, g)));
+                        new RenderEvent(new Context2D(new Bounds(
+                                center.clone().subtract(diff), diff.add(center)),
+                                zoomlevel, g)));
             }      
         };
         return result;

@@ -90,8 +90,8 @@ public class Tile3D extends Tile {
         super.prerender();
         projection = ProjectionFactory.getCurrentProjection();
         State.getInstance().getLoadedHeightmap().reduceSection(
-                projection.getGeoCoordinates(topLeft),
-                projection.getGeoCoordinates(bottomRight),
+                projection.getGeoCoordinates(bounds.getTopLeft()),
+                projection.getGeoCoordinates(bounds.getBottomRight()),
                 getHeights(), HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
@@ -139,14 +139,14 @@ public class Tile3D extends Tile {
                 gl.glColor3f(1,1,1);
                 float[] color = new float[3];
                 float hRes = HEIGHT_RESOLUTION - 1;
-                float stepSize = (bottomRight.getLatitude() - topLeft.getLatitude()) / hRes;
+                float stepSize = bounds.getWidth() / hRes;
                 Coordinates pos = new Coordinates();
                 for (int x = 0; x < hRes; x++) {
                     gl.glBegin(GL_TRIANGLE_STRIP);
                     for (int y = 0; y <= hRes; y++) {            
                         for (int i = 0; i < 2; i++) {
-                            pos.setLatitude(topLeft.getLatitude() + y * stepSize);
-                            pos.setLongitude(topLeft.getLongitude() + (x + i) * stepSize);
+                            pos.setLatitude(bounds.getTop() + y * stepSize);
+                            pos.setLongitude(bounds.getLeft() + (x + i) * stepSize);
                             gl.glMultiTexCoord2f(GL_TEXTURE0, (x + i) / (float) GRAIN_RESOLUTION, y / (float) GRAIN_RESOLUTION);
                             gl.glMultiTexCoord2f(GL_TEXTURE1, (x + i) / hRes, y / hRes);
                             float height = heights[x + HEIGHT_BORDER + i][y + HEIGHT_BORDER];
@@ -167,12 +167,12 @@ public class Tile3D extends Tile {
         
     private void renderPOIs(GL gl) {
         Collection<MapElement> elements = State.getInstance().getMapInfo()
-                    .queryElements(detailLevel, topLeft, bottomRight, false);
+                    .queryElements(detailLevel, bounds, false);
         if (elements.size() == 0) {
             return;
         }
         for (MapElement element : elements) {
-            if (!element.isInBounds(topLeft, bottomRight)) {
+            if (!element.isInBounds(bounds)) {
                 continue;
             }
             if (element instanceof POINode) {
@@ -314,13 +314,13 @@ public class Tile3D extends Tile {
      * @return whether the tile is in the frustum
      */
     boolean isInFrustum(Frustum frustum) {
-        Coordinates center = topLeft.clone().add(bottomRight).scale(0.5f);
+        Coordinates center = bounds.getCenter();
         return (frustum == null) || frustum.isBoxWithin(
                 new float[] {center.getLongitude(), center.getLatitude(),
-                        0.5f * (minHeight + maxHeight) },
-                new float[] {center.getLongitude() - topLeft.getLongitude(), 
-                        center.getLatitude() - topLeft.getLatitude(),
-                        0.5f * (maxHeight - minHeight)});
+                             0.5f * (minHeight + maxHeight) },
+                new float[] {center.getLongitude() - bounds.getLeft(), 
+                             center.getLatitude() - bounds.getTop(),
+                             0.5f * (maxHeight - minHeight)});
     }
 
     /**
@@ -346,10 +346,8 @@ public class Tile3D extends Tile {
         int c2 = Math.abs(getImage().hashCode()) % 256;
         gl.glColor4f(c1 / 256f, c2 / 256f, ((c1 + c2) * 34) % 256 / 256f, 0.3f);
         gl.glPushMatrix();
-        gl.glTranslatef(topLeft.getLongitude(), topLeft.getLatitude(), minHeight);
-        gl.glScalef(bottomRight.getLongitude() - topLeft.getLongitude(),
-                    bottomRight.getLatitude() - topLeft.getLatitude(),
-                    maxHeight - minHeight);
+        gl.glTranslatef(bounds.getLeft(), bounds.getTop(), minHeight);
+        gl.glScalef(bounds.getWidth(), bounds.getHeight(), maxHeight - minHeight);
         gl.glBegin(GL_QUADS);
             gl.glVertex3f(0, 0, 0);
             gl.glVertex3f(0, 1, 0);

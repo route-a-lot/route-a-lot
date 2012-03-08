@@ -1,7 +1,8 @@
 package kit.route.a.lot.map.infosupply;
 
 import java.util.HashSet;
-import kit.route.a.lot.common.Coordinates;
+
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.map.Node;
 
 /**
@@ -19,19 +20,12 @@ public class FileQuadTreeDivider {
     private CountingQuadTree root = null;
     private boolean refillNeeded = false;
     
-    public FileQuadTreeDivider(Coordinates topLeft, Coordinates bottomRight) {
-        root = new CountingQuadTree(topLeft, bottomRight);
+    public FileQuadTreeDivider(Bounds bounds) {
+        root = new CountingQuadTree(bounds);
     }
 
-    public void getBounds(Coordinates topLeft, Coordinates bottomRight) {
-        if (topLeft != null) {
-            topLeft.setLatitude(root.getTopLeft().getLatitude());
-            topLeft.setLongitude(root.getTopLeft().getLongitude());
-        }
-        if (bottomRight != null) {
-            bottomRight.setLatitude(root.getBottomRight().getLatitude());
-            bottomRight.setLongitude(root.getBottomRight().getLongitude());
-        }
+    public Bounds getBounds() {
+        return root.getBounds();
     }
 
     public void addNode(Node node) {
@@ -55,16 +49,19 @@ public class FileQuadTreeDivider {
         private static final int MAX_SIZE = 16384;
         private int size = 0;     
         
-        private Coordinates topLeft, bottomRight;
+        private Bounds bounds;
         private HashSet<CountingQuadTree> children = null;
 
-        public CountingQuadTree(Coordinates topLeft, Coordinates bottomRight) {
-            this.topLeft = topLeft;
-            this.bottomRight = bottomRight;
+        public CountingQuadTree(Bounds bounds) {
+            this.bounds = bounds.clone();
         }
         
+        public Bounds getBounds() {
+            return bounds;
+        }
+
         public FileQuadTree buildDividedQuadTree(HashSet<FileQuadTree> leaves) {
-            FileQuadTree result = new FileQuadTree(topLeft, bottomRight);
+            FileQuadTree result = new FileQuadTree(bounds);
             if (children == null) {
                 leaves.add(result);
             } else {
@@ -82,7 +79,7 @@ public class FileQuadTreeDivider {
          */
         public boolean add(Node node) {
             boolean result = true;
-            if (node.isInBounds(topLeft, bottomRight)) {
+            if (node.isInBounds(bounds)) {
                 if (size++ >= MAX_SIZE) {
                     if (children == null) {
                         createChildren();
@@ -100,21 +97,19 @@ public class FileQuadTreeDivider {
             return size;
         }*/
         
-        public Coordinates getTopLeft() {
-            return topLeft;
-        }
-
-        public Coordinates getBottomRight() {
-            return bottomRight;
-        }
-
         public HashSet<CountingQuadTree> createChildren() {
             HashSet<CountingQuadTree> result = new HashSet<CountingQuadTree>(4);
-            Coordinates dim = bottomRight.clone().subtract(topLeft).scale(0.5f);
+            float xStep = bounds.getWidth() / 2;
+            float yStep = bounds.getHeight() / 2;
             for (int i = 0; i < 4; i++) {
-                Coordinates origin = topLeft.clone().add(
-                        dim.getLatitude() * (i % 2), dim.getLongitude() * (i / 2));
-                result.add(new CountingQuadTree(origin, origin.clone().add(dim)));
+                Bounds newBounds = new Bounds(
+                        bounds.getLeft() + xStep * (i / 2),
+                        bounds.getLeft() + xStep * (i / 2 + 1),
+                        bounds.getTop() + yStep * (i % 2),
+                        bounds.getTop() + yStep * (i % 2 + 1)
+                );
+                result.add(new CountingQuadTree(newBounds));
+                
             }
             children = new HashSet<CountingQuadTree>(result);
             return result;

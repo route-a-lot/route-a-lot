@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Address;
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.OSMType;
 import kit.route.a.lot.common.Projection;
@@ -36,7 +37,7 @@ public class Tile {
     private static final Color POI_BORDER_COLOR = new Color(196, 161, 80);
     private static final Color POI_COLOR = new Color(229, 189, 100);
 
-    protected Coordinates topLeft, bottomRight;
+    protected Bounds bounds;
     protected int detailLevel, tileSize;
 
     private BufferedImage image = null;
@@ -58,8 +59,7 @@ public class Tile {
      *            the desired level of detail
      */
     public Tile(Coordinates topLeft, int tileSize, int detailLevel) {
-        this.topLeft = topLeft;
-        this.bottomRight = topLeft.clone().add(tileSize, tileSize);
+        this.bounds = new Bounds(topLeft, topLeft.clone().add(tileSize, tileSize));
         this.detailLevel = detailLevel;
         this.tileSize = tileSize;
         this.mapInfo = State.getInstance().getMapInfo();
@@ -94,13 +94,12 @@ public class Tile {
     }
 
     public void prerender() {
-        // query quadtree elements, TODO test if true is faster
-        Set<MapElement> map = mapInfo.queryElements(detailLevel, topLeft, bottomRight, false);
-
+        // query quadtree elements, exact=true is generally faster (by more than 30%)
+        Set<MapElement> map = mapInfo.queryElements(detailLevel, bounds, true);
+        
         if (map.size() == 0) {
             return;
         }
-        
 
         // prepare image
         image = null;
@@ -109,11 +108,11 @@ public class Tile {
         graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         // color tile background
-//         int c1 = Math.abs(this.hashCode()) % 256;
-//         int c2 = Math.abs(getImage().hashCode()) % 256;
-//         graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
-//         graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize /
-//         Projection.getZoomFactor(detailLevel));
+        // int c1 = Math.abs(this.hashCode()) % 256;
+        // int c2 = Math.abs(getImage().hashCode()) % 256;
+        // graphics.setColor(new Color(c1, c2, ((c1 + c2) * 34) % 256, 64));
+        // graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize /
+        // Projection.getZoomFactor(detailLevel));
 
         // draw base layer elements
 
@@ -122,13 +121,15 @@ public class Tile {
                 draw((Area) element);
             }
         }
+  
         for (MapElement element : map) {
-            if (element instanceof Node) {
+            if (element instanceof Node && !(element instanceof POINode)) {
                 draw((Node) element);
             } else if (element instanceof Street) {
                 draw((Street) element, false);
             }
         }
+
         for (MapElement element : map) {
             if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
                 draw((Street) element, true);
@@ -139,11 +140,13 @@ public class Tile {
                 draw((Street) element, true);
             }
         }
+        
         for (MapElement element : map) {
             if ((element instanceof Area) && (((Area) element).getWayInfo().isBuilding())) {
                 draw((Area) element);
             }
         }
+
         for (MapElement element : map) {
             if (element instanceof Street) {
                 drawStreetArrows((Street) element);
@@ -154,16 +157,17 @@ public class Tile {
                 drawStreetNames((Street) element);
             }
         }
-        
-        if (State.getInstance().getActiveRenderer().drawAreas) {
-            Precalculator.drawAreas(topLeft, bottomRight, detailLevel, graphics);
-        }
 
+        if (State.getInstance().getActiveRenderer().drawAreas) {
+            Precalculator.drawAreas(bounds, detailLevel, graphics);
+        }
+        
         graphics.dispose();
+
     }
 
     public void drawPOIs() {
-        Set<MapElement> elements = mapInfo.queryElements(detailLevel, topLeft, bottomRight, false);
+        Set<MapElement> elements = mapInfo.queryElements(detailLevel, bounds, false);
         if (elements.size() == 0) {
             return;
         }
@@ -171,8 +175,7 @@ public class Tile {
         for (MapElement element : elements) {
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
-                if ((poi.getInfo().getName() == null) || (poi.getInfo().getName().length() == 0)
-                        || (poi.getInfo().getCategory() == OSMType.FAVOURITE)) {
+                if ((poi.getInfo().getName() == null) || (poi.getInfo().getName().length() == 0)) {
                     continue;
                 }
                 graphics.setColor(POI_BORDER_COLOR);
@@ -255,7 +258,6 @@ public class Tile {
         int nPoints = nodes.length;
         int[] xPoints = new int[nPoints];
         int[] yPoints = new int[nPoints];
-
         WayInfo wayInfo = street.getWayInfo();
 
         // set colors
@@ -278,7 +280,7 @@ public class Tile {
         } else {
             graphics.setColor(Color.DARK_GRAY);
         }
-
+        
         // set size
         int basicSize = street.getDrawingSize();
         int size = basicSize / Projection.getZoomFactor(detailLevel);
@@ -294,15 +296,13 @@ public class Tile {
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
-
+        
         graphics.drawPolyline(xPoints, yPoints, nPoints);
-
     }
 
     private void drawPoint(Coordinates globalCoordinates, int size) {
-        Coordinates localCoordinates = getLocalCoordinates(globalCoordinates);
-        graphics.fillOval((int) localCoordinates.getLongitude() - size / 2, (int) localCoordinates.getLatitude() - size
-                / 2, size, size);
+        Coordinates localCoordinates = getLocalCoordinates(globalCoordinates).add(-size/2, -size/2);
+        graphics.fillOval((int) localCoordinates.getLongitude(), (int) localCoordinates.getLatitude(), size, size);
     }
 
     private void drawStreetArrows(Street street) {
@@ -510,16 +510,15 @@ public class Tile {
         List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
         int start = 0;
         drawingSize += 2;
-        Coordinates extendedTopLeft = topLeft.clone().add(-drawingSize, -drawingSize);
-        Coordinates extendedBottomRight = bottomRight.clone().add(drawingSize, drawingSize);
+        Bounds extendedBounds = bounds.clone().extend(drawingSize);
         while (start < streetNodes.length - 1
-                && !Street.isEdgeInBounds(streetNodes[start].getPos(), streetNodes[start + 1].getPos(),
-                        extendedTopLeft, extendedBottomRight)) {
+                && !Street.isEdgeInBounds(streetNodes[start].getPos(),
+                        streetNodes[start + 1].getPos(), extendedBounds)) {
             start++;
         }
         int end = streetNodes.length - 1;
-        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(), streetNodes[end].getPos(),
-                extendedTopLeft, extendedBottomRight)) {
+        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(),
+                streetNodes[end].getPos(), extendedBounds)) {
             end--;
         }
         for (int i = start; i <= end; i++) {
@@ -530,15 +529,15 @@ public class Tile {
     }
 
     private Coordinates getLocalCoordinates(Coordinates coordinates) {
-        return Renderer.getLocalCoordinates(coordinates, topLeft, detailLevel);
+        return Renderer.getLocalCoordinates(coordinates, bounds.getTop(), bounds.getLeft(), detailLevel);
     }
 
-    public static long getSpecifier(Coordinates topLeft, int tileSize, int detail) {
-        return (long) Math.floor((topLeft.getLongitude() + topLeft.getLatitude() * 10000) * 100000) + tileSize + detail;
+    public static long getSpecifier(float lat, float lon, int tileSize, int detail) {
+        return (long) Math.floor((lon + lat * 10000) * 100000) + tileSize + detail;
     }
 
     public long getSpecifier() {
-        return getSpecifier(topLeft, tileSize, detailLevel);
+        return getSpecifier(bounds.getTop(), bounds.getLeft(), tileSize, detailLevel);
     }
 
 }

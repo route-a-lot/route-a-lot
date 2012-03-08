@@ -31,7 +31,7 @@ public class HashRenderCache implements RenderCache {
 
     @Override
     public Tile queryCache(Coordinates topLeft, int tileSize, int detail) {
-        long specifier = Tile.getSpecifier(topLeft, tileSize, detail);
+        long specifier = Tile.getSpecifier(topLeft.getLatitude(), topLeft.getLongitude(), tileSize, detail);
         if (leastRecentlyUsed.remove(specifier)) {
             leastRecentlyUsed.addLast(specifier);
         }
