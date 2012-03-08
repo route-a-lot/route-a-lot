@@ -353,7 +353,7 @@ public class Controller {
             System.gc();
             new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.0004));
             Precalculator.precalculate(p.createSubProgress(0.9995));
-            state.getMapInfo().compactifyDatastructures();
+            state.getMapInfo().compactify();
             state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
                     + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {

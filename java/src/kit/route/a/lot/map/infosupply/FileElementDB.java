@@ -68,6 +68,15 @@ public class FileElementDB extends ArrayElementDB {
         return new ArrayList<POINode>();
     }
     
+    @Override
+    public Iterator<Node> getAllNodes() {
+        return new ElementIterator<Node>(outputFile, nodesCountPointer + 4);
+    }
+  
+    @Override
+    public Iterator<MapElement> getAllMapElements() {
+        return new ElementIterator<MapElement>(outputFile, elementsCountPointer + 4);
+    }
     
     // CONSTRUCTIVE OPERATIONS (FAVORITES UNSUPPORTED)
     
@@ -198,16 +207,8 @@ public class FileElementDB extends ArrayElementDB {
     }
 
 
-    @Override
-    public Iterator<Node> getAllNodes() {
-        return new ElementIterator<Node>(outputFile, nodesCountPointer + 4);
-    }
-
-  
-    public Iterator<MapElement> getAllMapElements() {
-        return new ElementIterator<MapElement>(outputFile, elementsCountPointer + 4);
-    }
-
+    // MISCELLANEOUS
+    
     private class ElementIterator<T> implements Iterator<T> {
 
         DataInputStream inputStream;
@@ -228,6 +229,7 @@ public class FileElementDB extends ArrayElementDB {
             }
         }
         
+        @SuppressWarnings("unchecked")
         @Override
         public boolean hasNext() {
             try {

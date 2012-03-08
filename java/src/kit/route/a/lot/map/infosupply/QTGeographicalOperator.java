@@ -34,7 +34,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     protected Bounds bounds;
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
-    protected QuadTree zoomlevels[];
+    protected QuadTree trees[];
     
     
     // CONSTRUCTOR
@@ -49,18 +49,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void setBounds(Bounds bounds) {
         this.bounds = bounds.clone();
-        zoomlevels = new QuadTree[NUM_LEVELS];
-        for (int i = 0; i < NUM_LEVELS; i++) {
-            zoomlevels[i] = new QTNode(bounds);
-        }
+        trees = new QuadTree[NUM_LEVELS];
     }
 
     @Override
     public Bounds getBounds() {
         return bounds;
     }
-       
-    
+        
     // BASIC OPERATIONS
     
     @Override
@@ -68,20 +64,23 @@ public class QTGeographicalOperator implements GeographicalOperator {
         if (elementDB == null) {
             throw new IllegalArgumentException();
         }
+        for (int detail = 0; detail < NUM_LEVELS; detail++) {
+            trees[detail] = new QTNode(bounds);
+        }
         Iterator<MapElement> elements = elementDB.getAllMapElements();
         while (elements.hasNext()) {
             MapElement element = elements.next();
-            zoomlevels[0].addElement(element);
+            trees[0].addElement(element);
             int maxLevel = getMaximumZoomlevel(element);
-            for (int level = 1; level < maxLevel; level++) {
-                MapElement reduced = element.getReduced(level,
-                        Projection.getZoomFactor(level) * LAYER_MULTIPLIER);
+            for (int detail = 1; detail < maxLevel; detail++) {
+                MapElement reduced = element.getReduced(detail,
+                        Projection.getZoomFactor(detail) * LAYER_MULTIPLIER);
                 if (reduced == null) {
                     if (logger.isTraceEnabled()) {
-                        logger.trace("Ignoring " + element + " for zoomlevel " + level);
+                        logger.trace("Ignoring " + element + " for zoomlevel " + detail);
                     }
                 } else {
-                    if (!zoomlevels[level].addElement(reduced)) {
+                    if (!trees[detail].addElement(reduced)) {
                         logger.error("Reduced element could not be added to the quadtree.");
                     }
                 }
@@ -104,7 +103,10 @@ public class QTGeographicalOperator implements GeographicalOperator {
             State.getInstance().getActiveRenderer().addFrameToDraw(bounds, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        zoomlevels[Util.clip(zoomlevel, 0, NUM_LEVELS -1)].queryElements(area, elements, exact);
+        QuadTree tree = trees[Util.clip(zoomlevel, 0, NUM_LEVELS -1)];
+        if (tree != null) {
+            tree.queryElements(area, elements, exact);
+        }
         return elements;
     }
    
@@ -181,25 +183,27 @@ public class QTGeographicalOperator implements GeographicalOperator {
      
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        logger.debug("Loading " + zoomlevels.length + " zoomlevels...");
-        for(int i = 0; i < zoomlevels.length; i++) {
+        logger.debug("Loading " + trees.length + " zoomlevels...");
+        for(int i = 0; i < trees.length; i++) {
             logger.trace("load zoom level " + i + "...");
-            zoomlevels[i] = QuadTree.loadFromInput(input);
+            trees[i] = QuadTree.loadFromInput(input);
         }
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        for(int i = 0; i < zoomlevels.length; i++) {
+        for(int i = 0; i < trees.length; i++) {
             logger.info("save zoom level " + i + "...");
-            QuadTree.saveToOutput(output, zoomlevels[i]);
+            QuadTree.saveToOutput(output, trees[i]);
         }
     }
     
     @Override
     public void compactify() {
-        for (int i = 0; i < zoomlevels.length; i++) {
-            zoomlevels[i].compactify();
+        for (QuadTree tree : trees) {
+            if(tree != null) {
+                tree.compactify();
+            }
         }
     } 
     
@@ -246,16 +250,16 @@ public class QTGeographicalOperator implements GeographicalOperator {
             return false;
         }
         QTGeographicalOperator comparee = (QTGeographicalOperator) other;
-        return java.util.Arrays.equals(zoomlevels, comparee.zoomlevels);
+        return java.util.Arrays.equals(trees, comparee.trees);
     }
        
     /**
      * Prints a string representing the quadtree.
      */
     public void printQuadTree() {
-        System.out.println(zoomlevels[0].toString(0, new ArrayList<Integer>()));
+        System.out.println(trees[0].toString(0, new ArrayList<Integer>()));
     }
 
 
-    
+ 
 }

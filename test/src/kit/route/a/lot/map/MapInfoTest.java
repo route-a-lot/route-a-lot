@@ -78,7 +78,7 @@ public class MapInfoTest {
         info.addFavorite(new Coordinates(0.0f, 0.0f), new POIDescription("foo", 0, "deletable"));
         info.deleteFavorite(new Coordinates(3.0f, 3.0f), 0, 1);
         assertEquals(1, info.queryElements(0, new Bounds(0, 30, 0, 25), true).size());
-        info.compactifyDatastructures();
+        info.compactify();
         assertEquals(1, info.queryElements(0, new Bounds(0, 30, 0, 25), true).size());
         assertTrue(info.getPOIDescription(new Coordinates(10.3f, 15.3f), 1, 0).getName().equals("derp"));
         info.printQuadTree();

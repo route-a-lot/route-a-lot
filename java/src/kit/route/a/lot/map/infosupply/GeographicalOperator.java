@@ -32,8 +32,7 @@ public interface GeographicalOperator {
      * 
      */
     public Bounds getBounds();
-
-    
+   
     // BASIC OPERATIONS
    
     /**

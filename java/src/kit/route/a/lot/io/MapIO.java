@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import org.apache.log4j.Logger;
 
@@ -46,7 +47,7 @@ public class MapIO {
                 || (input.readChar() != 'A') || (input.readChar() != 'L')) {
             throw new IOException("Is not a map file: " + file.getName());
         }
-        if (!input.readUTF().equals("0.5")) {
+        if (!input.readUTF().equals("0.6")) {
             throw new IOException("Wrong format version: " + file.getName());
         } 
 
@@ -79,10 +80,11 @@ public class MapIO {
         // Open / create file stream, abort on failure
         DataOutputStream output = new DataOutputStream(
                 new BufferedOutputStream(new FileOutputStream(file)));
+        //RandomAccessFile output = new RandomAccessFile(file, "rw");
         
         // Write data to stream, abort on error
         output.writeChars("SRAL");  // magic number
-        output.writeUTF("0.5");     // version number
+        output.writeUTF("0.6");     // version number
         // TODO: maybe add date or name
         p.addProgress(0.05);
         logger.info("save map info...");

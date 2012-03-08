@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Iterator;
+
+import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -13,24 +15,20 @@ import kit.route.a.lot.map.Node;
 
 public class FileQTGeoOperator extends QTGeographicalOperator {
            
-    private RandomAccessFile output;
-
-    // GETTERS & SETTERS
-    
-    public void setOutputFile(RandomAccessFile output) {
-        this.output = output;
-    }
-    
+    private RandomAccessFile file = null;
+    private ElementDB elementDB = null;
     
     // BASIC OPERATIONS
     
+    @Override
     public void fill(ElementDB elementDB) {
-        if (output == null) {
-            throw new IllegalStateException();
-        }
         if (elementDB == null) {
             throw new IllegalArgumentException();
         }
+        if (file == null) {
+            this.elementDB = elementDB; // store to be able to invoke fill() later
+            return;
+        }     
         
         // << DIVIDE SECTION >>
         // get a subtree division (one is enough as all trees are similar)
@@ -42,52 +40,76 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                 divider.addNode(nodes.next());
             }
         } while (divider.isRefillNeeded());
-        
+            
         // << FILL AND SAVE SECTION >>
+        //long start = 0;
         try {           
+            //start = output.getFilePointer();
+            // save map bounds
+            bounds.saveToOutput(file);
+            // tree location table reservation
+            long mark = file.getFilePointer();
+            file.skipBytes(Long.SIZE * NUM_LEVELS);
             // build tree for each detail level
             for (int detail = 0; detail < NUM_LEVELS; detail++) {
                 float range = Projection.getZoomFactor(detail) * LAYER_MULTIPLIER; // for reducing
                     
-                    // get current root tree division (same for all), prepare arrays
-                    HashSet<FileQuadTree> subtreeSet = new HashSet<FileQuadTree>();
-                    zoomlevels[detail] = divider.buildDividedQuadTree(subtreeSet);
-                    FileQuadTree[] subtrees = subtreeSet.toArray(new FileQuadTree[subtreeSet.size()]);
+                    // get current tree branches (same division for all), prepare arrays
+                    HashSet<FileQuadTree> branchSet = new HashSet<FileQuadTree>();
+                    trees[detail] = divider.buildDividedQuadTree(branchSet);
+                    FileQuadTree[] branches = branchSet.toArray(new FileQuadTree[branchSet.size()]);
                     
-                    // pick each subtree of the current root tree
-                    for (int i = 0; i < subtrees.length; i++) {
+                    // pick each tree branch of the current tree
+                    for (int i = 0; i < branches.length; i++) {
                         // add all relevant elements
                         Iterator<MapElement> elements = elementDB.getAllMapElements();
                         while (elements.hasNext()) {
-                            subtrees[i].addElement(elements.next().getReduced(detail, range));
+                            MapElement element = elements.next().getReduced(detail, range);
+                            if (element != null) {
+                                branches[i].addElement(element);
+                            }
                         }
-                        // save subtree and remove it from RAM
-                        subtrees[i].saveTree(output);
-                        subtrees[i].unload();
+                        // save tree branch and remove it from RAM
+                        branches[i].saveTree(file);
+                        branches[i].unload();
                     }
-                    // save complete tree (already saved subtrees will be linked)
-                    zoomlevels[detail].save(output);
-            }
+                    // register tree trunk location
+                    long pos = file.getFilePointer();
+                    file.seek(mark + detail * Long.SIZE);
+                    file.writeLong(pos);
+                    file.seek(pos);
+                    // save tree trunk (branches will be linked)
+                    ((FileQuadTree) trees[detail]).saveTree(file);                 
+            } 
         } catch (IOException e) {
             // can't throw IO exception as signature does not allow that:
             throw new IllegalArgumentException();
         }
             
         // << PASSING ON SECTION >>
-        // relevant: allRoots, output
+        // relevant: zoomlevels, output, start
     }
 
-    
-    // UNSUPPORTED OPERATIONS
-    
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        throw new UnsupportedOperationException();
+        if (!(input instanceof RandomAccessFile)) {
+            throw new IllegalArgumentException();
+        }
+        file = (RandomAccessFile) input;
+        bounds = Bounds.loadFromInput(file);
+        for (int detail = 0; detail < NUM_LEVELS; detail++) {
+            trees[detail] = new FileQuadTree(bounds, file, file.readLong());
+        }
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        throw new UnsupportedOperationException();
+        if (!(output instanceof RandomAccessFile)) {
+            throw new IllegalArgumentException();
+        }
+        file = (RandomAccessFile) output;
+        fill(this.elementDB);
+        compactify();
     }   
 
 }

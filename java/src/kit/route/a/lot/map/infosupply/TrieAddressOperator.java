@@ -33,15 +33,11 @@ public class TrieAddressOperator implements AddressOperator {
 
     @Override
     public Selection select(String address) {
-        // TODO Auto-generated method stub
             ArrayList<MapElement> targets = mapElements.search(address);
             if(targets == null || targets.size() == 0){
                 return null;
             }
-            
-           Selection selection = targets.remove(0).getSelection();     
-           selection.setName(address);
-           return selection;
+           return targets.remove(0).getSelection();
     }
  
     @Override

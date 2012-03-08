@@ -337,8 +337,8 @@ public class MapInfo {
     public void loadFromInput(DataInput input) throws IOException {
         geoBounds = Bounds.loadFromInput(input);
         elementDB.loadFromInput(input);
-        geoOperator.loadFromInput(input);
         addressOperator.loadFromInput(input);
+        geoOperator.loadFromInput(input);        
     }
 
     /**
@@ -352,11 +352,11 @@ public class MapInfo {
     public void saveToOutput(DataOutput output) throws IOException {
         geoBounds.saveToOutput(output);
         elementDB.saveToOutput(output);
-        geoOperator.saveToOutput(output);
         addressOperator.saveToOutput(output);
+        geoOperator.saveToOutput(output);
     }
 
-    public void compactifyDatastructures() {
+    public void compactify() {
         // todo pack elementdb as well?
         geoOperator.compactify();
         addressOperator.compactify();
