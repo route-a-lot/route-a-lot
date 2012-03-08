@@ -116,7 +116,11 @@ public class Map3D extends Map implements GLEventListener {
      * Adapts the map position and rotation and schedules a map redraw.
      */
     @Override
-    public void mouseDragged(MouseEvent e) {      
+    public void mouseDragged(MouseEvent e) {
+        if (oldMousePosX == Integer.MIN_VALUE) {
+            oldMousePosX = e.getX();
+            oldMousePosY = e.getY();
+        }
         float diffX = e.getX() - oldMousePosX;
         float diffY = e.getY() - oldMousePosY;
         // ROTATE CAMERA if mouse wheel (or left mouse button + ctrl) is pressed

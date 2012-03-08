@@ -47,11 +47,15 @@ public class Map2D extends Map  {
      */
     @Override
     public void mouseDragged(MouseEvent e) {
-        if ((e.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) != 0 && (e.getModifiersEx() & MouseEvent.BUTTON3_DOWN_MASK) == 0) {
+        if (oldMousePosX == Integer.MIN_VALUE) {
+            oldMousePosX = e.getX();
+            oldMousePosY = e.getY();
+        }
+        if (isMouseButtonPressed(e, 1) && !isMouseButtonPressed(e, 3)) {
             center.add(new Coordinates(oldMousePosY - e.getY(), oldMousePosX - e.getX())
                 .scale(Projection.getZoomFactor(zoomlevel)));                      
         }      
-        super.mouseDragged(e);
+        super.mouseDragged(e);     
     }
 
     @Override

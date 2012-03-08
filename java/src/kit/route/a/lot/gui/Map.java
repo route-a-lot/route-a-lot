@@ -78,14 +78,17 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         canvas.addMouseMotionListener(this);
         canvas.addMouseWheelListener(this);
         canvas.addMouseListener(new MouseAdapter() {          
-            public void mousePressed(MouseEvent me) {
-                oldMousePosX = me.getX(); 
-                oldMousePosY = me.getY();
+            public void mousePressed(MouseEvent me) {           
                 checkPopup(me);
             }     
             public void mouseReleased(MouseEvent me) {
-                mousePressed(me);
+                checkPopup(me);
             }
+            public void mouseClicked(MouseEvent me) {
+                if(me.getClickCount() == 2 && isMouseButtonPressed(me, 1)) {
+                    zoomAtPosition(me.getX(), me.getY(), -1);   
+                }   
+            }     
         });
                
         Listener.addListener(TILE_RENDERED, new Listener() {
@@ -178,7 +181,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         navNodeMenu.add(deleteFavoriteItem);
         navNodeMenu.add(deleteNavPoint);            
     }
-    
+       
     /**
      * Converts pixel coordinates into the equivalent projected geo reference system coordinates. The pixel
      * origin is top left corner of the map.
@@ -207,6 +210,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * Returns the view center in geo coordinates.
      * @return the map center coordinates
      */
+    
     public Coordinates getCenter() {
         return center;
     }
@@ -261,26 +265,15 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     /**
      * Opens the map context menu if appropriate. Fires a WhatWasClicked event.
      */
-    private void checkPopup(MouseEvent me) {
-        if(me.getClickCount() == 2 && isMouseButtonPressed(me, 1)) {
-            Coordinates clickDiff = getPosition(me.getX(), me.getY()).subtract(center);
-            int oldZoom = zoomlevel;
-            setZoomlevel(zoomlevel - 1);
-            if(zoomlevel < 0) {
-                zoomlevel = 0;
-            }
-            if (zoomlevel != oldZoom) {
-                center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
-                render();
-            }      
-        }
+    private void checkPopup(MouseEvent me) {  
+        oldMousePosX = Integer.MIN_VALUE; // invalidation signal
         clickEvent = me;
         Listener.fireEvent(POSITION_CLICKED,
                 new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
     }
       
     /**
-     * Adapts the map position and schedules a map redraw.
+     * Adapts the map position.
      */
     @Override
     public void mouseDragged(MouseEvent e) {
@@ -289,7 +282,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         }
         oldMousePosX = e.getX();
         oldMousePosY = e.getY();  
-        render();   
+        render();
     }
    
     /**
@@ -297,13 +290,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      */
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
-        Coordinates clickDiff = getPosition(e.getX(), e.getY()).subtract(center);
-        int oldZoom = zoomlevel;
-        setZoomlevel(zoomlevel + e.getWheelRotation());
-        if (zoomlevel != oldZoom) {
-            center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
-            render();
-        }            
+        zoomAtPosition(e.getX(), e.getY(), e.getWheelRotation());
     }
     
     /**
@@ -324,7 +311,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     }
         
     public void passElementType(int itemType) {
-        if (isMouseButtonPressed(clickEvent, 3)) {
+        if (hasButtonChanged(clickEvent, 3)) {
             String name = TEXT_EMPTY;
             switch(itemType) {
                 case POI: name = TEXT_POI; break;
@@ -339,7 +326,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             deleteFavoriteItem.setVisible(itemType == FAVORITE);
             deleteNavPoint.setVisible(itemType == NAVNODE);
             navNodeMenu.show(clickEvent.getComponent(), clickEvent.getX(), clickEvent.getY());
-        } else if (isMouseButtonPressed(clickEvent, 1)
+        } else if (hasButtonChanged(clickEvent, 1)
                 && (itemType == FAVORITE || itemType == POI)){
             Listener.fireEvent(SHOW_POI_DESCRIPTION,
                     new PositionEvent(getPosition(clickEvent.getX(), clickEvent.getY())));
@@ -367,5 +354,20 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
             default: return false;
         }
         return (e.getModifiersEx() & buttonMask) != 0;
+    }
+    
+    protected static boolean hasButtonChanged(MouseEvent e, int buttonID) {
+        return (e.getButton() == buttonID);
+    }
+    
+    
+    private void zoomAtPosition(int x, int y, int amount) {
+        Coordinates clickDiff = getPosition(x, y).subtract(center);
+        int oldZoom = zoomlevel;
+        setZoomlevel(zoomlevel + amount);
+        if (zoomlevel != oldZoom) {
+            center.add(clickDiff.scale((oldZoom > zoomlevel) ? 0.5f : -1));
+            render();
+        }
     }
 }
