@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -68,6 +69,8 @@ public class Controller {
     private GUIHandler guiHandler = new GUIHandler();
     private State state = State.getInstance();
     private static Logger logger = Logger.getLogger(Controller.class);
+    
+    private static int MAX_SEARCH_COMPLETIONS = 15;
     
     public static void main(String[] args) {
         // ENVIRONMENT SETUP
@@ -474,6 +477,7 @@ public class Controller {
         // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
         //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
         // }
+        setViewTo(newSel.getPosition());
     }
     
     private void deleteNavNode(int pos) {
@@ -559,7 +563,13 @@ public class Controller {
     }
 
     private void passSearchCompletion(String str, int iconNum) {
-        guiHandler.showSearchCompletion(state.getMapInfo().getCompletions(str), iconNum);
+        List<String> allCompletions = state.getMapInfo().getCompletions(str);
+        List<String> shownCompletions = new ArrayList<String>(MAX_SEARCH_COMPLETIONS);
+        Iterator<String> it = allCompletions.iterator();
+        while (it.hasNext() && shownCompletions.size() < MAX_SEARCH_COMPLETIONS) {
+            shownCompletions.add(it.next());
+        }
+        guiHandler.showSearchCompletion(shownCompletions, iconNum);
     }
   
     private void updateImportedMapsList() {
@@ -609,6 +619,16 @@ public class Controller {
         state.setCenterCoordinates(Coordinates.interpolate(bounds.getTopLeft(),
                 bounds.getBottomRight(), 0.5f));
         guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());
+    }
+    
+    private void setViewTo(Coordinates viewCenter) {
+        if (state.getMapInfo() == null) {
+            return;
+        }
+        Coordinates center = state.getCenterCoordinates();
+        center.setLatitude(viewCenter.getLatitude());
+        center.setLongitude(viewCenter.getLongitude());
+        guiHandler.setView(center, state.getDetailLevel());
     }
     
     private void render(Context context) {
