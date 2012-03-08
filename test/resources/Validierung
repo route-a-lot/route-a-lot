@@ -1,0 +1,631 @@
+\documentclass{scrreprt}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{ngerman}
+\usepackage{xspace}
+\usepackage{nameref}
+\usepackage{rotating}
+\usepackage{graphicx}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage[numberedsection,acronym]{glossaries}
+\usepackage{tikz}
+\usepackage{ownstyle}
+\usepackage[normalem]{ulem}
+\usepackage{amssymb}
+
+\definecolor{darkblue}{RGB}{0,0,130}
+\hypersetup{unicode=true,pdfborder={0 0 0},colorlinks=true,linkcolor=darkblue}
+\makeglossaries
+\input{glossar.tex}
+
+\newcommand{\Testcase}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\subsection*{\includegraphics[height=4.5mm]{graphics/glass.pdf}\quad #2}\label{Testcase-#2}}{\subsection*{\includegraphics[height=4.5mm]{graphics/glass.pdf}\quad #2}\label{Testcase-#1}}}
+\newcommand{\RefTestcase}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\texttt{\hyperref[Testcase-#2]{#2}} (s. Seite \pageref{Testcase-#2})}{\texttt{\hyperref[Testcase-#2]{#1}} (s. Seite \pageref{Testcase-#2})}}
+\newcommand{\Opt}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\subsection*{\includegraphics[height=4.5mm]{graphics/Plus.pdf} \textit{#2}}\label{#2}}{\subsection*{\includegraphics[height=4.5mm]{graphics/Plus.pdf} \textit{#2}}\label{#1}}}
+\newcommand{\Bug}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\subsection*{\includegraphics[height=4.5mm]{graphics/Bug.pdf} \textit{#2}}\label{#2}}{\subsection*{\includegraphics[height=4.5mm]{graphics/Bug.pdf} \textit{#2}}\label{#1}}}
+
+\newcommand{\TitledBlock}[2]{\begin{tabular}{p{2.5cm} p{12cm}} \hspace{0.3cm} \textsf{\textbf{#1}} & #2 \end{tabular} \\[0.1cm]}
+\newcommand{\Symptom}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\TitledBlock{Symptom}{#2}}{\TitledBlock{Symptom \label{sym:#1}}{#2}}}
+\newcommand{\Explanation}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\TitledBlock{Erklärung}{#2}}{\TitledBlock{Erklärung \label{expl:#1}}{#2}}}
+\newcommand{\Fix}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\TitledBlock{Behebung}{#2}}{\TitledBlock{Behebung \label{fix:#1}}{#2}}}
+\newcommand{\UntitledBlock}[1]{\TitledBlock{}{#1}}
+
+\newcommand{\RefBug}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{\texttt{\hyperref[#2]{#2}} (s. Seite \pageref{#2})}{\texttt{\hyperref[#2]{#1}} (s. Seite \pageref{#2})}}
+\newcommand{\RefSymptom}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{RefBug{#2}}{RefBug[sym:#1]{#2}}}
+\newcommand{\RefExplanation}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{RefBug{#2}}{RefBug[expl:#1]{#2}}}
+\newcommand{\RefFix}[2][\empty]{\ifthenelse{\equal{#1}{\empty}}{RefBug{#2}}{RefBug[fix:#1]{#2}}}
+\newcommand{\Class}[1]{\texttt{#1}}
+\newcommand{\Method}[1]{\texttt{#1}}
+\newcommand{\CoverageAll}[1]{Die Codeüberdeckung für den gesamten Code beträgt #1\%}
+\newcommand{\Passed}{\includegraphics[height=4.5mm]{graphics/OK_green.pdf}\quad Der Test wurde bestanden.}
+\newcommand{\SemiPassed}{\includegraphics[height=4.5mm]{graphics/OK_yellow.pdf}\quad Unter diesen Bedingungen wurde der Test bestanden.}
+\newcommand{\Failed}{\includegraphics[height=4.5mm]{graphics/X.pdf}\quad Der Test wurde \textbf{nicht} bestanden.}
+\newcommand{\Dropped}{\includegraphics[height=4.5mm]{graphics/Dropped.pdf} \quad Diese Funktion wurde fallen gelassen und bedarf daher keiner Überprüfung.}
+
+
+\newlength{\wideitemsep}
+\setlength{\wideitemsep}{\itemsep}
+\addtolength{\wideitemsep}{-7pt}
+\let\olditem\item
+\renewcommand{\item}{\setlength{\itemsep}{\wideitemsep}\olditem}
+
+\begin{document}
+%\maketitle
+\begin{titlepage}
+\begin{center}
+\textsc{\LARGE Validierungsbericht}\\
+\vspace{0.3cm}
+\textsc{\Huge Route-A-Lot}\\
+\vspace{1cm}
+\textsc{\large Yvonne Braun, Matthias Grundmann, Jan Jacob,\\ Daniel Krauß, Josua Stabenow, Malte Wolff}
+\vspace{0.6cm}
+\\\textsc{PSE Projekt 13}
+\vspace{1cm}
+\vfill
+\includegraphics[scale=0.795]{graphics/SirBuggALot.pdf}
+% Bottom of the page
+\\
+\vspace{1cm}
+\textsc{\today}
+\end{center}
+\end{titlepage}
+
+\begingroup
+\hypersetup{linkcolor=black}
+\tableofcontents
+\endgroup
+\newpage
+
+\chapter{Behobene Fehler}
+\section{Funktionsfehler}
+
+\Bug{Falsche Selections}
+\Symptom[Falsche Selections]{In manchen Fällen wurde bei Klick auf die Karte nicht die nächstliegende Straße gefunden, sondern eine andere Straße in der Nähe.}
+\Explanation[Falsche Selections]{Der "'select-Algorithmus"', der dafür verwendet wird, arbeitet wie folgt:
+Über \textit{getBaseLayer} von \textit{GeographicalOperator} werden Elemente in einem Kreis um den markierten Punkt angefordert.
+Von diesen Elementen wird der Abstand zum ausgewählten Punkt berechnet und das Element mit dem kürzesten Abstand ausgewählt.
+Wird kein Element zurückgegeben, so wird der Radius des Kreises erhöht. Die Suche erfolgt also in konzentrischen Kreisen um die Auswahl.}
+\UntitledBlock{Aus Performancegründen gab die Implementierung \Class{QTGeographicalOperator} aber nicht genau die Elemente in dem Bereich zurück, der in den Parametern von \Method{getBaseLayer} spezifiert wurde, sondern alle Elemente der Blätter, die der Bereich berührte.
+(Dadurch fallen Überprüfungen weg, die nicht nötig sind, wenn die Methode zum Zeichnen benutzt wird.)
+Dadurch konnte es aber passieren, dass im Fall, dass die Auswahl in einem anderen Quadtree-Blatt als die Straße ist, die der Auswahl am nächsten liegt, nicht diese Straße ausgewählt wurde, sondern die Straße, die sowohl im gleichen Quadtree-Blatt wie die Auswahl liegt als auch eine möglichst kurze Entfernung zu ihr hat.}
+\Fix[Falsche Selections]{Behoben wurde der Fehler, indem die \Method{getBaseLayer} ein zusätzliche Variable bekommt, das angibt, ob die Elemente im übergebenen Bereich oder genau die Elemente im übergebenen Bereich gesucht sind.}
+
+\Bug[Ignorieren der Arc-Flags]{Ignorieren der \glspl{ArcFlag}}
+\Symptom{Trotz Vorberechnung der \glspl{ArcFlag} wurde die Berechnung der Route nicht schneller.}
+\Explanation{Bei dem Vergleich der \glspl{ArcFlag} wurden diese mit der zu vergleichenden Maske mit oder verknüpft statt mit und. Dies führte dazu, dass keine Kanten ignoriert wurden.}
+\Fix{Das "'Oder"' wurde durch ein "'Und"' ersetzt}
+
+\Bug{Fehlerhafte Anzeige geladener Routen auf Nicht-Original-Karten}
+\UntitledBlock{Hatte man eine Route gespeichert, eine andere Karte aktiviert und darauf die Route wieder geladen, so wurden die Koordinaten dieser Route falsch interpretiert. Abhilfe wurde geschaffen, indem die Routendateien jetzt zusätzlich den Originalkarten-Namen und Geokoordinaten für alle Navigationspunkte speichern.}
+
+\Bug{Nicht gezeichnete Kacheln}
+\Symptom{Beim Laden einer gespeicherten Karte wurden Kacheln leer gezeichnet und blieben leer.}
+\Explanation{Wenn der Renderer während des Ladens die Karte zeichnet, so bekommt er aus dem Quadtree noch keine Elemente zurück und zeichnet also eine leere Kachel.
+Die Kachel landete also leer im Cache und wurde nicht mit allen Elementen neu gezeichnet.}
+\Fix{Nach dem Laden wird der Cache des Renderers geleert, sodass er auch alle Kacheln, die eventuell leer sind, neu zeichnet.}
+
+\Bug{Nicht gefundene Straßen bei der textuellen Eingabe}
+\Symptom{Rückgabe einer falschen Selection}
+
+\Explanation{Für die Auswahl eines Start - oder Zielpunktes der Routenberechnung wurde die Methode der Stringvervollständigung verwendet. Da zwei Strassen mit gleichem Präfix nicht eindeutig identifiziert werden können, kann dies zu einer falsch berechneten Route führen}
+\Bug{Unvollständige Breitensuche beim Kompaktieren des StringTries}
+\Symptom{Eingefügte Worte konnten nach dem Kompaktieren nicht mehr erreicht werden.} 
+\Explanation{Das Kompaktieren des StringTries wurde über eine Breitensuche implementiert, dabei wurden zwei Knoten zu einem verschmolzen, wenn der Folgeknoten das einzige Kind war, in diesem Fall wurden die im Knoten enthaltenen Strings konkateniert und die Kinder des Folgeknotens übernommen. Grund für den Fehler war dass der neu erstellte Knoten nicht in die Queue eingefügt wurde.}
+\section{Kleine Fehler}
+
+\Bug{Fehlerhaftes Zeichnen der Route}
+\Symptom{Es konnte dazu kommen, dass nicht in der Route enthaltene Wegstrecken gezeichnet wurden.}
+\Explanation{Der Fehler trat auf, wenn sowohl Start-, als auch Zielpunkt einer \Class{Selection} in einer Route enthalten waren.}
+\Fix{Eine Route wird jetzt entsprechend kodiert, sodass die Position einer Selection in der Route genau ermittelt werden kann und mit diesen Informationen die richtige, in der Route enthaltene, Wegstrecke gezeichnet wird.}
+\UntitledBlock{Betroffene Klassen: \Class{map.rendering.Renderer}}
+
+\Bug{Ungenaue Berechnung von Routenlänge und Fahrtdauer}
+\Symptom{Die Routenlänge und Fahrtdauer einer Route wurde ungenau in der GUI dargestellt,
+sodass es auch dazu kommen konnte, dass zwischenhaltoptimierte Routen länger schienen, als die nicht optimierten.}
+\Explanation{Bei der Berechnung der Fahrtdauer wurden \textbf{Selections},
+die Teil der Route sind nicht berücksichtigt.}
+\Fix{Alle gezeichneten Abschnitte einer Route (auch die Distanz von einem ausgewählten Punkt zu einer Straße) werden jetzt berücksichtigt.}
+\UntitledBlock{Betroffene Klassen: \Class{map.complexInfoSupplier}}
+
+\Bug{Berechnung einer nicht kürzesten oder unzulässigen Route}
+\Symptom{Sonderfällen in der Auswahl der \textbf{Selections} konnten dazu führen, dass eine nicht optimale Route gefunden wurde.}
+\Explanation{Lag ein Ziel-Navigationspunkt auf einer Einbahnstraße, so wurde evtl. eine Route gefunden, die ein kurzes Stück gegen diese führte.}
+\Fix{Einbahnstraßen bei Zielpunkten werden jetzt berücksichtigt.
+Des weiteren wurde ein kleiner Rechenoperationsfehler behoben, der dazu führte, dass Zielpunkte falsch gewichtet wurden, was wiederum dazu führen konnte, dass eine nicht kürzeste Route gefunden wurde.}
+\UntitledBlock{Betroffene Klassen: \Class{routing.Router}}
+
+\Bug{Nicht funktionierende Höheninterpolation}
+\Symptom{3D-Höhenmodelle wiesen v.a. in nahen Zoomstufen starke Treppeneffekte auf.}
+\Explanation{Bei der Abfrage von Höhendaten zeigte der Code zum \gls{Interpolieren} zwischen den vier nächstgelegenen Höhenpunkten im Gitter keine Wirkung.}
+\Fix{Grund war eine vertauschte \gls{Variable}.}
+
+
+\Bug{Falsche Mausklick-Projektion im 3D-Modus}
+\Symptom{Im 3D-Modus waren alle mit der Maus gewählten Punkte gegenüber dem Mauszeiger verschobenen.}
+\Explanation{Es wurde für Mausklicks dieselbe nicht \gls{perspektivischeProjektion} von Fensterkoordinaten in Geokoordinaten wie im 2D-Modus verwendet.}
+\Fix{In \Class{Map} wurde eine abstrakte Methode \Method{getPosition(x, y)} eingeführt, deren Implementierungen in \Class{Map2D} und \Class{Map3D} unterschiedliche Projektionen verwenden.}
+
+\Bug{Zoom im 3D-Modus nicht an der Mausposition}
+\Symptom{Das Zoomzentrum befand sich im 3D-Modus unabhängig von der Position des Mauszeigers immer im Sichtfeldmittelpunkt.}
+\Explanation{Dieser Fehler trat auf, weil die Herangehensweise zur Bestimmung des Zentrums implizite Annahmen über die Art der verwendeten Projektion von Fensterkoordinaten auf Geokoordinaten traf.}
+\Fix{Durch eine allgemeinere Herangehensweise konnte das behoben werden, so dass jetzt das Zoomzentrum in beiden Modi unter dem Cursor liegt.}
+
+\Bug{Exceptions bei Sonderfällen bezüglich importierter Karten}
+\Symptom{Waren gerade keine Karten importiert, so resultierte ein Klick auf die Schaltflächen zum Aktivieren oder Löschen von Karten in einer \gls{Exception}.}
+\Explanation{Es wurde ein leerer String als Kartenname übergeben, welcher in einem ungültigen Dateinamen resultierte.}
+\Fix{Im Fall eines leeren Strings wird die Bearbeitung abgebrochen.}
+
+\Bug{Exception beim Optimieren einer leeren Route}
+\Symptom{War die \gls{Navigationspunkt}liste leer, so führte ein Versuch die Routenoptimierung auszuführen zu einer \gls{Exception}.}
+\Explanation{Die Fakultätsfunktion in \Class{Util} kam für nicht positive Eingaben (insbesondere für 0) in eine Endlosschleife.}
+\Fix{Anpassung der Fakultätsfunktion an 0 und negative Werte (Rückgabe war dann 1).}
+
+\Bug{Falsches Menü bei Rechtsklick auf POI}
+\Symptom{Ein Rechtsklick auf einen \gls{POI} hatte im 3D-Modus zur Folge, dass das Navigationsmenü zwar kurz angezeigt wurde,
+beim Loslassen der Maustaste aber durch das POI-Beschreibungsmenü ersetzt wurde.}
+\Explanation{Bei der Prüfung in \Class{Map}, welches Menü angezeigt werden soll, war die Bedingung für das Beschreibungsmenü zu schwach formuliert.}
+\Fix{Der Fehler konnte durch eine zusätzliche Abfrage nach der Art des Klicks (Rechtsklick) behoben werden.}
+
+\Bug{Fehlendes GUI-Update beim Laden einer Route}
+\Symptom{Nach dem Laden einer Route aus einer Datei wurde diese auf der Karte angezeigt, nicht aber in der \gls{Navigationspunkt}liste im Tabbereich der GUI.}
+\Explanation{Die Liste im Tabbereich wurde beim Laden nicht aktualisiert.}
+\Fix{Entsprechende Befehle mussten in der Klasse \Class{Controller} nachgerüstet werden.}
+
+\Bug{Fehlendes Speichern von Navigationspunktnamen}
+\Symptom{Beim Laden einer Route wurden die \glspl{Navigationspunkt} auf der Karte und in der Liste angezeigt; in der Liste fehlten allerdings die Namen (die Textfelder waren leer).}
+\Explanation{Die Namen der \glspl{Navigationspunkt} wurden beim Speichern (und Laden) von Routen vergessen.}
+\Fix{Der entsprechende Befehl wurde in \Class{RouteIO} und \Class{StateIO} ergänzt.}
+
+\Bug{Speicherleck im Grafikspeicher}
+\Symptom{Theoretisch sollten bei Verwendung des 3D-Modus nach einiger Zeit erhebliche Grafikfehler auftreten oder die Anwendung sollte terminieren. Allerdings wurde dieser Effekt nicht erreicht.}
+\Explanation{\Class{Tile3D}-Objekte legen Ressourcen im \gls{Grafikspeicher} ab, geben diese aber nicht wieder frei, wenn sie nicht mehr benötigt werden. Mit der Zeit sollte so der Grafikspeicher an seine Grenzen stoßen.}
+\Fix{Zum Beheben dieses Fehlers musste der Kachel-Cache (\Class{RenderCache}, \Class{HashRenderCache}) so geändert werden, dass er vertriebene Kacheln an den Renderer (\Class{Renderer3D}) zurück gibt. Dort können die mit den Kacheln verbundenen Ressourcen freigegeben werden, allerdings erst im nächsten Rendervorgang.}
+
+\Bug[Grafikspeicher-Invalidierung bei Fenstergrössenänderung]{Grafikspeicher-Invalidierung bei Fenstergrö\3enänderung}
+\Symptom{Eine Resizing-Operation bei laufendem 3D-Modus führte mit großer Wahrscheinlichkeit zu einem "'schwarzen Loch"' im aktuellen Bereich der Kartenanzeige.}
+\Explanation{Die Fenstergrößenänderung hatte zur Folge, dass die von den 3D-Kacheln im \gls{Grafikspeicher} abgelegten Daten ungültig wurden. Die letztendliche Ursache für diesen Bug ist noch nicht geklärt.}
+\Fix{Als Workaround wird der \gls{Cache} bei jeder Größenänderung geleert.}
+
+\Bug{Unsauberkeiten beim Rendering an Kachelgrenzen}
+\Symptom{Manche Straßen, die an Kachelgrenzen liegen, wurden nicht vollständig gezeichnet.}
+\Explanation{Das lag daran, dass es sein konnte, dass zwar die Strecke zwischen den zwei Punkten, die eine Kante der Straße aufspannen nicht auf der Kachel lag, die Straße jedoch so breit ist, dass sie teilweise auf der Kachel liegt.}
+\Fix{Um diesen Fehler zu beheben, beachten \Method{isInBounds} in \Class{Street} und \Method{getRelevantNodesForStreet} in \Class{Tile} jetzt auch die Dicke, mit der die Straße gezeichnet wird.}
+
+\Bug{Array im Quadtreeblatt}
+\Explanation{Jedes Quadtreeblatt enthält je eine Array für \gls{BaseLayer}- und eins für \gls{Overlay}-Elemente.
+Diese werden bei Erstellung des Quadtrees mit 1 initialisiert, bei Bedarf wird die Länge verdoppelt und am Ende des Imports getrimmt.
+
+Im Fall, dass ein solcher Quadtree nach dem Import getrimmt ist und ein Blatt keine Overlay-Elemente enhält, ist dieses Array leer.}
+\Symptom{Wird nun ein Favorit hinzugefügt, so verdoppelt \Method{addToOverlay} die Arraylänge (durch Aufruf von \Method{doubleSpace}), womit das Array aber leer bleibt. Dies führte zu einer \Class{ArrayIndexOutOfBoundsException}.}
+\Fix{Behoben wurde das Problem, indem die \Method{doubleSpace}-Methode im Fall, dass sie ein leeres Array übergeben bekommt, ein nichtleeres Array zurückgibt.}
+
+\Bug{Setzen der ArcFlags bei fehlgeschlagener Vorberechnung}
+\Symptom{Schlägt die Vorberechnung fehl (etwa weil die \gls{Metis}-Programmdatei nicht gefunden wurde), waren alle \glspl{ArcFlag} aufgrund ihrer Initialisierung auf 0 gesetzt, wodurch eine Routenberechnung nicht möglich war.}
+\Fix{Jetzt werden in diesem Fall alle \glspl{ArcFlag} gesetzt.}
+
+\Bug[Zusammenlegen von Strassen]{Zusammenlegen von Straßen}
+\Symptom{Bei der Suche nach einer Straße wird manchmal nur ein kleines Stück, nicht aber ihr Mittelpunkt, von ihr gefunden.}
+\Explanation{In den \gls{OSM}-Daten sind teilweise lange Straßen in mehrere \glspl{Way} unterteilt. Bei der Suche mit dem \Class{AddressOperator} wird aber nur die zuletzt hinzugefügte Straße mit diesem Namen gefunden.}
+\Fix{Mehrere Straßen, die den gleichen Namen haben und deren relevanten Zusatzdaten gleich sind, werden, sofern sie aneinanderhängen,
+beim Import zu einer Straße zusammengefügt.
+
+Dadurch wird nicht nur dieses Problem behoben, sondern es ist gleichzeitig auch eine Performanceoptimierung, da weniger Objekte im \gls{RAM} liegen, für die Zusatzdaten verwaltet werden müssen.}
+
+\Bug{Beachtung der Mali}
+\Symptom{Auf Karten, die mit unterschiedlichen Mali berechnet wurden, wurden die gleichen Routen gefunden.}
+\Explanation{Die Berücksichtigung der Mali war im WeightCalculator nicht implementiert.}
+\Fix{Implementierung des WeightCalculator dahingehend verbessert.}
+
+\section{Funktionale Verbesserungen}
+
+\Opt{Löschen der Metis-Dateien}
+Die Dateien von und für \gls{Metis} werden nun nach Gebrauch wieder gelöscht. Außerdem werden sie nicht im aktuellem Verzeichnis, sondern in einem (vom Betriebssystem bereitgestellten) temporären Verzeichnis gespeichert.
+
+\Opt{Dynamisches Laden von JOGL-Bibliotheken}
+Die Einbindung von \gls{JOGL} musste bei Verwendung der .jar-Datei durch einen Kommandozeilenparamter ermöglicht werden. 
+Jetzt werden je nach \gls{Systemarchitektur} (32 oder 64 bit) und Betriebssystem (Linux oder Windows) die entsprechenden \gls{JOGL}-\glspl{Bibliothek} geladen.
+
+%\Opt{Markieren der Zwischenhalte durch gesonderte ID's}
+%Bei der vom Router nach einer Berechnung zurückgegebenen Route werden nun an den Stellen, an denen sich Zwischenhalte befinden, virtuelle Knoten mit der \gls{ID} $-1$ eingefügt. Dies erleichtert die Behandlung der Zwischenhalte und ermöglicht eine genauere Berechnung von Fahrtdauer und -strecke.
+
+\Opt{Fortschrittsanzeige}
+Für alle Operationen, die eine für den Anwender spürbare Zeit brauchen (Laden, Import, Routenberechung und -optimierung, ...), wurde eine Fortschrittsanzeige in der \gls{GUI} eingebaut.
+
+\Opt{Rotation im 3D-Modus}
+Die 3D-Ansicht wurde um die Möglichkeit erweitert, die Blickrichtung und -neigung über die Maus zu ändern.
+
+\Opt{Zoomen durch doppelten Linksklick}
+Die Karte kann durch einen doppelten Linksklick hineingezoomt werden.
+
+\Opt{Textvervollständigung in den Textfeldern}
+Beim Tippen wird unter den Textfeldern ein PopUp-Menü erzeugt, dass die Suchvorschläge für die eingegebenen Buchstaben enthält.
+
+\Opt{Heuristische Optimierung der Zwischenhalte}
+Bevor für eine zu Optimierende Route nach der besten Anordnung der Zwischenhalte gesucht wird, wird diese heuristisch nach der \gls{Nearest-Neighbor-Heuristik} optimiert.
+
+\Opt{Möglichkeit zum Abbrechen der Routenberechnung}
+Sobald während des Optimierens eine bessere Anordnung der Zwischenhalte gefunden wird, wird diese sofort angewandt. Der User hat die Möglichkeit den Fortschritt zu betrachten und bei genügend guter Route die Berechnung abzubrechen.
+
+\section{Performanceverbesserungen}
+\Opt{Parallelisierung bei der Berechnung der ArcFlags}
+Die Berechnung der \glspl{ArcFlag} während der Vorberechnung ist nun parallelisiert.
+Auf dem Referenzsystem, das einen Dualcore mit Hyperthreading hat, ist der Speedup größer als 2.
+
+\Opt{Performance-Verbesserungen im 3D-Modus}
+Der 3D-Modus wurde in vieler Hinsicht rundum erneuert: Es wurden 3D-Kacheln eingeführt, deren Daten im \gls{RAM} und \gls{Grafikspeicher} gecacht werden. Die Höhendaten werden dementsprechend pro Kachel nur noch bei Erstellung von der \gls{Heightmap} abgefragt und interpoliert.
+Außerdem wurden weitere renderer-interne Parameter auf Leistung optimiert und \gls{Frustum Culling} zur Filterung zu zeichnender Kartenbereiche eingeführt.
+
+\Opt{IO Buffering}
+Datenaustausch mit dem \gls{Sekundaerspeicher} wird in einem \gls{RAM}-\gls{Puffer} zwischengespeichert, um unnötig viele \glspl{Systemaufruf} zu vermeiden.
+
+\Opt{Spätes Laden von Höhendaten}
+Statt bei Programmstart werden \gls{SRTM}-Höhenkacheln erst beim ersten Zugriff auf darin enthaltene Höhenwerte in den \gls{RAM} geladen.
+
+\Opt{Reduzierung der Anzahl der zu zeichnenden Kacheln}
+Leere Kacheln werden nicht im Speicher angefordert und gezeichnet. Auch das \gls{Cache}n solcher Kacheln wird damit vermieden.
+
+\Opt{Grafikverbesserungen im 3D-Modus}
+Die Höhen werden jetzt farbkodiert dargestellt; außerdem werden steile Hänge schattiert. In der Entfernung wird die Karte in Schwarz übergeblendet.
+Eine körnige Textur sorgt für größeres Detailgefühl v.a. in nahen Zoomstufen.
+Da Höhennetz wird nur noch bei der Erstellung neuer Kacheln abgetastet, wodurch das aus der Implementierungsversion bekannte "'Höhenflimmern"' vermieden wird.
+Löcher in den Höhendaten werden automatisch repariert. Das Straßennetz wird im 3D-Modus als teil-transparente \gls{Textur} ohne Hintergrundfarbe verwaltet, was in besseren Farben (z.B. weiße Straßen) resultiert.
+Die Route, \glspl{POI} und \glspl{Navigationspunkt} werden plastisch gezeichnet.
+%---------------------------------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
+\begin{figure}
+\begin{tikzpicture}
+\draw[white] (-1,-1) -- +(1,1) node[above,red] {t};
+\draw (0,0) -- +(1,1) node[above,red] {l};
+\draw[text=red] (1,1) -- +(1,1) node[above] {a};
+\draw (2,2) -- +(1,-1) node[above,red] {p};
+\draw (3,1) -- +(-1,-1) node[above,red] {f};
+\draw[text=red] (2,0) -- +(-1,-1) node[above] {e};
+\draw (1,-1) -- +(-1,-1) node[above,red] {l};
+\draw (3,1) -- +(1,-1) node[above,red] {p};
+\draw[text=red] (4,0) -- +(1,-1) node[above] {l};
+\draw[text=red] (5,-1) -- +(1,-1) node[above] {e};
+\draw (6,-2) -- +(1,-1) node[above,red] {t};
+%\draw (5,-1) -- +(-1,-1) node[above,red] {};
+\draw[text=red] (5,-1) -- +(-1,-1) node[above] {a};
+\draw[text=red] (4,-2) -- +(-1,-1) node[above] {u};
+\draw (3,-3) -- +(-1,-1) node[above,red] {s};
+\end{tikzpicture}
+%-----------------------------------------------------------------------------
+\begin{tikzpicture}
+\draw[white] (5,2) -- +(1,1) node[above,red] {lt};
+\draw[text=red] (6,3) -- +(1,1) node[above] {a};
+\draw (7,4) -- +(1,-1) node[above,red] {p};
+\draw (8,3) -- +(-1,-1) node[above,red] {fel};
+\draw (8,3) -- +(1,-1) node[above,red] {pl};
+\draw[text=red] (9,2) -- +(1,-1) node[above] {et};
+%\draw (5,-1) -- +(-1,-1) node[above,red] {};
+\draw[text=red] (9,2) -- +(-1,-1) node[above] {aus};
+
+
+\end{tikzpicture}
+\caption{\small Die Abbildung zeigt zwei StringTries, dabei stellt der rechte Trie eine kompaktierte Form des linken Tries dar. Bei der kompaktierten Version werden Kinder mit nur einem Knoten zusammengefasst.
+}
+\end{figure}
+
+
+
+
+%--------------------------------------------------------------------------------------------------------
+
+
+
+\Opt{Verwendung eines StringTrie zur Textverfollständigung}
+Im Gegensatz zur Implementierungsphase bei der die Strassennamen, die mit einem
+gegebenen Präfix beginnen über das Durchlaufen einer sortierten Liste ermittelt wurden. Stehen diese jetzt im Blatt eines kompaktierten StringTrie wobei für das finden eines einzelnen Eintrags ein Pfad höchstens der Länge |m| abgearbeitet werden muss.
+\Opt{Verwendung eines StringTrie für die textuelle Routenberechnung}
+Die textuelle Eingabe eines Start - und eines Zielpunktes, zwischen denen die 
+Route berechnet werden soll, geschieht nach dem gleichen Prinzip wie die Stringvervollständigung, hierbei enthält das Blatt anstatt eines Strings ein \glspl{MapElement}.
+
+
+\section{Verbesserungen der Optik}
+
+\Opt[Zeichnen der Strassennamen]{Zeichnen der Straßennamen}
+Auf der Karte wurden die Namen der Straßen nicht gezeichnet, was eine Orientierung in unbekannten Gebieten schwierig gemacht hat.
+Das wurde behoben, indem der Name -- falls vorhanden -- in regelmäßigen Abständen gezeichnet wird.
+
+\Opt{Anzeige von Geokoordinaten in der Statusbar}
+In der Statusbar werden die aktuellen Geokoordinaten unter dem Mauszeiger angezeigt.
+
+\Opt{Verschönerung der GUI}
+Die Bedienelemente der Benutzeroberfläche sind besser skaliert, gruppiert und für jede Gruppe gibt es ein umrandetes und benanntes Feld.
+
+\Opt[Farben für Navigationspunkte und Pfeile bei Auswahl]{Farben für \glspl{Navigationspunkt} und Pfeile bei Auswahl}
+\glspl{Navigationspunkt} werden auf der Karte in unterschiedlichen, passenden Farben gezeichnet.
+Die gleiche Farbe hat auch ein Pfeil, der sowohl im Kontextmenü auf der Karte als auch bei den Vervollständigungsvorschlägen im Textfeld für einen Navigationspunkt angezeigt wird.
+
+\chapter{Neue Testfälle}
+\Testcase{Korrekte Nachbarn}
+\label{Routing}
+Der korrekte Aufbau des Routing Graph wird durch Vergleich mit einem simplen Graphen getestet, nachdem beide aus einer kleinen Karlsruhe-Karte aufgebaut wurden.
+Hierfür wie die korrekte Wiedergabe von Nachbarn von Knoten getestet.
+Weitere Funktionen des Graphen (z.B. das Invertieren) werden durch simple Methodenaufrufe getestet.
+\subsection*{Berechnung der kürzesten Route -- \textit{Korrektheitstests}}
+\Testcase{Ein Start- und Zielpunkt}   %RoutingAndGraphTest.simpleRoutingTest()
+\label{Route}
+Für die Überprüfung der Richtigkeit des Routings wurde eine simple Routingfunktion geschrieben.
+Diese wird mit 10.000 zufällig generierten Start- und Endpunkten auf einer kleinen Karte von Karlsruhe, in Form von \texttt{Selection}s ausgeführt. 
+Die Ergebnisse (Routenlänge) sowie  Eingaben werden daraufhin in eine Datei geschrieben. 
+Für die zufällige Generierung von \texttt{Selection}s wurde eine Funktion geschrieben, die den Java-internen Zufallsgenerator zu Hilfe nimmt.
+Die generierte Datei wird in einem automatisierten JUnit-Test gelesen und die darin enthaltenen Eingaben mit der eigentlichen Routingfunktion ausgeführt. 
+Die Einzelergebnisse werden mit Hilfe der in der Datei gespeicherten Ergebnisse der simplen Routingfunktion auf Richtigkeit geprüft.
+\Testcase{Zwischenhalte ohne Optimierung}  %RoutingAndGraphTest.simpleRoutingTest()
+Die Routingfunktion wird auch mit 3 bis 8 Zwischenhalten getestet.
+Diese werden wie in \RefTestcase{Ein Start- und Zielpunkt} zufällig generiert und analog getestet.
+Für jede Anzahl an Zwischenhalten werden 50 Testfälle generiert.
+
+\Testcase{Zwischenhalte mit Optimierung}  %RoutingAndGraphTest.optimizedRoutingTest()
+Die Optimierung der Reihenfolge der Zwischenhalte wird mit 1000 generierten Testfällen mit jeweils zwei Zwischenhalten getestet.
+Die Generierung der Testfälle läuft analog zu \RefTestcase{Ein Start- und Zielpunkt}, genau so wie die Überprüfung der Richtigkeit mit Hilfe eines Vergleichs mit den Ergebnissen eines simplen Routingmethode einem simplem Algorithmus.
+
+\Testcase{Import von manuell erzeugten Karten}
+Zur Überprüfung des Importes von Karten wurden einige Testkarten erzeugt, die diverse Grenzfälle beinhalten. Dazu gehören Karten die keine Straßen oder keine Knoten beinhalten, sowie "'Karten"' die entweder nicht das korrekte XML-Format besitzen oder Binärdateien sind. Der Import der Karten wurde danach auf Fehler überprüft (wie etwa Anzahl der Knoten oder Wege). Hierbei wurden keine Fehler gefunden.
+
+\Testcase{Wiederholtes Importieren}
+Um zu testen, wie sich das Programm beim wiederholten Importieren von Kartenmaterial verhält, wird die gleiche Karte zweimal importiert und die Zustände des Programmes nach beiden Importiervorgängen verglichen.
+
+\Testcase{Existenztests von MapElements im StringTrie}
+Es werden 800 künstliche MapElements generiert, woraufhin der StringTrie aufgebaut wird. Im Anschluss wird durch Anfrage getestet ob jedes dieser Elemente enthalten ist, das ganze wird auch auf dem kompaktierten StringTrie durchgeführt.
+ 
+\chapter{Testfälle und Szenarien}
+Die folgenden Testfälle und Szenarien sind im Pflichtenheft spezifiert.
+\section{Testfälle}
+\Testcase{Grafische Auswahl von Start und Ziel}
+\Passed
+\Testcase{Berechnung der kürzesten Route}
+\Passed
+\Testcase{Routendarstellung}
+\Passed
+\Testcase{Kartendarstellung}
+\Passed
+\Testcase{Zoomen und Verschieben}
+\Passed
+\Testcase{Kartenimport}
+\Passed
+\Testcase{Aktivieren von Karten}
+\Passed
+\Testcase{Auswahl und Berechnung von Zwischenzielen}
+\Passed
+\Testcase{textuelle Suchfunktion}
+Beschränkt auf die Eingabe von Straßennamen wurde der Test bestanden. Andere Eingaben werden nicht erkannt.
+\\\SemiPassed
+\Testcase{Vervollständigungs-Vorschläge}
+Wie bei \RefTestcase{textuelle Suchfunktion}, wurde auch hier sowohl die Funktion als auch der Test auf Straßennamen beschränkt.
+\\\SemiPassed
+\Testcase{Erweiterte Routenberechnung}
+Der Malus auf Fernstraßen funktioniert sehr gut.
+Im Hinblick auf den Höhenmalus zeigten allerdings unterschiedlich berechnete Routen keine Unterschiede.
+\Testcase{Speichern und Laden von Routen}
+\Passed
+\Testcase{Export von Routen ins KML-Format}
+\Passed
+\Testcase{Routenanzeige in Textform}
+\Dropped
+\Testcase{Einstellen der Fahrtgeschwindigkeit und zur Berechnung der Fahrtdauer}
+\Passed
+\Testcase{Ausdrucken der textuellen Routenbeschreibung}
+\Dropped
+\Testcase{Verwendung von Höheninformationen beim Kartenimport}
+\Passed
+\Testcase{3D-Darstellungsmodus}
+\Passed
+\Testcase{Points of Interest}
+\Passed
+\Testcase{Favoriten}
+\Passed
+
+\section{Szenarien}
+\subsection*{Berechnen und Anzeigen der kürzesten Route nach Auswahl von Start und Ziel}
+\Passed
+\subsection*{Berechnen, Anzeigen und Ausdrucken der kürzesten Route nach Auswahl von Start und Ziel per Suchfunktion}
+\begin{itemize}
+	\item Die Navigationspunktliste enthält standartmäßig zwei Felder, kann also nicht "'auf zwei Felder erweitert"' werden.
+	\item Nicht routbare Straßen werden durch nächstliegende routbare Straßen ersetzt.
+	\item Die Suche nach einer genauen Adresse ist nicht möglich; nur die Suche nach Straßennamen und \glspl{POI}.
+	\item Die textuelle Routenbeschreibung wurde verworfen.
+	\item Entsprechend kann die textuelle Routenbeschreibung auch nicht ausgedruckt werden.
+\end{itemize}
+\SemiPassed
+\subsection*{Planung einer reihenfolgeoptimierten Rundfahrt unter Verwendung von Favoriten / POIs}
+\begin{itemize}
+	\item Ein Navigationspuinkt kann nicht als weiterer Navigationspunkt ausgewählt werden (Start und Ziel können nicht gleich sein).
+\end{itemize}
+\SemiPassed
+\subsection*{Abschnittweises Anzeigen der Route und anschließender KML-Export}
+\begin{itemize}
+	\item Die textuelle Routenbeschreibung wird nicht unterstützt.
+	\item Die Hervorhebung der Routenabschnitte wurde entsprechend nicht implementiert.
+	\item Folgend ist eine Zentrierung des Routenabschnittes nicht möglich.
+\end{itemize}
+\SemiPassed
+\subsection*{Importieren/Laden der Karte, Laden/Speichern von Routen und Setzen/Löschen von Favoriten}
+\Passed
+\subsection*{Textuelle Punktsuche}
+\Passed
+\subsection*{Import und Verwendung von Höhendaten}
+\begin{itemize}
+        \item Die Höhendaten werden automatisch aus dem Bereitgestelltem Ordner importiert und benötigen keine Interaktion durch den Nutzer.
+\end{itemize}
+\SemiPassed
+\chapter{Codeüberdeckung}
+\section{Manuelle Tests}
+\begin{center}
+	\begin{tabular}{lr}
+	Paket & Überdeckung \\
+	\hline
+	\textit{Gesamt} & 77,3\% \\
+	\hline
+	\texttt{common} & 79,6\% \\
+	\texttt{controller} & 82,8\% \\
+	\texttt{gui} & 92,0\% \\
+	\texttt{gui.event} & 100,0\% \\
+	\texttt{heightinfo} & 64,4\% \\
+	\texttt{io} & 62,5\% \\
+	\texttt{map} & 80,4\% \\
+	\texttt{map.infosupply} & 56,3\% \\
+	\texttt{map.rendering} & 91,6\% \\
+	\texttt{routing} & 82,7\% \\
+	\end{tabular}
+\end{center}
+\section{Automatische Tests}
+\begin{center}
+	\begin{tabular}{lr}
+	Paket & Überdeckung \\
+	\hline
+	\textit{Gesamt} & 42,6\% \\
+	\hline
+	\texttt{common} & 47,5\% \\
+	\texttt{controller} & 10,1\% \\
+	\texttt{gui} & 0,0\% \\
+	\texttt{gui.event} & 8,4\% \\
+	\texttt{heightinfo} & 11,9\% \\
+	\texttt{io} & 81,1\% \\
+	\texttt{map} & 81,1\% \\
+	\texttt{map.infosupply} & 52\% \\
+	\texttt{map.rendering} & 7,3\% \\
+	\texttt{routing} & 89,3\% \\
+	\end{tabular}
+\end{center}
+\section{Alle Tests}
+\begin{center}
+	\begin{tabular}{lr}
+	Paket & Überdeckung \\
+	\hline
+	\textit{Gesamt} & 84,6\% \\
+	\hline
+	\texttt{common} & 86,5\% \\
+	\texttt{controller} & 86,3\% \\
+	\texttt{gui} & 92,0\% \\
+	\texttt{gui.event} & 100,0\% \\
+	\texttt{heightinfo} & 64,4\% \\
+	\texttt{io} & 88,3\% \\
+	\texttt{map} & 86,6\% \\
+	\texttt{map.infosupply} & 62,4\% \\
+	\texttt{map.rendering} & 91,6\% \\
+	\texttt{routing} & 89,3\% \\
+	\end{tabular}
+\end{center}
+
+\chapter{Skalierungs- und Belastungstests}
+\label{Skal}
+\section{Routing}
+\subsection{Einfaches Routing zwischen zwei Punkten}
+Das Routing zwischen zwei Zielen wurde auf drei verschieden großen Graphen zwischen jeweils 10000 zufällig gewählten Punkten ausgeführt.
+Als Testkarten dienten:
+\begin{itemize}
+     \item Karlsruhe-klein mit 5140 Knoten und 11531 Kanten
+     \item Karlsruhe-groß mit 17001 Knoten und 38261 Kanten
+     \item Berlin mit 274004 Knoten und 614859 Kanten
+\end{itemize}
+Die nachfolgende Grafik zeigt das unterschieliche Zeitverhalten bei verschieden langen Routen.
+Den Spalten sind jeweils die durchschnittlichen Zeiten für die Berechnung von Routen zu entnehmen.
+\vspace{2em}
+\begin{center}
+
+\begin{tabular}[c]{c||c|c||c|c||c|c|}
+\textbf{Länge der Route}& \multicolumn{2}{|c||}{KA klein }& \multicolumn{2}{|c||}{KA groß} & \multicolumn{2}{|c|}{Berlin} \\
+ArcFlags? & ja & nein & ja & nein & ja & nein \\
+\hline
+\hline
+0 - 49 & 0,00022s & 0,00079s & 0,00030s  & 0,0015s & 0,0024s & 0,0073\\
+\hline
+50 -99 & 0,00036s & 0,0018s & 0,0006s & 0,0034s & 0,0034 & 0,019\\
+\hline
+100 -149 & 0,00054s & 0,0024s & 0,0011s & 0,0056s & 0,0048s & 0,025 \\
+\hline
+150 -199 & 0,00069s & 0,0031s & 0,0014s & 0,0067s & 0,0067s & 0,039s \\
+\hline
+200 -249 & $\emptyset$ & $\emptyset$ & 0,0017s & 0,0076 & 0,0073s & 0,051s \\
+\hline
+249 -299 & $\emptyset$ & $\emptyset$ & 0,0019s & 0,008s & 0,0095s & 0,07s\\
+\hline
+$\varnothing$ & 0,00045 & 0,0025 & 0,00075 & 0,0054 & 0,0041 & 0035
+\end{tabular}
+\end{center}
+\vspace{2em}
+Folgend noch eine Übersicht der Routen, die die längste Berechnung auf den Karten benötigten:
+\begin{itemize} 
+     \item Karlsruhe-groß: Zeit 1.8ms, Routenlänge 0
+     \item Berlin: Zeit 40.2ms, Länge: 695
+\end{itemize}
+
+Auf den Karten von Karlsruhe gibt es keine Routen mit einer Länge > 300.
+Folgend eine Statistik, die das Laufzeitverhalten bei verschiedenen Routenlängen beschreibt.
+
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{graphics/MitundOhneArcFlags.pdf}
+\caption{Routenberechnung auf einer Karte von Berlin}
+\label{labelname}
+\end{figure}
+
+
+
+
+\subsection{Optimierung der Zwischenhaltreihenfolge}
+Der Skalierungstest für das optimierte Routing lief auf einer großen Karte von Karlsruhe (17001 Knoten und 38261 Kanten).
+Die folgende Grafik zeigt das Zeitverhalten bei verschiedenen Anzahlen von Zwischenhalten.
+Es wurden für jede Anzahl von Zwischenhalten mit zehn verschiedenen, zufälligen Zwischenhalten getestet und am Ende der Durchschnitt der resultierenden Zeiten genommen.
+Ab zwölf Zwischenhalten benötigt die Berechnung der Route zu lange, um nachhaltig getestet werden zu können, kann jedoch jederzeit mit einem zufriedenstellenden Ergebniss abgebrochen werden.
+
+\begin{figure}[h]
+\includegraphics[width = \textwidth]{graphics/datei.pdf}
+\caption{Zwischenhaltoptimierung}
+\label{labelname}
+\end{figure}
+
+\chapter{Qualitätsziele}
+Im Pflichtenheft festgelegte Qualitätsziele:
+\\
+\begin{tabular}{c||c|c|c|c|c}
+	& \rotatebox{60}{\textbf{sehr wichtig}} & \rotatebox{60}{\textbf{wichtig}} &
+\rotatebox{60}{\textbf{ausgewogen}} & \rotatebox{60}{\textbf{weniger wichtig}} & \rotatebox{60}{\textbf{unwichtig}}\\
+	\hline
+	\hline
+	\multicolumn{5}{l}{\textbf{Funktionalität}} \\\hline
+	Korrektheit & $\surd$ & & & \\\hline
+	\multicolumn{5}{l}{\textbf{Benutzerfreundlichkeit}} \\\hline
+	Bedienbarkeit & $\surd$ &  & & \\\hline
+	Erlernbarkeit & & $\surd$ & & \\\hline
+	Verständlichkeit & $\surd$ & & & \\\hline
+	\multicolumn{5}{l}{\textbf{Effizienz}} \\\hline
+	Zeitverhalten & & $\surd$ & & \\\hline
+	\hspace{0.2cm} Speicherplatzverbrauch & & & & $\surd$ \\\hline
+	\multicolumn{5}{l}{\textbf{Zuverlässigkeit}} \\\hline
+	Fehlertoleranz & & $\surd$ & & \\\hline
+	Reife & & $\surd$ & & \\\hline
+	\multicolumn{5}{l}{\textbf{Änderbarkeit}} \\\hline
+	Modifizierbarkeit & & & $\surd$ & \\\hline
+	Prüfbarkeit & & $\surd$ & & \\\hline
+	\multicolumn{5}{l}{\textbf{Übertragbarkeit}} \\\hline
+	Installierbarkeit & & & $\surd$ & \\\hline
+\end{tabular}\\
+
+\textbf{Korrektheit:} alle Korrektheitstests (vor allem Routing) wurden bestanden.\\
+
+\textbf{Benutzerfreundlichkeit:} nicht messbar, jedoch ist die GUI einfach zu bedienen und orientiert sich an gebräuchlichen Routenplanern.\\
+
+\textbf{Effizienz:} Wie den \hyperref[Skal]{Skalierungstests} zu entnehmen ist, arbeitet das normale Routing auch auf größeren Karten schnell und die Zwischenhaltoptimierung liefert schon nach kurzer Zeit gute Ergebnisse.\\
+
+\textbf{Zuverlässigkeit:} Im Betrieb des Programmes sind keine Abstürze festzustellen. \\
+
+\textbf{Änderbarkeit:} Das Deseign ist flexibel gehalten. \\
+
+\textbf{Übertragbarkeit:} Das Programm muss nicht installiert werden und läuft auch auf Windows stabil.
+\\ 
+
+
+
+
+% Performance Boosts: distance based level of detail (LOD)
+% Quality enhancement: improved looks of GUI tabs
+% Code cleanup: better event/listener handling, renaming of illfit/inconsistent or overlong names, removal of unused methods / classes, movement of some functionality to other packages/classes (wrong place), replaced attributes by local variables
+
+%\chapter{Glossar}
+\printglossary[title=Glossar]
+
+\end{document}
+
