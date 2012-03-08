@@ -171,12 +171,15 @@ public class Router {
             }
             logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
             route = fromAToB(prev, navPoint);
-            if (route != null) {    //TODO is this the best way to handle this situation (I dont think so) // Why not?
-                result.addAll(route.toList());
-                prev = navPoint;
-            } else {
+            if (route == null) {
                 logger.warn("Ignoring " + navPoint + " for routing." + " (no path found).");
                 return new ArrayList<Integer>();    //TODO l.a.
+            } else if (route.toList().size() == 1 && route.toList().get(0) == -1) {    //TODO is this the best way to handle this situation (I dont think so) // Why not?
+                prev = navPoint;
+                continue;
+            } else {
+                result.addAll(route.toList());
+                prev = navPoint;
             }
         }
         // // System.out.println(route.size());

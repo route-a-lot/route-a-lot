@@ -22,6 +22,10 @@ public class SimpleRouter {
             }
             Route route = fromAToB(prev, navPoint);
             if (route != null) {    // cause Router does this too, otherwise we would get different results
+                if (route.toList().size() == 1 && route.toList().get(0) == -1) {
+                    prev = navPoint;
+                    continue;
+                }
                 result.addAll(route.toList());
                 result.add(-1);
                 prev = navPoint;
@@ -34,8 +38,12 @@ public class SimpleRouter {
     }
     
     private static Route fromAToB(Selection a, Selection b) {
-        if (a == null || b == null || a.isOnSameEdge(b)) {
+        if (a == null || b == null) {
             return null;
+        }
+        if (a.isOnSameEdge(b)) {
+            return new Route(-1, 0);
+            
         }
         List<Integer> newRoute = new ArrayList<Integer>();
         

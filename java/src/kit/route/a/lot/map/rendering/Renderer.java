@@ -47,6 +47,7 @@ public class Renderer {
     private BufferedImage routeImage = null;
     private Bounds routeBounds = new Bounds();
     private Integer[] drawnRoute = new Integer[0];
+    private Selection[] drawnSelections = new Selection[0];
     private int drawnRouteDetail = -1;
     
     // Temporary variable (only guaranteed to be valid when rendering):
@@ -149,43 +150,47 @@ public class Renderer {
         State state = State.getInstance();
         MapInfo mapInfo = state.getMapInfo();
         Integer[] route = state.getCurrentRoute().toArray(new Integer[state.getCurrentRoute().size()]);
+        Selection[] sel = state.getNavigationNodes().toArray(new Selection[state.getNavigationNodes().size()]);
         List<Selection> navPoints = state.getNavigationNodes();
         Bounds bounds = context.getBounds();       
         
         boolean mustDrawRoute = (!Arrays.equals(route, drawnRoute))
+                    || (!Arrays.equals(sel, drawnSelections))
                     || (drawnRouteDetail != detail)
                     || (routeBounds.getTop() >= bounds.getTop())
                     || (routeBounds.getLeft() >= bounds.getLeft())
                     || (routeBounds.getBottom() <= bounds.getBottom())
                     || (routeBounds.getRight() <= bounds.getRight());
         
+        
         if (mustDrawRoute) {
+            drawnSelections = sel;
             drawnRoute = route;
             drawnRouteDetail = detail;
             int size = 0;
-            for (int i = 0; i < drawnRoute.length; i++) {
+            for (int i = 0; i < drawnRoute.length; i++) {   //count actual route size (without coded -1)
                 if (drawnRoute[i] != -1) {
                     size++;
                 }
             }
-            if (route.length == 0) { 
-                routeImage = null;
-            } else {
-                Node[] routeNodes = new Node[size];
-                
+            
+            Node[] routeNodes = new Node[size];
+            if (route.length != 0) {    
                 routeBounds = new Bounds(mapInfo.getNode(drawnRoute[0]).getPos(), 0);
-                
-                // find route bounding rectangle dimensions
-                int pos = 0;
-                for (int i = 0; i < drawnRoute.length; i++) {
-                    if (drawnRoute[i] != -1) {
-                        routeNodes[pos] = mapInfo.getNode(drawnRoute[i]);
-                        adjustBorderCoordinates(routeBounds, routeNodes[pos].getPos(), detail);
-                        pos++;
+                    // find route bounding rectangle dimensions and fill route nodes
+                    int pos = 0;
+                    for (int i = 0; i < drawnRoute.length; i++) {
+                        if (drawnRoute[i] != -1) {
+                            routeNodes[pos] = mapInfo.getNode(drawnRoute[i]);
+                            adjustBorderCoordinates(routeBounds, routeNodes[pos].getPos(), detail);
+                            pos++;
+                        } 
                     }
-                    
+                } else if (navPoints.size() != 0){
+                    routeBounds = new Bounds(navPoints.get(0).getPosition(), 0);    //no route but navNodes
+                } else {
+                    return; //no route, or navNodes
                 }
-                
                 for (Selection navSelection : navPoints) {
                     Node from = mapInfo.getNode(navSelection.getFrom());
                     Node to = mapInfo.getNode(navSelection.getTo());
@@ -238,7 +243,7 @@ public class Renderer {
 //                }
                 
                 graphics.dispose();
-            }
+            
         }
         
         if (routeImage != null) {
@@ -248,17 +253,45 @@ public class Renderer {
 
     private void drawRouteLines(Node[] routeNodes, List<Selection> navPoints, int detail,
             Graphics2D graphics, MapInfo mapInfo) {
-        for (int i = 1; i < routeNodes.length; i++) {
+        for (int i = 1; i < routeNodes.length; i++) {   
             drawLineBetweenCoordinates(routeNodes[i-1].getPos(), routeNodes[i].getPos(), detail, graphics);
         }
+        int navNodesPos = 1;    //navNode we have to look at first, later
+        for (int i = 0; i < navPoints.size() - 1; i++) {    //draw lines between selection on the same edge
+            boolean first = true;   //important for counting navNodesPos
+            if (navPoints.get(i).isOnSameEdge(navPoints.get(i+1))) {
+                if (i == 0 || first) {
+                    navNodesPos++;
+                }
+                Selection navSelection = navPoints.get(i);  //till loop we treat start and target
+                Node from = mapInfo.getNode(navSelection.getFrom());
+                Node to = mapInfo.getNode(navSelection.getTo());
+                Coordinates nodeOnEdge1 = Coordinates.interpolate(from.getPos(),
+                        to.getPos(), navSelection.getRatio());
+                drawLineBetweenCoordinates(nodeOnEdge1, navSelection.getPosition(), detail, graphics);
+                navSelection = navPoints.get(i + 1); 
+                from = mapInfo.getNode(navSelection.getFrom());
+                to = mapInfo.getNode(navSelection.getTo());
+                Coordinates nodeOnEdge2 = Coordinates.interpolate(from.getPos(),
+                        to.getPos(), navSelection.getRatio());
+                drawLineBetweenCoordinates(nodeOnEdge2, navSelection.getPosition(), detail, graphics);
+                drawLineBetweenCoordinates(nodeOnEdge1, nodeOnEdge2, detail, graphics);
+            } else {
+                first = false;
+            }
+        }
+        
         if (drawnRoute.length > 0) {
             Selection navSelection = navPoints.get(0);  //till loop we treat start and target
             Node from = mapInfo.getNode(navSelection.getFrom());
             Node to = mapInfo.getNode(navSelection.getTo());
             Coordinates nodeOnEdge = Coordinates.interpolate(from.getPos(),
                     to.getPos(), navSelection.getRatio());
+            
             drawLineBetweenCoordinates(routeNodes[0].getPos(), nodeOnEdge, detail, graphics);
             drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+            
+            
             navSelection = navPoints.get(navPoints.size() - 1);
             from = mapInfo.getNode(navSelection.getFrom());
             to = mapInfo.getNode(navSelection.getTo());
@@ -266,22 +299,32 @@ public class Renderer {
                     to.getPos(), navSelection.getRatio());
             drawLineBetweenCoordinates(routeNodes[routeNodes.length - 1].getPos(), nodeOnEdge, detail, graphics);
             drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
-            int navNodesPos = 1;
+            
             for (int i = 1; i < drawnRoute.length - 1; i++) {   //for navigationNodes which aren't start, or target
-                if (drawnRoute[i] == -1) {
+                if (drawnRoute[i] == -1) {//we have to draw lines to a selection
                     navSelection = navPoints.get(navNodesPos);
                     from = mapInfo.getNode(navSelection.getFrom());
                     to = mapInfo.getNode(navSelection.getTo());
                     nodeOnEdge = Coordinates.interpolate(from.getPos(),
                             to.getPos(), navSelection.getRatio());
                     drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i - 1]), nodeOnEdge, detail, graphics);
-                    drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i - 1]), nodeOnEdge, detail, graphics);
+                    drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i + 1]), nodeOnEdge, detail, graphics);
                     drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+                    while (navPoints.get(navNodesPos).isOnSameEdge(navPoints.get(navNodesPos + 1))) { //no route till the next navPoint
+                        navNodesPos++;
+                        navSelection = navPoints.get(navNodesPos);
+                        from = mapInfo.getNode(navSelection.getFrom());
+                        to = mapInfo.getNode(navSelection.getTo());
+                        nodeOnEdge = Coordinates.interpolate(from.getPos(),
+                                to.getPos(), navSelection.getRatio());
+                        drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+                    }
                     navNodesPos++;
                 }
             }
         }
     }
+    
     
     private void adjustBorderCoordinates(Bounds bounds, Coordinates point, int detail) {
         bounds.extend(point, ROUTE_SIZE * Projection.getZoomFactor(detail / 2));
