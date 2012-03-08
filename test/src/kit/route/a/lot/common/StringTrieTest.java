@@ -140,7 +140,7 @@ public class StringTrieTest {
         
         /*--------------Worte generieren-----------------------------------------*/
         try{
-            File file = new File("test/resources/Text");
+            File file = new File("test/resources/Validierung");
             BufferedReader reader = new BufferedReader(new FileReader(file));
             while( !( (line = reader.readLine() ) == null) ) {
                 String[] split = line.split(" ");
@@ -173,6 +173,7 @@ public class StringTrieTest {
                 trie.compactify();
             /*Testet ob alle Worte in den Trie eingefügt wurden*/
                 ArrayList<MapElement> wordArray = new ArrayList<MapElement>();
+                String missingWords = "";
                 int counter = 0;        
                 int anzahl = 0;
                 for(int i = 0; i < words.length; i++){
@@ -197,21 +198,24 @@ public class StringTrieTest {
                                     }
                     } else {
                         anzahl++;
-                        System.out.println(words[i]);
+                       // System.out.println(words[i]);
                     }
                         if(bool == false){
                         
-                        System.out.println(words[i]);
+                        missingWords = missingWords + words[i];
                         
                             anzahl++;
                         }
                     }
                 }
                 System.out.println("nicht gefundene Worte: " + anzahl);
+                System.out.println("missing Words konkateniert"+ missingWords);
                 System.out.println("gefundene Worte: " + counter);
                 System.out.println("Größe des Wordarrays: " + words.length);
-        System.out.println("anzahl: "+anzahl);
-        assertTrue(anzahl == 0);
+                /*MissingWords enthält nur Worte die keinen Strings entsprechen
+                  und hat nach Normalisierung die Länge null */
+        
+        assertTrue(StringTrie.normalize(missingWords).length() == 0);
         
        
     }
