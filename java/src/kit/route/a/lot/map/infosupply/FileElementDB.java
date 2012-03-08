@@ -15,14 +15,13 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.io.ProgressInputStream;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
+
+import org.apache.log4j.Logger;
 
 
 public class FileElementDB extends ArrayElementDB {
@@ -61,29 +60,12 @@ public class FileElementDB extends ArrayElementDB {
             e.printStackTrace();
         }
     }
-<<<<<<< HEAD
-    
     
     // GETTERS
     
-=======
-
->>>>>>> Iterator für FileElementDB ungetestet hinzugefügt
     @Override
     public ArrayList<POINode> getFavorites() {
         return new ArrayList<POINode>();
-    }
-    
-    @Override
-    public Iterator<Node> getAllNodes() {
-        // TODO
-        return null;
-    }
-    
-    @Override
-    public Iterator<MapElement> getAllMapElements() {
-        // TODO
-        return null;
     }
     
     
@@ -128,44 +110,7 @@ public class FileElementDB extends ArrayElementDB {
             }
         }
     }
-<<<<<<< HEAD
     
-=======
-
-    @Override
-    public void addNode(int nodeID, Node node) {
-        try {
-            if (currentAction == 0) {
-                currentAction = SAVING_NODES;
-                nodesCountPointer = randAccessFile.getFilePointer();
-                randAccessFile.writeInt(0);
-            }
-            nodePositionStream.writeLong(randAccessFile.getFilePointer());
-            MapElement.saveToOutput(randAccessFile, node, false);
-            nodesCount++;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void lastElementAdded() {
-        currentAction = 0;
-        try {
-            nodePositionRAF.close();
-            nodePositionFile.delete();
-
-            randAccessFile.writeInt(0);
-            randAccessFile.seek(nodesCountPointer);
-            randAccessFile.writeInt(nodesCount);
-            randAccessFile.seek(elementsCountPointer);
-            randAccessFile.writeInt(elementsCount);
-            randAccessFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
->>>>>>> Iterator für FileElementDB ungetestet hinzugefügt
     @Override
     public void addFavorite(POINode favorite) {
         throw new UnsupportedOperationException();

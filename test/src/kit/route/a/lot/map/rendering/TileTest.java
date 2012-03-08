@@ -37,13 +37,20 @@ public class TileTest {
         assertArrayEquals(expectedNodesOther, otherTile.getRelevantNodesForStreet(allNodes, 0));
     }
     
-//    @Test
+    @Test
     public void testPrerenderPerformance() {
         MapInfoMock mapInfoMock = new MapInfoMock();
         Tile myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
         long start;
         long duration;
-        for (int count = 1; count < 1000000; count *= 7) {
+        for (int i = 0; i < 10; i++) {       // warm up (because of cache effects)
+            mapInfoMock = new MapInfoQTMock(new Bounds(0, 140, -20, 130));
+            myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
+            fillMapInfoMock(mapInfoMock, 15, new Bounds(0, 140, -20, 130));
+            myTile.prerender();
+        }
+        System.out.println("Elemente\tBenötigte Zeit [ms]");
+        for (int count = 1; count < 1000000; count *= Math.sqrt(10)) {
 //            mapInfoMock = new MapInfoMock();
             mapInfoMock = new MapInfoQTMock(new Bounds(0, 140, -20, 130));
             myTile = new Tile(new Coordinates(0, 0), 100, 0, mapInfoMock);
@@ -51,7 +58,8 @@ public class TileTest {
             start = System.nanoTime();
             myTile.prerender();
             duration = System.nanoTime() - start;
-            System.out.println("Prerendering " + count + " elements took " + Util.formatNanoSeconds(duration));
+//            System.out.println("Prerendering " + count + " elements took " + Util.formatNanoSeconds(duration));
+            System.out.println(count + "\t" + ((double) duration / 1000000));
         }
     }
     
