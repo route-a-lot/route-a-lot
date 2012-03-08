@@ -61,7 +61,7 @@ public class StringTrie {
             str = normalize(str);
         }
         
-         
+        if(str.length() == 0){ return null; } 
         char cur = str.charAt(0);
         int index = Character.getNumericValue(cur) - 10;
         /* Sonderfälle abfangen */
