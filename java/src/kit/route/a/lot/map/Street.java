@@ -238,7 +238,9 @@ public class Street extends MapElement implements Comparable<Street> {
                    nodes[nodes.length / 2 + 1].getPos(), 0.5f), start, end, 0.5f, (name != null) ? name : 
                        Coordinates.interpolate(nodes[nodes.length / 2].getPos(),
                                nodes[nodes.length / 2 + 1].getPos(), 0.5f).toString());*/
-        return State.getInstance().getMapInfo().select(nodes[nodes.length / 2 - 1].getPos());
+        Selection sel = State.getInstance().getMapInfo().select(nodes[nodes.length / 2 - 1].getPos());
+        sel.setName(name);
+        return sel;
     }
 
     @Override
