@@ -15,7 +15,7 @@ import kit.route.a.lot.map.infosupply.MapElementTrie;
 import org.junit.Test;
 
 
-public class StringTrieTest {
+public class MapElementTrieTest {
     
     
     

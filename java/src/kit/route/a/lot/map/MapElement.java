@@ -101,7 +101,7 @@ public abstract class MapElement{
         MapInfo mapInfo = State.getInstance().getMapInfo();
         byte descriptor = input.readByte();
         switch (descriptor) {
-            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getNode(input.readInt()) : new POINode(); break;
+            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new POINode(); break;
             case DESCRIPTOR_NODE: result = (asID) ? mapInfo.getNode(input.readInt()) : new Node(); break;
             case DESCRIPTOR_STREET: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new Street(); break;
             case DESCRIPTOR_AREA: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new Area(); break;
@@ -129,7 +129,7 @@ public abstract class MapElement{
         }
         byte descriptor = 0;
         if (element instanceof POINode) {
-            descriptor = DESCRIPTOR_POI;  
+           descriptor = DESCRIPTOR_POI;  
         } else if (element instanceof Node) {
            descriptor = DESCRIPTOR_NODE; 
         } else if (element instanceof Street) {
