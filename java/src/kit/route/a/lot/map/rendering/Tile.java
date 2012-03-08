@@ -175,13 +175,14 @@ public class Tile {
         for (MapElement element : elements) {
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
-                if ((poi.getInfo().getName() == null) || (poi.getInfo().getName().length() == 0)) {
-                    continue;
+                if ((poi.getInfo().getName() != null) && (poi.getInfo().getName().length() > 0)
+                        && poi.getInfo().getCategory() != OSMType.FAVOURITE) {
+                    graphics.setColor(POI_BORDER_COLOR);
+                    drawPoint(poi.getPos(), POI_SIZE + 2);
+                    graphics.setColor(POI_COLOR);
+                    drawPoint(poi.getPos(), POI_SIZE); 
                 }
-                graphics.setColor(POI_BORDER_COLOR);
-                drawPoint(poi.getPos(), POI_SIZE + 2);
-                graphics.setColor(POI_COLOR);
-                drawPoint(poi.getPos(), POI_SIZE);       
+                      
             } 
         }
         graphics.dispose();

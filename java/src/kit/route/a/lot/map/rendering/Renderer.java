@@ -324,16 +324,15 @@ public class Renderer {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setColor(Color.BLUE);
         graphics.fillOval(0, 0, size, size);
-
+        
+        float offset = -size/2 * Projection.getZoomFactor(detail);
         for (MapElement element : elements) {
             if (element instanceof POINode) {
-                if ((((POINode) element).getInfo().getName() == null 
-                        || ((POINode) element).getInfo().getName().equals("")
-                        || ((POINode) element).getInfo().getCategory() != OSMType.FAVOURITE)){
-                    continue;
-                }
-                float offset = -size/2 * Projection.getZoomFactor(detail);
-                drawImage(context, ((Node) element).getPos().add(offset, offset), image, detail);
+                POINode fav = (POINode) element;
+                if (((fav.getInfo().getName() != null) && (fav.getInfo().getName().length() > 0)
+                        && (fav.getInfo().getCategory() == OSMType.FAVOURITE))){
+                    drawImage(context, ((Node) element).getPos().add(offset, offset), image, detail);
+                }                     
             }
         }
     }

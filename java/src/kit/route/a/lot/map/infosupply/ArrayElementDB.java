@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -88,22 +89,22 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public Node getNode(int id) {
         if (id < 0 || id >= nodes.size()) { 
-            throw new IllegalArgumentException("Illegal ID: " + id);
+            throw new IllegalArgumentException();
         }
         return nodes.get(id);
     }
     
     @Override
-    public MapElement getMapElement(int id) throws IllegalArgumentException {
+    public MapElement getMapElement(int id) {
         if (id < 0 || id >= mapElements.size()) { 
-            throw new IllegalArgumentException("Illegal ID: " + id);
+            throw new IllegalArgumentException();
         }
         return mapElements.get(id);
     }
    
     @Override
     public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
-        Bounds bounds = new Bounds(pos, (detailLevel + 1) * 2 * radius); 
+        Bounds bounds = new Bounds(pos, (Projection.getZoomFactor(detailLevel) + 1) * radius); 
         for (POINode fav : favorites) {
             if(fav.isInBounds(bounds)) {
                 return fav.getInfo();
