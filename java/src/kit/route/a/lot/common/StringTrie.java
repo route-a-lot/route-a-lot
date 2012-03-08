@@ -298,6 +298,8 @@ public class StringTrie {
             if(prefix.startsWith(value.substring(1))){
                 prefix = prefix.substring( (value.length() - 1) );
             /*------------------------------------------------------*/
+            } else {
+                return null;
             }
         }
     }
