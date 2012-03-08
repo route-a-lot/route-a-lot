@@ -41,7 +41,7 @@ public class Tile {
     protected int detailLevel, tileSize;
 
     private BufferedImage image = null;
-    private boolean finished = false;
+    private boolean finished = true; // false
 
     private MapInfo mapInfo;
 

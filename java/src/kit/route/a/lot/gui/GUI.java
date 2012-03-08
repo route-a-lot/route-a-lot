@@ -909,26 +909,26 @@ public class GUI extends JFrame {
             case 1: icon = selectWaypointIcon; break;
             case 2: icon = selectDestinationIcon; break;
         }
-        if(completions == null){
-            return;
+        popupSearchCompletions.setVisible(false);
+        if((completions != null) && (completions.size() > 0)){   
+            popupSearchCompletions.removeAll();
+            for (String completion : completions) {
+                final JMenuItem item = new JMenuItem(completion, icon);
+                popupSearchCompletions.add(item);
+                item.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        navComp.setFocusable(false);
+                        navComp.setText(item.getText());
+                        Listener.fireEvent(ADD_NAVNODE,
+                                new TextNumberEvent(item.getText(), currentNavNodeIndex));
+                        navComp.setFocusable(true);
+                    }
+                });
+            }
+            popupSearchCompletions.show(currentNavNodeField, 0, currentNavNodeField.getHeight());
+            navComp.grabFocus();
+            repaint();
         }
-        popupSearchCompletions.removeAll();
-        for (String completion : completions) {
-            final JMenuItem item = new JMenuItem(completion, icon);
-            popupSearchCompletions.add(item);
-            item.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    navComp.setFocusable(false);
-                    navComp.setText(item.getText());
-                    Listener.fireEvent(ADD_NAVNODE,
-                            new TextNumberEvent(item.getText(), currentNavNodeIndex));
-                    navComp.setFocusable(true);
-                }
-            });
-        }
-        popupSearchCompletions.show(currentNavNodeField, 0, currentNavNodeField.getHeight());
-        navComp.grabFocus();
-        repaint();
     }
 
     /**
