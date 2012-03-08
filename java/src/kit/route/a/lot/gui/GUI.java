@@ -703,7 +703,7 @@ public class GUI extends JFrame {
         int returnValue = dialog.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             Listener.fireEvent(SAVE_ROUTE,
-                    new TextEvent(dialog.getSelectedFile().getPath()));
+                    new TextEvent(dialog.getSelectedFile().getPath() + ".rte"));
         }
     }
 
@@ -715,7 +715,7 @@ public class GUI extends JFrame {
         int returnValue = dialog.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             Listener.fireEvent(EXPORT_ROUTE,
-                            new TextEvent(dialog.getSelectedFile().getPath()));
+                            new TextEvent(dialog.getSelectedFile().getPath() + ".kml"));
         }
     }
 
