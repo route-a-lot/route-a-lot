@@ -49,15 +49,10 @@ public class ArrayElementDB implements ElementDB {
     
     @Override
     public void addNode(int nodeID, Node node) {
-        if (nodeID > nodes.size()) {
-            throw new IllegalStateException("Node ID out of range: " + nodeID);
-        }
-        if (nodeID < nodes.size()) {
-            nodes.remove(nodeID);
-            throw new IllegalStateException("Node ID conflict: " + nodeID);
+        if (nodeID != nodes.size()) {
+            throw new IllegalArgumentException();
         }
         nodes.add(nodeID, node);
-        //logger.debug("NodeArraySize: " + nodes.size());
     }
     
     @Override
@@ -67,14 +62,14 @@ public class ArrayElementDB implements ElementDB {
         }
         
         if (mapElements.add(element)) {
-            element.assignID(mapElements.size() - 1);
+            element.setID(mapElements.size() - 1);
         }
     }
     
     @Override
     public void addFavorite(POINode favorite) {
         favorites.add(favorite);
-        favorite.assignID(favorites.size() - 1);     
+        favorite.setID(favorites.size() - 1);     
     }
     
     @Override

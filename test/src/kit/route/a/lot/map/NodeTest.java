@@ -63,12 +63,4 @@ public class NodeTest {
         assertFalse(poiNode.equals("boo"));
     }
     
-    @Test
-    public void testAssignID() {
-        //Falls node.id < 0 und id < 0 wird kein fehler geworfen!
-        assertTrue(node.assignID(1));
-        assertTrue(poiNode.assignID(2));
-        assertEquals(2, poiNode.getID());
-        assertEquals(1, node.getID());
-    }
 }

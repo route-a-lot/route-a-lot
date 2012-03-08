@@ -25,10 +25,9 @@ public abstract class Listener {
         SET_HIGHWAY_MALUS = 21, SET_HEIGHT_MALUS = 22,
         LIST_IMPORTED_MAPS = 23, DELETE_IMPORTED_MAP = 24,
         PROGRESS = 25, CANCEL_OPERATION = 26, CLOSE_APPLICATION = 27,
-        LIST_SEARCH_COMPLETIONS_START = 28, LIST_SEARCH_COMPLETIONS_PITSTOP = 29,
-        LIST_SEARCH_COMPLETIONS_DESTINATION = 30, SWITCH_NAV_NODES = 31;
+        LIST_SEARCH_COMPLETIONS = 28, SWITCH_NAV_NODES = 29;
     
-    private static final int TYPE_COUNT = 32;
+    private static final int TYPE_COUNT = 30;
     
     private static List<Listener>[] lists;
     static {

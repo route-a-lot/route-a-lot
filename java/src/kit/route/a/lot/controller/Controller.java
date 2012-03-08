@@ -32,7 +32,7 @@ import kit.route.a.lot.gui.event.PositionEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
 import kit.route.a.lot.gui.event.TextEvent;
-import kit.route.a.lot.gui.event.NavNodeNameEvent;
+import kit.route.a.lot.gui.event.TextNumberEvent;
 import kit.route.a.lot.io.HeightLoader;
 import kit.route.a.lot.io.MapIO;
 import kit.route.a.lot.io.OSMLoader;
@@ -142,8 +142,8 @@ public class Controller {
                     PositionNumberEvent event = (PositionNumberEvent) e;
                     addNavNode(event.getPosition(), event.getNumber());
                 } else {  
-                    NavNodeNameEvent event = (NavNodeNameEvent) e;
-                    addNavNode(event.getName(), event.getIndex());
+                    TextNumberEvent event = (TextNumberEvent) e;
+                    addNavNode(event.getText(), event.getNumber());
                     //getNavNodeFromText(((TextEvent) e).getText());
                 }
             }            
@@ -267,19 +267,10 @@ public class Controller {
                 setMapMode(!(state.getActiveRenderer() instanceof Renderer3D));
             }         
         });
-        Listener.addListener(LIST_SEARCH_COMPLETIONS_START, new Listener() {
+        Listener.addListener(LIST_SEARCH_COMPLETIONS, new Listener() {
             public void handleEvent(Event e) {
-                passSearchCompletion(((TextEvent) e).getText(), 0);
-            }      
-        });
-        Listener.addListener(LIST_SEARCH_COMPLETIONS_PITSTOP, new Listener() {
-            public void handleEvent(Event e) {
-                passSearchCompletion(((TextEvent) e).getText(), 1);
-            }      
-        });
-        Listener.addListener(LIST_SEARCH_COMPLETIONS_DESTINATION, new Listener() {
-            public void handleEvent(Event e) {
-                passSearchCompletion(((TextEvent) e).getText(), 2);
+                TextNumberEvent event = (TextNumberEvent) e;
+                passSearchCompletion(event.getText(), event.getNumber());
             }      
         });
         Listener.addListener(DELETE_IMPORTED_MAP, new Listener() {

@@ -61,21 +61,6 @@ public abstract class MapElement{
     }
     
     /**
-     * Sets the MapElement ID if no ID was assigned so far.
-     * Assigning a negative ID will delete any ID.
-     * @param id the new MapElement ID
-     * @return whether the ID was set
-     * @throws IllegalStateException ID is already set
-     */
-    public boolean assignID(int id) {
-        if (this.id >= 0 && id >= 0) {
-            throw new IllegalStateException("Element ID already assigned."); 
-        }
-        this.id = id;
-        return true;    
-    }
-    
-    /**
      * Checks whether the <code>MapElement</code> is (fully or partially) within
      * the given {@link Coordinates} range.
      * 

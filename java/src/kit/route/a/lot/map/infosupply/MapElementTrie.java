@@ -1,4 +1,4 @@
-package kit.route.a.lot.common;
+package kit.route.a.lot.map.infosupply;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -12,7 +12,7 @@ import java.lang.ClassCastException;
 
 import kit.route.a.lot.map.MapElement;
 
-public class StringTrie {
+public class MapElementTrie {
     
     private final static String EMPTY = "";
     
@@ -20,14 +20,14 @@ public class StringTrie {
     private MapElement word;
     private boolean suffix;
     private int count;
-    private StringTrie[] children;   
+    private MapElementTrie[] children;   
 
     /**
     * Konstruktor
     */
-    public StringTrie(String value) {
+    public MapElementTrie(String value) {
         this.value = value;
-        this.children = new StringTrie[27]; 
+        this.children = new MapElementTrie[27]; 
         this.word = null;
         this.count = 0;
         this.suffix = false;   
@@ -36,9 +36,9 @@ public class StringTrie {
     /**
      * Konstruktor
      */
-    public StringTrie() {
+    public MapElementTrie() {
          this.value = EMPTY;
-         this.children = new StringTrie[27]; 
+         this.children = new MapElementTrie[27]; 
          this.word = null;
          this.count = 0;
          this.suffix = false;    
@@ -50,7 +50,7 @@ public class StringTrie {
         ArrayList<MapElement> words = new ArrayList<MapElement>();
         if (str.length() == 0) {
             /*Blättinhalte werden in der DFS in words eingefügt*/
-                    for(StringTrie node: children){
+                    for(MapElementTrie node: children){
                             if(!(node == null)) {
                                     depthFirstSearch(words, node);
                             }
@@ -71,7 +71,7 @@ public class StringTrie {
         }
         /*geändert, an unterschiedliche Zeichenlänge angepasst*/
         if(!(children[index] == null)){
-                        StringTrie child = children[index];
+                        MapElementTrie child = children[index];
                         String value = child.getValue();
                         if(str.length() < value.length() ){
                 /*str ist nicht im Trie*/
@@ -118,10 +118,10 @@ public class StringTrie {
         }
 
         /* falls es noch keine Einträge gibt neuen Knoten erstellen */
-        StringTrie child;
+        MapElementTrie child;
 
         if ( children[index] == null ) {
-            child = new StringTrie("");
+            child = new MapElementTrie("");
             count++;
         } else {
             child = children[index];
@@ -136,7 +136,7 @@ public class StringTrie {
     * fügt die Blätter rekursiv ein
     *
     */
-    private StringTrie insert(StringTrie parent, String str, MapElement element) {
+    private MapElementTrie insert(MapElementTrie parent, String str, MapElement element) {
         if (str.length() == 0){
             /*markiere Wortende*/
             parent.setSuffix(true);
@@ -162,10 +162,10 @@ public class StringTrie {
             }
         
         }
-        StringTrie child;
+        MapElementTrie child;
         /* neuen Knoten einfügen, bei erster Traversierung */
         if ( parent.children[index] == null) {
-            child = new StringTrie("");
+            child = new MapElementTrie("");
             
            // parent.setCount();
         } else {
@@ -192,13 +192,13 @@ public class StringTrie {
     /*
     * Setter Methode für children
     */
-    public void setChildren(StringTrie[] children){
+    public void setChildren(MapElementTrie[] children){
         this.children = children;
     }
     /*
     * Getter Methode für children
     */
-    public StringTrie[] getChildren(){
+    public MapElementTrie[] getChildren(){
         return this.children;
     }        
     /*
@@ -242,7 +242,7 @@ public class StringTrie {
     /*
     * Tiefensuche
     */
-    public ArrayList<MapElement> depthFirstSearch(ArrayList<MapElement> words, StringTrie child){
+    public ArrayList<MapElement> depthFirstSearch(ArrayList<MapElement> words, MapElementTrie child){
         
             if (child.getSuffix()) {
                 MapElement element = child.getWord();
@@ -255,10 +255,10 @@ public class StringTrie {
     }   
     
     //public void TraverseTreeEdge(Node child, String str, String tmp, ArrayList<String> words){
-    public void TraverseTreeEdge(StringTrie child, ArrayList<MapElement> words){
+    public void TraverseTreeEdge(MapElementTrie child, ArrayList<MapElement> words){
 
-        StringTrie[] children = child.getChildren();
-        for(StringTrie node: children) {
+        MapElementTrie[] children = child.getChildren();
+        for(MapElementTrie node: children) {
             if( !(node == null) ) {
                 depthFirstSearch(words, node);
             }
@@ -273,11 +273,11 @@ public class StringTrie {
     * gibt vorerst die Nachbarn des Knotens zurück bei 
     * dem die Tiefensuche beginnt
     */
-    public StringTrie[] getStartNodes(String prefix){
+    public MapElementTrie[] getStartNodes(String prefix){
         if(prefix.length() == 0){
             return children;
         }
-    StringTrie[] dfsStartNodes = null;
+    MapElementTrie[] dfsStartNodes = null;
     char cur = prefix.charAt(0); 
     int index = Character.getNumericValue(cur) - 10;
     /* Sonderfälle abfangen */
@@ -298,8 +298,6 @@ public class StringTrie {
             if(prefix.startsWith(value.substring(1))){
                 prefix = prefix.substring( (value.length() - 1) );
             /*------------------------------------------------------*/
-            } else {
-                return null;
             }
         }
     }
@@ -316,7 +314,7 @@ public class StringTrie {
                 System.exit(0);    
             }
             /*-----------------------------------------------*/
-        StringTrie nextNeighbor = children[index];
+        MapElementTrie nextNeighbor = children[index];
         if(!(nextNeighbor == null) ){
             dfsStartNodes = nextNeighbor.getStartNodes(prefix.substring(1));
         } else {
@@ -379,13 +377,13 @@ public class StringTrie {
             prefix = normalize(prefix);
         }
         if(prefix.length() == 0){ return null;}
-        StringTrie[] children = getStartNodes(prefix);
+        MapElementTrie[] children = getStartNodes(prefix);
         if(children == null) {
             System.out.println("No words found");
             return new ArrayList<MapElement>();
         }
         ArrayList<MapElement> words = new ArrayList<MapElement>();
-        for(StringTrie node: children){
+        for(MapElementTrie node: children){
             if(!(node == null)) {
                 depthFirstSearch(words, node);
             }
@@ -400,8 +398,8 @@ public class StringTrie {
          /*Breitensuche: Liste initialisieren*/
          String value;
          String otherValue;
-         ArrayList<StringTrie> allChildren = new ArrayList<StringTrie>();
-         for(StringTrie node: children){
+         ArrayList<MapElementTrie> allChildren = new ArrayList<MapElementTrie>();
+         for(MapElementTrie node: children){
              if(node != null && !(node.getSuffix()) ){
                  allChildren.add(node);
                  /*Sprung in dfsComp*/
@@ -409,12 +407,12 @@ public class StringTrie {
              }
          }
          while(allChildren.size() > 0){
-             StringTrie node = allChildren.remove(0);
+             MapElementTrie node = allChildren.remove(0);
              node.setCount(node.countChild(node));
              
                      if(node.getCount() == 1 ){
              //System.out.println("Kinder == 1, Value: " + node.getValue() );
-                     StringTrie child = getChild(node);
+                     MapElementTrie child = getChild(node);
                                          value = node.getValue();
                                          if(!(child.getSuffix()) ){
                                              otherValue = child.getValue();
@@ -426,8 +424,8 @@ public class StringTrie {
                      }
              } else {
              //System.out.println("Kinder > 1, Value: " + node.getValue() );
-             StringTrie[] nextLayer = node.getChildren();
-                 for(StringTrie child: nextLayer){
+             MapElementTrie[] nextLayer = node.getChildren();
+                 for(MapElementTrie child: nextLayer){
                      if(child != null && !(child.getSuffix() ) ){
                                          allChildren.add(child);
                                  }
@@ -444,8 +442,8 @@ public class StringTrie {
     /*
     * gibt einziges Kind zurück
     */
-    private StringTrie getChild(StringTrie node){
-        for(StringTrie child: node.getChildren()){
+    private MapElementTrie getChild(MapElementTrie node){
+        for(MapElementTrie child: node.getChildren()){
             if(!(child == null)){
                 return child;
             }
@@ -453,9 +451,9 @@ public class StringTrie {
         return null;
     }
         
-    private int countChild(StringTrie node){
+    private int countChild(MapElementTrie node){
         int count = 0;
-        for(StringTrie child: node.getChildren()){
+        for(MapElementTrie child: node.getChildren()){
                         if(!(child == null)){
                
                                     count++;
@@ -467,8 +465,8 @@ public class StringTrie {
                 
    
 
-    public static StringTrie loadFromInput(DataInput input) throws IOException {      
-        StringTrie result = new StringTrie();
+    public static MapElementTrie loadFromInput(DataInput input) throws IOException {      
+        MapElementTrie result = new MapElementTrie();
         result.value = input.readUTF();
         result.word = (input.readBoolean()) ? MapElement.loadFromInput(input, true) : null;
         result.suffix = input.readBoolean();

@@ -1,27 +1,6 @@
 package kit.route.a.lot.gui;
 
-import static kit.route.a.lot.common.Listener.ADD_NAVNODE;
-import static kit.route.a.lot.common.Listener.CANCEL_OPERATION;
-import static kit.route.a.lot.common.Listener.CLOSE_APPLICATION;
-import static kit.route.a.lot.common.Listener.DELETE_IMPORTED_MAP;
-import static kit.route.a.lot.common.Listener.DELETE_NAVNODE;
-import static kit.route.a.lot.common.Listener.EXPORT_ROUTE;
-import static kit.route.a.lot.common.Listener.IMPORT_OSM;
-import static kit.route.a.lot.common.Listener.LIST_IMPORTED_MAPS;
-import static kit.route.a.lot.common.Listener.LIST_SEARCH_COMPLETIONS_DESTINATION;
-import static kit.route.a.lot.common.Listener.LIST_SEARCH_COMPLETIONS_PITSTOP;
-import static kit.route.a.lot.common.Listener.LIST_SEARCH_COMPLETIONS_START;
-import static kit.route.a.lot.common.Listener.LOAD_MAP;
-import static kit.route.a.lot.common.Listener.LOAD_ROUTE;
-import static kit.route.a.lot.common.Listener.OPTIMIZE_ROUTE;
-import static kit.route.a.lot.common.Listener.PROGRESS;
-import static kit.route.a.lot.common.Listener.SAVE_ROUTE;
-import static kit.route.a.lot.common.Listener.SET_HEIGHT_MALUS;
-import static kit.route.a.lot.common.Listener.SET_HIGHWAY_MALUS;
-import static kit.route.a.lot.common.Listener.SET_SPEED;
-import static kit.route.a.lot.common.Listener.SWITCH_MAP_MODE;
-import static kit.route.a.lot.common.Listener.SWITCH_NAV_NODES;
-import static kit.route.a.lot.common.Listener.VIEW_CHANGED;
+import static kit.route.a.lot.common.Listener.*;
 import static kit.route.a.lot.common.Util.humanReadableByteCount;
 
 import java.awt.BorderLayout;
@@ -83,7 +62,7 @@ import kit.route.a.lot.common.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.FloatEvent;
-import kit.route.a.lot.gui.event.NavNodeNameEvent;
+import kit.route.a.lot.gui.event.TextNumberEvent;
 import kit.route.a.lot.gui.event.NumberEvent;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
 import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
@@ -130,7 +109,7 @@ public class GUI extends JFrame {
     private long taskStartTime;
     private boolean enterPressed = false;
     private boolean nextNavPoint = false;
-    private Icon deleteIcon, selectStartIcon, selectPitStopIcon, selectDestinationIcon, switchIcon;
+    private Icon deleteIcon, selectStartIcon, selectWaypointIcon, selectDestinationIcon, switchIcon;
     private boolean active = false; // indicates whether main thread has finished startup
 
     /**
@@ -149,7 +128,7 @@ public class GUI extends JFrame {
         deleteIcon = new ImageIcon(ClassLoader.getSystemResource("icon_delete.png"));
         switchIcon = new ImageIcon(ClassLoader.getSystemResource("UpDown.png"));
         selectStartIcon = new ImageIcon(ClassLoader.getSystemResource("icon_greenarrow.png"));
-        selectPitStopIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
+        selectWaypointIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
         selectDestinationIcon = new ImageIcon(ClassLoader.getSystemResource("icon_redarrow.png"));
         setVisible(true);
     }
@@ -386,12 +365,11 @@ public class GUI extends JFrame {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
-                        new NavNodeNameEvent(fieldStartNode.getText(), editedNavNodeIndex));
+                        new TextNumberEvent(fieldStartNode.getText(), editedNavNodeIndex));
             }
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
-                System.out.println(fieldStartNode.getText());
                 if (enterPressed == false) {
                     if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
@@ -401,8 +379,8 @@ public class GUI extends JFrame {
                     editedNavNodeIndex = 0;
                     if (fieldStartNode.getText().length() > 1) {
                         navComp = fieldStartNode;
-                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS_START,
-                                new TextEvent(fieldStartNode.getText() + e.getKeyChar()));
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                                new TextNumberEvent(fieldStartNode.getText() + e.getKeyChar(), 0));
                     } else if (popupSearchCompletions.isVisible()) {
                         popupSearchCompletions.setVisible(false);
                     }
@@ -423,7 +401,7 @@ public class GUI extends JFrame {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
-                        new NavNodeNameEvent(fieldEndNode.getText(), editedNavNodeIndex));
+                        new TextNumberEvent(fieldEndNode.getText(), editedNavNodeIndex));
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
@@ -441,8 +419,8 @@ public class GUI extends JFrame {
                     }
                     if (fieldEndNode.getText().length() > 1) {
                         navComp = fieldEndNode;
-                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS_DESTINATION,
-                                new TextEvent(fieldEndNode.getText() + e.getKeyChar()));
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                                new TextNumberEvent(fieldEndNode.getText() + e.getKeyChar(), 2));
                     } else if (popupSearchCompletions.isVisible()) {
                         popupSearchCompletions.setVisible(false);
                     }
@@ -466,7 +444,6 @@ public class GUI extends JFrame {
                 }
                 
                 if(waypointArea.getComponentCount() > 0) {
-                    System.out.println(waypointArea.getComponentCount());
                     for(int i = 0; i < waypointArea.getComponentCount() && !nextNavPoint; i++) {
                         if(((JTextField) ((JPanel) waypointArea.getComponent(i)).getComponent(0)).getText().equals("")) {
                             nextNavPoint = true;
@@ -782,7 +759,7 @@ public class GUI extends JFrame {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
-                        new NavNodeNameEvent(waypointField.getText(), editedNavNodeIndex));
+                        new TextNumberEvent(waypointField.getText(), editedNavNodeIndex));
                 repaint();
             }
         });
@@ -798,8 +775,8 @@ public class GUI extends JFrame {
                         popupPos = new Point(waypointField.getX(),
                                 waypointField.getY() + waypointField.getHeight());
                         navComp = waypointField;
-                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS_PITSTOP,
-                                new TextEvent(waypointField.getText() + e.getKeyChar()));
+                        Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
+                                new TextNumberEvent(waypointField.getText() + e.getKeyChar(), 1));
                     } else if (popupSearchCompletions.isVisible()) {
                         popupSearchCompletions.setVisible(false);
                     }
@@ -932,15 +909,9 @@ public class GUI extends JFrame {
     public void showSearchCompletions(List<String> completions, int iconNum) {
         Icon icon = null;
         switch (iconNum) {
-            case 0:
-                icon = selectStartIcon;
-                break;
-            case 1:
-                icon = selectPitStopIcon;
-                break;
-            case 2:
-                icon = selectDestinationIcon;
-                break;
+            case 0: icon = selectStartIcon; break;
+            case 1: icon = selectWaypointIcon; break;
+            case 2: icon = selectDestinationIcon; break;
         }
         if(completions == null){
             return;
@@ -955,7 +926,7 @@ public class GUI extends JFrame {
                     navComp.setFocusable(false);
                     navComp.setText(item.getText());
                     Listener.fireEvent(ADD_NAVNODE,
-                            new NavNodeNameEvent(item.getText(), editedNavNodeIndex));
+                            new TextNumberEvent(item.getText(), editedNavNodeIndex));
                     navComp.setFocusable(true);
                 }
             });

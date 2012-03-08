@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.infosupply.MapElementTrie;
 
 class Test{ 
     
@@ -16,7 +17,7 @@ public static void main(String[]args){
     
    String text = "";
    String line;
-   StringTrie trie = new StringTrie();
+   MapElementTrie trie = new MapElementTrie();
    String[] words = null;
 
 
@@ -58,14 +59,14 @@ public static void main(String[]args){
             int anzahl = 0;
             for(int i = 0; i < words.length; i++){
                 if(words[i].length() > 0){
-                String word = StringTrie.normalize(words[i]);
+                String word = MapElementTrie.normalize(words[i]);
                 wordArray = trie.select(words[i]);
                 boolean bool = false;
                 if(!(wordArray == null)){
                       // System.out.println("Size: " + wordArray.size() );
                                for(int j = 0; j < wordArray.size(); j++){
                                         //System.out.print( wordArray.get(j)+" ");
-                        String found = StringTrie.normalize(wordArray.get(j).getName() );
+                        String found = MapElementTrie.normalize(wordArray.get(j).getName() );
                     //  System.out.println("gesucht: " + words[i]);
                     //  System.out.println("gefunden: " + wordArray.get(j) );
                         if( found.equals(word)){

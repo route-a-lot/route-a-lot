@@ -6,15 +6,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.StringTrie;
 import kit.route.a.lot.map.MapElement;
 
 public class TrieAddressOperator implements AddressOperator {
 
-    private StringTrie mapElements;
+    private MapElementTrie mapElements;
     
     public TrieAddressOperator(){
-        this.mapElements = new StringTrie();
+        this.mapElements = new MapElementTrie();
     }
 
     @Override
@@ -40,7 +39,9 @@ public class TrieAddressOperator implements AddressOperator {
                 return null;
             }
             
-           return targets.remove(0).getSelection();            
+           Selection selection = targets.remove(0).getSelection();     
+           selection.setName(address);
+           return selection;
     }
  
     @Override
@@ -54,7 +55,7 @@ public class TrieAddressOperator implements AddressOperator {
     
    @Override
     public void loadFromInput(DataInput input) throws IOException {
-       mapElements = StringTrie.loadFromInput(input);
+       mapElements = MapElementTrie.loadFromInput(input);
     }
 
     @Override

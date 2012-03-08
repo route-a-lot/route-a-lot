@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import kit.route.a.lot.map.MapElement;
+import kit.route.a.lot.map.infosupply.MapElementTrie;
 
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class StringTrieTest {
     
     private String text = "";
     private String line;
-    private StringTrie trie = new StringTrie();
+    private MapElementTrie trie = new MapElementTrie();
     private String[] words = null;
    
     
@@ -178,14 +179,14 @@ public class StringTrieTest {
                 int anzahl = 0;
                 for(int i = 0; i < words.length; i++){
                     if(words[i].length() > 0){
-                    String word = StringTrie.normalize(words[i]);
+                    String word = MapElementTrie.normalize(words[i]);
                     wordArray = trie.select(words[i]);
                     boolean bool = false;
                     if(!(wordArray == null)){
                           // System.out.println("Size: " + wordArray.size() );
                                    for(int j = 0; j < wordArray.size(); j++){
                                             //System.out.print( wordArray.get(j)+" ");
-                            String found = StringTrie.normalize(wordArray.get(j).getName() );
+                            String found = MapElementTrie.normalize(wordArray.get(j).getName() );
                         //  System.out.println("gesucht: " + words[i]);
                         //  System.out.println("gefunden: " + wordArray.get(j) );
                             if( found.equals(word)){
@@ -215,7 +216,7 @@ public class StringTrieTest {
                 /*MissingWords enthält nur Worte die keinen Strings entsprechen
                   und hat nach Normalisierung die Länge null */
         
-        assertTrue(StringTrie.normalize(missingWords).length() == 0);
+        assertTrue(MapElementTrie.normalize(missingWords).length() == 0);
         
        
     }
