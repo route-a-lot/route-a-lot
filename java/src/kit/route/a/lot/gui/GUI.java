@@ -9,7 +9,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -104,8 +103,8 @@ public class GUI extends JFrame {
     private JButton buttonCancelOperation;
 
     // NON-COMPONENT ATTRIBUTES
-    private Point popupPos;
-    private int editedNavNodeIndex, numNavNodes = 0;
+    private JTextField currentNavNodeField; // for popup
+    private int currentNavNodeIndex, numNavNodes = 0;
     private long taskStartTime;
     private boolean enterPressed = false;
     private boolean nextNavPoint = false;
@@ -365,7 +364,7 @@ public class GUI extends JFrame {
                 fieldStartNode.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
-                        new TextNumberEvent(fieldStartNode.getText(), editedNavNodeIndex));
+                        new TextNumberEvent(fieldStartNode.getText(), currentNavNodeIndex));
             }
         });
         fieldStartNode.addKeyListener(new KeyAdapter() {
@@ -374,9 +373,8 @@ public class GUI extends JFrame {
                     if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
                     }
-                    popupPos = new Point(fieldStartNode.getX(), 
-                            fieldStartNode.getY() + fieldStartNode.getHeight());
-                    editedNavNodeIndex = 0;
+                    currentNavNodeField = fieldStartNode;
+                    currentNavNodeIndex = 0;
                     if (fieldStartNode.getText().length() > 1) {
                         navComp = fieldStartNode;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
@@ -401,7 +399,7 @@ public class GUI extends JFrame {
                 fieldEndNode.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
-                        new TextNumberEvent(fieldEndNode.getText(), editedNavNodeIndex));
+                        new TextNumberEvent(fieldEndNode.getText(), currentNavNodeIndex));
             }
         });
         fieldEndNode.addKeyListener(new KeyAdapter() {
@@ -410,12 +408,11 @@ public class GUI extends JFrame {
                     if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
                     }
-                    popupPos = new Point(fieldEndNode.getX(), 
-                            fieldEndNode.getY() + fieldEndNode.getHeight());
+                    currentNavNodeField = fieldEndNode;
                     if (countNavNodes() == 1) {
-                        editedNavNodeIndex = 1;
+                        currentNavNodeIndex = 1;
                     } else {
-                        editedNavNodeIndex = countNavNodes();
+                        currentNavNodeIndex = countNavNodes();
                     }
                     if (fieldEndNode.getText().length() > 1) {
                         navComp = fieldEndNode;
@@ -759,7 +756,7 @@ public class GUI extends JFrame {
                 waypointField.setBackground(Color.red);
                 enterPressed = true;
                 Listener.fireEvent(ADD_NAVNODE,
-                        new TextNumberEvent(waypointField.getText(), editedNavNodeIndex));
+                        new TextNumberEvent(waypointField.getText(), currentNavNodeIndex));
                 repaint();
             }
         });
@@ -770,10 +767,9 @@ public class GUI extends JFrame {
                     if (isNavigationKey(e) && popupSearchCompletions.isVisible()) {
                         return;
                     }
-                    editedNavNodeIndex = pos;
+                    currentNavNodeIndex = pos;
                     if (waypointField.getText().length() > 1) {
-                        popupPos = new Point(waypointArea.getX() + row1.getX(),
-                                waypointArea.getX() + row1.getY() + waypointField.getY() + waypointField.getHeight());
+                        currentNavNodeField = waypointField;
                         navComp = waypointField;
                         Listener.fireEvent(LIST_SEARCH_COMPLETIONS,
                                 new TextNumberEvent(waypointField.getText() + e.getKeyChar(), 1));
@@ -925,12 +921,12 @@ public class GUI extends JFrame {
                     navComp.setFocusable(false);
                     navComp.setText(item.getText());
                     Listener.fireEvent(ADD_NAVNODE,
-                            new TextNumberEvent(item.getText(), editedNavNodeIndex));
+                            new TextNumberEvent(item.getText(), currentNavNodeIndex));
                     navComp.setFocusable(true);
                 }
             });
         }
-        popupSearchCompletions.show(routingTabTopArea, popupPos.x, popupPos.y);
+        popupSearchCompletions.show(currentNavNodeField, 0, currentNavNodeField.getHeight());
         navComp.grabFocus();
         repaint();
     }
