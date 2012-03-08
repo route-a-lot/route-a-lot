@@ -1,10 +1,13 @@
 package kit.route.a.lot.map.infosupply;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,50 +15,60 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.apache.log4j.Logger;
+
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.io.ProgressInputStream;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;
 
 
 public class FileElementDB extends ArrayElementDB {
-    
+
     private int currentAction = 0;
     private static final int SAVING_NODES = 1;
     private static final int SWAPPING_IDS = 2;
     private static final int SAVING_ELEMENTS = 3;
-    
+
     private int nodesCount = 0;
     private long nodesCountPointer = 0;
     private int elementsCount = 0;
     private long elementsCountPointer = 0;
+    private File outputFile;
     private RandomAccessFile randAccessFile;
-    
+
     private DataOutputStream nodePositionStream;
     private File nodePositionFile;
     private RandomAccessFile nodePositionRAF;
+    
+    private static Logger logger = Logger.getLogger(FileElementDB.class);
 
     
     // CONSTRUCTOR
     
     public FileElementDB(File outputFile) {
         try {
+            this.outputFile = outputFile;
             randAccessFile = new RandomAccessFile(outputFile, "rw");
             nodePositionFile = File.createTempFile("nodePositions", ".bin");
             nodePositionFile.deleteOnExit();
-            nodePositionStream = new DataOutputStream(new BufferedOutputStream(
-                    new FileOutputStream(nodePositionFile)));
+            nodePositionStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nodePositionFile)));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+<<<<<<< HEAD
     
     
     // GETTERS
     
+=======
+
+>>>>>>> Iterator für FileElementDB ungetestet hinzugefügt
     @Override
     public ArrayList<POINode> getFavorites() {
         return new ArrayList<POINode>();
@@ -105,7 +118,7 @@ public class FileElementDB extends ArrayElementDB {
                 e.printStackTrace();
             }
         }
-        
+
         if (currentAction == SAVING_ELEMENTS) {
             try {
                 MapElement.saveToOutput(randAccessFile, element, false);
@@ -115,7 +128,44 @@ public class FileElementDB extends ArrayElementDB {
             }
         }
     }
+<<<<<<< HEAD
     
+=======
+
+    @Override
+    public void addNode(int nodeID, Node node) {
+        try {
+            if (currentAction == 0) {
+                currentAction = SAVING_NODES;
+                nodesCountPointer = randAccessFile.getFilePointer();
+                randAccessFile.writeInt(0);
+            }
+            nodePositionStream.writeLong(randAccessFile.getFilePointer());
+            MapElement.saveToOutput(randAccessFile, node, false);
+            nodesCount++;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void lastElementAdded() {
+        currentAction = 0;
+        try {
+            nodePositionRAF.close();
+            nodePositionFile.delete();
+
+            randAccessFile.writeInt(0);
+            randAccessFile.seek(nodesCountPointer);
+            randAccessFile.writeInt(nodesCount);
+            randAccessFile.seek(elementsCountPointer);
+            randAccessFile.writeInt(elementsCount);
+            randAccessFile.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+>>>>>>> Iterator für FileElementDB ungetestet hinzugefügt
     @Override
     public void addFavorite(POINode favorite) {
         throw new UnsupportedOperationException();
@@ -168,10 +218,10 @@ public class FileElementDB extends ArrayElementDB {
         if (currentAction == SAVING_NODES) {
             currentAction = SWAPPING_IDS;
         }
-        
+
         if (currentAction == SWAPPING_IDS) {
             try {
-                nodePositionRAF.seek(id1 * 8);  // 8 == length of long
+                nodePositionRAF.seek(id1 * 8); // 8 == length of long
                 long posNode1 = nodePositionRAF.readLong();
                 randAccessFile.seek(posNode1 + 1);
                 randAccessFile.writeInt(id2);
@@ -201,5 +251,71 @@ public class FileElementDB extends ArrayElementDB {
     public void saveToOutput(DataOutput output) throws IOException {
         throw new UnsupportedOperationException();
     }
+
+
+    @Override
+    public Iterator<Node> getAllNodes() {
+        return new ElementIterator<Node>(outputFile, nodesCountPointer + 4);
+    }
+
   
+    public Iterator<MapElement> getAllMapElements() {
+        return new ElementIterator<MapElement>(outputFile, elementsCountPointer + 4);
+    }
+
+    private class ElementIterator<T> implements Iterator<T> {
+
+        DataInputStream inputStream;
+        T currentElement;
+        boolean hasNext = true;
+        boolean hasMoved = false;
+
+        public ElementIterator(File elementDBFile, long mapElementStartPos) {
+            try {
+                inputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(elementDBFile)));
+                if (mapElementStartPos != inputStream.skip(mapElementStartPos)) {
+                    logger.error("could not go to map element start position");
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            try {
+                currentElement = (T) MapElement.loadFromInput(inputStream, false);
+                hasMoved = true;
+            } catch (IOException e) {
+                try {
+                    inputStream.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                hasNext = false;
+            }
+            return hasNext;
+        }
+
+        @Override
+        public T next() {
+            if (!hasMoved) {
+                hasNext();
+            }
+            if (!hasNext) {
+                return null;
+            }
+            hasMoved = false;
+            return currentElement;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("can't remove element from elementDB");
+        }
+
+    }
+
 }
