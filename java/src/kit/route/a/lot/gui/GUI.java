@@ -115,7 +115,7 @@ public class GUI extends JFrame {
      * Creates the GUI window, using the given view center coordinates.
      */
     public GUI() {
-        super("Route-A-Lot");  
+        super("Route-A-Lot"); 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         installLookAndFeel();
         List<Image> icons = new LinkedList<Image>();     

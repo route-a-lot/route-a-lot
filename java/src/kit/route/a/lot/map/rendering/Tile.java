@@ -41,7 +41,7 @@ public class Tile {
     protected int detailLevel, tileSize;
 
     private BufferedImage image = null;
-    private boolean finished = true; // false
+    private boolean finished = false;
 
     private MapInfo mapInfo;
 
@@ -286,7 +286,7 @@ public class Tile {
         int basicSize = street.getDrawingSize();
         int size = basicSize / Projection.getZoomFactor(detailLevel);
         if (!top) {
-            graphics.setStroke(new BasicStroke(size + 2 / (float) Math.pow(detailLevel + 1, 0.8),
+            graphics.setStroke(new BasicStroke(size + 2 /*/ (float) Math.pow(detailLevel + 1, 0.8)*/,
                     BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         } else {
             graphics.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
