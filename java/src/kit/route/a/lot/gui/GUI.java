@@ -310,6 +310,8 @@ public class GUI extends JFrame {
         
         final JProgressBar memoryConsumption = new JProgressBar(0, 100);
         memoryConsumption.setStringPainted(true);
+        memoryConsumption.setMinimumSize(new Dimension(150, 20));
+        memoryConsumption.setMaximumSize(new Dimension(150, 20));
         Timer memoryConsumptionTimer = new Timer("memory consumption timer");
         memoryConsumptionTimer.schedule(new TimerTask() {
             @Override
@@ -324,6 +326,7 @@ public class GUI extends JFrame {
         
         JPanel statusBar = new JPanel();
         statusBar.setLayout(new BoxLayout(statusBar, BoxLayout.X_AXIS));
+        statusBar.add(Box.createHorizontalStrut(5));
         statusBar.add(new JLabel("Route:"));
         statusBar.add(Box.createHorizontalStrut(10));
         statusBar.add(routeValues);    
