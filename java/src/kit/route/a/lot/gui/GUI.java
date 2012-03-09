@@ -688,6 +688,8 @@ public class GUI extends JFrame {
      */
     private void loadRouteFileChooser() {
         JFileChooser dialog = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(".rte", "rte");
+        dialog.setFileFilter(filter);
         int returnValue = dialog.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             Listener.fireEvent(LOAD_ROUTE,
@@ -702,8 +704,13 @@ public class GUI extends JFrame {
         JFileChooser dialog = new JFileChooser();
         int returnValue = dialog.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listener.fireEvent(SAVE_ROUTE,
-                    new TextEvent(dialog.getSelectedFile().getPath() + ".rte"));
+            if(dialog.getSelectedFile().getPath().endsWith(".rte")) {
+                Listener.fireEvent(SAVE_ROUTE,
+                        new TextEvent(dialog.getSelectedFile().getPath()));
+            } else {
+                Listener.fireEvent(SAVE_ROUTE,
+                        new TextEvent(dialog.getSelectedFile().getPath() + ".rte"));
+            }
         }
     }
 
@@ -714,8 +721,13 @@ public class GUI extends JFrame {
         JFileChooser dialog = new JFileChooser();
         int returnValue = dialog.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            Listener.fireEvent(EXPORT_ROUTE,
-                            new TextEvent(dialog.getSelectedFile().getPath() + ".kml"));
+            if(dialog.getSelectedFile().getPath().endsWith(".kml")) {
+                Listener.fireEvent(EXPORT_ROUTE,
+                        new TextEvent(dialog.getSelectedFile().getPath()));
+            } else {
+                Listener.fireEvent(EXPORT_ROUTE,
+                        new TextEvent(dialog.getSelectedFile().getPath() + ".kml"));
+            }
         }
     }
 
