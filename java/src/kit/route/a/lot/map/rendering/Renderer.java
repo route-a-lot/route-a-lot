@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RadialGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
@@ -32,9 +33,14 @@ public class Renderer {
     private static final boolean THREADED = true;
     private static final int DRAW_BUFFER = 200;
     private static final float ROUTE_SIZE = 20;
+    
     private static final BufferedImage STARTNODE = createNavNodeImage(new Color(52, 151, 50), 14);
     private static final BufferedImage WAYNODE = createNavNodeImage(new Color(179, 186, 62), 12);
     private static final BufferedImage ENDNODE = createNavNodeImage(new Color(151, 50, 55), 14);
+    private static final Color BACKGROUND_COLOR = new Color(210, 230, 190);
+    private static final boolean USE_GRADIENT = true;
+    private static final RadialGradientPaint GRADIENT = new RadialGradientPaint(
+            0, 0, 2500, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
     
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
     
@@ -78,9 +84,14 @@ public class Renderer {
         int detail = context.getDetailLevel();
         int tileSize = BASE_TILE_SIZE * Projection.getZoomFactor(detail);
         // FILL BACKGROUND
-        Graphics graphics = ((Context2D) context).getGraphics();
-        graphics.setColor(new Color(210, 230, 190));
-        graphics.fillRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());      
+        Graphics graphics = ((Context2D) context).getGraphics(); 
+        if (USE_GRADIENT) {
+            ((Graphics2D) graphics).setPaint(GRADIENT);
+        } else {
+            graphics.setColor(new Color(210, 230, 190));
+        }
+        graphics.fillRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());    
+        
         // DRAW TILES
         int maxLon = (int) (bounds.getRight() / tileSize);
         int maxLat = (int) (bounds.getBottom() / tileSize);
