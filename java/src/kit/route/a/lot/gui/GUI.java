@@ -658,13 +658,7 @@ public class GUI extends JFrame {
         JFileChooser dialog = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".osm", "osm");
         dialog.setFileFilter(filter);
-        File currentDir = null;
-        try {
-            currentDir = new File(new File(".").getCanonicalPath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        dialog.setCurrentDirectory(currentDir);
+        setCurrentDir(dialog);
         if (dialog.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             startTask();
             Listener.fireEvent(IMPORT_OSM,
@@ -690,6 +684,7 @@ public class GUI extends JFrame {
         JFileChooser dialog = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(".rte", "rte");
         dialog.setFileFilter(filter);
+        setCurrentDir(dialog);
         int returnValue = dialog.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             Listener.fireEvent(LOAD_ROUTE,
@@ -702,6 +697,7 @@ public class GUI extends JFrame {
      */
     private void saveRouteFileChooser() {
         JFileChooser dialog = new JFileChooser();
+        setCurrentDir(dialog);
         int returnValue = dialog.showSaveDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             if(dialog.getSelectedFile().getPath().endsWith(".rte")) {
@@ -719,6 +715,7 @@ public class GUI extends JFrame {
      */
     private void exportRouteKMLFileChooser() {
         JFileChooser dialog = new JFileChooser();
+        setCurrentDir(dialog);
         int returnValue = dialog.showDialog(this, "Exportieren");
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             if(dialog.getSelectedFile().getPath().endsWith(".kml")) {
@@ -729,6 +726,16 @@ public class GUI extends JFrame {
                         new TextEvent(dialog.getSelectedFile().getPath() + ".kml"));
             }
         }
+    }
+    
+    private void setCurrentDir(JFileChooser dialog) {
+        File currentDir = null;
+        try {
+            currentDir = new File(new File(".").getCanonicalPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        dialog.setCurrentDirectory(currentDir);
     }
 
     /**

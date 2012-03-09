@@ -60,7 +60,7 @@ public class QTLeaf extends QuadTree {
     @Override
     public void queryElements(Bounds area, Set<MapElement> elememts, boolean exact) {
         if(isInBounds(area)) {
-            if (QTGeographicalOperator.DRAW_FRAMES) {
+            if (QTGeographicalOperator.drawFrames) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(
                         this.bounds, Color.blue);
             }

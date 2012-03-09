@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 public class QTGeographicalOperator implements GeographicalOperator {
 
     private static Logger logger = Logger.getLogger(QTGeographicalOperator.class);
-    public static final boolean DRAW_FRAMES = false;
+    public static boolean drawFrames = false;
     
     protected Bounds bounds;
     
@@ -99,8 +99,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
             logger.trace(" QT Bounds BR Lon: " + zoomlevels[0].getBottomRight().getLongitude());
             logger.trace(" QT Bounds BR Lat: " + zoomlevels[0].getBottomRight().getLatitude());
         }*/    
-        if (QTGeographicalOperator.DRAW_FRAMES) {
-            State.getInstance().getActiveRenderer().addFrameToDraw(bounds, Color.red);
+        if (drawFrames) {
+            State.getInstance().getActiveRenderer().addFrameToDraw(area, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
         QuadTree tree = trees[Util.clip(zoomlevel, 0, NUM_LEVELS -1)];

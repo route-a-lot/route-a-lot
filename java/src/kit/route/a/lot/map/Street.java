@@ -75,7 +75,7 @@ public class Street extends MapElement implements Comparable<Street> {
     @Override
     public boolean isInBounds(Bounds bounds) {
         boolean inBounds = false;
-        Bounds extendedBounds = bounds.clone().extend(getDrawingSize() + 2);
+        Bounds extendedBounds = bounds.clone().extend(getDrawingSize() / 2 + 2);
         for (int i = 1; i < nodes.length && !inBounds; i++) {
             inBounds = isEdgeInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), extendedBounds);
         }
@@ -364,6 +364,10 @@ public class Street extends MapElement implements Comparable<Street> {
                 break;
         }
         return basicSize;
+    }
+    
+    public static int getMaxDrawingSize() {
+        return 40;
     }
 
     public int getDrawingSize() {

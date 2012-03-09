@@ -56,7 +56,7 @@ public class QTNode extends QuadTree {
     @Override
     public void queryElements(Bounds area, Set<MapElement> elements, boolean exact) {
         if (isInBounds(area)) {
-            if (QTGeographicalOperator.DRAW_FRAMES) {
+            if (QTGeographicalOperator.drawFrames) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(bounds, Color.black);
             }
             for(QuadTree qt : children) {

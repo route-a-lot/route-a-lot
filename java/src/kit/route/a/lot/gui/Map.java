@@ -152,6 +152,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         // POI / FAVORITE DESCRIPTION POPUP
         labelPOIDescription = new JLabel();
         labelPOIName = new JLabel();
+        labelPOIName.setForeground(Color.WHITE);
         descriptionMenu = new JPopupMenu();
         descriptionMenu.setBackground(Color.WHITE);
         descriptionMenu.add(labelPOIName);
@@ -164,6 +165,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
         URL favoriteIcon = ClassLoader.getSystemResource("icon_bluecircle.png");
         URL deleteIcon = ClassLoader.getSystemResource("icon_delete.png");
         popUpName = new JLabel();
+        popUpName.setForeground(Color.LIGHT_GRAY);
         startItem = new JMenuItem(TEXT_AS_START, new ImageIcon(startIcon));
         endItem = new JMenuItem(TEXT_AS_DESTINATION, new ImageIcon(endIcon));
         stopoverItem = new JMenuItem(TEXT_AS_WAYPOINT, new ImageIcon(stopoverIcon));

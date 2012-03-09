@@ -444,6 +444,7 @@ public class Renderer {
         framesToDraw.add(frame);
         System.out.println("Added " + frame[0] + "  " + frame[1]);
         System.out.println("Size: " + framesToDraw.size());
+        System.out.println("Color: " + c);
     }
     
     private void drawFrame(Coordinates topLeft, Coordinates bottomRight,int detail, Color c) {
