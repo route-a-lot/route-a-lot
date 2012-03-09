@@ -10,26 +10,24 @@ import kit.route.a.lot.map.MapElement;
 public class MapElementMock extends MapElement {
     
     private String name;
-    private int id = 0; 
+    private int id = -1; 
     
     public MapElementMock(String name){
         this.name = name;
     }
     
+    @Override
     public String getName(){
-
         return name;
     }
     
-    public void setName(String name){
-        this.name = name;
-    } 
-    
-    public void setId(int id){
+    @Override
+    public void setID(int id){
         this.id = id;
     }
 
-    public int getId(){
+    @Override
+    public int getID(){
         return id;
     }
 

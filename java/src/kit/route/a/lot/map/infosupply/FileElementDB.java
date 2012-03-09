@@ -233,7 +233,7 @@ public class FileElementDB extends ArrayElementDB {
         @Override
         public boolean hasNext() {
             try {
-                currentElement = (T) MapElement.loadFromInput(inputStream, false);
+                currentElement = (T) MapElement.loadFromInput(inputStream);
                 hasMoved = true;
             } catch (IOException e) {
                 try {

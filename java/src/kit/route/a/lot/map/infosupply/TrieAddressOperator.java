@@ -6,14 +6,16 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.StringTrie;
+import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 
 public class TrieAddressOperator implements AddressOperator {
 
-    private MapElementTrie mapElements;
-    
-    public TrieAddressOperator(){
-        this.mapElements = new MapElementTrie();
+    private StringTrie mapElements;
+
+    public TrieAddressOperator() {
+        this.mapElements = new StringTrie();
     }
 
     @Override
@@ -23,43 +25,45 @@ public class TrieAddressOperator implements AddressOperator {
         }
         ArrayList<String> completions = new ArrayList<String>();
        
-        for (MapElement element : mapElements.search(expression)) {
-            String name = element.getName();
-            if(!(name == null || name.length() == 0) )
-                completions.add(element.getName());
+        for (Integer id : mapElements.search(expression)) {
+            String name = State.getInstance().getMapInfo().getMapElement(id).getName();
+            if (name != null && name.length() != 0) {
+                completions.add(name);
             }       
+        }
         return completions;
     }
 
     @Override
     public Selection select(String address) {
-            ArrayList<MapElement> targets = mapElements.search(address);
-            if(targets == null || targets.size() == 0){
-                return null;
-            }
-           return targets.remove(0).getSelection();
+        ArrayList<Integer> targets = mapElements.search(address);
+        if (targets == null || targets.size() == 0) {
+            return null;
+        }
+        return State.getInstance().getMapInfo().getMapElement(targets.remove(0)).getSelection();
     }
- 
+
     @Override
     public void add(MapElement element) {
-           mapElements.insert(element.getName(), element);
+        mapElements.insert(element.getName(), element.getID());
     }
+
     @Override
-    public void compactify(){
+    public void compactify() {
         mapElements.compactify();
     }
-    
-   @Override
+
+    @Override
     public void loadFromInput(DataInput input) throws IOException {
-       mapElements = MapElementTrie.loadFromInput(input);
+        mapElements = StringTrie.loadFromInput(input);
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
         mapElements.saveToOutput(output);
     }
-    
-    
+
+
     public boolean equals(Object other) {
         // TODO: dummy
         return true;

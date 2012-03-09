@@ -12,6 +12,7 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public abstract class MapElement {
 
+    public static final byte DESCRIPTOR_NULL = 0;
     /** constant used in a stream for announcing {@link Node} element data following */
     public static final byte DESCRIPTOR_NODE = 1;
     /** constant used in a stream for announcing {@link Street} element data following */
@@ -87,27 +88,30 @@ public abstract class MapElement {
      * the map element type from the input and creates the map element.
      * 
      * @param input the input
-     * @param asID whether the element is stored indirectly via ID
      * @return the loaded {@link MapElement}
      * @throws IllegalArgumentException <b>stream</b> is <code>null</code>
      * @throws UnsupportedOperationException element type could not be determined
      * @throws IOException map element could not be loaded from the input
      */
-    public static MapElement loadFromInput(DataInput input, boolean asID) throws IOException {
-        if (input == null) {
+    public static MapElement loadFromInput(DataInput input) throws IOException {
+        byte descriptor = 0;
+        if ((input == null) || ((descriptor = input.readByte()) == DESCRIPTOR_NULL)) {
             throw new IllegalArgumentException();
         }
-        MapElement result;
-        MapInfo mapInfo = State.getInstance().getMapInfo();
-        byte descriptor = input.readByte();
-        switch (descriptor) {
-            case DESCRIPTOR_POI: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new POINode(); break;
-            case DESCRIPTOR_NODE: result = (asID) ? mapInfo.getNode(input.readInt()) : new Node(); break;
-            case DESCRIPTOR_STREET: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new Street(); break;
-            case DESCRIPTOR_AREA: result = (asID) ? mapInfo.getMapElement(input.readInt()) : new Area(); break;
-            default: throw new UnsupportedOperationException("Cannot determine element type from stream.");         
-        }
-        if (!asID) {
+        MapElement result;      
+        if (input.readBoolean()) {
+            MapInfo mapInfo = State.getInstance().getMapInfo();
+            int id = input.readInt();
+            result = (descriptor == DESCRIPTOR_NODE) ? mapInfo.getNode(id) : mapInfo.getMapElement(id);
+        } else {
+            switch (descriptor) {
+                case DESCRIPTOR_NODE: result = new Node(); break;
+                case DESCRIPTOR_POI: result = new POINode(); break;
+                case DESCRIPTOR_STREET: result = new Street(); break;
+                case DESCRIPTOR_AREA: result = new Area(); break;
+                default: throw new UnsupportedOperationException(
+                        "Cannot determine element type from stream.");         
+            }
             result.load(input);
         }
         return result;
@@ -119,15 +123,16 @@ public abstract class MapElement {
      * 
      * @param output the output
      * @param element the {@link MapElement} that is to be saved
-     * @param asID determines whether the element itself or rather its ID is saved
+     * @param allowAsID determines whether the element itself or rather its ID is saved
      * @throws IllegalArgumentException either argument is <code>null</code>
      * @throws IOException <b>element</b> could not be saved to the output
      */
-    public static void saveToOutput(DataOutput output, MapElement element, boolean asID) throws IOException {     
+    public static void saveToOutput(DataOutput output, MapElement element, boolean allowAsID) throws IOException {     
         if ((output == null) || (element == null)) {
             throw new IllegalArgumentException();
         }
-        byte descriptor = 0;
+        
+        byte descriptor = DESCRIPTOR_NULL;
         if (element instanceof POINode) {
            descriptor = DESCRIPTOR_POI;  
         } else if (element instanceof Node) {
@@ -136,14 +141,12 @@ public abstract class MapElement {
            descriptor = DESCRIPTOR_STREET; 
         } else if (element instanceof Area) {
            descriptor = DESCRIPTOR_AREA; 
-        } else {
-           throw new UnsupportedOperationException("Cannot save element: " + element.getName());
-        }
+        } 
         output.writeByte(descriptor);
+        
+        boolean asID = allowAsID && (element.getID() >= 0);
+        output.writeBoolean(asID);
         if (asID) {
-            if (element.getID() < 0) {
-                throw new IllegalArgumentException("Cannot save element as ID: " + element.getName());
-            }
             output.writeInt(element.getID());
         } else {
             element.save(output);

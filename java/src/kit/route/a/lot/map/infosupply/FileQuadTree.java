@@ -151,7 +151,7 @@ public class FileQuadTree extends QuadTree {
             int size = file.readByte();
             elements = new ArrayList<MapElement>(size);
             for (int i = 0; i < size; i++) {
-                MapElement element = MapElement.loadFromInput(file, true);
+                MapElement element = MapElement.loadFromInput(file);
                 element.registerUse();
                 elements.add(element);               
             }

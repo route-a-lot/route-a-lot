@@ -81,7 +81,7 @@ public class QTLeaf extends QuadTree {
         int len = input.readInt();
         elements = new MapElement[len];
         for (int i = 0; i < len; i++) {
-            elements[i] = MapElement.loadFromInput(input, input.readBoolean());
+            elements[i] = MapElement.loadFromInput(input);
         }
     }
 
@@ -91,8 +91,7 @@ public class QTLeaf extends QuadTree {
         output.writeInt(getSize());
         for (MapElement element: elements) {
             if (element != null) {
-                output.writeBoolean(element.getID() >= 0);
-                MapElement.saveToOutput(output, element, element.getID() >= 0);
+                MapElement.saveToOutput(output, element, true);
             }
         }
     }

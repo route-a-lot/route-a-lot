@@ -78,8 +78,8 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-        //RandomAccessFile output = new RandomAccessFile(file, "rw");
+        //DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+        RandomAccessFile output = new RandomAccessFile(file, "rw");
         
         // Write data to stream, abort on error
         output.writeChars("SRAL");  // magic number
@@ -91,7 +91,7 @@ public class MapIO {
         p.addProgress(0.7);
         logger.info("save graph...");
         state.getLoadedGraph().saveToOutput(output); 
-        output.close();     
+        //output.close();     
         logger.info("map saving finished");
         p.addProgress(0.25);
     }

@@ -18,7 +18,7 @@ import kit.route.a.lot.map.Node;
  */
 public class FileQuadTreeDivider {
 
-    private static final int MAX_SIZE = 512;//16384;
+    private static final int MAX_SIZE = 16384;
     
     private CountingQuadTree root = null;
     private boolean refillNeeded = false;

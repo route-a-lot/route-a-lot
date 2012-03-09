@@ -89,7 +89,7 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public Node getNode(int id) {
         if (id < 0 || id >= nodes.size()) { 
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Illegal Node ID: " + id);
         }
         return nodes.get(id);
     }
@@ -97,7 +97,7 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public MapElement getMapElement(int id) {
         if (id < 0 || id >= mapElements.size()) { 
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Illegal Map Element ID: " + id);
         }
         return mapElements.get(id);
     }
@@ -132,7 +132,7 @@ public class ArrayElementDB implements ElementDB {
         int len = input.readInt();
         Node[] nodesArray = new Node[len];
         for (int i = 0; i < len; i++) {
-            Node node = (Node) MapElement.loadFromInput(input, false);
+            Node node = (Node) MapElement.loadFromInput(input);
             nodesArray[node.getID()] = node;
         }
         nodes = new ArrayList<Node>(Arrays.asList(nodesArray));
@@ -140,7 +140,7 @@ public class ArrayElementDB implements ElementDB {
         len = input.readInt();
         mapElements = new ArrayList<MapElement>(len);
         for (int i = 0; i < len; i++) {
-            MapElement element = MapElement.loadFromInput(input, false);
+            MapElement element = MapElement.loadFromInput(input);
             mapElements.add(element);
             element.setID(i);
         }
@@ -148,7 +148,7 @@ public class ArrayElementDB implements ElementDB {
         len = input.readInt();
         favorites = new ArrayList<POINode>(len);
         for (int i = 0; i < len; i++) {
-            POINode favorite = (POINode) MapElement.loadFromInput(input, false);
+            POINode favorite = (POINode) MapElement.loadFromInput(input);
             nodes.add(favorite);
             favorite.setID(i); // TODO: necessary?
         }

@@ -3,13 +3,17 @@ package kit.route.a.lot.map.infosupply;
 import static kit.route.a.lot.common.Util.getSharedElementAtEnd;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -39,9 +43,11 @@ public class MapInfo {
     private static Logger logger = Logger.getLogger(MapInfo.class);
 
     protected ElementDB elementDB = new ArrayElementDB();
-    private GeographicalOperator geoOperator = new /*FileQTGeoOperator();*/ QTGeographicalOperator();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
+    private GeographicalOperator geoOperator = new FileQTGeoOperator();
+    //private GeographicalOperator geoOperator = new QTGeographicalOperator();
+    
     private Bounds geoBounds = new Bounds();
 
     private static boolean useDirectFile = false;
@@ -353,6 +359,7 @@ public class MapInfo {
         geoBounds.saveToOutput(output);
         elementDB.saveToOutput(output);
         addressOperator.saveToOutput(output);
+        //logger.info("save qt");
         geoOperator.saveToOutput(output);
     }
 
