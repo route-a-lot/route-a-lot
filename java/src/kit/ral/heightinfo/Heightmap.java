@@ -1,9 +1,9 @@
-package kit.route.a.lot.heightinfo;
+package kit.ral.heightinfo;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.ral.common.Coordinates;
 
 public class Heightmap implements IHeightmap {
 

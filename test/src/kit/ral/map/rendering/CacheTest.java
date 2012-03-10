@@ -1,8 +1,8 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import static org.junit.Assert.*;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.ral.common.Coordinates;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

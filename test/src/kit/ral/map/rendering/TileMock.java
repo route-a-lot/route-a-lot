@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 
 
@@ -11,16 +11,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.OSMType;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.Street;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.OSMType;
+import kit.ral.common.description.WayInfo;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.util.MathUtil;
+import kit.ral.map.Area;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
+import kit.ral.map.Street;
 
 
 public class TileMock {

@@ -1,10 +1,10 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.util.HashSet;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
+import kit.ral.common.Bounds;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
 
 /**
  * Creates a QuadTree with maximum leaf size 16384. Since elements are not saved,

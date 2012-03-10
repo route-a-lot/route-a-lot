@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,14 +10,14 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.map.infosupply.ElementDB;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.POINode;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.projection.Projection;
+import kit.ral.map.infosupply.ElementDB;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
+import kit.ral.map.POINode;
 
 public class ArrayElementDB implements ElementDB {
 

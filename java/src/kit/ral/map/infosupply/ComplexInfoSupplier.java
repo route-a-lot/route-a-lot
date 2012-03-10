@@ -1,13 +1,13 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.util.List;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.RouteDescription;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.projection.ProjectionFactory;
-import kit.route.a.lot.controller.State;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Selection;
+import kit.ral.common.description.RouteDescription;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.controller.State;
 
 public class ComplexInfoSupplier {
 

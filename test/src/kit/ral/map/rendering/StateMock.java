@@ -1,10 +1,10 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.controller.State;
+import kit.ral.common.Selection;
+import kit.ral.controller.State;
 
 
 public class StateMock extends State {

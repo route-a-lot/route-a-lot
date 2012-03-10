@@ -1,11 +1,11 @@
-package kit.route.a.lot.map;
+package kit.ral.map;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.POIDescription;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.POIDescription;
 
 public class POINode extends Node {
 

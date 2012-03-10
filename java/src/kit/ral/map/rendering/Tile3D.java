@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -15,18 +15,18 @@ import static javax.media.opengl.GL.*;
 
 import com.sun.opengl.util.BufferUtil;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Frustum;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.OSMType;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.projection.ProjectionFactory;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.heightinfo.IHeightmap;
-import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.POINode;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Frustum;
+import kit.ral.common.Selection;
+import kit.ral.common.description.OSMType;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.common.util.MathUtil;
+import kit.ral.controller.State;
+import kit.ral.heightinfo.IHeightmap;
+import kit.ral.map.Area;
+import kit.ral.map.MapElement;
+import kit.ral.map.POINode;
 
 
 public class Tile3D extends Tile {

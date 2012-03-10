@@ -1,18 +1,18 @@
-package kit.route.a.lot.controller;
+package kit.ral.controller;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.RouteDescription;
-import kit.route.a.lot.heightinfo.Heightmap;
-import kit.route.a.lot.heightinfo.IHeightmap;
-import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.map.rendering.Renderer;
-import kit.route.a.lot.routing.AdjacentFieldsRoutingGraph;
-import kit.route.a.lot.routing.RoutingGraph;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Selection;
+import kit.ral.common.description.RouteDescription;
+import kit.ral.heightinfo.Heightmap;
+import kit.ral.heightinfo.IHeightmap;
+import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.rendering.Renderer;
+import kit.ral.routing.AdjacentFieldsRoutingGraph;
+import kit.ral.routing.RoutingGraph;
 
 public class State {
     private static State singleton = new State();

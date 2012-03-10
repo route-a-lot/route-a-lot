@@ -1,4 +1,4 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -9,8 +9,8 @@ import java.io.RandomAccessFile;
 
 import org.apache.log4j.Logger;
 
-import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.controller.State;
+import kit.ral.common.Progress;
+import kit.ral.controller.State;
 
 public class MapIO {
     

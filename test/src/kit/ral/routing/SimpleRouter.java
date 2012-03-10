@@ -1,12 +1,12 @@
-package kit.route.a.lot.routing;
+package kit.ral.routing;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.controller.State;
+import kit.ral.common.Selection;
+import kit.ral.controller.State;
 
 
 public class SimpleRouter {

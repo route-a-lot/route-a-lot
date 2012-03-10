@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import static javax.media.opengl.GL.*;
 
@@ -13,18 +13,18 @@ import javax.media.opengl.glu.GLUquadric;
 
 import org.apache.log4j.Logger;
 
-import kit.route.a.lot.common.Context3D;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Context;
-import kit.route.a.lot.common.Frustum;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.projection.ProjectionFactory;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.heightinfo.IHeightmap;
-import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.map.rendering.Renderer;
+import kit.ral.common.Context3D;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Context;
+import kit.ral.common.Frustum;
+import kit.ral.common.Selection;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.common.util.MathUtil;
+import kit.ral.controller.State;
+import kit.ral.heightinfo.IHeightmap;
+import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {
 

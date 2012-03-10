@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.awt.geom.Rectangle2D;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.map.MapElement;
+import kit.ral.common.Bounds;
+import kit.ral.map.MapElement;
 
 public abstract class QuadTree {
 

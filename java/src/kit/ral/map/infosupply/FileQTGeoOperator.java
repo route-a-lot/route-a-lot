@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -7,9 +7,9 @@ import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.map.MapElement;
+import kit.ral.common.Bounds;
+import kit.ral.common.projection.Projection;
+import kit.ral.map.MapElement;
 
 
 public class FileQTGeoOperator extends QTGeographicalOperator {

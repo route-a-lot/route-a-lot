@@ -1,4 +1,4 @@
-package kit.route.a.lot.common;
+package kit.ral.common;
 
 public abstract class Context {
 

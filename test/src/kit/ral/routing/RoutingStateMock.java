@@ -1,6 +1,6 @@
-package kit.route.a.lot.routing;
+package kit.ral.routing;
 
-import kit.route.a.lot.controller.State;
+import kit.ral.controller.State;
 
 
 public class RoutingStateMock extends State {

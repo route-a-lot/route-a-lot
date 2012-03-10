@@ -1,13 +1,13 @@
-package kit.route.a.lot.map;
+package kit.ral.map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.controller.State;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.WayInfo;
+import kit.ral.common.util.MathUtil;
+import kit.ral.controller.State;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

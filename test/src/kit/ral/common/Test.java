@@ -1,11 +1,11 @@
-package kit.route.a.lot.common;
+package kit.ral.common;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import kit.route.a.lot.map.infosupply.ArrayElementDB;
+import kit.ral.map.infosupply.ArrayElementDB;
 
 class Test {
 

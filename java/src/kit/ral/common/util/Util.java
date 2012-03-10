@@ -1,4 +1,4 @@
-package kit.route.a.lot.common.util;
+package kit.ral.common.util;
 
 import java.util.ArrayDeque;
 import java.util.List;

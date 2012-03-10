@@ -1,4 +1,4 @@
-package kit.route.a.lot.routing;
+package kit.ral.routing;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -12,10 +12,10 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.io.OSMLoader;
+import kit.ral.common.Progress;
+import kit.ral.common.Selection;
+import kit.ral.controller.State;
+import kit.ral.io.OSMLoader;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.BeforeClass;

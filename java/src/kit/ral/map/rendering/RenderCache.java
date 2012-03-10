@@ -1,8 +1,8 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.util.Collection;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.ral.common.Coordinates;
 
 public interface RenderCache {
     

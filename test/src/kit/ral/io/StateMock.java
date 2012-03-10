@@ -1,8 +1,8 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.routing.RoutingGraph;
+import kit.ral.controller.State;
+import kit.ral.map.infosupply.MapInfo;
+import kit.ral.routing.RoutingGraph;
 
 
 class StateMock extends State {

@@ -1,11 +1,11 @@
-package kit.route.a.lot.common;
+package kit.ral.common;
 
 import java.lang.Math;
 
-import kit.route.a.lot.common.description.OSMType;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.heightinfo.IHeightmap;
+import kit.ral.common.description.OSMType;
+import kit.ral.common.projection.Projection;
+import kit.ral.controller.State;
+import kit.ral.heightinfo.IHeightmap;
 
 public class WeightCalculator {
 

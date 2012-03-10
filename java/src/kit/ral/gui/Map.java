@@ -1,6 +1,6 @@
-package kit.route.a.lot.gui;
+package kit.ral.gui;
 
-import static kit.route.a.lot.common.Listener.*;
+import static kit.ral.common.Listener.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -29,15 +29,15 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.projection.ProjectionFactory;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.gui.event.AddFavoriteEvent;
-import kit.route.a.lot.gui.event.Event;
-import kit.route.a.lot.gui.event.PositionNumberEvent;
-import kit.route.a.lot.gui.event.PositionEvent;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Listener;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.common.util.MathUtil;
+import kit.ral.gui.event.AddFavoriteEvent;
+import kit.ral.gui.event.Event;
+import kit.ral.gui.event.PositionNumberEvent;
+import kit.ral.gui.event.PositionEvent;
 
 
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {

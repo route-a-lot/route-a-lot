@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.awt.Color;
 import java.io.DataInput;
@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.util.Util;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.MapElement;
+import kit.ral.common.Bounds;
+import kit.ral.common.util.Util;
+import kit.ral.controller.State;
+import kit.ral.map.MapElement;
 
 public class QTLeaf extends QuadTree {
        

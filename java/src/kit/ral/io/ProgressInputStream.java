@@ -1,10 +1,10 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import kit.route.a.lot.common.Progress;
+import kit.ral.common.Progress;
 
 public class ProgressInputStream extends FilterInputStream {
 

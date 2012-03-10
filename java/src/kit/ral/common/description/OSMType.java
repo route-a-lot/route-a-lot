@@ -1,4 +1,4 @@
-package kit.route.a.lot.common.description;
+package kit.ral.common.description;
 
 
 public class OSMType {

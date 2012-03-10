@@ -1,4 +1,4 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import static org.junit.Assert.*;
 
@@ -10,9 +10,9 @@ import org.apache.log4j.PropertyConfigurator;
 import org.junit.*;
 import org.junit.Test;
 
-import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Progress;
+import kit.ral.controller.State;
+import kit.ral.map.infosupply.MapInfo;
 
 
 public class MapIOTest {

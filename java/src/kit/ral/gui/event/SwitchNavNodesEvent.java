@@ -1,4 +1,4 @@
-package kit.route.a.lot.gui.event;
+package kit.ral.gui.event;
 
 
 public class SwitchNavNodesEvent extends Event {

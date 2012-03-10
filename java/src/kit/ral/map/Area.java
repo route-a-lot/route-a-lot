@@ -1,4 +1,4 @@
-package kit.route.a.lot.map;
+package kit.ral.map;
 
 import java.awt.Polygon;
 import java.awt.geom.Rectangle2D;
@@ -6,11 +6,11 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Bounds;
+import kit.ral.common.Selection;
+import kit.ral.common.description.WayInfo;
+import kit.ral.controller.State;
+import kit.ral.map.infosupply.MapInfo;
 
 
 

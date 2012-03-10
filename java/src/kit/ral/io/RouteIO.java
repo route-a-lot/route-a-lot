@@ -1,4 +1,4 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -24,12 +24,12 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.projection.ProjectionFactory;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Selection;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.controller.State;
+import kit.ral.map.infosupply.MapInfo;
 
 public class RouteIO {
 

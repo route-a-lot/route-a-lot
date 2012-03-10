@@ -1,11 +1,11 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.util.Set;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.infosupply.ArrayElementDB;
-import kit.route.a.lot.map.infosupply.QTGeographicalOperator;
+import kit.ral.common.Bounds;
+import kit.ral.map.MapElement;
+import kit.ral.map.infosupply.ArrayElementDB;
+import kit.ral.map.infosupply.QTGeographicalOperator;
 
 
 public class MapInfoQTMock extends MapInfoMock {

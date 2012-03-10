@@ -1,7 +1,7 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.WeightCalculator;
+import kit.ral.common.Selection;
+import kit.ral.common.WeightCalculator;
 
 
 public class WeightCalculatorMock extends WeightCalculator {

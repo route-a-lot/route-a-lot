@@ -1,11 +1,11 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.map.rendering.RenderCache;
+import kit.ral.common.Coordinates;
+import kit.ral.map.rendering.RenderCache;
 
 public class HashRenderCache implements RenderCache {
 

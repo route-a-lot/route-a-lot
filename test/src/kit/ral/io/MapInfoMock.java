@@ -1,13 +1,13 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.util.List;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.Address;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.Address;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.description.WayInfo;
+import kit.ral.map.infosupply.MapInfo;
 
 
 class MapInfoMock extends MapInfo {

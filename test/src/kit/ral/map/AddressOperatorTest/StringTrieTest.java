@@ -1,9 +1,9 @@
-package kit.route.a.lot.map.AddressOperatorTest;
+package kit.ral.map.AddressOperatorTest;
 
 
 import java.util.ArrayList;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Street;
+import kit.ral.map.MapElement;
+import kit.ral.map.Street;
 
 import java.util.Iterator;
 import java.lang.Character;

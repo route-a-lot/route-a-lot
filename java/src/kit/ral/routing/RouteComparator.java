@@ -1,8 +1,8 @@
-package kit.route.a.lot.routing;
+package kit.ral.routing;
 
 import java.util.Comparator;
 
-import kit.route.a.lot.routing.Route;
+import kit.ral.routing.Route;
 
 
 class RouteComparator<T> implements Comparator<T> {

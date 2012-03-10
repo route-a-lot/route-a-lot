@@ -1,6 +1,6 @@
-package kit.route.a.lot.heightinfo;
+package kit.ral.heightinfo;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.ral.common.Coordinates;
 
 public interface IHeightmap {
 

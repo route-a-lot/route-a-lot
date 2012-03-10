@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.POINode;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.POIDescription;
+import kit.ral.map.Node;
+import kit.ral.map.MapElement;
+import kit.ral.map.POINode;
 
 public interface ElementDB {
 

@@ -1,4 +1,4 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -8,10 +8,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.heightinfo.Heightmap;
-import kit.route.a.lot.heightinfo.HeightTile;
-import kit.route.a.lot.heightinfo.RAMHeightTile;
+import kit.ral.common.Coordinates;
+import kit.ral.heightinfo.Heightmap;
+import kit.ral.heightinfo.HeightTile;
+import kit.ral.heightinfo.RAMHeightTile;
 
 
 public class SRTMLoaderProto {

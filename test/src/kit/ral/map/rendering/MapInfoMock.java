@@ -1,11 +1,11 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Bounds;
+import kit.ral.map.MapElement;
+import kit.ral.map.infosupply.MapInfo;
 
 
 public class MapInfoMock extends MapInfo {

@@ -1,16 +1,16 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
-import static kit.route.a.lot.common.util.Util.printMemoryInformation;
+import static kit.ral.common.util.Util.printMemoryInformation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.Address;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.Address;
+import kit.ral.common.description.WayInfo;
+import kit.ral.map.infosupply.MapInfo;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;

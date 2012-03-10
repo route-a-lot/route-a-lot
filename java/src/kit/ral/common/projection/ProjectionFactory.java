@@ -1,7 +1,7 @@
-package kit.route.a.lot.common.projection;
+package kit.ral.common.projection;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.controller.State;
+import kit.ral.common.Coordinates;
+import kit.ral.controller.State;
 
 
 public class ProjectionFactory {

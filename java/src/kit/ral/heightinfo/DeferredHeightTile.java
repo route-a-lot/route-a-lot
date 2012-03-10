@@ -1,9 +1,9 @@
-package kit.route.a.lot.heightinfo;
+package kit.ral.heightinfo;
 
 import java.io.File;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.io.SRTMLoader;
+import kit.ral.common.Coordinates;
+import kit.ral.io.SRTMLoader;
 
 public class DeferredHeightTile extends RAMHeightTile {
 

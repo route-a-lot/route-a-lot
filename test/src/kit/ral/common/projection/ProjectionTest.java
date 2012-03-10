@@ -1,10 +1,10 @@
-package kit.route.a.lot.common.projection;
+package kit.ral.common.projection;
 
 import static org.junit.Assert.*;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.projection.MercatorProjection;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.projection.SimpleProjection;
+import kit.ral.common.Coordinates;
+import kit.ral.common.projection.MercatorProjection;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.SimpleProjection;
 
 import org.junit.Test;
 

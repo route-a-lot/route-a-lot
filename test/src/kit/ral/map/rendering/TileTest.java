@@ -1,8 +1,8 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.map.Node;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.map.Node;
 
 import org.junit.Test;
 import static org.junit.Assert.*;

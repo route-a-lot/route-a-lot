@@ -1,4 +1,4 @@
-package kit.route.a.lot.routing;
+package kit.ral.routing;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -19,15 +19,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.util.StringUtil;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.infosupply.MapInfo;
-import kit.route.a.lot.map.rendering.Renderer;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Progress;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.util.StringUtil;
+import kit.ral.controller.State;
+import kit.ral.map.Node;
+import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.rendering.Renderer;
 
 import org.apache.log4j.Logger;
 

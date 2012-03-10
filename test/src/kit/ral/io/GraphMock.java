@@ -1,11 +1,11 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
 
-import kit.route.a.lot.routing.RoutingGraph;
+import kit.ral.routing.RoutingGraph;
 
 
 public class GraphMock implements RoutingGraph {

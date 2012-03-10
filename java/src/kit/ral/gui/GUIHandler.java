@@ -1,11 +1,11 @@
-package kit.route.a.lot.gui;
+package kit.ral.gui;
 
 import java.util.List;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.description.RouteDescription;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Selection;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.description.RouteDescription;
 
 
 public class GUIHandler {

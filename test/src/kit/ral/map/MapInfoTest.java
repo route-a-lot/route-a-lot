@@ -1,8 +1,8 @@
-package kit.route.a.lot.map;
+package kit.ral.map;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.infosupply.*;
+import kit.ral.common.Coordinates;
+import kit.ral.map.MapElement;
+import kit.ral.map.infosupply.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -11,10 +11,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.description.Address;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.description.WayInfo;
+import kit.ral.common.Bounds;
+import kit.ral.common.description.Address;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.description.WayInfo;
 
 import static org.junit.Assert.*;
 

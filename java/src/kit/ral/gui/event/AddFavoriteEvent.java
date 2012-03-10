@@ -1,6 +1,6 @@
-package kit.route.a.lot.gui.event;
+package kit.ral.gui.event;
 
-import kit.route.a.lot.common.Coordinates;
+import kit.ral.common.Coordinates;
 
 
 public class AddFavoriteEvent extends PositionEvent {

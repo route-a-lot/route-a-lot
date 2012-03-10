@@ -1,4 +1,4 @@
-package kit.route.a.lot.common.util;
+package kit.ral.common.util;
 
 
 public class StringUtil {

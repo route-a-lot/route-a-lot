@@ -1,9 +1,9 @@
-package kit.route.a.lot.map;
+package kit.ral.map;
 
 import static org.junit.Assert.*;
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.POIDescription;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.POIDescription;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

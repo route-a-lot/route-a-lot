@@ -1,6 +1,6 @@
-package kit.route.a.lot.gui;
+package kit.ral.gui;
 
-import static kit.route.a.lot.common.Listener.*;
+import static kit.ral.common.Listener.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -51,21 +51,21 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.common.util.StringUtil;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.gui.event.Event;
-import kit.route.a.lot.gui.event.FloatEvent;
-import kit.route.a.lot.gui.event.TextNumberEvent;
-import kit.route.a.lot.gui.event.NumberEvent;
-import kit.route.a.lot.gui.event.PositionNumberEvent;
-import kit.route.a.lot.gui.event.SwitchNavNodesEvent;
-import kit.route.a.lot.gui.event.TextEvent;
-import kit.route.a.lot.map.rendering.Renderer;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Listener;
+import kit.ral.common.Selection;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.util.MathUtil;
+import kit.ral.common.util.StringUtil;
+import kit.ral.controller.State;
+import kit.ral.gui.event.Event;
+import kit.ral.gui.event.FloatEvent;
+import kit.ral.gui.event.TextNumberEvent;
+import kit.ral.gui.event.NumberEvent;
+import kit.ral.gui.event.PositionNumberEvent;
+import kit.ral.gui.event.SwitchNavNodesEvent;
+import kit.ral.gui.event.TextEvent;
+import kit.ral.map.rendering.Renderer;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;

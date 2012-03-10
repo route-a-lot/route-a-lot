@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.awt.Color;
 import java.io.DataInput;
@@ -10,19 +10,19 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import kit.route.a.lot.common.Coordinates;
-import static kit.route.a.lot.common.description.OSMType.*;
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.util.MathUtil;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.Area;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.POINode;
-import kit.route.a.lot.map.Street;
+import kit.ral.common.Coordinates;
+import static kit.ral.common.description.OSMType.*;
+import kit.ral.common.Bounds;
+import kit.ral.common.Selection;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.description.WayInfo;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.util.MathUtil;
+import kit.ral.controller.State;
+import kit.ral.map.Area;
+import kit.ral.map.MapElement;
+import kit.ral.map.POINode;
+import kit.ral.map.Street;
 
 import org.apache.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
@@ -16,17 +16,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Context;
-import kit.route.a.lot.common.Context2D;
-import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.description.OSMType;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.*;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Context;
+import kit.ral.common.Context2D;
+import kit.ral.common.Listener;
+import kit.ral.common.Selection;
+import kit.ral.common.description.OSMType;
+import kit.ral.common.projection.Projection;
+import kit.ral.controller.State;
+import kit.ral.map.*;
+import kit.ral.map.infosupply.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;

@@ -1,4 +1,4 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -15,19 +15,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.WeightCalculator;
-import kit.route.a.lot.common.description.Address;
-import kit.route.a.lot.common.description.OSMType;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.common.projection.ProjectionFactory;
-import kit.route.a.lot.common.util.Util;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Progress;
+import kit.ral.common.WeightCalculator;
+import kit.ral.common.description.Address;
+import kit.ral.common.description.OSMType;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.description.WayInfo;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.common.util.Util;
+import kit.ral.controller.State;
+import kit.ral.map.infosupply.MapInfo;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;

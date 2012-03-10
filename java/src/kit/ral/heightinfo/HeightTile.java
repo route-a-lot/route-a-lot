@@ -1,7 +1,7 @@
-package kit.route.a.lot.heightinfo;
+package kit.ral.heightinfo;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.util.MathUtil;
+import kit.ral.common.Coordinates;
+import kit.ral.common.util.MathUtil;
 
 public abstract class HeightTile {
     

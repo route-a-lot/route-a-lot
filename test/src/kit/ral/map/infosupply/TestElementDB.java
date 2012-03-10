@@ -1,13 +1,13 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import static org.junit.Assert.*;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.POIDescription;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.MapElement;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.POINode;
-import kit.route.a.lot.map.rendering.MapElementGenerator;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.POIDescription;
+import kit.ral.controller.State;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
+import kit.ral.map.POINode;
+import kit.ral.map.rendering.MapElementGenerator;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

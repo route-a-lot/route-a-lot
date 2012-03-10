@@ -1,7 +1,7 @@
-package kit.route.a.lot.gui;
+package kit.ral.gui;
 
 
-import static kit.route.a.lot.common.Listener.*;
+import static kit.ral.common.Listener.*;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -9,12 +9,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Context2D;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.projection.Projection;
-import kit.route.a.lot.gui.event.RenderEvent;
+import kit.ral.common.Bounds;
+import kit.ral.common.Context2D;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Listener;
+import kit.ral.common.projection.Projection;
+import kit.ral.gui.event.RenderEvent;
 
 public class Map2D extends Map  {
     

@@ -1,10 +1,10 @@
-package kit.route.a.lot.common;
+package kit.ral.common;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import kit.route.a.lot.map.MapElement;
+import kit.ral.map.MapElement;
 
 
 public class MapElementMock extends MapElement {

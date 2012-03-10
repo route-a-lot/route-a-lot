@@ -1,4 +1,4 @@
-package kit.route.a.lot.routing;
+package kit.ral.routing;
 
 import java.util.ArrayList;
 import java.util.List;

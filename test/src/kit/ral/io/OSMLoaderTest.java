@@ -1,10 +1,10 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import static org.junit.Assert.*;
 
 import java.io.File;
 
-import kit.route.a.lot.common.Progress;
+import kit.ral.common.Progress;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

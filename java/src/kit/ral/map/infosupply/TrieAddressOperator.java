@@ -1,14 +1,14 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.StringTrie;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.MapElement;
+import kit.ral.common.Selection;
+import kit.ral.common.StringTrie;
+import kit.ral.controller.State;
+import kit.ral.map.MapElement;
 
 public class TrieAddressOperator implements AddressOperator {
 

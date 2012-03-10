@@ -1,12 +1,12 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 
 import java.awt.Image;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Context2D;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.projection.Projection;
+import kit.ral.common.Bounds;
+import kit.ral.common.Context2D;
+import kit.ral.common.Coordinates;
+import kit.ral.common.projection.Projection;
 
 
 import org.apache.log4j.Logger;

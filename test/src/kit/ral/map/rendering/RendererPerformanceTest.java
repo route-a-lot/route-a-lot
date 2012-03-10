@@ -1,4 +1,4 @@
-package kit.route.a.lot.map.rendering;
+package kit.ral.map.rendering;
 
 import static org.junit.Assert.*;
 
@@ -12,13 +12,13 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Context2D;
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.description.OSMType;
-import kit.route.a.lot.common.description.WayInfo;
-import kit.route.a.lot.map.Node;
-import kit.route.a.lot.map.Street;
+import kit.ral.common.Bounds;
+import kit.ral.common.Context2D;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.OSMType;
+import kit.ral.common.description.WayInfo;
+import kit.ral.map.Node;
+import kit.ral.map.Street;
 
 public class RendererPerformanceTest {
 

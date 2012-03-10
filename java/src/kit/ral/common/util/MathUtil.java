@@ -1,10 +1,10 @@
-package kit.route.a.lot.common.util;
+package kit.ral.common.util;
 
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
-import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
 
 import org.apache.log4j.Logger;
 

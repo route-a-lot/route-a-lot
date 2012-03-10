@@ -1,6 +1,6 @@
-package kit.route.a.lot.gui;
+package kit.ral.gui;
 
-import kit.route.a.lot.gui.GUI;
+import kit.ral.gui.GUI;
 
 
 public class ShellGUI {

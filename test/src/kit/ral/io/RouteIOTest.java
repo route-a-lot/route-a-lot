@@ -1,4 +1,4 @@
-package kit.route.a.lot.io;
+package kit.ral.io;
 
 import static org.junit.Assert.*;
 
@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.controller.State;
-import kit.route.a.lot.map.infosupply.MapInfo;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Progress;
+import kit.ral.common.Selection;
+import kit.ral.controller.State;
+import kit.ral.map.infosupply.MapInfo;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;

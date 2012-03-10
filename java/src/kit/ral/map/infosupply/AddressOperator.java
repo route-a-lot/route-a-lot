@@ -1,12 +1,12 @@
-package kit.route.a.lot.map.infosupply;
+package kit.ral.map.infosupply;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 
-import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.map.MapElement;
+import kit.ral.common.Selection;
+import kit.ral.map.MapElement;
 
 public interface AddressOperator {
 

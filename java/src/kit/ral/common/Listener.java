@@ -1,9 +1,9 @@
-package kit.route.a.lot.common;
+package kit.ral.common;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import kit.route.a.lot.gui.event.Event;
+import kit.ral.gui.event.Event;
 
 /**
  * Interface for our own listener

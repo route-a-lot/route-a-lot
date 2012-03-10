@@ -1,6 +1,6 @@
-package kit.route.a.lot.common;
+package kit.ral.common;
 
-import kit.route.a.lot.gui.event.FloatEvent;
+import kit.ral.gui.event.FloatEvent;
 
 
 public class Progress {
