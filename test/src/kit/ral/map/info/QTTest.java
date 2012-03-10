@@ -12,7 +12,7 @@ import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
 import kit.ral.map.info.ArrayElementDB;
-import kit.ral.map.info.QTGeographicalOperator;
+import kit.ral.map.info.geo.QTGeographicalOperator;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

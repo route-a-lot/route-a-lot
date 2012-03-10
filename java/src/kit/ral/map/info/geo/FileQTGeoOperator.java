@@ -1,4 +1,4 @@
-package kit.ral.map.info;
+package kit.ral.map.info.geo;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,6 +10,7 @@ import java.util.Iterator;
 import kit.ral.common.Bounds;
 import kit.ral.common.projection.Projection;
 import kit.ral.map.MapElement;
+import kit.ral.map.info.ElementDB;
 
 
 public class FileQTGeoOperator extends QTGeographicalOperator {

@@ -1,4 +1,4 @@
-package kit.ral.map.info;
+package kit.ral.map.info.geo;
 
 import java.util.HashSet;
 
