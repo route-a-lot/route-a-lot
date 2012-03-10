@@ -15,17 +15,17 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.OSMType;
-import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.ProjectionFactory;
-import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.WeightCalculator;
+import kit.route.a.lot.common.description.Address;
+import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.projection.ProjectionFactory;
+import kit.route.a.lot.common.util.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 

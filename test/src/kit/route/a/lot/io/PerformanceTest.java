@@ -1,15 +1,15 @@
 package kit.route.a.lot.io;
 
-import static kit.route.a.lot.common.Util.printMemoryInformation;
+import static kit.route.a.lot.common.util.Util.printMemoryInformation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.Address;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
 import org.apache.log4j.PropertyConfigurator;

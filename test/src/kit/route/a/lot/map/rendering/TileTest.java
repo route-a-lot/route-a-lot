@@ -2,7 +2,6 @@ package kit.route.a.lot.map.rendering;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Util;
 import kit.route.a.lot.map.Node;
 
 import org.junit.Test;

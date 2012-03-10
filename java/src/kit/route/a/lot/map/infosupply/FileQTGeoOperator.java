@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.projection.Projection;
 import kit.route.a.lot.map.MapElement;
 
 

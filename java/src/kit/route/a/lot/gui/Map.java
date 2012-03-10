@@ -31,9 +31,9 @@ import javax.swing.JTextField;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.ProjectionFactory;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.projection.ProjectionFactory;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.PositionNumberEvent;
@@ -250,7 +250,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
      * @param zoomlevel the desired zoom level
      */
     public void setZoomlevel(int zoomlevel) {
-        this.zoomlevel = Util.clip(zoomlevel, 0, MAX_ZOOMLEVEL);
+        this.zoomlevel = MathUtil.clip(zoomlevel, 0, MAX_ZOOMLEVEL);
         Listener.fireEvent(VIEW_CHANGED,
                 new PositionNumberEvent(center.clone(), zoomlevel));
     }

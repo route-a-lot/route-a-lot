@@ -1,4 +1,4 @@
-package kit.route.a.lot.common;
+package kit.route.a.lot.common.description;
 
 import java.io.DataInput;
 import java.io.DataOutput;

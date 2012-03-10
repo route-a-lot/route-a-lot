@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.description.POIDescription;
 
 public class POINode extends Node {
 

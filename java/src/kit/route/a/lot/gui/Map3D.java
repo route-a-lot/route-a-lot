@@ -13,8 +13,8 @@ import javax.media.opengl.glu.GLU;
 import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.gui.event.RenderEvent;
 
 public class Map3D extends Map implements GLEventListener {
@@ -127,7 +127,7 @@ public class Map3D extends Map implements GLEventListener {
         if (isMouseButtonPressed(e, 2) || (isMouseButtonPressed(e, 1) && e.isControlDown())) {
             rotationHorizontal += ROTATION_SPEED * diffX;
             rotationHorizontal += (rotationHorizontal < 0) ? 360 : (rotationHorizontal > 360) ? - 360 : 0;
-            rotationVertical = Util.clip(rotationVertical + diffY, 0, MAX_VERTICAL_ROTATION);
+            rotationVertical = MathUtil.clip(rotationVertical + diffY, 0, MAX_VERTICAL_ROTATION);
         }    
         // MOVE CAMERA if left mouse button is pressed (and no ctrl)
         if (isMouseButtonPressed(e, 1) && !e.isControlDown() && !isMouseButtonPressed(e, 3)) {

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.description.POIDescription;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;

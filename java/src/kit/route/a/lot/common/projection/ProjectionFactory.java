@@ -1,5 +1,6 @@
-package kit.route.a.lot.common;
+package kit.route.a.lot.common.projection;
 
+import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.controller.State;
 
 

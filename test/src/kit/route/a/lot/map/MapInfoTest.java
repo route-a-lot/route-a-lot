@@ -11,10 +11,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.Address;
+import kit.route.a.lot.common.description.POIDescription;
 
 import static org.junit.Assert.*;
 

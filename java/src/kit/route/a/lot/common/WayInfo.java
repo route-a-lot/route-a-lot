@@ -4,6 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import kit.route.a.lot.common.description.Address;
+
 
 public class WayInfo {
     

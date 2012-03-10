@@ -17,10 +17,10 @@ import kit.route.a.lot.common.Context3D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Frustum;
-import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.projection.ProjectionFactory;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -81,7 +81,7 @@ public class Renderer3D extends Renderer {
         gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR);
         float centerHeight = heightmap.getHeight(projection.getGeoCoordinates(center));
         viewHeight = (viewHeight == Float.NEGATIVE_INFINITY) ? centerHeight
-                : Util.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
+                : MathUtil.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
         gl.glTranslatef(0, 0, -viewHeight);     
         
         // TEST AND RENDER TILES, STARTING AT THE CENTRAL TILE

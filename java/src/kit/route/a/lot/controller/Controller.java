@@ -17,12 +17,13 @@ import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Context;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.OSMType;
-import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.util.StringUtil;
+import kit.route.a.lot.common.util.Util;
 import kit.route.a.lot.gui.GUIHandler;
 import kit.route.a.lot.gui.event.AddFavoriteEvent;
 import kit.route.a.lot.gui.event.FloatEvent;
@@ -354,7 +355,7 @@ public class Controller {
             new OSMLoader(State.getInstance()).importMap(osmFile, p.createSubProgress(0.0004));
             Precalculator.precalculate(p.createSubProgress(0.9995));
             state.getMapInfo().compactify();
-            state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + Util.removeExtension(osmFile.getName())
+            state.setLoadedMapFile(new File(SRAL_DIRECTORY + "/" + StringUtil.removeExtension(osmFile.getName())
                     + " (" + state.getHeightMalus() + ", " + state.getHighwayMalus() + ")" + SRAL_EXT));    
             try {
                 MapIO.saveMap(state.getLoadedMapFile(), p.createSubProgress(0.0001));
@@ -580,7 +581,7 @@ public class Controller {
             int count = 0;
             for(File file : files) {
                 if (file.getName().endsWith(".sral")) {
-                    maps.add(Util.removeExtension(file.getName()));
+                    maps.add(StringUtil.removeExtension(file.getName()));
                     if(file.equals(state.getLoadedMapFile())) {
                         activeMapIndex = count;
                     }

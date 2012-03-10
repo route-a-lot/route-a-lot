@@ -1,7 +1,7 @@
 package kit.route.a.lot.heightinfo;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.util.MathUtil;
 
 
 
@@ -16,7 +16,7 @@ public class RAMHeightTile extends HeightTile {
 
     @Override
     public int getHeight(int x, int y) {
-        return data[Util.clip(y, 0, tileWidth - 1)][Util.clip(x, 0, tileHeight - 1)];
+        return data[MathUtil.clip(y, 0, tileWidth - 1)][MathUtil.clip(x, 0, tileHeight - 1)];
     }
 
     @Override

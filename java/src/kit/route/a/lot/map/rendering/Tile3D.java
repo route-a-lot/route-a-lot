@@ -17,11 +17,11 @@ import com.sun.opengl.util.BufferUtil;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Frustum;
-import kit.route.a.lot.common.OSMType;
-import kit.route.a.lot.common.Projection;
-import kit.route.a.lot.common.ProjectionFactory;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.projection.ProjectionFactory;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.Area;
@@ -232,7 +232,7 @@ public class Tile3D extends Tile {
                 max = Math.max(max, height);
             }
         }       
-        return 1 - Util.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, MAX_SLOPE_SHADE_VALUE);
+        return 1 - MathUtil.clip(SLOPE_SHADE_FACTOR * (max - min) / stepSize, 0, MAX_SLOPE_SHADE_VALUE);
     }
 
     /**

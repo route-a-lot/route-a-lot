@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.util.Util;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 
@@ -30,7 +30,7 @@ public class QTLeaf extends QuadTree {
 
     @Override
     public int getSize() {
-        return Util.getElementCount(elements);
+        return Util.countNonNullElements(elements);
     }
     
     
@@ -64,7 +64,7 @@ public class QTLeaf extends QuadTree {
                 State.getInstance().getActiveRenderer().addFrameToDraw(
                         this.bounds, Color.blue);
             }
-            for (int i = 0; i < Util.getElementCount(elements); i++) {
+            for (int i = 0; i < Util.countNonNullElements(elements); i++) {
                 if (!exact || elements[i].isInBounds(area)) {   //TODO test what's faster
                     elememts.add(elements[i]);
                 }
@@ -111,7 +111,7 @@ public class QTLeaf extends QuadTree {
     
     protected QTNode split() {
         QTNode result = new QTNode(bounds);
-        for(int i = 0; i < Util.getElementCount(elements); i++) {
+        for(int i = 0; i < Util.countNonNullElements(elements); i++) {
             result.addElement(elements[i]);
         }
         return result;

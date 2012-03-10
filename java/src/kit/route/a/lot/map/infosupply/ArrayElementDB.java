@@ -12,8 +12,8 @@ import org.apache.log4j.Logger;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.projection.Projection;
 import kit.route.a.lot.map.infosupply.ElementDB;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;

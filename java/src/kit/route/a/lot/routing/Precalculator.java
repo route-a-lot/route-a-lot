@@ -1,7 +1,5 @@
 package kit.route.a.lot.routing;
 
-import static kit.route.a.lot.common.Util.formatSeconds;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.BufferedInputStream;
@@ -24,7 +22,8 @@ import java.util.concurrent.Future;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Progress;
-import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.util.StringUtil;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.infosupply.MapInfo;
@@ -78,7 +77,8 @@ public class Precalculator {
                     e.printStackTrace();
                 }
             }
-            logger.info("Succesfully created ArcFlags in " + formatSeconds((System.currentTimeMillis() - startTime) / 1000, true));
+            logger.info("Succesfully created ArcFlags in "
+                    + StringUtil.formatSeconds((System.currentTimeMillis() - startTime) / 1000, true));
         } else {
             graph.setAllArcFlags();
             logger.error("Failed to do precalculation");
@@ -95,8 +95,9 @@ public class Precalculator {
                 startPeriod = currentTime;
                 logger.info("Calculation of ArcFlags at " + (finishedIds * 100 / graph.getIDCount()) + "%");
                 long elapsedTime = (currentTime - startTime) / 1000;
-                logger.info("Elapsed time: " + formatSeconds(elapsedTime, true) + " - estimated time remaining: "
-                        + formatSeconds((long)(elapsedTime  * ((graph.getIDCount() / (double) finishedIds) - 1)), true));
+                logger.info("Elapsed time: " + StringUtil.formatSeconds(elapsedTime, true)
+                        + " - estimated time remaining: " + StringUtil.formatSeconds(
+                        (long)(elapsedTime  * ((graph.getIDCount() / (double) finishedIds) - 1)), true));
             }
         }
     }

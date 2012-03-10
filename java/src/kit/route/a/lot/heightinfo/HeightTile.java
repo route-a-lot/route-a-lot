@@ -1,7 +1,7 @@
 package kit.route.a.lot.heightinfo;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.util.MathUtil;
 
 public abstract class HeightTile {
     
@@ -42,9 +42,9 @@ public abstract class HeightTile {
         float ratioX = Math.abs(lonDiff * tileWidth - x);
         float ratioY = Math.abs(latDiff * tileHeight - y);           
         
-        float interpolateX1 = Util.interpolate(getHeight(x,y), getHeight(x+1,y), ratioX);
-        float interpolateX2 = Util.interpolate(getHeight(x,y+1), getHeight(x+1,y+1), ratioX);
-        float interpolateY = Util.interpolate(interpolateX1, interpolateX2, ratioY);
+        float interpolateX1 = MathUtil.interpolate(getHeight(x,y), getHeight(x+1,y), ratioX);
+        float interpolateX2 = MathUtil.interpolate(getHeight(x,y+1), getHeight(x+1,y+1), ratioX);
+        float interpolateY = MathUtil.interpolate(interpolateX1, interpolateX2, ratioY);
         return interpolateY;        
     }
 

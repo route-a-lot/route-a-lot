@@ -3,9 +3,9 @@ package kit.route.a.lot.gui;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.description.RouteDescription;
 
 
 public class GUIHandler {

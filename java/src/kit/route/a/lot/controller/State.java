@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.description.RouteDescription;
 import kit.route.a.lot.heightinfo.Heightmap;
 import kit.route.a.lot.heightinfo.IHeightmap;
 import kit.route.a.lot.map.infosupply.MapInfo;

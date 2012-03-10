@@ -3,8 +3,8 @@ package kit.route.a.lot.map.infosupply;
 import java.util.List;
 
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.RouteDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.description.RouteDescription;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Street;
 

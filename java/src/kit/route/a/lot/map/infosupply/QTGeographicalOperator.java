@@ -11,13 +11,13 @@ import java.util.Iterator;
 import java.util.Set;
 
 import kit.route.a.lot.common.Coordinates;
-import static kit.route.a.lot.common.OSMType.*;
+import static kit.route.a.lot.common.description.OSMType.*;
 import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.POIDescription;
-import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
@@ -103,7 +103,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
             State.getInstance().getActiveRenderer().addFrameToDraw(area, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        QuadTree tree = trees[Util.clip(zoomlevel, 0, NUM_LEVELS -1)];
+        QuadTree tree = trees[MathUtil.clip(zoomlevel, 0, NUM_LEVELS -1)];
         if (tree != null) {
             tree.queryElements(area, elements, exact);
         }
@@ -239,7 +239,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
                     result = 6;
             }
         }
-        return Util.clip(result, 0, NUM_LEVELS);
+        return MathUtil.clip(result, 0, NUM_LEVELS);
     }
     
     public boolean equals(Object other) {

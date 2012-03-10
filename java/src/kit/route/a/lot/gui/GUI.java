@@ -1,8 +1,6 @@
 package kit.route.a.lot.gui;
 
 import static kit.route.a.lot.common.Listener.*;
-import static kit.route.a.lot.common.Util.humanReadableByteCount;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -55,9 +53,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.Util;
+import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.util.MathUtil;
+import kit.route.a.lot.common.util.StringUtil;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.gui.event.Event;
 import kit.route.a.lot.gui.event.FloatEvent;
@@ -228,9 +227,9 @@ public class GUI extends JFrame {
                 setActive(progress < 0 || progress >= 100);
                 int time = (int)((System.currentTimeMillis() - taskStartTime) / 1000
                                     * ((100 - progress) / progress));
-                progressBar.setValue(Util.clip((int) progress, 0, 100));
+                progressBar.setValue(MathUtil.clip((int) progress, 0, 100));
                 progressBar.setString((active) ? "" : progressBar.getValue()
-                        + "%, noch " + Util.formatSeconds(time, false));
+                        + "%, noch " + StringUtil.formatSeconds(time, false));
             }
         });
         buttonCancelOperation = new JButton(deleteIcon);
@@ -319,8 +318,8 @@ public class GUI extends JFrame {
                 long maxMemory = Runtime.getRuntime().maxMemory();
                 long totalMemory = Runtime.getRuntime().totalMemory();
                 memoryConsumption.setValue((int) (100 * ((double) totalMemory / maxMemory)));
-                memoryConsumption.setString(humanReadableByteCount(totalMemory, true)
-                        + " / " + humanReadableByteCount(maxMemory, true));
+                memoryConsumption.setString(StringUtil.humanReadableByteCount(totalMemory, true)
+                        + " / " + StringUtil.humanReadableByteCount(maxMemory, true));
             }
         }, 200, 500);
         
@@ -960,7 +959,7 @@ public class GUI extends JFrame {
      */
     public void showRouteValues(int length, int duration) {
         String output = String.format("%1$3.1f km / ", length / 1000f);
-        routeValues.setText("(" + output + Util.formatSeconds(duration, false) + ")");
+        routeValues.setText("(" + output + StringUtil.formatSeconds(duration, false) + ")");
     }
     
     /**

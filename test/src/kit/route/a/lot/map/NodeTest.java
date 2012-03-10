@@ -3,7 +3,7 @@ package kit.route.a.lot.map;
 import static org.junit.Assert.*;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.description.POIDescription;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

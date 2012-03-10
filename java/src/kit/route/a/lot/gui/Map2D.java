@@ -13,7 +13,7 @@ import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Context2D;
 import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Listener;
-import kit.route.a.lot.common.Projection;
+import kit.route.a.lot.common.projection.Projection;
 import kit.route.a.lot.gui.event.RenderEvent;
 
 public class Map2D extends Map  {

@@ -1,19 +1,15 @@
 package kit.route.a.lot.map.infosupply;
 
-import static kit.route.a.lot.common.Util.getSharedElementAtEnd;
+import static kit.route.a.lot.common.util.Util.getSharedElementAtEnd;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.Address;
+import kit.route.a.lot.common.description.POIDescription;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;

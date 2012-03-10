@@ -8,7 +8,7 @@ import java.util.PriorityQueue;
 import kit.route.a.lot.common.Listener;
 import kit.route.a.lot.common.Progress;
 import kit.route.a.lot.common.Selection;
-import static kit.route.a.lot.common.Util.*;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.controller.State;
 import org.apache.log4j.Logger;
 
@@ -81,7 +81,7 @@ public class Router {
         int size = navigationNodes.size();
         Route route;
         int min = totalLength(navigationNodes);
-        long faculty = fak(size - 1);
+        long faculty = MathUtil.fak(size - 1);
         if (faculty < 0) {
             logger.warn("To many stopovers, aborting");
             return;
@@ -105,7 +105,7 @@ public class Router {
             p.addProgress(progressRatio / faculty);
             // Iterate over all permutations
             boolean isRouteable = true;
-            int[] current = permutation(size - 2, f);
+            int[] current = MathUtil.permutation(size - 2, f);
             int currentLength = 0;
             for (int i = 0; i < current.length - 1; i++) {
                 long routeLength = routes[current[i]][current[i+1]];

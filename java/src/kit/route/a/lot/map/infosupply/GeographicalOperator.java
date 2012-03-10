@@ -7,8 +7,8 @@ import java.util.Set;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
 import kit.route.a.lot.common.Selection;
+import kit.route.a.lot.common.description.POIDescription;
 import kit.route.a.lot.map.MapElement;
 
 public interface GeographicalOperator {

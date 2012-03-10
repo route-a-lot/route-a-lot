@@ -2,7 +2,7 @@ package kit.route.a.lot.map.infosupply;
 
 import static org.junit.Assert.*;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.POIDescription;
+import kit.route.a.lot.common.description.POIDescription;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;

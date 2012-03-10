@@ -1,6 +1,9 @@
 package kit.route.a.lot.common;
 
 import java.lang.Math;
+
+import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.projection.Projection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.heightinfo.IHeightmap;
 

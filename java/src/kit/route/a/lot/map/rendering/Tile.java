@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import kit.route.a.lot.common.Address;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.OSMType;
-import kit.route.a.lot.common.Projection;
 import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.Address;
+import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.projection.Projection;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
