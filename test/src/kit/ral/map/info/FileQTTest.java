@@ -17,7 +17,7 @@ import kit.ral.map.POINode;
 import kit.ral.map.Street;
 import kit.ral.map.info.ArrayElementDB;
 import kit.ral.map.info.MapInfo;
-import kit.ral.map.info.geo.QTGeographicalOperator;
+import kit.ral.map.info.QTGeographicalOperator;
 import kit.ral.map.rendering.MapElementGenerator;
 
 import org.apache.log4j.PropertyConfigurator;

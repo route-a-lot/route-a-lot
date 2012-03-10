@@ -1,4 +1,4 @@
-package kit.ral.map.info.geo;
+package kit.ral.map.info;
 
 import java.awt.Color;
 import java.io.DataInput;
@@ -23,7 +23,6 @@ import kit.ral.map.Area;
 import kit.ral.map.MapElement;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
-import kit.ral.map.info.ElementDB;
 
 import org.apache.log4j.Logger;
 

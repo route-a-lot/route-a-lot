@@ -1,4 +1,4 @@
-package kit.ral.map.info.geo;
+package kit.ral.map.info;
 
 import java.awt.Color;
 import java.io.DataInput;
