@@ -7,7 +7,7 @@ import kit.ral.common.Coordinates;
 import kit.ral.common.description.Address;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 
 class MapInfoMock extends MapInfo {

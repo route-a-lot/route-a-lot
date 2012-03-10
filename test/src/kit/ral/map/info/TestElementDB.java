@@ -1,4 +1,4 @@
-package kit.ral.map.infosupply;
+package kit.ral.map.info;
 
 import static org.junit.Assert.*;
 import kit.ral.common.Coordinates;
@@ -7,6 +7,8 @@ import kit.ral.controller.State;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
+import kit.ral.map.info.ArrayElementDB;
+import kit.ral.map.info.ElementDB;
 import kit.ral.map.rendering.MapElementGenerator;
 
 import org.apache.log4j.PropertyConfigurator;

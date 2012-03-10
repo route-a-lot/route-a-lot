@@ -29,7 +29,7 @@ import kit.ral.common.Selection;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.controller.State;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 public class RouteIO {
 

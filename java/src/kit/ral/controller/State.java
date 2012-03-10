@@ -9,7 +9,7 @@ import kit.ral.common.Selection;
 import kit.ral.common.description.RouteDescription;
 import kit.ral.heightinfo.Heightmap;
 import kit.ral.heightinfo.IHeightmap;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.routing.AdjacentFieldsRoutingGraph;
 import kit.ral.routing.RoutingGraph;

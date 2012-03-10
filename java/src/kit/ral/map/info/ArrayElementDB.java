@@ -1,4 +1,4 @@
-package kit.ral.map.infosupply;
+package kit.ral.map.info;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -14,7 +14,7 @@ import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.projection.Projection;
-import kit.ral.map.infosupply.ElementDB;
+import kit.ral.map.info.ElementDB;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;

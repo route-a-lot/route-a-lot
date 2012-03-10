@@ -10,7 +10,7 @@ import kit.ral.common.Bounds;
 import kit.ral.common.Selection;
 import kit.ral.common.description.WayInfo;
 import kit.ral.controller.State;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 
 

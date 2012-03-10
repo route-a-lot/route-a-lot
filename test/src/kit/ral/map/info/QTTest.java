@@ -1,4 +1,4 @@
-package kit.ral.map.infosupply;
+package kit.ral.map.info;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,6 +11,8 @@ import kit.ral.map.Area;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
+import kit.ral.map.info.ArrayElementDB;
+import kit.ral.map.info.geo.QTGeographicalOperator;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;

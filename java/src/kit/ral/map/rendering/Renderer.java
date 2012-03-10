@@ -26,7 +26,7 @@ import kit.ral.common.description.OSMType;
 import kit.ral.common.projection.Projection;
 import kit.ral.controller.State;
 import kit.ral.map.*;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;

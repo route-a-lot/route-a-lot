@@ -4,8 +4,8 @@ import java.util.Set;
 
 import kit.ral.common.Bounds;
 import kit.ral.map.MapElement;
-import kit.ral.map.infosupply.ArrayElementDB;
-import kit.ral.map.infosupply.QTGeographicalOperator;
+import kit.ral.map.info.ArrayElementDB;
+import kit.ral.map.info.geo.QTGeographicalOperator;
 
 
 public class MapInfoQTMock extends MapInfoMock {

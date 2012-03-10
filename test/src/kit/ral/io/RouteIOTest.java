@@ -11,7 +11,8 @@ import kit.ral.common.Coordinates;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
 import kit.ral.controller.State;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
+
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;

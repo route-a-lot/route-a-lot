@@ -5,7 +5,7 @@ import java.util.Set;
 
 import kit.ral.common.Bounds;
 import kit.ral.map.MapElement;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 
 public class MapInfoMock extends MapInfo {

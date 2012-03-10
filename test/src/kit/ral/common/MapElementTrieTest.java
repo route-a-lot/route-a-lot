@@ -7,7 +7,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import kit.ral.map.infosupply.ArrayElementDB;
+
+import kit.ral.map.info.ArrayElementDB;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

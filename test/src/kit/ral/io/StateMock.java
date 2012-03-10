@@ -1,7 +1,7 @@
 package kit.ral.io;
 
 import kit.ral.controller.State;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 import kit.ral.routing.RoutingGraph;
 
 

@@ -15,7 +15,7 @@ import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
 import kit.ral.common.description.OSMType;
 import kit.ral.controller.State;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 public class Street extends MapElement implements Comparable<Street> {
     

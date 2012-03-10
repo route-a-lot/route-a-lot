@@ -1,4 +1,4 @@
-package kit.ral.map.infosupply;
+package kit.ral.map.info;
 
 import java.io.DataInput;
 import java.io.DataOutput;

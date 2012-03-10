@@ -26,7 +26,7 @@ import kit.ral.common.projection.Projection;
 import kit.ral.common.util.StringUtil;
 import kit.ral.controller.State;
 import kit.ral.map.Node;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 import kit.ral.map.rendering.Renderer;
 
 import org.apache.log4j.Logger;

@@ -42,7 +42,7 @@ import kit.ral.io.RouteIO;
 import kit.ral.io.SRTMLoaderDeferred;
 import kit.ral.io.StateIO;
 import kit.ral.map.Node;
-import kit.ral.map.infosupply.ComplexInfoSupplier;
+import kit.ral.map.info.ComplexInfoSupplier;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.map.rendering.Renderer3D;
 import kit.ral.routing.Precalculator;
@@ -114,10 +114,11 @@ public class Controller {
         Util.startTimer();
         loadState(p.createSubProgress(0.8));
         logger.info("State loaded: " + Util.stopTimer());
-        
+             
         // IMPORT DEFAULT OSM MAP
         if (state.getLoadedMapFile() == null) {
             if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
+                Util.startTimer();
                 p.addProgress(-0.3);
                 currentTask = executorService.submit(new Runnable() {
                     public void run() {

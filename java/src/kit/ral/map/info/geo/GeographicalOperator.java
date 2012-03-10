@@ -1,4 +1,4 @@
-package kit.ral.map.infosupply;
+package kit.ral.map.info.geo;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -10,6 +10,7 @@ import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.POIDescription;
 import kit.ral.map.MapElement;
+import kit.ral.map.info.ElementDB;
 
 public interface GeographicalOperator {
 

@@ -2,7 +2,8 @@ package kit.ral.map;
 
 import kit.ral.common.Coordinates;
 import kit.ral.map.MapElement;
-import kit.ral.map.infosupply.*;
+import kit.ral.map.info.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

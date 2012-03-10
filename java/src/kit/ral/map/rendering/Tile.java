@@ -25,7 +25,7 @@ import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 import kit.ral.routing.Precalculator;
 
 import org.apache.log4j.Logger;

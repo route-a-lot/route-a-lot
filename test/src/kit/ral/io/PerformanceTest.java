@@ -10,7 +10,7 @@ import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.Address;
 import kit.ral.common.description.WayInfo;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;

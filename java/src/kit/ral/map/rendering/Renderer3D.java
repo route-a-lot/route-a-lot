@@ -23,7 +23,7 @@ import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.heightinfo.IHeightmap;
-import kit.ral.map.infosupply.MapInfo;
+import kit.ral.map.info.MapInfo;
 import kit.ral.map.rendering.Renderer;
 
 public class Renderer3D extends Renderer {

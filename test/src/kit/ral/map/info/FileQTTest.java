@@ -1,4 +1,4 @@
-package kit.ral.map.infosupply;
+package kit.ral.map.info;
 
 import static org.junit.Assert.assertEquals;
 import java.io.File;
@@ -15,6 +15,9 @@ import kit.ral.map.Area;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
+import kit.ral.map.info.ArrayElementDB;
+import kit.ral.map.info.MapInfo;
+import kit.ral.map.info.geo.QTGeographicalOperator;
 import kit.ral.map.rendering.MapElementGenerator;
 
 import org.apache.log4j.PropertyConfigurator;
