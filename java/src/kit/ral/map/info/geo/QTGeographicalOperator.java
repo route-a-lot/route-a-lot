@@ -35,7 +35,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     protected Bounds bounds;
     
     /** The QuadTrees storing the distributed base layer and overlay, one for each zoom level */
-    protected QuadTree trunkRoots[];
+    protected QuadTree trees[];
     
     
     // CONSTRUCTOR
@@ -50,7 +50,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     @Override
     public void setBounds(Bounds bounds) {
         this.bounds = bounds.clone();
-        trunkRoots = new QuadTree[NUM_LEVELS];
+        trees = new QuadTree[NUM_LEVELS];
     }
 
     @Override
@@ -66,12 +66,12 @@ public class QTGeographicalOperator implements GeographicalOperator {
             throw new IllegalArgumentException();
         }
         for (int detail = 0; detail < NUM_LEVELS; detail++) {
-            trunkRoots[detail] = new QTNode(bounds);
+            trees[detail] = new QTNode(bounds);
         }
         Iterator<MapElement> elements = elementDB.getAllMapElements();
         while (elements.hasNext()) {
             MapElement element = elements.next();
-            trunkRoots[0].addElement(element);
+            trees[0].addElement(element);
             int maxLevel = getMaximumZoomlevel(element);
             for (int detail = 1; detail < maxLevel; detail++) {
                 MapElement reduced = element.getReduced(detail,
@@ -81,7 +81,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
                         logger.trace("Ignoring " + element + " for zoomlevel " + detail);
                     }
                 } else {
-                    if (!trunkRoots[detail].addElement(reduced)) {
+                    if (!trees[detail].addElement(reduced)) {
                         logger.error("Reduced element could not be added to the quadtree.");
                     }
                 }
@@ -104,7 +104,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
             State.getInstance().getActiveRenderer().addFrameToDraw(area, Color.red);
         }
         HashSet<MapElement> elements = new HashSet<MapElement>();
-        QuadTree tree = trunkRoots[MathUtil.clip(zoomlevel, 0, NUM_LEVELS -1)];
+        QuadTree tree = trees[MathUtil.clip(zoomlevel, 0, NUM_LEVELS -1)];
         if (tree != null) {
             tree.queryElements(area, elements, exact);
         }
@@ -184,24 +184,24 @@ public class QTGeographicalOperator implements GeographicalOperator {
      
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        logger.debug("Loading " + trunkRoots.length + " zoomlevels...");
-        for(int i = 0; i < trunkRoots.length; i++) {
+        logger.debug("Loading " + trees.length + " zoomlevels...");
+        for(int i = 0; i < trees.length; i++) {
             logger.trace("load zoom level " + i + "...");
-            trunkRoots[i] = QuadTree.loadFromInput(input);
+            trees[i] = QuadTree.loadFromInput(input);
         }
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        for(int i = 0; i < trunkRoots.length; i++) {
+        for(int i = 0; i < trees.length; i++) {
             logger.info("save zoom level " + i + "...");
-            QuadTree.saveToOutput(output, trunkRoots[i]);
+            QuadTree.saveToOutput(output, trees[i]);
         }
     }
     
     @Override
     public void compactify() {
-        for (QuadTree tree : trunkRoots) {
+        for (QuadTree tree : trees) {
             if(tree != null) {
                 tree.compactify();
             }
@@ -251,14 +251,14 @@ public class QTGeographicalOperator implements GeographicalOperator {
             return false;
         }
         QTGeographicalOperator comparee = (QTGeographicalOperator) other;
-        return java.util.Arrays.equals(trunkRoots, comparee.trunkRoots);
+        return java.util.Arrays.equals(trees, comparee.trees);
     }
        
     /**
      * Prints a string representing the quadtree.
      */
     public void printQuadTree() {
-        System.out.println(trunkRoots[0].toString(0, new ArrayList<Integer>()));
+        System.out.println(trees[0].toString(0, new ArrayList<Integer>()));
     }
 
 

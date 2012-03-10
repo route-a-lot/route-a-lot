@@ -1,28 +1,24 @@
 package kit.ral.map.info.geo;
 
-import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import kit.ral.common.Bounds;
+import kit.ral.common.RandomAccessStream;
 import kit.ral.map.MapElement;
 
 
 public class FileQuadTree extends QuadTree {
 
-    private RandomAccessFile file = null;
+    private RandomAccessStream file = null;
     private long filePointer = 0;
 
     private FileQuadTree[] children = null;
     private ArrayList<MapElement> elements = null;
-
 
     // CONSTRUCTORS
 
@@ -34,7 +30,7 @@ public class FileQuadTree extends QuadTree {
      * @param source
      * @param sourcePointer
      */
-    public FileQuadTree(Bounds bounds, RandomAccessFile source, long sourcePointer) {
+    public FileQuadTree(Bounds bounds, RandomAccessStream source, long sourcePointer) {
         super(bounds);
         this.file = source;
         this.filePointer = sourcePointer;
@@ -140,7 +136,7 @@ public class FileQuadTree extends QuadTree {
     // I/O OPERATIONS
 
     /**
-     * Loads this quad tree node or leaf from the source. Direct sub nodes may be created, but won't be loaded.
+     * Loads this quad tree node or leaf from the source. Direct sub nodes are created, but won't be loaded.
      * @throws IOException
      */
     public void loadNode() throws IOException {
@@ -148,14 +144,15 @@ public class FileQuadTree extends QuadTree {
             throw new IllegalStateException();
         }
         synchronized (file) {
-            file.seek(filePointer);
-            file.seek(file.readLong()); // allow indirect addressing
-
+            file.setRandomAccess(true);
+            file.setPosition(filePointer);
+            file.setPosition(file.readLong()); // allow indirect addressing
+            file.setRandomAccess(false);
             if (file.readBoolean()) {
                 int size = file.readByte();
-                elements = new ArrayList<MapElement>(size);
+                elements = new ArrayList<MapElement>(size); 
                 for (int i = 0; i < size; i++) {
-                    MapElement element = MapElement.loadFromInput(file);
+                    MapElement element = MapElement.loadFromInput(file); // TODO performance
                     element.registerUse();
                     elements.add(element);
                 }
@@ -164,12 +161,12 @@ public class FileQuadTree extends QuadTree {
                 float xStep = bounds.getWidth() / 2;
                 float yStep = bounds.getHeight() / 2;
                 for (int i = 0; i < children.length; i++) {
-                    Bounds newBounds =
-                            new Bounds(bounds.getLeft() + xStep * (i / 2), bounds.getLeft() + xStep * (i / 2 + 1),
-                                    bounds.getTop() + yStep * (i % 2), bounds.getTop() + yStep * (i % 2 + 1));
+                    Bounds newBounds = new Bounds(
+                            bounds.getLeft() + xStep * (i / 2), bounds.getLeft() + xStep * (i / 2 + 1),
+                            bounds.getTop() + yStep * (i % 2), bounds.getTop() + yStep * (i % 2 + 1));
                     children[i] = new FileQuadTree(newBounds, file, file.readLong());
                 }
-            }
+            }        
         }
 
     }
@@ -180,7 +177,7 @@ public class FileQuadTree extends QuadTree {
      * @param output
      * @throws IOException
      */
-    public void saveTree(RandomAccessFile output) throws IOException {
+    public void saveTree(RandomAccessStream output) throws IOException {
         if (output == null) {
             throw new IllegalArgumentException();
         }
@@ -190,31 +187,31 @@ public class FileQuadTree extends QuadTree {
             return;
         }
         file = output;
-        filePointer = file.getFilePointer();
+        filePointer = file.getPosition();
         output.writeLong(filePointer + 8);
-
+          
         output.writeBoolean(elements != null);
-        if (elements != null) {
-            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(Channels.newOutputStream(output.getChannel())));
-            outputStream.writeByte(elements.size());
+        if (elements != null) {     
+            file.setRandomAccess(false);
+            file.writeByte(elements.size());
             for (MapElement element : elements) {
                 if (element == null) {
                     throw new IllegalStateException("Found null element in QT.");
                 }
-                MapElement.saveToOutput(outputStream, element, true);
+                MapElement.saveToOutput(file, element, true);
             }
-//            outputStream.close();
+            file.setRandomAccess(true);
         } else if (children != null) {
             // save children, write each child's position at position mark
-            long mark = output.getFilePointer();
+            long mark = output.getPosition();
             for (int i = 0; i < children.length; i++) {
                 output.writeLong(0);
             }
             for (int i = 0; i < children.length; i++) {
-                long pos = output.getFilePointer();
-                output.seek(mark + i * 8);
+                long pos = output.getPosition();
+                output.setPosition(mark + i * 8);
                 output.writeLong(pos);
-                output.seek(pos);
+                output.setPosition(pos);
                 children[i].saveTree(output);
             }
         } else {

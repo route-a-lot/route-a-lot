@@ -359,21 +359,10 @@ public class MapInfo {
      *             a stream write error occurred
      */
     public void saveToOutput(DataOutput output) throws IOException {
-        if (output instanceof RandomAccessFile) {
-            RandomAccessFile raf = (RandomAccessFile) output;
-            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(Channels.newOutputStream(raf.getChannel())));
-            geoBounds.saveToOutput(outputStream);
-            elementDB.saveToOutput(outputStream);
-            addressOperator.saveToOutput(outputStream);
-            geoOperator.saveToOutput(raf);
-//            outputStream.close();
-        } else {
-            geoBounds.saveToOutput(output);
-            elementDB.saveToOutput(output);
-            addressOperator.saveToOutput(output);
-            //logger.info("save qt");
-            geoOperator.saveToOutput(output);
-        }
+        geoBounds.saveToOutput(output);
+        elementDB.saveToOutput(output);
+        addressOperator.saveToOutput(output);
+        geoOperator.saveToOutput(output);
     }
 
     public void compactify() {

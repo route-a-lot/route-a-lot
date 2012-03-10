@@ -5,11 +5,10 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-
 import org.apache.log4j.Logger;
 
 import kit.ral.common.Progress;
+import kit.ral.common.RandomAccessStream;
 import kit.ral.controller.State;
 
 public class MapIO {
@@ -75,8 +74,7 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        //DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-        RandomAccessFile output = new RandomAccessFile(file, "rw");
+        RandomAccessStream output = new RandomAccessStream(file);
         
         // Write data to stream, abort on error
         output.writeChars("SRAL");  // magic number

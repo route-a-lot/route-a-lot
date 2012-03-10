@@ -17,14 +17,12 @@ import com.sun.opengl.util.BufferUtil;
 
 import kit.ral.common.Coordinates;
 import kit.ral.common.Frustum;
-import kit.ral.common.Selection;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.heightinfo.IHeightmap;
-import kit.ral.map.Area;
 import kit.ral.map.MapElement;
 import kit.ral.map.POINode;
 
@@ -180,14 +178,8 @@ public class Tile3D extends Tile {
                 if ((poi.getInfo().getName() != null)
                      && (poi.getInfo().getName().length() > 0)
                      && (poi.getInfo().getCategory() != OSMType.FAVOURITE)){
-                    renderPin(gl, poi.getPos(), COLOR_POI, 1f);
+                    renderPin(gl, poi.getPos(), COLOR_POI, 1);
                 } 
-            }
-            if (element instanceof Area) {
-                Selection selection = ((Area) element).getSelection();
-                if (selection != null) {
-                    renderPin(gl, selection.getPosition(), COLOR_POI, 1f);
-                }
             }
         }
     }

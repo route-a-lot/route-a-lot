@@ -3,11 +3,11 @@ package kit.ral.map.info.geo;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.util.HashSet;
 import java.util.Iterator;
 
 import kit.ral.common.Bounds;
+import kit.ral.common.RandomAccessStream;
 import kit.ral.common.projection.Projection;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
@@ -16,7 +16,7 @@ import kit.ral.map.info.ElementDB;
 
 public class FileQTGeoOperator extends QTGeographicalOperator {
            
-    private RandomAccessFile file = null;
+    private RandomAccessStream file = null;
     private ElementDB elementDB = null;
     
     // BASIC OPERATIONS
@@ -30,6 +30,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
             this.elementDB = elementDB; // store to be able to invoke fill() later
             return;
         }     
+
         
         // << DIVIDE SECTION >>
         // get a subtree division (one is enough as all trees are similar)
@@ -41,26 +42,27 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                 divider.add(elements.next());
             }
         } while (divider.isRefillNeeded());
-            
+        
+        
         // << FILL AND SAVE SECTION >>
         //long start = 0;
-        try {           
+        try {     
+            file.setRandomAccess(true);
             //start = output.getFilePointer();
             // save map bounds
             bounds.saveToOutput(file);
             // tree location table reservation
-            long mark = file.getFilePointer();
+            long mark = file.getPosition();
             for (int detail = 0; detail < NUM_LEVELS; detail++) {
                 file.writeLong(0);
             }
-            
             // build tree for each detail level
             for (int detail = 0; detail < NUM_LEVELS; detail++) {
                 float range = Projection.getZoomFactor(detail) * LAYER_MULTIPLIER; // for reducing
                     
                     // get current tree branches (same division for all), prepare arrays
                     HashSet<FileQuadTree> branchSet = new HashSet<FileQuadTree>();
-                    trunkRoots[detail] = divider.buildTrunk(branchSet);
+                    trees[detail] = divider.buildTrunk(branchSet);
                     FileQuadTree[] branchRoots = branchSet.toArray(new FileQuadTree[branchSet.size()]);
                     // pick each tree branch of the current tree
                     for (int i = 0; i < branchRoots.length; i++) {
@@ -77,40 +79,42 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                         branchRoots[i].unload();
                     }
                     // register tree trunk location
-                    long pos = file.getFilePointer();
-                    file.seek(mark + detail * 8);
+                    long pos = file.getPosition();
+                    file.setPosition(mark + detail * 8);
                     file.writeLong(pos);
-                    file.seek(pos);
+                    file.setPosition(pos);
                     // save tree trunk (branches will be linked)
-                    ((FileQuadTree) trunkRoots[detail]).saveTree(file);                 
-            } 
+                    ((FileQuadTree) trees[detail]).saveTree(file);                 
+            }
+            file.setRandomAccess(false);
         } catch (IOException e) {
             // can't throw IO exception as signature does not allow that:
             throw new IllegalArgumentException(e);
         }
-            
+        
+                    
         // << PASSING ON SECTION >>
         // relevant: zoomlevels, output, start
     }
 
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        if (!(input instanceof RandomAccessFile)) {
+        if (!(input instanceof RandomAccessStream)) {
             throw new IllegalArgumentException();
         }
-        file = (RandomAccessFile) input;
+        file = (RandomAccessStream) input;
         bounds = Bounds.loadFromInput(file);
         for (int detail = 0; detail < NUM_LEVELS; detail++) {
-            trunkRoots[detail] = new FileQuadTree(bounds, file, file.readLong());
+            trees[detail] = new FileQuadTree(bounds, file, file.readLong());
         }
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        if (!(output instanceof RandomAccessFile)) {
+        if (!(output instanceof RandomAccessStream)) {
             throw new IllegalArgumentException();
         }
-        file = (RandomAccessFile) output;
+        file = (RandomAccessStream) output;
         fill(this.elementDB);
         compactify();
     }   
