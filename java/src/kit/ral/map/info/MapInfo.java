@@ -3,13 +3,17 @@ package kit.ral.map.info;
 import static kit.ral.common.util.Util.getSharedElementAtEnd;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -355,11 +359,21 @@ public class MapInfo {
      *             a stream write error occurred
      */
     public void saveToOutput(DataOutput output) throws IOException {
-        geoBounds.saveToOutput(output);
-        elementDB.saveToOutput(output);
-        addressOperator.saveToOutput(output);
-        //logger.info("save qt");
-        geoOperator.saveToOutput(output);
+        if (output instanceof RandomAccessFile) {
+            RandomAccessFile raf = (RandomAccessFile) output;
+            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(Channels.newOutputStream(raf.getChannel())));
+            geoBounds.saveToOutput(outputStream);
+            elementDB.saveToOutput(outputStream);
+            addressOperator.saveToOutput(outputStream);
+            geoOperator.saveToOutput(raf);
+//            outputStream.close();
+        } else {
+            geoBounds.saveToOutput(output);
+            elementDB.saveToOutput(output);
+            addressOperator.saveToOutput(output);
+            //logger.info("save qt");
+            geoOperator.saveToOutput(output);
+        }
     }
 
     public void compactify() {

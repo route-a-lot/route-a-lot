@@ -1,9 +1,12 @@
 package kit.ral.map.info.geo;
 
+import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -192,13 +195,15 @@ public class FileQuadTree extends QuadTree {
 
         output.writeBoolean(elements != null);
         if (elements != null) {
-            output.writeByte(elements.size());
+            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(Channels.newOutputStream(output.getChannel())));
+            outputStream.writeByte(elements.size());
             for (MapElement element : elements) {
                 if (element == null) {
                     throw new IllegalStateException("Found null element in QT.");
                 }
-                MapElement.saveToOutput(output, element, true);
+                MapElement.saveToOutput(outputStream, element, true);
             }
+//            outputStream.close();
         } else if (children != null) {
             // save children, write each child's position at position mark
             long mark = output.getFilePointer();
@@ -244,6 +249,7 @@ public class FileQuadTree extends QuadTree {
             }
         }
         children = null;
+        System.gc();
     }
 
     /**

@@ -60,21 +60,21 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                     
                     // get current tree branches (same division for all), prepare arrays
                     HashSet<FileQuadTree> branchSet = new HashSet<FileQuadTree>();
-                    trees[detail] = divider.buildDividedQuadTree(branchSet);
-                    FileQuadTree[] branches = branchSet.toArray(new FileQuadTree[branchSet.size()]);
+                    trunkRoots[detail] = divider.buildTrunk(branchSet);
+                    FileQuadTree[] branchRoots = branchSet.toArray(new FileQuadTree[branchSet.size()]);
                     // pick each tree branch of the current tree
-                    for (int i = 0; i < branches.length; i++) {
+                    for (int i = 0; i < branchRoots.length; i++) {
                         // add all relevant elements
                         Iterator<MapElement> elements = elementDB.getAllMapElements();
                         while (elements.hasNext()) {
                             MapElement element = elements.next().getReduced(detail, range);
                             if (element != null) {
-                                branches[i].addElement(element);
+                                branchRoots[i].addElement(element);
                             }
                         }
                         // save tree branch and remove it from RAM
-                        branches[i].saveTree(file);
-                        branches[i].unload();
+                        branchRoots[i].saveTree(file);
+                        branchRoots[i].unload();
                     }
                     // register tree trunk location
                     long pos = file.getFilePointer();
@@ -82,7 +82,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                     file.writeLong(pos);
                     file.seek(pos);
                     // save tree trunk (branches will be linked)
-                    ((FileQuadTree) trees[detail]).saveTree(file);                 
+                    ((FileQuadTree) trunkRoots[detail]).saveTree(file);                 
             } 
         } catch (IOException e) {
             // can't throw IO exception as signature does not allow that:
@@ -101,7 +101,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
         file = (RandomAccessFile) input;
         bounds = Bounds.loadFromInput(file);
         for (int detail = 0; detail < NUM_LEVELS; detail++) {
-            trees[detail] = new FileQuadTree(bounds, file, file.readLong());
+            trunkRoots[detail] = new FileQuadTree(bounds, file, file.readLong());
         }
     }
 

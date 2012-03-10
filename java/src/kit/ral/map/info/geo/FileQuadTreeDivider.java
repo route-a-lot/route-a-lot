@@ -49,7 +49,7 @@ public class FileQuadTreeDivider {
         return result;
     } 
     
-    public FileQuadTree buildDividedQuadTree(HashSet<FileQuadTree> divisions) {
+    public FileQuadTree buildTrunk(HashSet<FileQuadTree> divisions) {
         return root.buildDividedQuadTree(divisions);
     }
     

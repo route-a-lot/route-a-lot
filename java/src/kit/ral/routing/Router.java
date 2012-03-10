@@ -194,10 +194,11 @@ public class Router {
                 continue;
             }
             logger.debug("Calculating route from " + prev.toString() + " to " + navPoint.toString() + ".");
-            if (fromAToB(prev, navPoint) == null) {
+            Route route = fromAToB(prev, navPoint);
+            if (route == null) {
                 return 0;
             }
-            length += fromAToB(prev, navPoint).getLength();
+            length += route.getLength();
             prev = navPoint;
         }
         return length;
