@@ -7,9 +7,9 @@ import java.io.RandomAccessFile;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.description.OSMType;
 import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Node;

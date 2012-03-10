@@ -7,45 +7,38 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import kit.route.a.lot.common.Bounds;
-import kit.route.a.lot.common.Coordinates;
 import kit.route.a.lot.common.Selection;
-import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
 
+
 public class Area extends MapElement {
-
-    private Node[] nodes;
-
-    private String name;
-
-    private WayInfo wayInfo;
     
-    private static final String EMPTY = "";
+    private String name;
+    private Node[] nodes;
+    private WayInfo wayInfo; 
 
+    
+    // CONSTRUCTORS
+    
+    public Area() {
+        this(null, null);
+    }
+    
     public Area(String name, WayInfo wayInfo) {
         this.name = name;
         this.nodes = new Node[0];
         this.wayInfo = wayInfo;
     }
 
-    public Area() {
-        this(null, null);
-    }
-
+    
+    // GETTERS & SETTERS
+    
     @Override
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof Area)) {
-            return false;
-        }
-        Area comparee = (Area) other;
-        return nodes.equals(comparee.nodes)
-                && name == comparee.name
-                && wayInfo.equals(comparee.wayInfo);
+    public String getName() {
+        return (this.name != null) ? this.name : "";
     }
     
     public Node[] getNodes() {
@@ -59,12 +52,10 @@ public class Area extends MapElement {
     public void setNodes(Node[] nodes) {
         this.nodes = nodes;
     }
-
-    @Override
-    public String getName() {
-        return (this.name != null) ? this.name : "";
-    }
-
+    
+    
+    // GENERAL MAP ELEMENT OPERATIONS
+    
     @Override
     public boolean isInBounds(Bounds bounds) {
         // TODO there is no float polygon, so I have to think about s.th. else (or leave it the way it is now)
@@ -96,6 +87,27 @@ public class Area extends MapElement {
 
     }
 
+    @Override
+    public MapElement getReduced(int detail, float range) {
+        // draw everything on detail 0
+        if (detail == 0) {
+            return this;
+        }
+        // determine bounding box
+        Bounds bounds = new Bounds(nodes[0].getPos(), 0);
+        for (Node node: nodes) {
+            bounds.extend(node.getPos(), 0);
+        }
+        // discard too small areas
+        if (bounds.getHeight() + bounds.getWidth() < 2 * range) {
+            return null;
+        }
+        // return simplified area
+        Area result = new Area(name, wayInfo);
+        result.setNodes(Street.simplifyNodes(nodes, range / 2));
+        return result;
+    }
+      
     /**
      * Returns a selection with pos = the center of the area and from and to as normal (routable edge).
      */
@@ -104,6 +116,9 @@ public class Area extends MapElement {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    
+    // I/O OPERATIONS
     
     @Override //TODO: attribs, load() and save() are identical to methods of same name in Street
     protected void load(DataInput input) throws IOException {
@@ -128,37 +143,16 @@ public class Area extends MapElement {
         this.wayInfo.saveToOutput(output);
     }
 
-    @Override
-    public MapElement getReduced(int detail, float range) {
-        if (detail == 0) {
-            return this;
-        }
-        Coordinates topLeft = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
-        Coordinates bottomRight = new Coordinates(nodes[0].getPos().getLatitude(), nodes[0].getPos().getLongitude());
-        Coordinates position;
-        for (Node node: nodes) {
-            position = node.getPos();
-            topLeft.setLatitude(Math.min(topLeft.getLatitude(), position.getLatitude()));
-            topLeft.setLongitude(Math.min(topLeft.getLongitude(), position.getLongitude()));
-            bottomRight.setLatitude(Math.max(bottomRight.getLatitude(), position.getLatitude()));
-            bottomRight.setLongitude(Math.max(bottomRight.getLongitude(), position.getLongitude()));
-        }
-        if (Math.abs(topLeft.getLatitude() - bottomRight.getLatitude()) > range ||
-                Math.abs(topLeft.getLongitude() - bottomRight.getLongitude()) > range) {
-            Area result = new Area(name, wayInfo);
-            result.setNodes(Street.simplifyNodes(nodes, range / 2));
-            return result;
-        } else {
-            return null;
-        }
-    }
     
-    public boolean equals(MapElement other){
-
-        if(name.equals(other.getName()) ){
-            return true;
-        }
-        return false;
+    // MISCELLANEOUS
+        
+    @Override
+    public boolean equals(Object other){
+        return (other == this) || (
+               (other != null) && (other instanceof Area)
+                && getName().equals(((Area) other).getName())
+                && nodes.equals(((Area) other).nodes)
+                && wayInfo.equals(((Area) other).wayInfo));
     }
 
     public int compare(MapElement one, MapElement other){
@@ -181,11 +175,9 @@ public class Area extends MapElement {
             }               
         }
 
-        /*wenn Präfix gleich aber dieser String kürzer 
+        /*wenn PrÃ¤fix gleich aber dieser String kÃ¼rzer 
                   steht er lexikographisch weiter vorne*/
         return name.length() - otherName.length();
-    }
-
-    
+    }   
 
 }

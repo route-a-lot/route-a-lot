@@ -13,9 +13,10 @@ import java.util.List;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
 import kit.route.a.lot.map.Node;
@@ -162,12 +163,12 @@ public class TileMock {
     protected Node[] getRelevantNodesForStreet(Node[] streetNodes) {
         List<Node> relevantNodes = new ArrayList<Node>(streetNodes.length);
         int start = 0;
-        while (start < streetNodes.length - 1 && !Street.isEdgeInBounds(streetNodes[start].getPos(),
+        while (start < streetNodes.length - 1 && !MathUtil.isLineInBounds(streetNodes[start].getPos(),
                 streetNodes[start+1].getPos(), bounds)) {
             start++;
         }
         int end = streetNodes.length - 1;
-        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(),
+        while (end > 1 && !MathUtil.isLineInBounds(streetNodes[end - 1].getPos(),
                 streetNodes[end].getPos(), bounds)) {
             end--;
         }

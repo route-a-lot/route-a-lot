@@ -5,7 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
+import kit.route.a.lot.common.description.WayInfo;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.controller.State;
 
 import org.apache.log4j.PropertyConfigurator;
@@ -59,7 +60,7 @@ public class StreetAreaTest {
     
     @Test
     public void testIsInBounce() {
-        assertTrue(Street.isEdgeInBounds(street.getNodes()[0].getPos(),
+        assertTrue(MathUtil.isLineInBounds(street.getNodes()[0].getPos(),
                 street.getNodes()[2].getPos(), new Bounds(0, 6, 0, 6)));
                
         assertTrue(street.isInBounds(new Bounds(0, 6, 0, 6)));

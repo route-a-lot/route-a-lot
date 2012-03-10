@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.POINode;

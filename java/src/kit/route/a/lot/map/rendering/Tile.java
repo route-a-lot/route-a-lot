@@ -14,10 +14,11 @@ import java.util.Set;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.description.Address;
 import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.common.projection.Projection;
+import kit.route.a.lot.common.util.MathUtil;
 import kit.route.a.lot.controller.State;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.MapElement;
@@ -513,12 +514,12 @@ public class Tile {
         drawingSize += 2;
         Bounds extendedBounds = bounds.clone().extend(drawingSize);
         while (start < streetNodes.length - 1
-                && !Street.isEdgeInBounds(streetNodes[start].getPos(),
+                && !MathUtil.isLineInBounds(streetNodes[start].getPos(),
                         streetNodes[start + 1].getPos(), extendedBounds)) {
             start++;
         }
         int end = streetNodes.length - 1;
-        while (end > 1 && !Street.isEdgeInBounds(streetNodes[end - 1].getPos(),
+        while (end > 1 && !MathUtil.isLineInBounds(streetNodes[end - 1].getPos(),
                 streetNodes[end].getPos(), extendedBounds)) {
             end--;
         }

@@ -12,6 +12,8 @@ import kit.route.a.lot.map.infosupply.MapInfo;
 
 public abstract class MapElement {
 
+    protected static final String EMPTY = "";
+    
     public static final byte DESCRIPTOR_NULL = 0;
     /** constant used in a stream for announcing {@link Node} element data following */
     public static final byte DESCRIPTOR_NODE = 1;

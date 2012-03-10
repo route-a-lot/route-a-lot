@@ -4,9 +4,9 @@ import java.util.List;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.description.Address;
 import kit.route.a.lot.common.description.POIDescription;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.map.infosupply.MapInfo;
 
 

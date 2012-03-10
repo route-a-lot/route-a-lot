@@ -2,8 +2,8 @@ package kit.route.a.lot.map.rendering;
 
 import kit.route.a.lot.common.Bounds;
 import kit.route.a.lot.common.Coordinates;
-import kit.route.a.lot.common.WayInfo;
 import kit.route.a.lot.common.description.OSMType;
+import kit.route.a.lot.common.description.WayInfo;
 import kit.route.a.lot.map.Area;
 import kit.route.a.lot.map.Node;
 import kit.route.a.lot.map.Street;
