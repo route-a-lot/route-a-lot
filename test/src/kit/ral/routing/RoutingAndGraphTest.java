@@ -14,6 +14,7 @@ import java.util.List;
 
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
+import kit.ral.common.WeightCalculator;
 import kit.ral.controller.State;
 import kit.ral.io.OSMLoader;
 
@@ -38,15 +39,16 @@ public class RoutingAndGraphTest {
     @BeforeClass
     public static void initialize() {
         System.out.println("starte import");
-        State.getInstance().resetMap();
+        State state = State.getInstance();
+        state.resetMap();
         PropertyConfigurator.configure("config/log4j.conf");
-        loader = new OSMLoader(State.getInstance());
+        loader = new OSMLoader(state, new WeightCalculator(state));
         simpleRoutingState = new RoutingStateMock();
-        loaderForSimpleGraph = new OSMLoader(simpleRoutingState);
+        loaderForSimpleGraph = new OSMLoader(simpleRoutingState, new WeightCalculator(state));
         loader.importMap(new File("./test/resources/karlsruhe_small_current.osm"), new Progress());
         loaderForSimpleGraph.importMap(new File("./test/resources/karlsruhe_small_current.osm"), new Progress());
         Precalculator.precalculate(new Progress());
-        graph = State.getInstance().getLoadedGraph();
+        graph = state.getLoadedGraph();
         System.out.println("import fertig");
     }
 

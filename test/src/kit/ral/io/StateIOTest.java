@@ -26,8 +26,7 @@ public class StateIOTest extends StateIO {
     @Before
     public void setUp() throws Exception {
         state = new State();
-        loader = new OSMLoader(state);
-        loader.weightCalculator = new WeightCalculatorMock();
+        loader = new OSMLoader(state, new WeightCalculatorMock(state));
     }
     
     @After

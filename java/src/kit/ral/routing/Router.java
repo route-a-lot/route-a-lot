@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import kit.ral.common.Listener;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
+import kit.ral.common.event.Listener;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import org.apache.log4j.Logger;

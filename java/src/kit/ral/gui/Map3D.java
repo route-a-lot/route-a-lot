@@ -1,7 +1,7 @@
 package kit.ral.gui;
 
 import static javax.media.opengl.GL.*;
-import static kit.ral.common.Listener.*;
+import static kit.ral.common.event.Listener.*;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -12,10 +12,10 @@ import javax.media.opengl.glu.GLU;
 
 import kit.ral.common.Context3D;
 import kit.ral.common.Coordinates;
-import kit.ral.common.Listener;
+import kit.ral.common.event.Listener;
+import kit.ral.common.event.RenderEvent;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.MathUtil;
-import kit.ral.gui.event.RenderEvent;
 
 public class Map3D extends Map implements GLEventListener {
     

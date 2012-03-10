@@ -1,4 +1,4 @@
-package kit.ral.gui.event;
+package kit.ral.common.event;
 
 import kit.ral.common.Context;
 

@@ -1,6 +1,6 @@
 package kit.ral.gui;
 
-import static kit.ral.common.Listener.*;
+import static kit.ral.common.event.Listener.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -30,14 +30,14 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import kit.ral.common.Coordinates;
-import kit.ral.common.Listener;
 import kit.ral.common.description.POIDescription;
+import kit.ral.common.event.AddFavoriteEvent;
+import kit.ral.common.event.Event;
+import kit.ral.common.event.Listener;
+import kit.ral.common.event.PositionEvent;
+import kit.ral.common.event.PositionNumberEvent;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
-import kit.ral.gui.event.AddFavoriteEvent;
-import kit.ral.gui.event.Event;
-import kit.ral.gui.event.PositionNumberEvent;
-import kit.ral.gui.event.PositionEvent;
 
 
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {

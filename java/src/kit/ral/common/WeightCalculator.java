@@ -9,26 +9,20 @@ import kit.ral.heightinfo.IHeightmap;
 
 public class WeightCalculator {
 
-    private static WeightCalculator instance;
-    private Projection projection;
-
-    protected WeightCalculator() {
+    private Projection projection = null;
+    private State state;
+    
+    public WeightCalculator(State state) {
+        this.state = state;
     }
-
-    public static WeightCalculator getInstance() {
-        if (instance == null) {
-            instance = new WeightCalculator();
-        }
-        return instance;
-    }
-
+    
     public void setProjection(Projection projection) {
         this.projection = projection;
     }
     
     public int calcWeightWithHeightAndHighwayMalus(int fromID, int toID, int wayType) {
         int weightWithHeight = calcWeightWithHeight(fromID, toID);
-        return (int) (weightWithHeight * (getMalusFactor(wayType, State.getInstance().getHighwayMalus())));
+        return (int) (weightWithHeight * (getMalusFactor(wayType, state.getHighwayMalus())));
     }
     
     private static double getMalusFactor(int wayType, int malus) {
@@ -65,21 +59,18 @@ public class WeightCalculator {
         }
         return 1 + malusFactor / 150 * Math.pow(7, malus);
     }
-    
-    //private static void print(String string) {
-    //    System.out.println(string);
-    //}
 
-    public int calcWeightWithHeight(int fromID, int toID) {
-        Coordinates from = projection.getGeoCoordinates(State.getInstance().getMapInfo().getNodePosition(fromID));
-        Coordinates to = projection.getGeoCoordinates(State.getInstance().getMapInfo().getNodePosition(toID));
-        IHeightmap heightmap = State.getInstance().getLoadedHeightmap();
+    protected int calcWeightWithHeight(int fromID, int toID) {
+        Coordinates from = projection.getGeoCoordinates(state.getMapInfo().getNodePosition(fromID));
+        Coordinates to = projection.getGeoCoordinates(state.getMapInfo().getNodePosition(toID));
+        IHeightmap heightmap = state.getLoadedHeightmap();
 
         int flatWeight = calcWeight(fromID, toID);
         float fromHeight = heightmap.getHeight(from) * 100;
         float toHeight = heightmap.getHeight(to) * 100;
 
-        double heightDifference = Math.pow(Math.abs(fromHeight - toHeight), 2) * getHeightMalusFactor(State.getInstance().getHeightMalus());
+        double heightDifference = Math.pow(Math.abs(fromHeight - toHeight), 2)
+                                    * getHeightMalusFactor(state.getHeightMalus());
         if (toHeight < fromHeight) {
             heightDifference = 0;
         }
@@ -91,17 +82,17 @@ public class WeightCalculator {
         return weight;
     }// end calcHeightWeight
     
-    private static double getHeightMalusFactor(int heightMalus) {
+    private double getHeightMalusFactor(int heightMalus) {
         if (heightMalus == 0) {
             return 0;
         }
-        return Math.pow(2, State.getInstance().getHeightMalus());
+        return Math.pow(2, state.getHeightMalus());
     }
 
 
-    public int calcWeight(int fromID, int toID) {
-        Coordinates from = State.getInstance().getMapInfo().getNodePosition(fromID);
-        Coordinates to = State.getInstance().getMapInfo().getNodePosition(toID);
+    protected int calcWeight(int fromID, int toID) {
+        Coordinates from = state.getMapInfo().getNodePosition(fromID);
+        Coordinates to = state.getMapInfo().getNodePosition(toID);
 
         Coordinates geoFrom = projection.getGeoCoordinates(from);
         Coordinates geoTo = projection.getGeoCoordinates(to);
@@ -113,11 +104,14 @@ public class WeightCalculator {
 
         // Kugelkoordinaten berechnet distance in km
         double distanceRad =
-                Math.acos(Math.sin(geoFromLalRad) * Math.sin(geoToLalRad) + Math.cos(geoFromLalRad)
-                        * Math.cos(geoToLalRad) * Math.cos(geoFromLonRad - geoToLonRad));
+                Math.acos(Math.sin(geoFromLalRad) * Math.sin(geoToLalRad)
+                        + Math.cos(geoFromLalRad) * Math.cos(geoToLalRad)
+                        * Math.cos(geoFromLonRad - geoToLonRad));
         return (int) (100 * 6371000.785 * distanceRad); // 6371000 is earthRadius in meter, so result will be
                                                         // given in cm
     }
+
+
 
 
 }

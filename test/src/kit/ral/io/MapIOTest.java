@@ -39,7 +39,8 @@ public class MapIOTest {
     @Test
     public void SaveAndLoad() {
         File karlsruheMap = new File("test/resources/karlsruhe_small_current.osm");
-        OSMLoader osmLoader = new OSMLoader(State.getInstance());
+        OSMLoader osmLoader = new OSMLoader(State.getInstance(),
+                new WeightCalculatorMock(State.getInstance()));
         osmLoader.importMap(karlsruheMap, p.createSubProgress(0.6));
         State state = State.getInstance();
 

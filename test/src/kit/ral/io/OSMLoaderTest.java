@@ -27,8 +27,7 @@ public class OSMLoaderTest {
     @Before
     public void setUp() throws Exception {
         state = new StateMock();
-        loader = new OSMLoader(state);
-        loader.weightCalculator = new WeightCalculatorMock();
+        loader = new OSMLoader(state, new WeightCalculatorMock(state));
     }
 
     @After

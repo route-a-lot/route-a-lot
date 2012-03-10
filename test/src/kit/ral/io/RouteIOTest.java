@@ -34,8 +34,7 @@ public class RouteIOTest extends RouteIO {
         new State();
         state = State.getInstance();
         state.setMapInfo(new MapInfo());
-        loader = new OSMLoader(state);
-        loader.weightCalculator = new WeightCalculatorMock();
+        loader = new OSMLoader(state, new WeightCalculatorMock(state));
     }
 
     @After

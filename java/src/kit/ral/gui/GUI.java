@@ -1,6 +1,7 @@
 package kit.ral.gui;
 
-import static kit.ral.common.Listener.*;
+import static kit.ral.common.event.Listener.*;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -52,19 +53,19 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import kit.ral.common.Coordinates;
-import kit.ral.common.Listener;
 import kit.ral.common.Selection;
 import kit.ral.common.description.POIDescription;
+import kit.ral.common.event.Event;
+import kit.ral.common.event.FloatEvent;
+import kit.ral.common.event.Listener;
+import kit.ral.common.event.NumberEvent;
+import kit.ral.common.event.PositionNumberEvent;
+import kit.ral.common.event.SwitchNavNodesEvent;
+import kit.ral.common.event.TextEvent;
+import kit.ral.common.event.TextNumberEvent;
 import kit.ral.common.util.MathUtil;
 import kit.ral.common.util.StringUtil;
 import kit.ral.controller.State;
-import kit.ral.gui.event.Event;
-import kit.ral.gui.event.FloatEvent;
-import kit.ral.gui.event.TextNumberEvent;
-import kit.ral.gui.event.NumberEvent;
-import kit.ral.gui.event.PositionNumberEvent;
-import kit.ral.gui.event.SwitchNavNodesEvent;
-import kit.ral.gui.event.TextEvent;
 import kit.ral.map.rendering.Renderer;
 
 public class GUI extends JFrame {

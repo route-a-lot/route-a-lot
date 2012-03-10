@@ -8,6 +8,7 @@ import java.util.List;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
+import kit.ral.common.WeightCalculator;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.controller.State;
@@ -31,11 +32,12 @@ public class RoutingScalTest {
     @Before
     public void initialize() throws Exception {
         System.out.println("starte import");
+        State state = State.getInstance();
         State.getInstance().resetMap();
-        loader = new OSMLoader(State.getInstance());
+        loader = new OSMLoader(state, new WeightCalculator(state));
         loader.importMap(new File("./test/resources/karlsruhe_big.osm"), new Progress());
         Precalculator.precalculate(new Progress());
-        graph = State.getInstance().getLoadedGraph();
+        graph = state.getLoadedGraph();
         System.out.println("import abgeschlossen");
     }
     

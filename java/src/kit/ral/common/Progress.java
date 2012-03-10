@@ -1,6 +1,7 @@
 package kit.ral.common;
 
-import kit.ral.gui.event.FloatEvent;
+import kit.ral.common.event.FloatEvent;
+import kit.ral.common.event.Listener;
 
 
 public class Progress {

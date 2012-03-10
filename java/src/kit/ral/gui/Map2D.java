@@ -1,7 +1,7 @@
 package kit.ral.gui;
 
 
-import static kit.ral.common.Listener.*;
+import static kit.ral.common.event.Listener.*;
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -12,9 +12,9 @@ import javax.swing.JPanel;
 import kit.ral.common.Bounds;
 import kit.ral.common.Context2D;
 import kit.ral.common.Coordinates;
-import kit.ral.common.Listener;
+import kit.ral.common.event.Listener;
+import kit.ral.common.event.RenderEvent;
 import kit.ral.common.projection.Projection;
-import kit.ral.gui.event.RenderEvent;
 
 public class Map2D extends Map  {
     

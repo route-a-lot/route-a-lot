@@ -48,21 +48,21 @@ public class OSMLoader {
 
     float minLat, maxLat, minLon, maxLon;
 
-    State state;
-    WeightCalculator weightCalculator;
-    Projection projection;
+    private State state;
+    private WeightCalculator weightCalculator;
+    private Projection projection;
 
     int nodeCount;
     private long[] osmIds;
 
-    public OSMLoader(State state) {
+    public OSMLoader(State state, WeightCalculator weightCalculator) {
         this.state = state;
-        weightCalculator = WeightCalculator.getInstance();
         startIds = new ArrayList<Integer>();
         endIds = new ArrayList<Integer>();
         wayType = new ArrayList<Integer>();
         uniqueEdgeStartIds = new ArrayList<Integer>();
         uniqueEdgeEndIds = new ArrayList<Integer>();
+        this.weightCalculator = weightCalculator;
     }
 
     /**

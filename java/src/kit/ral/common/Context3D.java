@@ -1,6 +1,6 @@
 package kit.ral.common;
 
-import javax.media.opengl.*;
+import javax.media.opengl.GL;
 
 public class Context3D extends Context {
     

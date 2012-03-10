@@ -3,12 +3,9 @@ package kit.ral.common;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.lang.String;
-import java.lang.Character;
-import java.util.ArrayList;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Locale;
-import java.lang.ClassCastException;
 
 public class StringTrie {
 

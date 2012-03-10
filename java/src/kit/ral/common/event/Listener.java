@@ -1,9 +1,7 @@
-package kit.ral.common;
+package kit.ral.common.event;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import kit.ral.gui.event.Event;
 
 /**
  * Interface for our own listener
@@ -29,9 +27,9 @@ public abstract class Listener {
     
     private static final int TYPE_COUNT = 30;
     
-    private static List<Listener>[] lists;
+    private static ArrayList<Listener>[] lists;
     static {
-        lists = (List<Listener>[]) new ArrayList[TYPE_COUNT];
+        lists = (ArrayList<Listener>[]) new ArrayList[TYPE_COUNT];
         for (int i = 0; i < lists.length; i++) {
             lists[i] = new ArrayList<Listener>(1);
         }
