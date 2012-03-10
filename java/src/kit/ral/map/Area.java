@@ -7,6 +7,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.WayInfo;
 import kit.ral.controller.State;
@@ -50,6 +51,9 @@ public class Area extends MapElement {
     }
 
     public void setNodes(Node[] nodes) {
+        if (nodes == null || nodes.length == 0) {
+            throw new IllegalArgumentException();
+        }
         this.nodes = nodes;
     }
     
@@ -93,28 +97,27 @@ public class Area extends MapElement {
         if (detail == 0) {
             return this;
         }
-        // determine bounding box
+        // determine bounding box, discard too small areas
         Bounds bounds = new Bounds(nodes[0].getPos(), 0);
         for (Node node: nodes) {
             bounds.extend(node.getPos(), 0);
-        }
-        // discard too small areas
-        if (bounds.getHeight() + bounds.getWidth() < 2 * range) {
+        }  
+        if (bounds.getHeight() + bounds.getWidth() < range) {
             return null;
         }
         // return simplified area
         Area result = new Area(name, wayInfo);
         result.setNodes(Street.simplifyNodes(nodes, range / 2));
-        return result;
+        return (result.nodes.length == nodes.length) ? this : result;
     }
       
-    /**
-     * Returns a selection with pos = the center of the area and from and to as normal (routable edge).
-     */
     @Override
     public Selection getSelection() {
-        // TODO Auto-generated method stub
-        return null;
+        Coordinates center = new Coordinates();
+        for (Node node : nodes) {
+            center.add(node.getPos());
+        }
+        return State.getInstance().getMapInfo().select(center.scale(1f / nodes.length));
     }
     
     

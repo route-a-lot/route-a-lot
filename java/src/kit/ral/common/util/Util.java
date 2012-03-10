@@ -1,5 +1,6 @@
 package kit.ral.common.util;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayDeque;
 import java.util.List;
 
@@ -55,5 +56,13 @@ public class Util {
                 + StringUtil.humanReadableByteCount(Runtime.getRuntime().maxMemory(), false));
         System.out.println("Unused memory: "
                 + StringUtil.humanReadableByteCount(Runtime.getRuntime().freeMemory(), false));
+        printGPUMemoryInformation();
+    }
+    
+    public static void printGPUMemoryInformation() {
+        int mem = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .getDefaultScreenDevice().getAvailableAcceleratedMemory();
+        System.out.println("Available graphics memory (including accessible RAM): "
+                + StringUtil.humanReadableByteCount(mem, false));
     }
 }

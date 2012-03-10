@@ -10,6 +10,7 @@ import java.util.Iterator;
 import kit.ral.common.Bounds;
 import kit.ral.common.projection.Projection;
 import kit.ral.map.MapElement;
+import kit.ral.map.Node;
 import kit.ral.map.info.ElementDB;
 
 
@@ -35,7 +36,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
         FileQuadTreeDivider divider = new FileQuadTreeDivider(bounds); 
         // divider cannot store nodes, so we have to add them several times
         do {
-            Iterator<MapElement> elements = elementDB.getAllMapElements();
+            Iterator<Node> elements = elementDB.getAllNodes();
             while (elements.hasNext()) {
                 divider.add(elements.next());
             }

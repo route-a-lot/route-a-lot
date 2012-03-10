@@ -147,6 +147,7 @@ public class FileQuadTree extends QuadTree {
         }
         file.seek(filePointer);
         file.seek(file.readLong()); // allow indirect addressing
+        
         if (file.readBoolean()) {
             int size = file.readByte();
             elements = new ArrayList<MapElement>(size);
@@ -159,7 +160,7 @@ public class FileQuadTree extends QuadTree {
             children = new FileQuadTree[4];
             float xStep = bounds.getWidth() / 2;
             float yStep = bounds.getHeight() / 2;
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < children.length; i++) {
                 Bounds newBounds = new Bounds(
                         bounds.getLeft() + xStep * (i / 2),
                         bounds.getLeft() + xStep * (i / 2 + 1),
@@ -190,27 +191,32 @@ public class FileQuadTree extends QuadTree {
         }
         file = output;
         filePointer = file.getFilePointer();
-        output.writeLong(filePointer + 8);
+        output.writeLong(filePointer + 8);     
         
         output.writeBoolean(elements != null);
         if (elements != null) {
             output.writeByte(elements.size());
             for (MapElement element : elements) {
+                if (element == null) {
+                    throw new IllegalStateException("Found null element in QT.");
+                }
                 MapElement.saveToOutput(output, element, true);
             }
-        } else {
+        } else if (children != null) {
             // save children, write each child's position at position mark
             long mark = output.getFilePointer();
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < children.length; i++) {
                 output.writeLong(0);
             }
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < children.length; i++) {
                 long pos = output.getFilePointer();
                 output.seek(mark + i * 8);
                 output.writeLong(pos);
                 output.seek(pos);
                 children[i].saveTree(output);
             }
+        } else {
+            throw new IllegalStateException("Cannot save an unloaded QT node.");
         }
     }
 

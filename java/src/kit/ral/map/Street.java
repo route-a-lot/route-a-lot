@@ -53,6 +53,9 @@ public class Street extends MapElement implements Comparable<Street> {
     }
     
     public void setNodes(Node[] nodes) {
+        if (nodes == null || nodes.length == 0) {
+            throw new IllegalArgumentException();
+        }
         this.nodes = nodes;
     }
 
@@ -91,18 +94,22 @@ public class Street extends MapElement implements Comparable<Street> {
           
     @Override
     public MapElement getReduced(int detail, float range) {
+        // draw everything on detail 0
         if (detail == 0) {
             return this;
         }
-        Street result = new Street(name, wayInfo);
-        result.setNodes(simplifyNodes(nodes, range));
-        if (getLengthOfStreet(result) < range) {
-            return null;
-        } else if (result.nodes.length == nodes.length) {
-            return this;
-        } else {
-            return result;
+        // determine bounding box, discard too small streets
+        Bounds bounds = new Bounds(nodes[0].getPos(), 0);
+        for (Node node : nodes) {
+            bounds.extend(node.getPos(), 0);
         }
+        if (bounds.getWidth() + bounds.getHeight() < range) {
+            return null;
+        }
+        // return simplified street
+        Street result = new Street(name, wayInfo);
+        result.setNodes(simplifyNodes(nodes, range / 2));
+        return (result.nodes.length == nodes.length) ? this : result;
     }
     
     
@@ -111,8 +118,9 @@ public class Street extends MapElement implements Comparable<Street> {
     public Selection getSelection(Coordinates pos) {
         int start = getClosestEdgeStartPosition(pos);
         Coordinates geoPos = ProjectionFactory.getCurrentProjection().getGeoCoordinates(pos);
-        return new Selection(pos, nodes[start].getID(), nodes[start + 1].getID(), getRatio(start, start + 1,
-                pos), (name != null) ? name : geoPos.toString());
+        return new Selection(pos, nodes[start].getID(), nodes[start + 1].getID(),
+                getRatio(start, start + 1, pos),
+                (name != null) ? name : geoPos.toString());
     }
     
     public float getDistanceTo(Coordinates pos) {
@@ -132,7 +140,7 @@ public class Street extends MapElement implements Comparable<Street> {
         for (int i = 0; i < len; i++) {
             nodes[i] = mapInfo.getNode(input.readInt());
         }
-        this.wayInfo = WayInfo.loadFromInput(input);
+        wayInfo = WayInfo.loadFromInput(input);
     }
 
     @Override
@@ -142,7 +150,7 @@ public class Street extends MapElement implements Comparable<Street> {
         for (Node node : this.nodes) {
             output.writeInt(node.getID());
         }
-        this.wayInfo.saveToOutput(output);
+        wayInfo.saveToOutput(output);
     }
     
       
@@ -303,13 +311,13 @@ public class Street extends MapElement implements Comparable<Street> {
         }
     }
 
-    private static float getLengthOfStreet(Street street) {
+    /*private float getLength() {
         float length = 0;
-        for (int i = 1; i < street.nodes.length; i++) {
-            length += Coordinates.getDistance(street.nodes[i - 1].getPos(), street.nodes[i].getPos());
+        for (int i = 1; i < nodes.length; i++) {
+            length += Coordinates.getDistance(nodes[i - 1].getPos(), nodes[i].getPos());
         }
         return length;
-    }
+    }*/
 
     public static int getStreetDrawingSize(WayInfo wayInfo) {
         int basicSize = 10;

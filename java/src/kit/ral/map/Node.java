@@ -71,12 +71,8 @@ public class Node extends MapElement {
 
 
     @Override
-    public MapElement getReduced(int detail, float rang) {
-        if (detail > 2) {
-            return null;
-        } else {
-            return this;
-        }
+    public MapElement getReduced(int detail, float range) {
+        return (detail > 2) ? null : this;
     }
 
     @Override
