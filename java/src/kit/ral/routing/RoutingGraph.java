@@ -49,7 +49,7 @@ public interface RoutingGraph {
 
     public void readAreas(String areas);
 
-    public void buildGraphWithUniqueEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId);
+    public void buildGraphWithUndirectedEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId);
     
     public int[] getStartIDArray();
     

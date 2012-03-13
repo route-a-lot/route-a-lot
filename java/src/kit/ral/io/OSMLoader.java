@@ -7,7 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -39,11 +41,9 @@ public class OSMLoader {
 
     private static Logger logger = Logger.getLogger(OSMLoader.class);
 
-    private ArrayList<Integer> startIds;
-    private ArrayList<Integer> endIds;
-    private ArrayList<Integer> wayType;
-    private ArrayList<Integer> uniqueEdgeStartIds;
-    private ArrayList<Integer> uniqueEdgeEndIds;
+    private Collection<Edge> edges;
+    private List<Integer> wayType;
+    private Collection<Edge> undirectedEdges;
     private int maxWayNodeId = -1;
 
     float minLat, maxLat, minLon, maxLon;
@@ -57,11 +57,9 @@ public class OSMLoader {
 
     public OSMLoader(State state, WeightCalculator weightCalculator) {
         this.state = state;
-        startIds = new ArrayList<Integer>();
-        endIds = new ArrayList<Integer>();
+        edges = new HashSet<Edge>();
         wayType = new ArrayList<Integer>();
-        uniqueEdgeStartIds = new ArrayList<Integer>();
-        uniqueEdgeEndIds = new ArrayList<Integer>();
+        undirectedEdges = new HashSet<Edge>();
         this.weightCalculator = weightCalculator;
     }
 
@@ -933,35 +931,25 @@ public class OSMLoader {
                             }
                         }
 
-                        uniqueEdgeStartIds.add(curWayIds.get(0));
-                        for (int i = 1; i < curWayIds.size() - 1; i++) {
-                            uniqueEdgeEndIds.add(curWayIds.get(i));
-                            uniqueEdgeStartIds.add(curWayIds.get(i));
+                        for (int i = 1; i < curWayIds.size(); i++) {
+                            undirectedEdges.add(new Edge(curWayIds.get(i - 1), curWayIds.get(i)));
                         }
-                        uniqueEdgeEndIds.add(curWayIds.get(curWayIds.size() - 1));
 
                         if (curWayInfo.getOneway() == WayInfo.ONEWAY_NO
                                 || curWayInfo.getOneway() == WayInfo.ONEWAY_YES) {
-                            startIds.add(curWayIds.get(0));
-                            for (int i = 1; i < curWayIds.size() - 1; i++) {
-                                endIds.add(curWayIds.get(i));
-                                startIds.add(curWayIds.get(i));
+                            for (int i = 1; i < curWayIds.size(); i++) {
+                                edges.add(new Edge(curWayIds.get(i - 1), curWayIds.get(i)));
                                 wayType.add(curWayInfo.getType());
                             }
-                            wayType.add(curWayInfo.getType());
-                            endIds.add(curWayIds.get(curWayIds.size() - 1));
                         }
 
                         if (curWayInfo.getOneway() == WayInfo.ONEWAY_NO
                                 || curWayInfo.getOneway() == WayInfo.ONEWAY_OPPOSITE) {
-                            startIds.add(curWayIds.get(curWayIds.size() - 1));
-                            for (int i = curWayIds.size() - 2; i > 0; i--) {
-                                endIds.add(curWayIds.get(i));
-                                startIds.add(curWayIds.get(i));
+                            for (int i = curWayIds.size() - 1; i > 0; i--) {
+                                edges.add(new Edge(curWayIds.get(i), curWayIds.get(i - 1)));
                                 wayType.add(curWayInfo.getType());
                             }
                             wayType.add(curWayInfo.getType());
-                            endIds.add(curWayIds.get(0));
                         }
                         
                     }
@@ -1018,26 +1006,29 @@ public class OSMLoader {
 
         logger.info("create adjacient fields...");
 
-        int countIDs = startIds.size();
+        int countIDs = edges.size();
         int[] startIDs = new int[countIDs];
         int[] endIDs = new int[countIDs];
         int[] weights = new int[countIDs];
-        for (int i = 0; i < countIDs; i++) {
-            startIDs[i] = startIds.get(i);
-            endIDs[i] = endIds.get(i);
+        int i = 0;
+        for (Edge edge : edges) {
+            startIDs[i] = edge.getStartId();
+            endIDs[i] = edge.getEndId();
             weights[i] = weightCalculator.calcWeightWithHeightAndHighwayMalus(startIDs[i], endIDs[i], wayType.get(i));
+            i++;
         }
 
-        int countUniqueIDs = uniqueEdgeStartIds.size();
-        int[] uniqueEdgeStartIDs = new int[countUniqueIDs];
-        int[] uniqueEdgeEndIDs = new int[countUniqueIDs];
-        for (int i = 0; i < countUniqueIDs; i++) {
-            uniqueEdgeStartIDs[i] = uniqueEdgeStartIds.get(i);
-            uniqueEdgeEndIDs[i] = uniqueEdgeEndIds.get(i);
+        int countUndirectedIDs = undirectedEdges.size();
+        int[] undirectedEdgeStartIDs = new int[countUndirectedIDs];
+        int[] undirectedEdgeEndIDs = new int[countUndirectedIDs];
+        i = 0;
+        for (Edge edge : undirectedEdges) {
+            undirectedEdgeStartIDs[i] = edge.getStartId();
+            undirectedEdgeEndIDs[i] = edge.getEndId();
         }
         progress.addProgress(0.04);
         
-        for (int i = 0; i < startIDs.length; i++) {
+        for (i = 0; i < startIDs.length; i++) {
             if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
                 logger.error("Id found that is greater than maxWayNodeId");
             }
@@ -1051,8 +1042,42 @@ public class OSMLoader {
         progress.addProgress(0.01);
 
         state.getLoadedGraph().buildGraph(startIDs, endIDs, weights, maxWayNodeId);
-        state.getLoadedGraph().buildGraphWithUniqueEdges(uniqueEdgeStartIDs, uniqueEdgeEndIDs, maxWayNodeId);
+        state.getLoadedGraph().buildGraphWithUndirectedEdges(undirectedEdgeStartIDs, undirectedEdgeEndIDs, maxWayNodeId);
         progress.addProgress(0.05);
+    }
+    
+    private class Edge {
+        private int startId, endId;
+        
+        public Edge(int startId, int endId) {
+            this.startId = startId;
+            this.endId = endId;
+        }
+
+        
+        public int getStartId() {
+            return startId;
+        }
+
+        public int getEndId() {
+            return endId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (! (o instanceof Edge)) {
+                return false;
+            } else {
+                Edge other = (Edge) o;
+                return startId == other.startId && endId == other.endId;
+            }
+        }
+        
+        @Override
+        public int hashCode() {
+            return 17 * startId + 389 * endId;
+        }
+        
     }
     
 }
