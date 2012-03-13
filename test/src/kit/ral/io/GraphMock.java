@@ -107,7 +107,7 @@ public class GraphMock implements RoutingGraph {
     }
 
     @Override
-    public void buildGraphWithUniqueEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
+    public void buildGraphWithUndirectedEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
         // TODO Auto-generated method stub
         
     }

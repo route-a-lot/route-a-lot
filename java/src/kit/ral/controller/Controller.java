@@ -44,6 +44,7 @@ import kit.ral.io.SRTMLoaderDeferred;
 import kit.ral.io.StateIO;
 import kit.ral.map.Node;
 import kit.ral.map.info.ComplexInfoSupplier;
+import kit.ral.map.rendering.MapInfoMock;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.map.rendering.Renderer3D;
 import kit.ral.routing.Precalculator;
@@ -68,11 +69,17 @@ public class Controller {
     private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Future<?> currentTask;
             
-    private GUIHandler guiHandler = new GUIHandler();
-    private State state = State.getInstance();
+    private GUIHandler guiHandler;
+    private State state;
     private static Logger logger = Logger.getLogger(Controller.class);
     
     private static int MAX_SEARCH_COMPLETIONS = 15;
+    
+    // command arguments
+    private File file;
+    private boolean gui = true;
+    private boolean mod = true;
+    private boolean graphOnly = false;
     
     public static void main(String[] args) {
         // ENVIRONMENT SETUP
@@ -95,15 +102,24 @@ public class Controller {
         if (!SRAL_DIRECTORY.exists()) {
             SRAL_DIRECTORY.mkdir();
         }
-        // SYSTEM SETUP
-        new Controller();
+        
+        new Controller(args);
+
     }
     
-    private Controller() {
-        final Progress p = new Progress();
+    private Controller(String[] cmdArgs) {
+        if (!interpretArguments(cmdArgs)) {
+            return;
+        }
         
-        // REGISTER LISTENERS
-        addListeners(); 
+        state = State.getInstance();
+
+        final Progress p = new Progress();
+
+        if (gui) {
+            guiHandler = new GUIHandler();
+            addListeners(); 
+        }
         
         // IMPORT HEIGHT DATA    
         Util.startTimer();
@@ -111,34 +127,69 @@ public class Controller {
         logger.info("Heightmaps loaded: " + Util.stopTimer());
         
         
-        // LOAD STATE
-        Util.startTimer();
-        loadState(p.createSubProgress(0.8));
-        logger.info("State loaded: " + Util.stopTimer());
-             
-        // IMPORT DEFAULT OSM MAP
-        if (state.getLoadedMapFile() == null) {
-            if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
-                Util.startTimer();
-                p.addProgress(-0.3);
-                currentTask = executorService.submit(new Runnable() {
-                    public void run() {
-                        importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
-                    }   
-                });
-                try {
-                    currentTask.get();
-                    logger.info("Imported default map: " + Util.stopTimer());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
+        if (gui) {
+            // LOAD STATE
+            Util.startTimer();
+            loadState(p.createSubProgress(0.8));
+            logger.info("State loaded: " + Util.stopTimer());
+                 
+            // IMPORT DEFAULT OSM MAP
+            if (state.getLoadedMapFile() == null) {
+                if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
+                    Util.startTimer();
+                    p.addProgress(-0.3);
+                    currentTask = executorService.submit(new Runnable() {
+                        public void run() {
+                            importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
+                        }   
+                    });
+                    try {
+                        currentTask.get();
+                        logger.info("Imported default map: " + Util.stopTimer());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    logger.warn("No map loaded");
                 }
-            } else {
-                logger.warn("No map loaded");
             }
+        } else {
+            Precalculator.mod = mod;
+            if (graphOnly) {
+                state.setMapInfo(new kit.ral.io.MapInfoMock());
+            }
+            importMap(file, p.createSubProgress(0.8));
         }
         p.finish();
+    }
+    
+    private boolean interpretArguments(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("--")) {
+                if (args[i].equals("--nogui")) {
+                    gui = false;
+                } else if (args[i].equals("--gui")) {
+                    gui = true;
+                } else if (args[i].equals("--nomod")) {
+                    mod = false;
+                } else if (args[i].equals("--mod")) {
+                    mod = true;
+                } else if (args[i].equals("--nographOnly")) {
+                    graphOnly = false;
+                } else if (args[i].equals("--graphOnly")) {
+                    graphOnly = true;
+                }
+            } else {
+                file = new File(args[i]);
+                if (!file.exists()) {
+                    System.out.println("Given file does not exist.");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     private void addListeners() {
@@ -353,6 +404,9 @@ public class Controller {
             logger.error("OSM File doesn't exist");
         } else {
             state.resetMap();
+            if (graphOnly) {
+                state.setMapInfo(new kit.ral.io.MapInfoMock());
+            }
             System.gc();
             new OSMLoader(state, new WeightCalculator(state)).importMap(osmFile, p.createSubProgress(0.0004));
             Precalculator.precalculate(p.createSubProgress(0.9995));
@@ -576,6 +630,9 @@ public class Controller {
     }
   
     private void updateImportedMapsList() {
+        if (guiHandler == null) {
+            return;
+        }
         List<String> maps = new ArrayList<String>();
         int activeMapIndex = -1;
         if(SRAL_DIRECTORY.isDirectory()) {
@@ -615,7 +672,7 @@ public class Controller {
     }
     
     private void setViewToMapCenter() {
-        if (state.getMapInfo() == null) {
+        if (state.getMapInfo() == null || guiHandler == null) {
             return;
         }
         Bounds bounds = state.getMapInfo().getBounds();
