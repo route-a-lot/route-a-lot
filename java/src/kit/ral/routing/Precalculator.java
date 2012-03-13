@@ -3,16 +3,21 @@ package kit.ral.routing;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -45,12 +50,26 @@ public class Precalculator {
     
     private static int finishedIds = 0;
     private static long startTime, startPeriod, currentTime;
+
+    private static final int AREAS = 64;
+    private static String GRAPH_FILE = "sral/graph";
+    
+    public static boolean mod = true;
     
     public static void precalculate(final Progress p) {
+        if (mod) {
+            GRAPH_FILE = "sral/graph3";
+        } else {
+            GRAPH_FILE = "sral/graph1";
+        }
+        precalculate(p, mod);
+    }
+    
+    public static void precalculate(final Progress p, final boolean mod) {
         finishedIds = 0;
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
-        logger.info("Starting precalculation...");
+        logger.info("Starting precalculation... " + new Date());
         int procNum = Runtime.getRuntime().availableProcessors();
         ExecutorService executorService = Executors.newFixedThreadPool(procNum);
         Collection<Future<?>> futures = new ArrayList<Future<?>>(graph.getIDCount());
@@ -63,7 +82,7 @@ public class Precalculator {
                 futures.add(executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        createFlags(currentI, p.createSubProgress(0.99f / graph.getIDCount()));
+                        createFlags(currentI, p.createSubProgress(0.99f / graph.getIDCount()), mod);
                     }
                 }));       
             }
@@ -83,8 +102,25 @@ public class Precalculator {
             graph.setAllArcFlags();
             logger.error("Failed to do precalculation");
         }
+        saveGraph();
         p.finish();
+        logger.info("Precalculation finished. " + new Date());
         return;
+    }
+    
+    private static void saveGraph() {
+        File file = new File(GRAPH_FILE);
+        try {
+            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+            graph.saveToOutput(outputStream);
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
     
     private static synchronized void incrementFinishedIds() {
@@ -93,24 +129,40 @@ public class Precalculator {
             currentTime = System.currentTimeMillis();
             if (currentTime - startPeriod > 5000) {
                 startPeriod = currentTime;
-                logger.info("Calculation of ArcFlags at " + (finishedIds * 100 / graph.getIDCount()) + "%");
+                logger.debug("Calculation of ArcFlags at " + (finishedIds * 100 / graph.getIDCount()) + "%");
                 long elapsedTime = (currentTime - startTime) / 1000;
-                logger.info("Elapsed time: " + StringUtil.formatSeconds(elapsedTime, true)
+                logger.debug("Elapsed time: " + StringUtil.formatSeconds(elapsedTime, true)
                         + " - estimated time remaining: " + StringUtil.formatSeconds(
                         (long)(elapsedTime  * ((graph.getIDCount() / (double) finishedIds) - 1)), true));
             }
         }
     }
     
-    private static void createFlags(int node, Progress progress) {
+    private static void createFlags(int node, Progress progress, boolean mod) {
         logger.trace("Calculating ArcFlags for ID " + String.valueOf(node));
+        byte area = graph.getAreaID(node);
+        Collection<Integer> neighbors = inverted.getAllNeighbors(node);
+        if (mod) {
+            boolean hasNeighborInOtherArea = false;
+            for (Integer neighbor : neighbors) {
+                if (graph.getAreaID(neighbor) == area) {
+                    graph.setArcFlag(neighbor, node, area);
+                } else {
+                    hasNeighborInOtherArea = true;
+                }
+            }
+            if (!hasNeighborInOtherArea) {
+                progress.finish();
+                incrementFinishedIds();
+                return;
+            }
+        }
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false);
         Route currentPath = null;
         PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
         heap.add(new Route(node, 0));
-        byte area = graph.getAreaID(node);
         int currentNode;
         int weight;
         while (heap.peek() != null) {
@@ -122,8 +174,13 @@ public class Precalculator {
             }
             seen[currentNode] = true;
             // At this point, we have the shortest way for sure.
-            graph.setArcFlag(currentNode, currentPath.getRoute().getNode(), area);
+            if (currentNode != currentPath.getRoute().getNode()) {  // only false if we're in the first round
+                graph.setArcFlag(currentNode, currentPath.getRoute().getNode(), area);
+            }
             for (Integer from: inverted.getAllNeighbors(currentNode)) {
+                if (mod && area == graph.getAreaID(currentNode) && area == graph.getAreaID(from)) {
+                    continue;
+                }
                 weight = graph.getWeight(from, currentNode);
                 if (weight > 0) {
                     heap.add(new Route(from, weight, currentPath));
@@ -139,7 +196,6 @@ public class Precalculator {
     }
 
     private static boolean doAreas(Progress p) {
-        final int AREAS = 63;
         File file;
         try {
             file = File.createTempFile("graph", ".txt");
@@ -173,7 +229,7 @@ public class Precalculator {
                 BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));               
                 // read the output from the command
                 while ((buffer = stdInput.readLine()) != null) {
-                    logger.debug("Metis: " + buffer);
+                    logger.info("Metis: " + buffer);
                 }              
                 // read any errors from the attempted command
                 while ((buffer = stdError.readLine()) != null) {
@@ -205,7 +261,7 @@ public class Precalculator {
         File metisFile = new File(filePath);
         metisFile.delete();
         graph.readAreas(new String(areas));
-        logger.info("Areas successfully created");
+        logger.info("Areas successfully created " + new Date());
         p.addProgress(0.1);
         return true;  
     }
@@ -217,12 +273,12 @@ public class Precalculator {
     public static void drawAreas(Bounds bounds, int detailLevel, Graphics graphics) {
         graph = State.getInstance().getLoadedGraph();
         int idCount = graph.getIDCount();
-        Color[] colors = new Color[63];
+        Color[] colors = new Color[AREAS];
         for (int i = 0; i < colors.length; i++) {
-            colors[i] = new Color((i * 389) % 256, (i * 211) % 256, (i * 109) % 256);
+            colors[i] = getAreaColor(i);
         }
         MapInfo mapInfo = State.getInstance().getMapInfo();
-        int size = 256;
+        int size = 10;
         Bounds extendedBounds = bounds.clone().extend(size);
         size /= Projection.getZoomFactor(detailLevel);
         for (int i = 0; i < idCount; i++) {
@@ -235,5 +291,28 @@ public class Precalculator {
             graphics.setColor(colors[graph.getAreaID(i)]);
             graphics.fillOval((int) localCoordinates.getLongitude() - size/2, (int) localCoordinates.getLatitude() - size/2, size, size);
         }
+        ((AdjacentFieldsRoutingGraph) graph).drawArcFlags(bounds, detailLevel, graphics, 1);
+//        graphics.setColor(Color.green);
+//        size = 10;
+//        draw(5248, bounds, detailLevel, graphics, colors, mapInfo, size, extendedBounds);
+//        draw(2709, bounds, detailLevel, graphics, colors, mapInfo, size, extendedBounds);
+//        graphics.setColor(Color.red);
+//        draw(5349, bounds, detailLevel, graphics, colors, mapInfo, size, extendedBounds);
+//        draw(5350, bounds, detailLevel, graphics, colors, mapInfo, size, extendedBounds);
+    }
+    
+    private static void draw(int i, Bounds bounds, int detailLevel, Graphics graphics, Color[] colors,
+            MapInfo mapInfo, int size, Bounds extendedBounds) {
+        Node node = mapInfo.getNode(i);
+        if (!node.isInBounds(extendedBounds)) {
+            return;
+        }
+        Coordinates localCoordinates = Renderer.getLocalCoordinates(node.getPos(),
+                bounds.getTop(), bounds.getLeft(), detailLevel);
+        graphics.fillOval((int) localCoordinates.getLongitude() - size/2, (int) localCoordinates.getLatitude() - size/2, size, size);
+    }
+    
+    public static Color getAreaColor(int i) {
+        return new Color((i * 389) % 256, (i * 211) % 256, (i * 109) % 256);
     }
 }
