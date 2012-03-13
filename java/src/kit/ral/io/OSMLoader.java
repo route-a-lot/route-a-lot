@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -127,7 +128,7 @@ public class OSMLoader {
             }
         }; // boundsHandler end
 
-        logger.debug("Start calculating bounds...");
+        logger.info("Start calculating bounds... " + new Date());
         try {
             parser.parse(inputStream, boundsHandler);
         } catch (IOException e) {
@@ -148,6 +149,7 @@ public class OSMLoader {
         mapInfo.setGeoBounds(new Bounds(topLeft, topLeft));
         logger.debug("Finished calculating bounds: topLeft=" + topLeft + ", bottomRight=" + bottomRight);
 
+        logger.info("Importing elements... " + new Date());
         osmIds = new long[nodeCount];
 
         DefaultHandler handler = new DefaultHandler() {
@@ -492,7 +494,7 @@ public class OSMLoader {
                             Long osmId = Long.parseLong(attributes.getValue("ref"));
                             Integer newPolylineNode = idMap.get(osmId);
                             if (newPolylineNode == null) {
-                                logger.error("Node id is not known: id = " + attributes.getValue("ref"));
+                                logger.warn("Node id is not known: id = " + attributes.getValue("ref"));
                                 return;
                             }
                             curPolylineNode = newPolylineNode;
@@ -782,7 +784,7 @@ public class OSMLoader {
                             Long osmId = Long.parseLong(attributes.getValue("ref"));
                             curPolylineNode = idMap.get(osmId);
                             if (curPolylineNode == null) {
-                                logger.error("Node id is not known: id = " + attributes.getValue("ref"));
+                                logger.warn("Node id is not known: id = " + attributes.getValue("ref"));
                                 return;
                             }
                             inPolyline = true;
@@ -1004,7 +1006,7 @@ public class OSMLoader {
         
         weightCalculator.setProjection(projection);
 
-        logger.info("create adjacient fields...");
+        logger.info("create adjacient fields... " + new Date());
 
         int countIDs = edges.size();
         int[] startIDs = new int[countIDs];
@@ -1025,9 +1027,11 @@ public class OSMLoader {
         for (Edge edge : undirectedEdges) {
             undirectedEdgeStartIDs[i] = edge.getStartId();
             undirectedEdgeEndIDs[i] = edge.getEndId();
+            i++;
         }
         progress.addProgress(0.04);
         
+        // TODO should not be necessary
         for (i = 0; i < startIDs.length; i++) {
             if (startIDs[i] > maxWayNodeId || endIDs[i] > maxWayNodeId) {
                 logger.error("Id found that is greater than maxWayNodeId");

@@ -14,6 +14,13 @@ public class Util {
     public static void startTimer() {
         timers.push(System.nanoTime());
     }
+    
+    /**
+     * Returns the current timers value in milliseconds.
+     */
+    public static long getTimer() {
+        return (System.nanoTime() - timers.getFirst());
+    }
 
     public static String stopTimer() {
         return StringUtil.formatNanoSeconds(System.nanoTime() - timers.pop());
@@ -56,7 +63,6 @@ public class Util {
                 + StringUtil.humanReadableByteCount(Runtime.getRuntime().maxMemory(), false));
         System.out.println("Unused memory: "
                 + StringUtil.humanReadableByteCount(Runtime.getRuntime().freeMemory(), false));
-        printGPUMemoryInformation();
     }
     
     public static void printGPUMemoryInformation() {

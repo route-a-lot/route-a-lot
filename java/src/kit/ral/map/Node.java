@@ -91,7 +91,7 @@ public class Node extends MapElement {
     
     @Override
     public String toString() {
-        return "Node at " + lat + " , " + lon;
+        return "Node " + id + " at " + lat + " , " + lon;
     }
 
 }

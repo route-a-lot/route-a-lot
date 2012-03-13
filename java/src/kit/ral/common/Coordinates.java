@@ -89,7 +89,7 @@ public class Coordinates {
      * @param factor
      * @return this
      */
-    public Coordinates scale(float factor) {
+    public Coordinates scale(double factor) {
         latitude *= factor;
         longitude *= factor;
         return this;

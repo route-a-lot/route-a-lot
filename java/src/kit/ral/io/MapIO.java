@@ -1,9 +1,12 @@
 package kit.ral.io;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import org.apache.log4j.Logger;
 
@@ -74,7 +77,8 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-        RandomAccessStream output = new RandomAccessStream(file);
+//        RandomAccessStream output = new RandomAccessStream(file);
+        DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         
         // Write data to stream, abort on error
         output.writeChars("SRAL");  // magic number
@@ -86,7 +90,7 @@ public class MapIO {
         p.addProgress(0.7);
         logger.info("save graph...");
         state.getLoadedGraph().saveToOutput(output); 
-        //output.close();     
+        output.close();     
         logger.info("map saving finished");
         p.addProgress(0.25);
     }
