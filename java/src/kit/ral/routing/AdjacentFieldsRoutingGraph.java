@@ -1,11 +1,24 @@
 package kit.ral.routing;
 
+import java.awt.BasicStroke;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.WayInfo;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.util.MathUtil;
+import kit.ral.controller.State;
+import kit.ral.map.Node;
+import kit.ral.map.info.MapInfo;
+import kit.ral.map.rendering.Renderer;
 
 import org.apache.log4j.Logger;
 
@@ -74,7 +87,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
                 && java.util.Arrays.equals(arcFlags, comparee.arcFlags);
     }
         
-    public void buildGraphWithUniqueEdges(int[] startID, int[] endID, int maxNodeID) {
+    public void buildGraphWithUndirectedEdges(int[] startID, int[] endID, int maxNodeID) {
         int[] newStartID = new int[startID.length * 2];
         int[] newEndID = new int[endID.length * 2];
         for (int i = 0; i < startID.length; i++) {
@@ -220,9 +233,9 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             output.writeInt(edges[i]);
             output.writeInt(weights[i]);
             output.writeLong(arcFlags[i]);
+//            output.writeUTF("from: " + getEdgeStart(i) + " i=" + i + " to: " + edges[i] + " - " + arcFlags[i] + " Zielarea: " + areaID[edges[i]] + "\n");
         }
     }
-    
     
     public Collection<Integer> getRelevantNeighbors(int node, byte[] destAreas) {
         if (node >= edgesPos.length - 1 || node < 0) {
@@ -313,9 +326,11 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
             if (endID == edges[i]) {
                 synchronized (monitors) {       // TODO bei vielen Threads mit [i] besser?
                     arcFlags[i] |= 1 << area;   // TODO synchronised array?
+                    return;
                 }
             }
-        }    
+        }
+        logger.warn("Arc not found. Flag could not be set: startID = " + startID + ", endID = " + endID);
     }
     
     public int getIDCount() {
@@ -397,5 +412,53 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     @Override
     public void setAllArcFlags() {
         Arrays.fill(arcFlags, ~0L);
+    }
+    
+//    private int getEdgeStart(int innerPos) {
+//        for (int i = 0; i < edgesPos.length; i++) {
+//            if (edgesPos[i] > innerPos) {
+//                return i-1;
+//            }
+//        }
+//        return -1;
+//    }
+    
+    public void drawArcFlags(Bounds bounds, int detailLevel, Graphics graphics, int area) {
+        long flags = 1 << area;
+        MapInfo mapInfo = State.getInstance().getMapInfo();
+        Node from, to;
+        int size = 10;
+        graphics.setColor(Precalculator.getAreaColor(area));
+        ((Graphics2D) graphics).setStroke(new BasicStroke(2));
+        Bounds extendedBounds = bounds.clone().extend(size);
+        size /= Projection.getZoomFactor(detailLevel);
+        float headLength = 8.f / Projection.getZoomFactor(detailLevel);
+        for (int i = 0; i < edgesPos.length - 1; i++) {
+            from = mapInfo.getNode(i);
+            for (int k = edgesPos[i]; k < edgesPos[i+1]; k++) {
+                to = mapInfo.getNode(edges[k]);
+                if (MathUtil.isLineInBounds(from.getPos(), to.getPos(), extendedBounds) && ((flags & arcFlags[k]) != 0)) {
+                    Coordinates localFrom = Renderer.getLocalCoordinates(from.getPos(),
+                            bounds.getTop(), bounds.getLeft(), detailLevel);
+                    Coordinates localTo = Renderer.getLocalCoordinates(to.getPos(),
+                            bounds.getTop(), bounds.getLeft(), detailLevel);
+                    Coordinates vector = localTo.clone().subtract(localFrom);
+                    double vectorLength = vector.getLength();
+                    Coordinates edgeMiddle = vector.clone().scale(0.5f).add(localFrom);
+                    vector.normalize();
+                    Coordinates arrowStart = vector.clone().scale((vectorLength - size)/2).subtract(edgeMiddle).invert();
+                    Coordinates arrowEnd = vector.clone().scale((vectorLength - size)/2).add(edgeMiddle);
+                    Coordinates headLeft = vector.clone().rotate(210).normalize().scale(headLength).add(arrowEnd);
+                    Coordinates headRight = vector.clone().rotate(150).normalize().scale(headLength).add(arrowEnd);
+
+                    graphics.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(),
+                            (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
+                    graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
+                            (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
+                    graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
+                            (int) headRight.getLongitude(), (int) headRight.getLatitude());
+                }
+            }
+        }
     }
 }

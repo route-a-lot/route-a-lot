@@ -123,7 +123,7 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
         // TODO Auto-generated method stub
     }
     @Override
-    public void buildGraphWithUniqueEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
+    public void buildGraphWithUndirectedEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
         // TODO Auto-generated method stub
     }
 
