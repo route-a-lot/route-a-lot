@@ -1,7 +1,7 @@
 package kit.ral.common;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedList;
 
 
 public class _rawPHeap<T> {
@@ -11,7 +11,7 @@ public class _rawPHeap<T> {
      */
     
     private T element;
-    private LinkedList<_rawPHeap<T>> children = new LinkedList<_rawPHeap<T>>();
+    private ArrayList<_rawPHeap<T>> children = new ArrayList<_rawPHeap<T>>();
     private Comparator<T> comparator;
     
     public _rawPHeap(T object, Comparator<T> comp) {
@@ -42,17 +42,27 @@ public class _rawPHeap<T> {
     }
     
     public _rawPHeap<T> deleteMin() {
-        return mergePairs(children);
+        return mergePairs();
     }
     
-    private _rawPHeap<T> mergePairs(LinkedList<_rawPHeap<T>> heaps) {
+    private _rawPHeap<T> mergePairs() {
         int size = children.size();
         if (size == 0)
             return null;
         if (size == 1)
             return children.get(0);
-        // Seems legit
-        return heaps.remove().merge(heaps.remove()).merge(mergePairs(heaps));
+        int newSize = (size + 1) / 2;
+        ArrayList<_rawPHeap<T>> temp = new ArrayList<_rawPHeap<T>>(newSize);
+        for (int i = 0; i < size - 1; i +=2)
+            temp.add(children.get(i).merge(children.get(i+1)));
+        if (size % 2 == 1)
+            // Don't forget the last one.
+            temp.add(children.get(size - 1));
+        _rawPHeap<T> result = temp.get(newSize - 1);
+        for (int i = newSize - 2; i >= 0; i--)
+            result = temp.get(i).merge(result);
+        return result;
+        //return heaps.remove().merge(heaps.remove()).merge(mergePairs(heaps));
     }
 
     public int getSize() {
