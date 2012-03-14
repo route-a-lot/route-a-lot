@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import kit.ral.common.PairingHeap;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
 import kit.ral.common.event.Listener;
@@ -211,7 +212,7 @@ public class Router {
         // ToDo: rename?
         // Renderer renderer = State.getInstance().getController.getRender();
         RoutingGraph graph = State.getInstance().getLoadedGraph();
-        PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
+        PairingHeap<Route> heap = new PairingHeap<Route>(new RouteComparator<Route>());
         Route currentPath = null;
         if (a == null || b == null) {
             logger.warn("Can't calculate route for one Selection only");
