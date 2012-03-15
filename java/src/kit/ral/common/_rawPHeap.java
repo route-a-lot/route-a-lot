@@ -49,8 +49,6 @@ public class _rawPHeap<T> {
         int size = children.size();
         if (size == 0)
             return null;
-        if (size == 1)
-            return children.get(0);
         int newSize = (size + 1) / 2;
         ArrayList<_rawPHeap<T>> temp = new ArrayList<_rawPHeap<T>>(newSize);
         for (int i = 0; i < size - 1; i +=2)
