@@ -24,13 +24,7 @@ public class _rawPHeap<T> {
     public _rawPHeap<T> merge(_rawPHeap<T> b) {
         if (b == null)
             return this;
-        if (comparator.compare(element, b.element) < 0) {
-            children.add(b);
-            return this;
-        } else {
-            b.children.add(this);
-            return b;
-        }
+        return comparator.compare(element, b.element) < 0 ? add(b) : b.add(this);
     }
     
     public T findMin() {
@@ -57,7 +51,11 @@ public class _rawPHeap<T> {
         for (int i = newSize - 2; i >= 0; i--)
             result = children.get(i).merge(result);
         return result;
-        //return heaps.remove().merge(heaps.remove()).merge(mergePairs(heaps));
+    }
+    
+    private _rawPHeap<T> add(_rawPHeap<T> b) {
+        children.add(b);
+        return this;
     }
 
     public int getSize() {
