@@ -49,16 +49,13 @@ public class _rawPHeap<T> {
         int size = children.size();
         if (size == 0)
             return null;
-        int newSize = (size + 1) / 2;
-        ArrayList<_rawPHeap<T>> temp = new ArrayList<_rawPHeap<T>>(newSize);
         for (int i = 0; i < size - 1; i +=2)
-            temp.add(children.get(i).merge(children.get(i+1)));
-        if (size % 2 == 1)
-            // Don't forget the last one.
-            temp.add(children.get(size - 1));
-        _rawPHeap<T> result = temp.get(newSize - 1);
+            children.set(i / 2, children.get(i).merge(children.get(i+1)));
+        int newSize = (size + 1) / 2;
+        // size % 2 == 1 => We have (the last) one missing and newSize is one too big
+        _rawPHeap<T> result = size % 2 == 1 ? children.get(size - 1) : children.get(newSize - 1);
         for (int i = newSize - 2; i >= 0; i--)
-            result = temp.get(i).merge(result);
+            result = children.get(i).merge(result);
         return result;
         //return heaps.remove().merge(heaps.remove()).merge(mergePairs(heaps));
     }

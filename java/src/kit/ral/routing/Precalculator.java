@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
+import kit.ral.common.PairingHeap;
 import kit.ral.common.Progress;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.StringUtil;
@@ -161,7 +162,7 @@ public class Precalculator {
         boolean[] seen = new boolean[graph.getIDCount()];
         Arrays.fill(seen, false);
         Route currentPath = null;
-        PriorityQueue<Route> heap = new PriorityQueue<Route>(2, new RouteComparator<Route>());
+        PairingHeap<Route> heap = new PairingHeap<Route>(new RouteComparator<Route>());
         heap.add(new Route(node, 0));
         int currentNode;
         int weight;
