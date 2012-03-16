@@ -33,6 +33,9 @@ public class FileQuadTree extends QuadTree {
     public FileQuadTree(Bounds bounds, RandomAccessStream source, long sourcePointer) {
         super(bounds);
         this.file = source;
+        if (filePointer < 0) {
+            throw new IllegalArgumentException();
+        }
         this.filePointer = sourcePointer;
     }
 
@@ -146,7 +149,7 @@ public class FileQuadTree extends QuadTree {
         synchronized (file) {
             file.setRandomAccess(true);
             file.setPosition(filePointer);
-            file.setPosition(file.readLong()); // allow indirect addressing
+            //file.setPosition(file.readLong()); // allow indirect addressing
             file.setRandomAccess(false);
             if (file.readBoolean()) {
                 int size = file.readByte();
@@ -183,12 +186,12 @@ public class FileQuadTree extends QuadTree {
         }
         // already saved:
         if (output.equals(file) && (filePointer >= 0)) {
-            output.writeLong(filePointer + 8);
+            //output.writeLong(filePointer + 8);
             return;
         }
         file = output;
         filePointer = file.getPosition();
-        output.writeLong(filePointer + 8);
+        //output.writeLong(filePointer + 8);
           
         output.writeBoolean(elements != null);
         if (elements != null) {     
@@ -208,11 +211,11 @@ public class FileQuadTree extends QuadTree {
                 output.writeLong(0);
             }
             for (int i = 0; i < children.length; i++) {
+                children[i].saveTree(output);
                 long pos = output.getPosition();
                 output.setPosition(mark + i * 8);
-                output.writeLong(pos);
-                output.setPosition(pos);
-                children[i].saveTree(output);
+                output.writeLong(children[i].filePointer);
+                output.setPosition(pos);                
             }
         } else {
             throw new IllegalStateException("Cannot save an unloaded QT node.");
@@ -246,7 +249,6 @@ public class FileQuadTree extends QuadTree {
             }
         }
         children = null;
-        System.gc();
     }
 
     /**

@@ -1,12 +1,6 @@
 package kit.ral.io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import org.apache.log4j.Logger;
 
@@ -38,8 +32,9 @@ public class MapIO {
             throw new IllegalStateException("No map initialized!");
         }
         // Open file stream, abort on failure
-        DataInputStream input = new DataInputStream(new BufferedInputStream(
-                new ProgressInputStream(new FileInputStream(file), p, file.length())));
+        //DataInputStream input = new DataInputStream(new BufferedInputStream(
+        //        new ProgressInputStream(new FileInputStream(file), p, file.length())));
+        RandomAccessStream input = new RandomAccessStream(file);
         
         // Read data from stream, abort on error
         if ((input.readChar() != 'S') || (input.readChar() != 'R')
@@ -77,8 +72,8 @@ public class MapIO {
         }
         
         // Open / create file stream, abort on failure
-//        RandomAccessStream output = new RandomAccessStream(file);
-        DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+        RandomAccessStream output = new RandomAccessStream(file);
+        //DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
         
         // Write data to stream, abort on error
         output.writeChars("SRAL");  // magic number

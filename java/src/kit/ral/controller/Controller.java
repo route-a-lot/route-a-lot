@@ -44,7 +44,6 @@ import kit.ral.io.SRTMLoaderDeferred;
 import kit.ral.io.StateIO;
 import kit.ral.map.Node;
 import kit.ral.map.info.ComplexInfoSupplier;
-import kit.ral.map.rendering.MapInfoMock;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.map.rendering.Renderer3D;
 import kit.ral.routing.Precalculator;
@@ -62,7 +61,7 @@ public class Controller {
         SRAL_DIRECTORY = new File("./sral"),
         SRTM_DIRECTORY = new File("./srtm"),
         STATE_FILE = new File("./state.state"),
-        DEFAULT_OSM_MAP = new File("./test/resources/karlsruhe_small_current.osm");
+        DEFAULT_OSM_MAP = new File("./test/resources/hinne_nuff.osm");
     
     private static final String SRAL_EXT = ".sral";
     
@@ -123,14 +122,13 @@ public class Controller {
         
         // IMPORT HEIGHT DATA    
         Util.startTimer();
-        importHeightmaps(SRTM_DIRECTORY, p.createSubProgress(0.2));
+        importHeightmaps(SRTM_DIRECTORY, p.createSubProgress(0.04));
         logger.info("Heightmaps loaded: " + Util.stopTimer());
-        
         
         if (gui) {
             // LOAD STATE
             Util.startTimer();
-            loadState(p.createSubProgress(0.8));
+            loadState(p.createSubProgress(0.94));
             logger.info("State loaded: " + Util.stopTimer());
                  
             // IMPORT DEFAULT OSM MAP
@@ -151,8 +149,6 @@ public class Controller {
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    logger.warn("No map loaded");
                 }
             }
         } else {

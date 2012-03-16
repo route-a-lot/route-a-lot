@@ -8,10 +8,10 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 
 
@@ -24,7 +24,7 @@ public class RandomAccessStream implements DataInput, DataOutput, Closeable, Flu
     private DataInput in;
     private DataOutput out;
     
-    public RandomAccessStream(File file) throws FileNotFoundException {
+    public RandomAccessStream(File file) throws IOException {
         raf = new RandomAccessFile(file, "rw");
         outStream = new DataOutputStream(new BufferedOutputStream(
                         Channels.newOutputStream(raf.getChannel())));
@@ -33,9 +33,12 @@ public class RandomAccessStream implements DataInput, DataOutput, Closeable, Flu
         setRandomAccess(false);
     }
     
-    public void setRandomAccess(boolean enable) {
+    public void setRandomAccess(boolean enable) throws IOException {
         in = enable ? raf : inStream;
         out = enable ? raf : outStream;
+        if (enable) {
+            flush();
+        }
     }
 
     @Override
@@ -203,7 +206,9 @@ public class RandomAccessStream implements DataInput, DataOutput, Closeable, Flu
         raf.seek(pos);
     }
     
-    
+    public void writeLongAtPosition(long l, long position) throws IOException {
+        raf.getChannel().write(ByteBuffer.allocateDirect(8).putLong(l), position);
+    }
     
 
 }
