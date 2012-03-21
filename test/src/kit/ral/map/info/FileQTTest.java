@@ -1,22 +1,18 @@
 package kit.ral.map.info;
 
-import static org.junit.Assert.assertEquals;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-
 import kit.ral.common.Bounds;
-import kit.ral.common.Coordinates;
+import kit.ral.common.RandomWriteStream;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.description.POIDescription;
-import kit.ral.common.description.WayInfo;
 import kit.ral.controller.State;
-import kit.ral.map.Area;
-import kit.ral.map.Node;
 import kit.ral.map.POINode;
-import kit.ral.map.Street;
 import kit.ral.map.info.ArrayElementDB;
 import kit.ral.map.info.MapInfo;
+import kit.ral.map.info.geo.FileQTGeoOperator;
+import kit.ral.map.info.geo.GeographicalOperator;
 import kit.ral.map.info.geo.QTGeographicalOperator;
 import kit.ral.map.rendering.MapElementGenerator;
 
@@ -28,7 +24,7 @@ import org.junit.Test;
 
 public class FileQTTest {
 
-    QTGeographicalOperator operator;
+    GeographicalOperator operator;
     
     @BeforeClass
     public static void setUpClass() {
@@ -44,7 +40,8 @@ public class FileQTTest {
         State.getInstance().setMapInfo(mapInfo);
         MapElementGenerator gen = new MapElementGenerator();
         
-        for(int i = 0; i < 1000; i++) {
+        for(int i = 0; i < 1300; i++) {
+            /*
             Area area = new Area(null, new WayInfo());
             Node[] areaNode = new Node[4];
             
@@ -54,13 +51,14 @@ public class FileQTTest {
             areaNode[3] = new Node(areaNode[0].getPos().add(4, 0));
             area.setNodes(areaNode);
             mapInfo.elementDB.addMapElement(area);
-            String s = "" + i;
+            */
+            String s = "poi " + i;
             POINode poi = new POINode(gen.generateNodeInBounds(bounds).getPos(),
                                         new POIDescription(s, OSMType.AMENITY_COLLEGE, s));           
             mapInfo.elementDB.addMapElement(poi);
         }
         
-        Node[] node1 = {new Node(new Coordinates(0.0f, 0.0f)),
+        /*Node[] node1 = {new Node(new Coordinates(0.0f, 0.0f)),
                         new Node(new Coordinates(0.0f, 1.0f)),
                         new Node(new Coordinates(0.0f, 2.0f)),
                         new Node(new Coordinates(0.0f, 3.0f))};
@@ -89,16 +87,16 @@ public class FileQTTest {
         mapInfo.elementDB.addMapElement(street2);
         
         mapInfo.elementDB.addMapElement(new POINode(new Coordinates(30, 30),
-                new POIDescription("poi", OSMType.AMENITY_CAFE, "poi")));
+                new POIDescription("poi", OSMType.AMENITY_CAFE, "poi")));*/
         
-        operator = new QTGeographicalOperator();
+        operator = new FileQTGeoOperator();
         operator.setBounds(bounds);
         operator.fill(mapInfo.elementDB);
     }
 
-    @Test
+    /*@Test
     public void testFillAndSave() throws IOException {
-        RandomAccessFile output = new RandomAccessFile(File.createTempFile("xsral", null), "rw");
+        RandomAccessStream output = new RandomAccessStream(File.createTempFile("xsral", null));
         operator.saveToOutput(output);
     }
     
@@ -123,7 +121,14 @@ public class FileQTTest {
         assertEquals("poi", operator.getPOIDescription(new Coordinates(29.7f, 29.7f), 1, 0).getName());
         assertEquals("Parkstraße", operator.select(new Coordinates(20, 1.6f)).getName());
         assertEquals("Schloßallee", operator.select(new Coordinates(22, 1.7f)).getName());
-    }
+    }*/
     
+    @Test
+    public void testSaveAndPrint() throws IOException {
+        File file = File.createTempFile("xsral", null);
+        RandomWriteStream output = new RandomWriteStream(file, new FileOutputStream(file));
+        operator.saveToOutput(output);
+        ((QTGeographicalOperator) operator).printQuadTree();
+    }
 
 }

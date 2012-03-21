@@ -30,7 +30,7 @@ import kit.ral.map.info.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;
-    private static final boolean THREADED = true;
+    private static final boolean THREADED = false;
     private static final int DRAW_BUFFER = 200;
     private static final float ROUTE_SIZE = 20;
     
@@ -212,8 +212,8 @@ public class Renderer {
                 }
                 
                 // adjust border coordinates if the route is bigger than the context window
-                routeBounds.extend(bounds.getTopLeft(), DRAW_BUFFER);
-                routeBounds.extend(bounds.getBottomRight(), DRAW_BUFFER);               
+                routeBounds.extend(bounds.getTop(), bounds.getLeft(), DRAW_BUFFER);
+                routeBounds.extend(bounds.getBottom(), bounds.getRight(), DRAW_BUFFER);               
 
                 int width = (int) routeBounds.getWidth() / Projection.getZoomFactor(detail);
                 int height = (int) routeBounds.getHeight() / Projection.getZoomFactor(detail);
@@ -321,6 +321,7 @@ public class Renderer {
                     drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i - 1]), nodeOnEdge, detail, graphics);
                     drawLineBetweenCoordinates(mapInfo.getNodePosition(drawnRoute[i + 1]), nodeOnEdge, detail, graphics);
                     drawLineBetweenCoordinates(nodeOnEdge, navSelection.getPosition(), detail, graphics);
+                    // TODO bug below
                     while (navPoints.get(navNodesPos).isOnSameEdge(navPoints.get(navNodesPos + 1))) { //no route till the next navPoint
                         navNodesPos++;
                         navSelection = navPoints.get(navNodesPos);
@@ -338,7 +339,8 @@ public class Renderer {
     
     
     private void adjustBorderCoordinates(Bounds bounds, Coordinates point, int detail) {
-        bounds.extend(point, ROUTE_SIZE * Projection.getZoomFactor(detail / 2));
+        bounds.extend(point.getLatitude(), point.getLongitude(),
+                ROUTE_SIZE * Projection.getZoomFactor(detail / 2));
     }
 
     private void drawLineBetweenCoordinates(Coordinates from, Coordinates to, int detail, Graphics2D graphics) {

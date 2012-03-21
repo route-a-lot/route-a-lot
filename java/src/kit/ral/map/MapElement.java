@@ -14,7 +14,6 @@ public abstract class MapElement {
 
     protected static final String EMPTY = "";
     
-    public static final byte DESCRIPTOR_NULL = 0;
     /** constant used in a stream for announcing {@link Node} element data following */
     public static final byte DESCRIPTOR_NODE = 1;
     /** constant used in a stream for announcing {@link Street} element data following */
@@ -96,23 +95,25 @@ public abstract class MapElement {
      * @throws IOException map element could not be loaded from the input
      */
     public static MapElement loadFromInput(DataInput input) throws IOException {
-        byte descriptor = 0;
-        if ((input == null) || ((descriptor = input.readByte()) == DESCRIPTOR_NULL)) {
-            throw new IllegalArgumentException();
+        if (input == null) {
+            throw new IllegalArgumentException("Data source is null.");
+        }
+        byte descriptor = input.readByte();
+        if (descriptor < DESCRIPTOR_NODE || descriptor > DESCRIPTOR_POI) {
+            throw new IllegalArgumentException("Tried loading undefined map element.");
         }
         MapElement result;      
         if (input.readBoolean()) {
             MapInfo mapInfo = State.getInstance().getMapInfo();
             int id = input.readInt();
-            result = (descriptor == DESCRIPTOR_NODE) ? mapInfo.getNode(id) : mapInfo.getMapElement(id);
+            result = (descriptor == DESCRIPTOR_NODE)
+                    ? mapInfo.getNode(id) : mapInfo.getMapElement(id);
         } else {
             switch (descriptor) {
                 case DESCRIPTOR_NODE: result = new Node(); break;
                 case DESCRIPTOR_POI: result = new POINode(); break;
                 case DESCRIPTOR_STREET: result = new Street(); break;
-                case DESCRIPTOR_AREA: result = new Area(); break;
-                default: throw new UnsupportedOperationException(
-                        "Cannot determine element type from stream.");         
+                default: result = new Area();
             }
             result.load(input);
         }
@@ -120,7 +121,7 @@ public abstract class MapElement {
     }
 
     /**
-     * Saves a map element (or its ID if <code>asID</code> is set) to the output.
+     * Saves a map element (or if possible its ID if <code>allowAsID</code> is set) to the output.
      * Before doing so determines the map element type and saves it to the output.
      * 
      * @param output the output
@@ -134,7 +135,7 @@ public abstract class MapElement {
             throw new IllegalArgumentException();
         }
         
-        byte descriptor = DESCRIPTOR_NULL;
+        byte descriptor;
         if (element instanceof POINode) {
            descriptor = DESCRIPTOR_POI;  
         } else if (element instanceof Node) {
@@ -143,7 +144,10 @@ public abstract class MapElement {
            descriptor = DESCRIPTOR_STREET; 
         } else if (element instanceof Area) {
            descriptor = DESCRIPTOR_AREA; 
-        } 
+        } else {
+            throw new UnsupportedOperationException(
+                    "Cannot save element of type" + element.getClass().getName());
+        }
         output.writeByte(descriptor);
         
         boolean asID = allowAsID && (element.getID() >= 0);

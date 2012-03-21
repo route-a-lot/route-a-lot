@@ -115,18 +115,34 @@ public class Bounds implements Cloneable {
         return this;
     }
     
-    public Bounds extend(Coordinates point, float buffer) {
-        if (point.getLatitude() - buffer < top) {
-            top = point.getLatitude() - buffer;
+    public Bounds extend(float lat, float lon, float buffer) {
+        if (lat - buffer < top) {
+            top = lat - buffer;
         }
-        if (point.getLatitude() + buffer > bottom) {
-            bottom = point.getLatitude() + buffer;
+        if (lat + buffer > bottom) {
+            bottom = lat + buffer;
         }
-        if (point.getLongitude() - buffer < left) {
-            left = point.getLongitude() - buffer;
+        if (lon - buffer < left) {
+            left = lon - buffer;
         }
-        if (point.getLongitude() + buffer > right) {
-            right = point.getLongitude() + buffer;
+        if (lon + buffer > right) {
+            right = lon + buffer;
+        }
+        return this;
+    }
+    
+    public Bounds extend(float lat, float lon) {
+        if (lat < top) {
+            top = lat;
+        }
+        if (lat > bottom) {
+            bottom = lat;
+        }
+        if (lon < left) {
+            left = lon;
+        }
+        if (lon > right) {
+            right = lon;
         }
         return this;
     }

@@ -70,8 +70,9 @@ public class Street extends MapElement implements Comparable<Street> {
     public boolean isInBounds(Bounds bounds) {
         boolean inBounds = false;
         Bounds extendedBounds = bounds.clone().extend(getDrawingSize() / 2 + 2);
-        for (int i = 1; i < nodes.length && !inBounds; i++) {
-            inBounds = MathUtil.isLineInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), extendedBounds);
+        for (int i = 1; !inBounds && i < nodes.length; i++) {
+            inBounds = nodes[i - 1].isInBounds(extendedBounds) || nodes[i].isInBounds(extendedBounds)
+                    || MathUtil.isLineInBounds(nodes[i - 1].getPos(), nodes[i].getPos(), extendedBounds);
         }
         return inBounds;
     }
@@ -101,7 +102,7 @@ public class Street extends MapElement implements Comparable<Street> {
         // determine bounding box, discard too small streets
         Bounds bounds = new Bounds(nodes[0].getPos(), 0);
         for (Node node : nodes) {
-            bounds.extend(node.getPos(), 0);
+            bounds.extend(node.getLatitude(), node.getLongitude());
         }
         if (bounds.getWidth() + bounds.getHeight() < range) {
             return null;

@@ -3,14 +3,10 @@ package kit.ral.routing;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.PriorityQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,6 +48,7 @@ public class Precalculator {
     private static long startTime, startPeriod, currentTime;
 
     private static final int AREAS = 64;
+    @SuppressWarnings("unused")
     private static String GRAPH_FILE = "sral/graph";
     
     public static boolean mod = true;
@@ -110,18 +106,18 @@ public class Precalculator {
     }
     
     private static void saveGraph() {
-        File file = new File(GRAPH_FILE);
-        try {
-            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-            graph.saveToOutput(outputStream);
-            outputStream.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+//        File file = new File(GRAPH_FILE);
+//        try {
+//            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+//            graph.saveToOutput(outputStream);
+//            outputStream.close();
+//        } catch (FileNotFoundException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
     }
     
     private static synchronized void incrementFinishedIds() {
@@ -206,7 +202,7 @@ public class Precalculator {
         }
         file.deleteOnExit();
         //final String FILE = "graph.txt";
-        String BINARY = "gpmetis";
+        String BINARY = "lib/gpmetis";
         logger.info("Creating areas with Metis...");
         // Write graph file
         try {
@@ -242,7 +238,7 @@ public class Precalculator {
                     logger.error(BINARY + " failed to execute");
                     return false;  
                 }
-                BINARY = "./gpmetis";   
+                BINARY = "./lib/gpmetis";   
             }
         } while (tryAgain);
         p.addProgress(0.7);
@@ -302,16 +298,16 @@ public class Precalculator {
 //        draw(5350, bounds, detailLevel, graphics, colors, mapInfo, size, extendedBounds);
     }
     
-    private static void draw(int i, Bounds bounds, int detailLevel, Graphics graphics, Color[] colors,
-            MapInfo mapInfo, int size, Bounds extendedBounds) {
-        Node node = mapInfo.getNode(i);
-        if (!node.isInBounds(extendedBounds)) {
-            return;
-        }
-        Coordinates localCoordinates = Renderer.getLocalCoordinates(node.getPos(),
-                bounds.getTop(), bounds.getLeft(), detailLevel);
-        graphics.fillOval((int) localCoordinates.getLongitude() - size/2, (int) localCoordinates.getLatitude() - size/2, size, size);
-    }
+//    private static void draw(int i, Bounds bounds, int detailLevel, Graphics graphics, Color[] colors,
+//            MapInfo mapInfo, int size, Bounds extendedBounds) {
+//        Node node = mapInfo.getNode(i);
+//        if (!node.isInBounds(extendedBounds)) {
+//            return;
+//        }
+//        Coordinates localCoordinates = Renderer.getLocalCoordinates(node.getPos(),
+//                bounds.getTop(), bounds.getLeft(), detailLevel);
+//        graphics.fillOval((int) localCoordinates.getLongitude() - size/2, (int) localCoordinates.getLatitude() - size/2, size, size);
+//    }
     
     public static Color getAreaColor(int i) {
         return new Color((i * 389) % 256, (i * 211) % 256, (i * 109) % 256);

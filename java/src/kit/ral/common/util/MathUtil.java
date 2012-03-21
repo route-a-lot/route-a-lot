@@ -1,6 +1,5 @@
 package kit.ral.common.util;
 
-import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 import kit.ral.common.Bounds;
@@ -52,13 +51,11 @@ public class MathUtil {
     }
 
     public static boolean isLineInBounds(Coordinates start, Coordinates end, Bounds bounds) {
-        Line2D.Float edge =
-                new Line2D.Float(start.getLongitude(), start.getLatitude(), end.getLongitude(), end.getLatitude());
-        // coord.sys. begins in upper left corner
-        Rectangle2D.Float box =
-                new Rectangle2D.Float(bounds.getLeft(), bounds.getTop(), bounds.getWidth(), bounds.getHeight());
-        return box.contains(start.getLongitude(), start.getLatitude())
-                || box.contains(end.getLongitude(), end.getLatitude()) || box.intersectsLine(edge);
+        Rectangle2D.Float box = new Rectangle2D.Float(
+                bounds.getLeft(), bounds.getTop(),
+                bounds.getWidth(), bounds.getHeight());
+        return box.intersectsLine(start.getLongitude(), start.getLatitude(),
+                                  end.getLongitude(), end.getLatitude());
         // TODO pos -> neg (e.g. -180° -> 180°)
     }
 

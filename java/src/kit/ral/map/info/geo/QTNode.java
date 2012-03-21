@@ -91,6 +91,12 @@ public class QTNode extends QuadTree {
         children[1] = new QTLeaf(bounds.clone().extend(0, -widthHalf, -heightHalf, 0));
         children[2] = new QTLeaf(bounds.clone().extend(0, -widthHalf, 0, -heightHalf));
         children[3] = new QTLeaf(bounds.clone().extend(-widthHalf, 0, -heightHalf, 0)); 
+        /*float width = bounds.getWidth() / 2;
+        float height = bounds.getHeight() / 2;
+        for (int i = 0; i < 4; i++) {
+            Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));  
+            children[i] = new QTLeaf(new Bounds(topLeft, topLeft.clone().add(height, width)));
+        }*/
     }
     
     @Override

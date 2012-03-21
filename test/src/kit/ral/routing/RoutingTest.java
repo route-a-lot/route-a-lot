@@ -20,10 +20,7 @@ import kit.ral.common.WeightCalculator;
 import kit.ral.common.util.StringUtil;
 import kit.ral.common.util.Util;
 import kit.ral.controller.State;
-import kit.ral.io.MapIO;
 import kit.ral.io.OSMLoader;
-import kit.ral.map.info.MapInfo;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.BeforeClass;

@@ -8,17 +8,21 @@ import java.util.List;
 import java.util.Set;
 
 import kit.ral.common.Bounds;
-import kit.ral.common.RandomAccessStream;
+import kit.ral.common.Coordinates;
+import kit.ral.common.RandomReadStream;
+import kit.ral.common.RandomWriteStream;
 import kit.ral.map.MapElement;
 
 
 public class FileQuadTree extends QuadTree {
 
-    private RandomAccessStream file = null;
-    private long filePointer = 0;
+    private RandomReadStream source = null;
+    private RandomWriteStream target = null;
+    private long fileOffset = 0;
 
     private FileQuadTree[] children = null;
     private ArrayList<MapElement> elements = null;
+    
 
     // CONSTRUCTORS
 
@@ -30,13 +34,13 @@ public class FileQuadTree extends QuadTree {
      * @param source
      * @param sourcePointer
      */
-    public FileQuadTree(Bounds bounds, RandomAccessStream source, long sourcePointer) {
+    public FileQuadTree(Bounds bounds, RandomReadStream source, long sourcePointer) {
         super(bounds);
-        this.file = source;
-        if (filePointer < 0) {
+        this.source = source;
+        if (sourcePointer < 0) {
             throw new IllegalArgumentException();
         }
-        this.filePointer = sourcePointer;
+        fileOffset = sourcePointer;
     }
 
     /**
@@ -47,7 +51,7 @@ public class FileQuadTree extends QuadTree {
      */
     public FileQuadTree(Bounds bounds) {
         super(bounds);
-        this.elements = new ArrayList<MapElement>();
+        elements = new ArrayList<MapElement>(64);
     }
 
 
@@ -75,7 +79,11 @@ public class FileQuadTree extends QuadTree {
         return (elements == null) ? -1 : elements.size();
     }
 
+    long getFileOffset() {
+        return fileOffset;
+    }
 
+    
     // BASIC OPERATIONS
 
     /**
@@ -83,7 +91,7 @@ public class FileQuadTree extends QuadTree {
      */
     @Override
     public boolean addElement(MapElement element) {
-        if (file != null) {
+        if (source != null) {
             throw new IllegalStateException();
         }
         if (element.isInBounds(bounds)) {
@@ -94,7 +102,7 @@ public class FileQuadTree extends QuadTree {
             } else {
                 elements.add(element);
                 element.registerUse();
-                if (elements.size() > MAX_SIZE) {
+                if (elements.size() > SIZE_LIMIT) {
                     split();
                 }
             }
@@ -107,7 +115,7 @@ public class FileQuadTree extends QuadTree {
      * set, only elements that really are inside the boundaries are added.
      */
     @Override
-    public void queryElements(Bounds area, Set<MapElement> target, boolean exact) {
+    public void queryElements(Bounds area, Set<MapElement> list, boolean exact) {
         if (isInBounds(area)) {
             if ((children == null) && (elements == null)) {
                 try {
@@ -119,23 +127,23 @@ public class FileQuadTree extends QuadTree {
             }
             if (children != null) {
                 for (FileQuadTree child : children) {
-                    child.queryElements(area, target, exact);
+                    child.queryElements(area, list, exact);
                 }
             } else if (elements != null) {
                 if (exact) {
                     for (MapElement element : elements) {
                         if (element.isInBounds(area)) {
-                            target.add(element);
+                            list.add(element);
                         }
                     }
                 } else {
-                    target.addAll(elements);
+                    list.addAll(elements);
                 }
             }
         }
     }
 
-
+    
     // I/O OPERATIONS
 
     /**
@@ -143,31 +151,34 @@ public class FileQuadTree extends QuadTree {
      * @throws IOException
      */
     public void loadNode() throws IOException {
-        if (file == null) {
-            throw new IllegalStateException();
+        if (source == null) {
+            throw new IllegalStateException("QuadTree needs to be in load mode.");
         }
-        synchronized (file) {
-            file.setRandomAccess(true);
-            file.setPosition(filePointer);
-            //file.setPosition(file.readLong()); // allow indirect addressing
-            file.setRandomAccess(false);
-            if (file.readBoolean()) {
-                int size = file.readByte();
+        synchronized (source) {
+            source.setPosition(getFileOffset());
+
+            if (source.readLong() != 1234567890) {
+                throw new IllegalArgumentException();
+            }
+
+            if (source.readBoolean()) {
+                // load all elements
+                int size = source.readByte();  
                 elements = new ArrayList<MapElement>(size); 
                 for (int i = 0; i < size; i++) {
-                    MapElement element = MapElement.loadFromInput(file); // TODO performance
+                    MapElement element = MapElement.loadFromInput(source);
                     element.registerUse();
                     elements.add(element);
                 }
             } else {
+                // initialize children
                 children = new FileQuadTree[4];
-                float xStep = bounds.getWidth() / 2;
-                float yStep = bounds.getHeight() / 2;
-                for (int i = 0; i < children.length; i++) {
-                    Bounds newBounds = new Bounds(
-                            bounds.getLeft() + xStep * (i / 2), bounds.getLeft() + xStep * (i / 2 + 1),
-                            bounds.getTop() + yStep * (i % 2), bounds.getTop() + yStep * (i % 2 + 1));
-                    children[i] = new FileQuadTree(newBounds, file, file.readLong());
+                float width = bounds.getWidth() / 2;
+                float height = bounds.getHeight() / 2;
+                for (int i = 0; i < 4; i++) {
+                    Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));  
+                    children[i] = new FileQuadTree(new Bounds(topLeft, topLeft.clone().add(height, width)),
+                            source, source.readLong());
                 }
             }        
         }
@@ -177,46 +188,49 @@ public class FileQuadTree extends QuadTree {
     /**
      * Saves the quad tree to the given output. All nodes and leaves of the quad tree are saved as well. This method
      * will potentially override all data after the current position.
+     * 
      * @param output
      * @throws IOException
      */
-    public void saveTree(RandomAccessStream output) throws IOException {
+    public void saveTree(RandomWriteStream output) throws IOException {
         if (output == null) {
             throw new IllegalArgumentException();
         }
         // already saved:
-        if (output.equals(file) && (filePointer >= 0)) {
-            //output.writeLong(filePointer + 8);
+        if ((target != null) && (output.getFileDescriptor()
+                            .equals(target.getFileDescriptor()))) {
             return;
         }
-        file = output;
-        filePointer = file.getPosition();
-        //output.writeLong(filePointer + 8);
+        target = output;
+        fileOffset = target.getPosition();    
           
-        output.writeBoolean(elements != null);
+        target.writeLong(1234567890);
+        
+        target.writeBoolean(elements != null);
         if (elements != null) {     
-            file.setRandomAccess(false);
-            file.writeByte(elements.size());
+            // save all elements
+            target.writeByte(elements.size());
             for (MapElement element : elements) {
                 if (element == null) {
                     throw new IllegalStateException("Found null element in QT.");
                 }
-                MapElement.saveToOutput(file, element, true);
+                MapElement.saveToOutput(target, element, true);
             }
-            file.setRandomAccess(true);
         } else if (children != null) {
-            // save children, write each child's position at position mark
-            long mark = output.getPosition();
+            // prepare children table
+            long childTablePos = target.getPosition();
             for (int i = 0; i < children.length; i++) {
-                output.writeLong(0);
+                target.writeLong(0);
             }
+            // save children
+            for (FileQuadTree child : children) {
+                child.saveTree(target);             
+            }
+            // write children table
             for (int i = 0; i < children.length; i++) {
-                children[i].saveTree(output);
-                long pos = output.getPosition();
-                output.setPosition(mark + i * 8);
-                output.writeLong(children[i].filePointer);
-                output.setPosition(pos);                
-            }
+                target.writeLongToPosition(children[i].getFileOffset(),
+                        childTablePos + i * 8);
+            }         
         } else {
             throw new IllegalStateException("Cannot save an unloaded QT node.");
         }
@@ -273,17 +287,15 @@ public class FileQuadTree extends QuadTree {
      * Turns a leaf into a node, distributing it's elements to the new sub leafs.
      */
     private void split() {
-        if (children != null || file != null) {
+        if (children != null || source != null) {
             throw new IllegalStateException();
         }
         children = new FileQuadTree[4];
-        float xStep = bounds.getWidth() / 2;
-        float yStep = bounds.getHeight() / 2;
+        float width = bounds.getWidth() / 2;
+        float height = bounds.getHeight() / 2;
         for (int i = 0; i < 4; i++) {
-            Bounds newBounds = new Bounds(
-                    bounds.getLeft() + xStep * (i / 2), bounds.getLeft() + xStep * (i / 2 + 1),
-                    bounds.getTop() + yStep * (i % 2), bounds.getTop() + yStep * (i % 2 + 1));
-            children[i] = new FileQuadTree(newBounds);
+            Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));  
+            children[i] = new FileQuadTree(new Bounds(topLeft, topLeft.clone().add(height, width)));
             for (MapElement element : elements) {
                 children[i].addElement(element);
             }

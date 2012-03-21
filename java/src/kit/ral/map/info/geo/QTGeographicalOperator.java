@@ -184,8 +184,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
      
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        logger.debug("Loading " + trees.length + " zoomlevels...");
-        for(int i = 0; i < trees.length; i++) {
+        for(int i = 0; i < NUM_LEVELS; i++) {
             logger.trace("load zoom level " + i + "...");
             trees[i] = QuadTree.loadFromInput(input);
         }
@@ -193,7 +192,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        for(int i = 0; i < trees.length; i++) {
+        for(int i = 0; i < NUM_LEVELS; i++) {
             logger.info("save zoom level " + i + "...");
             QuadTree.saveToOutput(output, trees[i]);
         }

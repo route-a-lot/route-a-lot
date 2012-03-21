@@ -3,8 +3,6 @@ package kit.ral.routing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.PriorityQueue;
-
 import kit.ral.common.PairingHeap;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;

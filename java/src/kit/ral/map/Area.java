@@ -18,8 +18,8 @@ import kit.ral.map.info.MapInfo;
 public class Area extends MapElement {
     
     private String name;
-    private Node[] nodes;
-    private WayInfo wayInfo; 
+    private Node[] nodes = new Node[0];
+    private WayInfo wayInfo;
 
     
     // CONSTRUCTORS
@@ -30,7 +30,6 @@ public class Area extends MapElement {
     
     public Area(String name, WayInfo wayInfo) {
         this.name = name;
-        this.nodes = new Node[0];
         this.wayInfo = wayInfo;
     }
 
@@ -67,7 +66,7 @@ public class Area extends MapElement {
         int y[] = new int[nodes.length];
         int i = 0;
         for (Node node : nodes) {
-            x[i] = (int) (node.getPos().getLongitude() * 1000); // 100000000 is a random factor, can be changed
+            x[i] = (int) (node.getPos().getLongitude() * 1000); // 1000 is a random factor, can be changed
             i++;
         }
         i = 0;
@@ -76,11 +75,9 @@ public class Area extends MapElement {
             i++;
         }
         Polygon area = new Polygon(x, y, nodes.length);
-        Rectangle2D.Double box =
-                new Rectangle2D.Double(Math.min(bounds.getLeft(), bounds.getRight()) * 1000 - 1, 
-                        Math.min(bounds.getTop(), bounds.getBottom()) * 1000 - 1,
-                        (Math.abs(bounds.getWidth())) * 1000 + 1,
-                        (Math.abs(bounds.getHeight())) * 1000 + 1);
+        Rectangle2D.Double box = new Rectangle2D.Double(
+                bounds.getLeft() * 1000 - 1, bounds.getTop() * 1000 - 1,
+                bounds.getWidth() * 1000 + 1, bounds.getHeight() * 1000 + 1);
         boolean inside = false;
         for (Node node : nodes) {
             if (node.isInBounds(bounds)) {
@@ -88,7 +85,6 @@ public class Area extends MapElement {
             }
         }
         return inside || area.contains(box) || area.intersects(box);
-
     }
 
     @Override
@@ -100,7 +96,7 @@ public class Area extends MapElement {
         // determine bounding box, discard too small areas
         Bounds bounds = new Bounds(nodes[0].getPos(), 0);
         for (Node node: nodes) {
-            bounds.extend(node.getPos(), 0);
+            bounds.extend(node.getLatitude(), node.getLongitude());
         }  
         if (bounds.getHeight() + bounds.getWidth() < range) {
             return null;

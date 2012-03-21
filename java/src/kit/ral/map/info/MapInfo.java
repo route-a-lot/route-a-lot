@@ -44,8 +44,8 @@ public class MapInfo {
     protected ElementDB elementDB = new ArrayElementDB();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
-//    private GeographicalOperator geoOperator = new FileQTGeoOperator();
-    private GeographicalOperator geoOperator = new QTGeographicalOperator();
+    private GeographicalOperator geoOperator = new FileQTGeoOperator();
+    //private GeographicalOperator geoOperator = new QTGeographicalOperator();
     
     private Bounds geoBounds = new Bounds();
 
@@ -440,7 +440,7 @@ public class MapInfo {
         }
         MapInfo mapInfo = (MapInfo) other;
         return elementDB.equals(mapInfo.elementDB)
-                && geoOperator.equals(mapInfo.geoOperator) // TODO: add compares
+                && geoOperator.equals(mapInfo.geoOperator)
                 && addressOperator.equals(mapInfo.addressOperator)
                 && geoBounds.equals(mapInfo.geoBounds);
     }

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -58,10 +59,10 @@ public class Controller {
     private static final int FREEMAPSPACE = 0, POI = 1, FAVORITE = 2, NAVNODE = 3;
 
     private static final File
-        SRAL_DIRECTORY = new File("./sral"),
+        SRAL_DIRECTORY = new File("./maps"),
         SRTM_DIRECTORY = new File("./srtm"),
-        STATE_FILE = new File("./state.state"),
-        DEFAULT_OSM_MAP = new File("./test/resources/hinne_nuff.osm");
+        STATE_FILE = new File("./state"),
+        DEFAULT_OSM_MAP = new File("./maps/karlsruhe_small_current.osm");
     
     private static final String SRAL_EXT = ".sral";
     
@@ -100,10 +101,8 @@ public class Controller {
         }
         if (!SRAL_DIRECTORY.exists()) {
             SRAL_DIRECTORY.mkdir();
-        }
-        
+        }        
         new Controller(args);
-
     }
     
     private Controller(String[] cmdArgs) {
@@ -146,6 +145,8 @@ public class Controller {
                         logger.info("Imported default map: " + Util.stopTimer());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                    } catch (CancellationException e) {
+                        state.resetMap();
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
@@ -430,11 +431,12 @@ public class Controller {
         } else {
             state.resetMap();
             try {
+                state.getActiveRenderer().resetCache();
                 MapIO.loadMap(file, p);
                 state.setLoadedMapFile(file);
-                state.getActiveRenderer().resetCache();
             } catch (IOException e) {
-                logger.error("Map could not be loaded.");
+                e.printStackTrace();
+                logger.error("Map could not be loaded."); 
             }
         }
     }
@@ -697,9 +699,8 @@ public class Controller {
     }
     
     private void prepareForShutdown() {
-        File stateFile = new File("./state.state");
         try {
-            StateIO.saveState(stateFile);
+            StateIO.saveState(STATE_FILE);
         } catch (IOException e) {
             logger.fatal("IO exception in StateIO");
         }

@@ -12,7 +12,6 @@ import java.util.Collection;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
-import kit.ral.common.description.WayInfo;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
@@ -194,15 +193,19 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         if (input == null) {
             throw new IllegalArgumentException();
         }
+        
         int nodeCount = input.readInt();
         edgesPos = new int[nodeCount];
-        areaID = new byte[nodeCount];
         for (int i = 0; i < nodeCount; i++) {
             edgesPos[i] = input.readInt();         
         }
-        for (int i = 0; i < nodeCount-1; i++) {
+        
+        int areaIDCount = input.readInt();
+        areaID = new byte[areaIDCount];
+        for (int i = 0; i < areaIDCount; i++) {
             areaID[i] = input.readByte();        
-        }        
+        }     
+        
         int edgeCount = input.readInt();
         edges = new int[edgeCount];
         weights = new int[edgeCount];
@@ -221,19 +224,22 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         if (output == null) {
             throw new IllegalArgumentException();
         }
+        
         output.writeInt(edgesPos.length);
         for (int pos: edgesPos) {
             output.writeInt(pos);       
         }
+        
+        output.writeInt(areaID.length);
         for (byte id: areaID) {
             output.writeByte(id);       
         }
+        
         output.writeInt(edges.length);
         for (int i = 0; i < edges.length; i++) {
             output.writeInt(edges[i]);
             output.writeInt(weights[i]);
             output.writeLong(arcFlags[i]);
-//            output.writeUTF("from: " + getEdgeStart(i) + " i=" + i + " to: " + edges[i] + " - " + arcFlags[i] + " Zielarea: " + areaID[edges[i]] + "\n");
         }
     }
     

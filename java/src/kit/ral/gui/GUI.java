@@ -125,7 +125,7 @@ public class GUI extends JFrame {
         setIconImages(icons);
 
         deleteIcon = new ImageIcon(ClassLoader.getSystemResource("icon_delete.png"));
-        switchIcon = new ImageIcon(ClassLoader.getSystemResource("UpDown.png"));
+        switchIcon = new ImageIcon(ClassLoader.getSystemResource("icon_switch.png"));
         selectStartIcon = new ImageIcon(ClassLoader.getSystemResource("icon_greenarrow.png"));
         selectWaypointIcon = new ImageIcon(ClassLoader.getSystemResource("icon_yellowarrow.png"));
         selectDestinationIcon = new ImageIcon(ClassLoader.getSystemResource("icon_redarrow.png"));

@@ -12,7 +12,7 @@ import kit.ral.map.MapElement;
 
 public abstract class QuadTree {
 
-    protected static final int MAX_SIZE = 64;
+    protected static final int SIZE_LIMIT = 64;
     
     private static final byte DESCRIPTOR_QUADTREE_NODE = 1;
     private static final byte DESCRIPTOR_QUADTREE_LEAF = 2;
@@ -60,8 +60,6 @@ public abstract class QuadTree {
      *             quadtree could not be loaded from the stream
      */
     public static QuadTree loadFromInput(DataInput input) throws IOException {
-        input.readLong(); // skip value => ignore
-
         Bounds newBounds = Bounds.loadFromInput(input);
         QuadTree tree;
         byte descriptor = input.readByte();
@@ -69,8 +67,11 @@ public abstract class QuadTree {
             case DESCRIPTOR_QUADTREE_NODE:
                 tree = new QTNode(newBounds);
                 break;
-            default:
+            case DESCRIPTOR_QUADTREE_LEAF:
                 tree = new QTLeaf(newBounds);
+                break;
+            default:
+                throw new IOException();
         }
         tree.load(input);
         return tree;
@@ -85,14 +86,14 @@ public abstract class QuadTree {
      *             quadtree could not be saved to the stream
      */
     public static void saveToOutput(DataOutput output, QuadTree tree) throws IOException {
-        output.writeLong(0); // TODO: reserved for skip value => implement
         tree.bounds.saveToOutput(output);
         if (tree instanceof QTNode) {
             output.writeByte(DESCRIPTOR_QUADTREE_NODE);
-        } else {
+        } else if (tree instanceof QTLeaf) {
             output.writeByte(DESCRIPTOR_QUADTREE_LEAF);
+        } else {
+            throw new IllegalStateException();
         }
-
         tree.save(output);
     }
 

@@ -40,7 +40,7 @@ public class QTLeaf extends QuadTree {
     public boolean addElement(MapElement element) {
         if (element.isInBounds(bounds)) {
             int size = getSize();
-            if (size >= MAX_SIZE) {
+            if (size >= SIZE_LIMIT) {
                 return false;
             }
             // if needed double elements array length

@@ -3,8 +3,8 @@ package kit.ral.map.info.geo;
 import java.util.HashSet;
 
 import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
 import kit.ral.map.MapElement;
-import kit.ral.map.Node;
 
 /**
  * Creates a QuadTree with maximum leaf size 16384. Since elements are not saved,
@@ -12,7 +12,7 @@ import kit.ral.map.Node;
  * <code>isRefillNeeded()</code> returns <code>false</code>.<br><br>
  * 
  * The QuadTree's leaves can be converted to new separate QuadTrees using
- * <code>determineQuadTrees()</code>. Those QuadTrees then can be filled
+ * <code>buildTrunk()</code>. Those QuadTrees then can be filled
  * (for real) separately.
  * 
  */
@@ -26,16 +26,6 @@ public class FileQuadTreeDivider {
     public FileQuadTreeDivider(Bounds bounds) {
         root = new CountingQuadTree(bounds);
     }
-
-    public Bounds getBounds() {
-        return root.getBounds();
-    }
-
-    public void add(Node node) {
-        if (!root.add(node)) {
-            refillNeeded = true;
-        }
-    }
     
     public void add(MapElement element) {
         if (!root.add(element)) {
@@ -43,9 +33,10 @@ public class FileQuadTreeDivider {
         }
     }
     
-    public boolean isRefillNeeded() {
+    public boolean startRefill() {
         boolean result = refillNeeded;
         refillNeeded = false;
+        root.purge();
         return result;
     } 
     
@@ -55,18 +46,22 @@ public class FileQuadTreeDivider {
     
     private class CountingQuadTree {
         
-        
-        private int size = 0;     
+                private int size = 0;     
         
         private Bounds bounds;
-        private HashSet<CountingQuadTree> children = null;
+        private CountingQuadTree[] children = null;
 
         public CountingQuadTree(Bounds bounds) {
             this.bounds = bounds.clone();
         }
         
-        public Bounds getBounds() {
-            return bounds;
+        public void purge() {
+            size = 0;
+            if (children != null) {
+                for (CountingQuadTree child : children) {
+                    child.purge();
+                }
+            }
         }
 
         public FileQuadTree buildDividedQuadTree(HashSet<FileQuadTree> leaves) {
@@ -92,7 +87,7 @@ public class FileQuadTreeDivider {
                 if (size++ >= MAX_SIZE) {
                     if (children == null) {
                         createChildren();
-                        return false;
+                        result = false;
                     }
                     for (CountingQuadTree child : children) {
                         result &= child.add(element);
@@ -101,27 +96,16 @@ public class FileQuadTreeDivider {
             }
             return result;
         };
-
-        /*public int getSize() {
-            return size;
-        }*/
         
-        public HashSet<CountingQuadTree> createChildren() {
-            HashSet<CountingQuadTree> result = new HashSet<CountingQuadTree>(4);
-            float xStep = bounds.getWidth() / 2;
-            float yStep = bounds.getHeight() / 2;
+        public void createChildren() {
+            children = new CountingQuadTree[4];
+            float width = bounds.getWidth() / 2;
+            float height = bounds.getHeight() / 2;
             for (int i = 0; i < 4; i++) {
-                Bounds newBounds = new Bounds(
-                        bounds.getLeft() + xStep * (i / 2),
-                        bounds.getLeft() + xStep * (i / 2 + 1),
-                        bounds.getTop() + yStep * (i % 2),
-                        bounds.getTop() + yStep * (i % 2 + 1)
-                );
-                result.add(new CountingQuadTree(newBounds));
-                
+                Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));  
+                children[i] = new CountingQuadTree(
+                        new Bounds(topLeft, topLeft.clone().add(height, width)));
             }
-            children = new HashSet<CountingQuadTree>(result);
-            return result;
         };
         
     }

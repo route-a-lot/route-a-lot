@@ -50,6 +50,14 @@ public class Node extends MapElement {
     public Coordinates getPos() {
         return new Coordinates(lat, lon);
     }
+    
+    float getLatitude() {
+        return lat;
+    }
+
+    float getLongitude() {
+        return lon;
+    }
 
     @Override
     public String getName() {
