@@ -73,14 +73,17 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                 
                 // pick each tree branch of the current tree      
                 for (int i = 0; i < branchRoots.length; i++) {
-                    logger.info("QT " + (detail + 1) + "/" + NUM_LEVELS + ": branch " + (i + 1) + "/"
-                            + branchRoots.length);
+                    logger.info("QT " + (detail + 1) + "/" + NUM_LEVELS
+                            + ": branch " + (i + 1) + "/" + branchRoots.length);
                     // add all relevant elements
                     Iterator<MapElement> elements = elementDB.getAllMapElements();
                     while (elements.hasNext()) {
-                        MapElement element = elements.next().getReduced(detail, range);
-                        if (element != null) {
-                            branchRoots[i].addElement(element);
+                        MapElement element = elements.next();
+                        if (getMaximumZoomlevel(element) >= detail) {
+                            element = element.getReduced(detail, range);
+                            if (element != null) {
+                                branchRoots[i].addElement(element);
+                            }
                         }
                     }
                     // save tree branch and remove it from RAM

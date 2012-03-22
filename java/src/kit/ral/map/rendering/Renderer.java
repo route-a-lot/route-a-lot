@@ -30,9 +30,9 @@ import kit.ral.map.info.MapInfo;
 
 public class Renderer {
     protected static final int BASE_TILE_SIZE = 256;
-    private static final boolean THREADED = false;
-    private static final int DRAW_BUFFER = 200;
-    private static final float ROUTE_SIZE = 20;
+    private static final boolean THREADED = true;
+    private static final int ROUTE_IMAGE_BORDER_BUFFER = 200;
+    private static final float ROUTE_WIDTH = 10;
     
     private static final BufferedImage STARTNODE = createNavNodeImage(new Color(52, 151, 50), 14);
     private static final BufferedImage WAYNODE = createNavNodeImage(new Color(179, 186, 62), 12);
@@ -212,8 +212,8 @@ public class Renderer {
                 }
                 
                 // adjust border coordinates if the route is bigger than the context window
-                routeBounds.extend(bounds.getTop(), bounds.getLeft(), DRAW_BUFFER);
-                routeBounds.extend(bounds.getBottom(), bounds.getRight(), DRAW_BUFFER);               
+                routeBounds.extend(bounds.getTop(), bounds.getLeft(), ROUTE_IMAGE_BORDER_BUFFER);
+                routeBounds.extend(bounds.getBottom(), bounds.getRight(), ROUTE_IMAGE_BORDER_BUFFER);               
 
                 int width = (int) routeBounds.getWidth() / Projection.getZoomFactor(detail);
                 int height = (int) routeBounds.getHeight() / Projection.getZoomFactor(detail);
@@ -231,8 +231,9 @@ public class Renderer {
                 graphics.fillRect(0, 0, width, height);
                 
                 routeNodes = Street.simplifyNodes(routeNodes, Projection.getZoomFactor(detail) * 3);
-                float currentRouteSize = ROUTE_SIZE / Projection.getZoomFactor(detail / 2);
-                float currentRouteSizeUnderlay = (ROUTE_SIZE + 2) / Projection.getZoomFactor(detail / 2);
+                // TODO: decide whether route width should be zoom level dependent
+                float currentRouteSize = ROUTE_WIDTH;// / Projection.getZoomFactor(detail);
+                float currentRouteSizeUnderlay = (ROUTE_WIDTH + 2);// / Projection.getZoomFactor(detail);
                 
                 // draw route shadow
                 graphics.setStroke(new BasicStroke(currentRouteSizeUnderlay, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
@@ -340,7 +341,7 @@ public class Renderer {
     
     private void adjustBorderCoordinates(Bounds bounds, Coordinates point, int detail) {
         bounds.extend(point.getLatitude(), point.getLongitude(),
-                ROUTE_SIZE * Projection.getZoomFactor(detail / 2));
+                ROUTE_WIDTH * Projection.getZoomFactor(detail / 2));
     }
 
     private void drawLineBetweenCoordinates(Coordinates from, Coordinates to, int detail, Graphics2D graphics) {

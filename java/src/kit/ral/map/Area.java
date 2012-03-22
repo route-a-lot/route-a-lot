@@ -17,6 +17,8 @@ import kit.ral.map.info.MapInfo;
 
 public class Area extends MapElement {
     
+    private static final int MIN_REDUCTION_NODES = 4;
+    
     private String name;
     private Node[] nodes = new Node[0];
     private WayInfo wayInfo;
@@ -104,6 +106,9 @@ public class Area extends MapElement {
         // return simplified area
         Area result = new Area(name, wayInfo);
         result.setNodes(Street.simplifyNodes(nodes, range / 2));
+        if (result.nodes.length <= MIN_REDUCTION_NODES && nodes.length > MIN_REDUCTION_NODES) {
+            return null;
+        }
         return (result.nodes.length == nodes.length) ? this : result;
     }
       

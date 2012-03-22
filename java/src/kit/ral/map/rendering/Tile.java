@@ -284,8 +284,7 @@ public class Tile {
         }
         
         // set size
-        int basicSize = street.getDrawingSize();
-        int size = basicSize / Projection.getZoomFactor(detailLevel);
+        float size = street.getDrawingSize() / (float) Projection.getZoomFactor(detailLevel);
         if (!top) {
             graphics.setStroke(new BasicStroke(size + 2 /*/ (float) Math.pow(detailLevel + 1, 0.8)*/,
                     BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
