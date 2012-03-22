@@ -46,7 +46,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                 divider.add(elements.next());
             }
         } while (divider.startRefill());
-
+        
         // << FILL AND SAVE SECTION >>
         try {
             long startOffset = target.getPosition();

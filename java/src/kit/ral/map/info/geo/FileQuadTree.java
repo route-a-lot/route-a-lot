@@ -156,7 +156,7 @@ public class FileQuadTree extends QuadTree {
         }
         synchronized (source) {
             source.setPosition(getFileOffset());
-
+            
             if (source.readLong() != 1234567890) {
                 throw new IllegalArgumentException();
             }
@@ -197,8 +197,7 @@ public class FileQuadTree extends QuadTree {
             throw new IllegalArgumentException();
         }
         // already saved:
-        if ((target != null) && (output.getFileDescriptor()
-                            .equals(target.getFileDescriptor()))) {
+        if ((target != null) && (output.getFileDescriptor().equals(target.getFileDescriptor()))) {
             return;
         }
         target = output;
@@ -220,17 +219,19 @@ public class FileQuadTree extends QuadTree {
             // prepare children table
             long childTablePos = target.getPosition();
             for (int i = 0; i < children.length; i++) {
-                target.writeLong(0);
+                target.writeLong(-1);
             }
             // save children
             for (FileQuadTree child : children) {
                 child.saveTree(target);             
             }
             // write children table
-            for (int i = 0; i < children.length; i++) {
-                target.writeLongToPosition(children[i].getFileOffset(),
-                        childTablePos + i * 8);
-            }         
+            long lastPos = target.getPosition();
+            target.setPosition(childTablePos);
+            for (FileQuadTree child : children) {
+                target.writeLong(child.getFileOffset());
+            }      
+            target.setPosition(lastPos);
         } else {
             throw new IllegalStateException("Cannot save an unloaded QT node.");
         }

@@ -18,21 +18,37 @@ import kit.ral.map.MapElement;
  */
 public class FileQuadTreeDivider {
 
-    private static final int MAX_SIZE = 16384;
+    private static final int MAX_LEAF_SIZE = 4096;//16384;
     
-    private CountingQuadTree root = null;
+    private DividerTree root = null;
     private boolean refillNeeded = false;
     
+    /**
+     * Creates a new empty divider.
+     * @param bounds the area that is to be divided.
+     */
     public FileQuadTreeDivider(Bounds bounds) {
-        root = new CountingQuadTree(bounds);
+        root = new DividerTree(bounds);
     }
     
+    /**
+     * Adds a map element to the divider. The map element is not really stored but instead
+     * only inserted, added to a counter and discarded. This guarantees a low memory footprint,
+     * but likely will require multiple refill runs.
+     * @param element the MapElement that is to be added
+     */
     public void add(MapElement element) {
         if (!root.add(element)) {
             refillNeeded = true;
         }
     }
     
+    /**
+     * Checks whether the full depth of the divider tree has been reached.
+     * If not, the method will prepare another run at filling all MapElements
+     * into the Divider.<br>
+     * @return true if another refill is necessary to reach full depth
+     */
     public boolean startRefill() {
         boolean result = refillNeeded;
         refillNeeded = false;
@@ -40,25 +56,34 @@ public class FileQuadTreeDivider {
         return result;
     } 
     
+    /**
+     * Builds a {@link FileQuadTree} from the current division.
+     * While the tree root is assigned to the return value,
+     * the quadtree leaves are added to the list that was given as an argument.
+     * Those (empty) leaves can then be filled and saved separately (as separate quadtrees).<br>
+     * By finally calling the root method <code>saveTree()</code>,
+     * the complete tree is saved, integrating already saved subtrees (called "branches").
+     * @param divisions list that will be filled with all quadtree branch roots
+     * @return the quadtree trunk root
+     */
     public FileQuadTree buildTrunk(HashSet<FileQuadTree> divisions) {
         return root.buildDividedQuadTree(divisions);
     }
     
-    private class CountingQuadTree {
-        
-                private int size = 0;     
-        
-        private Bounds bounds;
-        private CountingQuadTree[] children = null;
+    private class DividerTree {
 
-        public CountingQuadTree(Bounds bounds) {
+        private int size = 0;
+        private Bounds bounds;
+        private DividerTree[] children = null;
+
+        public DividerTree(Bounds bounds) {
             this.bounds = bounds.clone();
         }
-        
+
         public void purge() {
             size = 0;
             if (children != null) {
-                for (CountingQuadTree child : children) {
+                for (DividerTree child : children) {
                     child.purge();
                 }
             }
@@ -70,7 +95,7 @@ public class FileQuadTreeDivider {
                 leaves.add(result);
             } else {
                 int i = 0;
-                for (CountingQuadTree child : children) {
+                for (DividerTree child : children) {
                     result.setChild(i++, child.buildDividedQuadTree(leaves));
                 }
             }
@@ -84,30 +109,29 @@ public class FileQuadTreeDivider {
         public boolean add(MapElement element) {
             boolean result = true;
             if (element.isInBounds(bounds)) {
-                if (size++ >= MAX_SIZE) {
+                if (size++ >= MAX_LEAF_SIZE) {
                     if (children == null) {
                         createChildren();
                         result = false;
                     }
-                    for (CountingQuadTree child : children) {
+                    for (DividerTree child : children) {
                         result &= child.add(element);
                     }
                 }
             }
             return result;
         };
-        
+
         public void createChildren() {
-            children = new CountingQuadTree[4];
+            children = new DividerTree[4];
             float width = bounds.getWidth() / 2;
             float height = bounds.getHeight() / 2;
             for (int i = 0; i < 4; i++) {
-                Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));  
-                children[i] = new CountingQuadTree(
-                        new Bounds(topLeft, topLeft.clone().add(height, width)));
+                Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));
+                children[i] = new DividerTree(new Bounds(topLeft, topLeft.clone().add(height, width)));
             }
         };
-        
+
     }
 
 }
