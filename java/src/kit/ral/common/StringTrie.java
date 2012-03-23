@@ -3,478 +3,184 @@ package kit.ral.common;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Locale;
+import kit.ral.common.util.StringUtil;
 
 public class StringTrie {
 
-    private final static String EMPTY = "";
-
-    private String value;
-    private int elementID;
-    private boolean suffix;
-    private int count;
-    private StringTrie[] children;
-
+    // FIELDS
+    
     /**
-     * Konstruktor
+     * Key prefix associated to this node. This initially always is a
+     * single character (apart from the root). However, a subsequent call
+     * to <code>compactify()</code> may change that (-> Patricia-Trie).
      */
-    public StringTrie(String value) {
-        this.value = value;
-        this.children = new StringTrie[27];
-        this.elementID = -1;
-        this.count = 0;
-        this.suffix = false;
-    }
+    private String keypart;
 
     /**
-     * Konstruktor
+     * The value associated with this node. Used as MapElement ID.
+     */
+    private int value = -1;
+    private StringTrie[] children = new StringTrie[27];
+
+    
+    // CONSTRUCTOR
+    
+    /**
+     * Creates a new empty StringTrie.
      */
     public StringTrie() {
-        this.value = EMPTY;
-        this.children = new StringTrie[27];
-        this.elementID = -1;
-        this.count = 0;
-        this.suffix = false;
+        keypart = "";
     }
 
-    /*
-     * neue selcectMethode zur Auswahl eines Navigationspunktes
+    
+    // BASE FUNCTIONALITY
+    
+    /**
+     * Inserts the given value into the StringTrie at the key position.
+     * Values with identical keys are replaced. Calling
+     * this method after compactifying the StringTrie may result in errors.
+     * 
+     * @param key
+     * @param value
+     * @throws IllegalArgumentException
+     *             key is <code>null</code> or key has length 0
      */
-    public ArrayList<Integer> select(String str) {
-        ArrayList<Integer> elements = new ArrayList<Integer>();
-        if (str.length() == 0) {
-            /* Blättinhalte werden in der DFS in words eingefügt */
-            for (StringTrie node : children) {
-                if (!(node == null)) {
-                    depthFirstSearch(elements, node);
-                }
-            }
-            return elements;
-        } else {
-            /* prefix normalisieren */
-            str = normalize(str);
+    public void insert(String key, int value) {
+        if ((key == null) || (key.length() == 0)) {
+            throw new IllegalArgumentException();
         }
-
-        if (str.length() == 0) {
-            return null;
-        }
-        char cur = str.charAt(0);
-        int index = Character.getNumericValue(cur) - 10;
-        /* Sonderfälle abfangen */
-        if (index < 0 || index > 25) {
-            System.out.println("ungültiger Character in select");
-            System.exit(0);
-        }
-        /* geändert, an unterschiedliche Zeichenlänge angepasst */
-        if (!(children[index] == null)) {
-            StringTrie child = children[index];
-            String value = child.getValue();
-            if (str.length() < value.length()) {
-                /* str ist nicht im Trie */
-                return null;
-            } else if (str.length() == value.length()) {
-                if (str.toLowerCase().equals(value.toLowerCase())) {
-                    str = "";
-
-                }
-            } else if (value.length() < str.length()) {
-                if (str.toLowerCase().startsWith(value.toLowerCase(), 0)) {
-                    str = str.substring(value.length());
-                }
-            }
-        } else {
-            return null;
-        }
-        if (!(children[index] == null)) {
-            elements = children[index].select(str);
-        }
-
-        return elements;
-    }
-
-    /*
-     * build fügt den ersten Knoten in die Kinder der Wurzel ein
+        insert(StringUtil.normalize(key), 0, value);
+    }    
+    
+    /**
+     * Returns all values associated with keys that start with the given key prefix.
+     * @param key prefix
+     * @return a list of values
+     * @throws IllegalArgumentException key is <code>null</code>
      */
-    public void insert(String str, int elementID) {
-        if (str == null || (str.length() == 0) || elementID == -1) {
-            return;
-        } else {
-            /* normalisieren für die sortierung */
-            str = normalize(str);
+    public ArrayList<Integer> search(String key) {
+        if (key == null) {
+            throw new IllegalArgumentException();
         }
-
-        if (str.length() == 0) {
-            return;
-        }
-
-        char cur = str.charAt(0);
-        int index = Character.getNumericValue(cur) - 10;
-        if (index < 0 || index > 25) {
-            System.out.println("Zeichen " + cur + "ist nicht in alphabet enthalten");
-            System.exit(0);
-        }
-
-        /* falls es noch keine Einträge gibt neuen Knoten erstellen */
-        StringTrie child;
-
-        if (children[index] == null) {
-            child = new StringTrie("");
-            count++;
-        } else {
-            child = children[index];
-        }
-        children[index] = insert(child, str, elementID);
-
-
-    }
-
-
-    /*
-     * fügt die Blätter rekursiv ein
-     */
-    private StringTrie insert(StringTrie parent, String str, int elementID) {
-        if (str.length() == 0) {
-            /* markiere Wortende */
-            parent.setSuffix(true);
-            /* Wort in Blatt einfügen */
-            parent.setElementID(elementID);
-            return parent;
-        }
-        /* Value einfügen */
-        char cur = str.charAt(0);
-        parent.setValue(Character.toString(cur));
-
-        int index = 0;
-        /* der Folgebuchstaben ist Schlüssel für den nächsten Eintrag */
-        if (str.length() == 1) {
-            index = 26;
-        } else {
-            cur = str.charAt(1);
-            index = Character.getNumericValue(cur) - 10;
-            /* Sonderfälle abfangen */
-            if (index < 0 || index > 25) {
-                System.out.println("Zeichen " + cur + "ist nicht in alphabet enthalten");
-                System.exit(0);
-            }
-
-        }
-        StringTrie child;
-        /* neuen Knoten einfügen, bei erster Traversierung */
-        if (parent.children[index] == null) {
-            child = new StringTrie("");
-
-            // parent.setCount();
-        } else {
-            child = parent.children[index];
-        }
-        parent.children[index] = insert(child, str.substring(1), elementID);
-
-        return parent;
-    }
-
-    /*
-     * Getter - Methode für Value
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /*
-     * Setter - Methode für Value
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /*
-     * Setter Methode für children
-     */
-    public void setChildren(StringTrie[] children) {
-        this.children = children;
-    }
-
-    /*
-     * Getter Methode für children
-     */
-    public StringTrie[] getChildren() {
-        return this.children;
-    }
-
-    /*
-     * Setter Methode für Wort
-     */
-    public void setElementID(int elementID) {
-        this.elementID = elementID;
-    }
-
-    /*
-     * Getter-Methode für Wort
-     */
-    public int getElementID() {
-        return elementID;
-    }
-
-    /*
-     * Setter Methode suffix
-     */
-    public void setSuffix(boolean suffix) {
-        this.suffix = suffix;
-    }
-
-    /*
-     * Getter Methode suffix
-     */
-    public boolean getSuffix() {
-        return suffix;
-    }
-
-    /*
-     * Setter Methode für count
-     */
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    /*
-     * Getter Methode für count
-     */
-    public int getCount() {
-        return count;
-    }
-
-    /*
-     * Tiefensuche
-     */
-    public ArrayList<Integer> depthFirstSearch(ArrayList<Integer> elements, StringTrie child) {
-
-        if (child.getSuffix()) {
-            TraverseNonTreeEdge(child.getElementID(), elements);
-        } else {
-            TraverseTreeEdge(child, elements);
-        }
-
-        return elements;
-    }
-
-    public void TraverseTreeEdge(StringTrie child, ArrayList<Integer> elements) {
-
-        StringTrie[] children = child.getChildren();
-        for (StringTrie node : children) {
-            if (!(node == null)) {
-                depthFirstSearch(elements, node);
-            }
-        }
-    }
-
-    public void TraverseNonTreeEdge(int elementID, ArrayList<Integer> elements) {
-        elements.add(elementID);
-    }
-
-    /*
-     * gibt vorerst die Nachbarn des Knotens zurück bei dem die Tiefensuche beginnt
-     */
-    public StringTrie[] getStartNodes(String prefix) {
-        if (prefix.length() == 0) {
-            return children;
-        }
-        StringTrie[] dfsStartNodes = null;
-        char cur = prefix.charAt(0);
-        int index = Character.getNumericValue(cur) - 10;
-        /* Sonderfälle abfangen */
-        if (index < 0 || index > 25) {
-            System.out.println("Zeichen " + cur + "ist nicht in alphabet enthalten");
-            System.exit(0);
-        }
-        /* geändert, an unterschiedliche Zeichenlänge angepasst */
-        if (value.length() > 1) {
-            if (prefix.length() <= (value.length() - 1)) {
-                if (value.startsWith(prefix, 1)) {
-                    return children;
-                } else {
-                    return null;
-                }
-            } else {
-                /*-----------------------------------------------------*/
-                if (prefix.startsWith(value.substring(1))) {
-                    prefix = prefix.substring((value.length() - 1));
-                    /*------------------------------------------------------*/
-                }
-            }
-        }
-        /* Falls Präfix abgearbeitet ist gibt Kindknoten für Tiefensuche zurück */
-        if (prefix.length() == 0) {
-            return children;
-        } else {
-            /*--------------------------------------------------*/
-            cur = prefix.charAt(0);
-            index = Character.getNumericValue(cur) - 10;
-            /* Sonderfälle abfangen */
-            if (index < 0 || index > 25) {
-                System.out.println("Zeichen " + cur + "ist nicht in alphabet enthalten");
-                System.exit(0);
-            }
-            /*-----------------------------------------------*/
-            StringTrie nextNeighbor = children[index];
-            if (!(nextNeighbor == null)) {
-                dfsStartNodes = nextNeighbor.getStartNodes(prefix.substring(1));
-            } else {
-                return null;
-            }
-        }
-        return dfsStartNodes;
-    }
-
-    /*
-     * Methode zum normalisieren des Textes
-     */
-    public static String normalize(String str) {
-        if (str == null) {
-            return null;
-        }
-        str = str.replaceAll("ß", "ss");
-        Collator collator = Collator.getInstance(Locale.GERMAN);
-        collator.setStrength(Collator.PRIMARY);
-        String[] org = str.split("");
-        String alph = "abcdefghijklmnopqrstuvwxyz";
-        String[] alphabet = alph.split("");
-        /* Normalisieren */
-        for (int i = 1; i < org.length; i++) {
-            for (int j = 1; j < alphabet.length; j++) {
-                try {
-                    if (collator.compare(org[i], alphabet[j]) == 0) {
-                        /* normalisieren */
-                        org[i] = alphabet[j];
-                        j = alphabet.length;
-                    }
-                    /* Zeichen ohne Sonderfallbehandlung entfernen */
-                    if (j == (alphabet.length - 1)) {
-                        org[i] = "";
-                    }
-                } catch (ClassCastException e) {
-                    /* Zeichen die keinen Strings entsprechen entfernen */
-                    org[i] = "";
-                }
-            }
-
-        }
-        str = "";
-        /* String generieren */
-        for (int j = 0; j < org.length; j++) {
-            str = str + org[j];
-        }
-
-        return str;
-    }
-
-    /*
-     * sucht Worte die mit dem Parameter praefix beginnen und gibt diese als ArrayList zurück
-     */
-    public ArrayList<Integer> search(String prefix) {
-        if (prefix == null) {
-            return null;
-        } else {
-            prefix = normalize(prefix);
-        }
-        if (prefix.length() == 0) {
-            return null;
-        }
-        StringTrie[] children = getStartNodes(prefix);
-        if (children == null) {
-            System.out.println("No words found");
-            return new ArrayList<Integer>();
-        }
-        ArrayList<Integer> elements = new ArrayList<Integer>();
-        for (StringTrie node : children) {
-            if (!(node == null)) {
-                depthFirstSearch(elements, node);
-            }
-        }
-        return elements;
-    }
-
-    /*
-     * kompaktifizieren des Tries, Breitensuche
+        ArrayList<Integer> values = new ArrayList<Integer>();
+        search(StringUtil.normalize(key), 0, values);
+        return values;
+    }    
+     
+    /**
+     * Converts the StringTrie into a PatriciaTrie. Afterwards
+     * <code>insert()</code> should not be called any more.
      */
     public void compactify() {
-        /* Breitensuche: Liste initialisieren */
-        String value;
-        String otherValue;
-        ArrayList<StringTrie> allChildren = new ArrayList<StringTrie>();
-        for (StringTrie node : children) {
-            if (node != null && !(node.getSuffix())) {
-                allChildren.add(node);
-                /* Sprung in dfsComp */
-                // dfsCompact(node);
+        StringTrie onlyChild = null;
+        do {
+            if (value >= 0) {
+                break;
             }
-        }
-        while (allChildren.size() > 0) {
-            StringTrie node = allChildren.remove(0);
-            node.setCount(node.countChild(node));
-
-            if (node.getCount() == 1) {
-                // System.out.println("Kinder == 1, Value: " + node.getValue() );
-                StringTrie child = getChild(node);
-                value = node.getValue();
-                if (!(child.getSuffix())) {
-                    otherValue = child.getValue();
-                    node.setValue(value + otherValue);
-                    // System.out.println("neuer Knotenwert: " + node.getValue());
-                    node.setChildren(child.getChildren());
-                    allChildren.add(node);
-
-                }
-            } else {
-                // System.out.println("Kinder > 1, Value: " + node.getValue() );
-                StringTrie[] nextLayer = node.getChildren();
-                for (StringTrie child : nextLayer) {
-                    if (child != null && !(child.getSuffix())) {
-                        allChildren.add(child);
+            // find only child, or null else
+            for (StringTrie child : children) {
+                if (child != null) {
+                    onlyChild = (onlyChild == null) ? child : null;
+                    if (onlyChild == null) {
+                        break;
                     }
-
                 }
             }
-
-        }// end while
-
-
+            // merge this with the only child
+            if (onlyChild != null) {
+                this.children = onlyChild.children;
+                this.keypart += onlyChild.keypart;
+                this.value = onlyChild.value;
+            }
+        } while (onlyChild != null);
+        for (StringTrie child : children) {
+            if (child != null) {
+                child.compactify();
+            }
+        }
     }
+    
+    
+    // RECURSIVE HELPER FUNCTIONS
 
-
-    /*
-     * gibt einziges Kind zurück
+    /**
+     * Inserts the given value into the StringTrie at the key position.
+     * Only the key suffix beginning at position
+     * <code>charIndex</code> is taken into account.
+     * 
+     * @param key
+     * @param charIndex
+     * @param value
      */
-    private StringTrie getChild(StringTrie node) {
-        for (StringTrie child : node.getChildren()) {
-            if (!(child == null)) {
-                return child;
+    private void insert(String key, int charIndex, int value) {
+        // TODO maybe PatriciaTrie insert handling
+        if (charIndex >= key.length()) {
+            this.value = value;
+        } else {
+            int index = StringUtil.getCharIndex(key.charAt(charIndex));
+            if (children[index] == null) {
+                children[index] = new StringTrie();
+                children[index].keypart = String.valueOf(key.charAt(charIndex));
+            }
+            children[index].insert(key, charIndex + 1, value);
+        }
+    }
+   
+    /**
+     * Returns all values associated with keys that start with the given key prefix.
+     * Only the second part of key (beginning at position <code>charIndex</code>)
+     * is taken into account.
+     * @param key
+     * @param charIndex
+     * @param values
+     */
+    private void search(String key, int charIndex, ArrayList<Integer> values) {
+        int minLen = Math.min(key.length() - charIndex, keypart.length());
+        // if keypart is prefix of (offset) key, or vice versa
+        if (key.regionMatches(charIndex, keypart, 0, minLen)) {
+            // add this entry and all child entries if expr ends within value
+            if (key.length() - charIndex <= keypart.length()) {
+                getAllValues(values);
+            } else { // select within child entries
+                charIndex += keypart.length();
+                StringTrie child = children[StringUtil.getCharIndex(key.charAt(charIndex))];
+                if (child != null) {
+                    child.search(key, charIndex, values);
+                }
             }
         }
-        return null;
     }
-
-    private int countChild(StringTrie node) {
-        int count = 0;
-        for (StringTrie child : node.getChildren()) {
-            if (!(child == null)) {
-
-                count++;
-
+    
+    /**
+     * Adds all values in the StringTrie to the given list.
+     * @param values a list that is to be filled with values.
+     */
+    private void getAllValues(ArrayList<Integer> values) {
+        if (value >= 0) {
+            values.add(value);
+        }
+        for (StringTrie child : children) {
+            if (child != null) {
+                child.getAllValues(values);
             }
         }
-        return count;
     }
+    
+    
+    // I/O FUNCTIONALITY
 
-
+    /**
+     * Loads a complete StringTrie from the given source.
+     * @param input the source
+     * @return the loaded StringTrie
+     * @throws IOException
+     */
     public static StringTrie loadFromInput(DataInput input) throws IOException {
         StringTrie result = new StringTrie();
-        result.value = input.readUTF();
-        result.elementID = input.readInt();
-        result.suffix = input.readBoolean();
-        result.count = input.readInt();
-        int len = input.readInt();
-        for (int i = 0; i < len; i++) {
+        result.keypart = input.readUTF();
+        result.value = input.readInt();
+        for (int i = 0; i < result.children.length; i++) {
             if (input.readBoolean()) {
                 result.children[i] = loadFromInput(input);
             }
@@ -482,12 +188,16 @@ public class StringTrie {
         return result;
     }
 
+    /**
+     * Saves the complete StringTrie to the given destination.
+     * 
+     * @param output
+     *            the destination (e.g. a stream)
+     * @throws IOException
+     */
     public void saveToOutput(DataOutput output) throws IOException {
-        output.writeUTF(value);
-        output.writeInt(elementID);
-        output.writeBoolean(suffix);
-        output.writeInt(count);
-        output.writeInt(children.length);
+        output.writeUTF(keypart);
+        output.writeInt(value);
         for (int i = 0; i < children.length; i++) {
             output.writeBoolean(children[i] != null);
             if (children[i] != null) {
@@ -495,5 +205,7 @@ public class StringTrie {
             }
         }
     }
+
+
 
 }

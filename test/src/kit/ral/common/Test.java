@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import kit.ral.common.util.StringUtil;
 import kit.ral.map.info.ArrayElementDB;
 
 class Test {
@@ -56,14 +57,14 @@ class Test {
         int anzahl = 0;
         for (int i = 0; i < words.length; i++) {
             if (words[i].length() > 0) {
-                String word = StringTrie.normalize(words[i]);
-                list = trie.select(words[i]);
+                String word = StringUtil.normalize(words[i]);
+                list = trie.search(words[i]);
                 boolean bool = false;
                 if (!(list == null)) {
                     // System.out.println("Size: " + wordArray.size() );
                     for (Integer id : list) {
                         // System.out.print( wordArray.get(j)+" ");
-                        String found = StringTrie.normalize(db.getMapElement(id).getName());
+                        String found = StringUtil.normalize(db.getMapElement(id).getName());
                         // System.out.println("gesucht: " + words[i]);
                         // System.out.println("gefunden: " + wordArray.get(j) );
                         if (found.equals(word)) {

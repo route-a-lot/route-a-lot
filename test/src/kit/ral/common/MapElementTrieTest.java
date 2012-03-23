@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import kit.ral.common.util.StringUtil;
 import kit.ral.map.info.ArrayElementDB;
 
 import org.junit.BeforeClass;
@@ -57,7 +58,7 @@ public class MapElementTrieTest {
     public void testInsert() {
         /* Testet ob alle Worte in den Trie eingefügt wurden */
         for (int i = 0; i < words.length; i++) {
-            ArrayList<Integer> list = trie.select(words[i]);
+            ArrayList<Integer> list = trie.search(words[i]);
             assertTrue(list.size() > 0);
             // System.out.println(list.remove(0).getName());
         }
@@ -72,7 +73,7 @@ public class MapElementTrieTest {
         int auswahl = 0;
         for (int i = 0; i < words.length; i++) {
             if (words[i].length() > 0) {
-                list = trie.select(words[i]);
+                list = trie.search(words[i]);
             } else {
                 list = new ArrayList<Integer>();
             }
@@ -106,14 +107,14 @@ public class MapElementTrieTest {
         int anzahl = 0;
         for (int i = 0; i < words.length; i++) {
             if (words[i].length() > 0) {
-                String word = StringTrie.normalize(words[i]);
-                list = trie.select(words[i]);
+                String word = StringUtil.normalize(words[i]);
+                list = trie.search(words[i]);
                 boolean bool = false;
                 if (!(list == null)) {
                     // System.out.println("Size: " + wordArray.size() );
                     for (Integer id : list) {
                         // System.out.print( wordArray.get(j)+" ");
-                        String found = StringTrie.normalize(db.getMapElement(id).getName());
+                        String found = StringUtil.normalize(db.getMapElement(id).getName());
                         // System.out.println("gesucht: " + words[i]);
                         // System.out.println("gefunden: " + wordArray.get(j) );
                         if (found.equals(word)) {
@@ -144,7 +145,7 @@ public class MapElementTrieTest {
          * MissingWords enthält nur Worte die keinen Strings entsprechen und hat nach Normalisierung die Länge null
          */
 
-        assertTrue(StringTrie.normalize(missingWords).length() == 0);
+        assertTrue(StringUtil.normalize(missingWords).length() == 0);
 
 
     }

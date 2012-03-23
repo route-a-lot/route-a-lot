@@ -525,14 +525,13 @@ public class Controller {
                 state.getNavigationNodes().remove(position);
                 state.getNavigationNodes().add(position, newSel);
             }
-            //System.err.println(position);
+            setViewTo(newSel.getPosition());
         }
         guiHandler.updateNavNodes(state.getNavigationNodes());
         calculateRoute();
         // for (int i = 0; i < state.getNavigationNodes().size(); i++) {
         //     guiHandler.showNavNodeDescription(state.getNavigationNodes().get(i).getName(), i);    // TODO error in GUI
-        // }
-        setViewTo(newSel.getPosition());
+        // }        
     }
     
     private void deleteNavNode(int pos) {

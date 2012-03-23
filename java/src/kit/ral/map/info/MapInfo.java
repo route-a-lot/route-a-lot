@@ -116,7 +116,6 @@ public class MapInfo {
             throw new IllegalStateException();
         }
         elementDB.addNode(id, newNode);
-        // geographicalOperator.addToBaseLayer(newNode);
     }
 
     /**
@@ -126,12 +125,13 @@ public class MapInfo {
      * @param type the type of the street
      */
     public void addWay(List<Integer> ids, String name, WayInfo wayInfo) {
+        int i = 0;
+        Node[] nodes = new Node[ids.size()];
         if (wayInfo.isStreet()) {
             Street street = new Street(name, wayInfo);
-            Node[] nodes = new Node[ids.size()];
-            if (useDirectFile) {
-                for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = new Node(ids.get(i));
+            if (useDirectFile) { 
+                for (int id : ids) {
+                    nodes[i++] = new Node(id);
                 }
                 street.setNodes(nodes);
                 elementDB.addMapElement(street);
@@ -139,16 +139,16 @@ public class MapInfo {
                 String mapId = wayInfo.getType() + wayInfo.getOneway() + wayInfo.getBicycle()
                                             + wayInfo.getAccess() + wayInfo.getAddress().getStreet();
                 Collection<Street> streets = streetsForAddress.get(mapId);
-
-                for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = getNode(ids.get(i));
+                
+                for (int id : ids) {
+                    nodes[i++] = getNode(id);
                 }
                 street.setNodes(nodes);
 
                 if (streets == null) {
                     streets = new HashSet<Street>();
                     streetsForAddress.put(mapId, streets);
-                } else if (!"".equals(wayInfo.getAddress().getStreet())) {
+                } else if (wayInfo.getAddress().getStreet().length() != 0) {
                     Iterator<Street> streetsIterator = streets.iterator();
                     while (streetsIterator.hasNext()) {
                         if (mergeStreetsIfPossible(street, streetsIterator.next())) {
@@ -157,20 +157,18 @@ public class MapInfo {
                     }
                 }
                 streets.add(street);
-                addressOperator.add(street);
             }
         } else {  
-            Node[] nodes = new Node[ids.size()];
+            Area area = new Area(name, wayInfo);
             if (useDirectFile) {
-                for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = new Node(ids.get(i));
+                for (int id : ids) {
+                    nodes[i++] = new Node(id);
                 }
             } else {
-                for (int i = 0; i < ids.size(); i++) {
-                    nodes[i] = elementDB.getNode(ids.get(i));
+                for (int id : ids) {
+                    nodes[i++] = getNode(id);
                 } 
-            }
-            Area area = new Area(name, wayInfo);
+            }          
             area.setNodes(nodes);
             elementDB.addMapElement(area);
         }
@@ -232,8 +230,8 @@ public class MapInfo {
         if (!useDirectFile) {
             for (Collection<Street> streets : streetsForAddress.values()) {
                 for (Street street : streets) {
-                    addressOperator.add(street);
                     elementDB.addMapElement(street);
+                    addressOperator.add(street);         
                 }
             }
         } else {

@@ -1,8 +1,19 @@
 package kit.ral.common.util;
 
+import java.text.Collator;
+import java.util.Locale;
+
 
 public class StringUtil {
 
+    private static final char[] ALPHABET = new char[] {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+        'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+    private static final Collator COLLATOR = Collator.getInstance(Locale.GERMAN);
+    static {
+        COLLATOR.setStrength(Collator.PRIMARY);
+    }
+    
     /**
      * Removes a file extension from a file name.
      * @param s the filename
@@ -80,4 +91,53 @@ public class StringUtil {
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
+    
+    /**
+     * Normalizes a string, i.e. converts the string to standard 26-characters lower case alphabet.
+     */
+    public static String normalize(String str) {
+        if (str == null) {
+            return null;
+        }
+        
+        // divide string
+        str = str.replaceAll("ß", "ss").replaceAll("'|\"|\\.", "");
+        
+        char[] strChars = new char[str.length()];
+        str.getChars(0, str.length(), strChars, 0);
+        // normalize string
+        nextCharacter:
+        for (int i = 0; i < strChars.length; i++) {
+            for (char letter : ALPHABET) {
+                if (COLLATOR.compare(String.valueOf(strChars[i]), String.valueOf(letter)) == 0) {
+                    strChars[i] = letter;
+                    continue nextCharacter;
+                }
+            }
+            // encode special characters
+            strChars[i] = '*';
+        }
+        // recombine string
+        StringBuilder builder = new StringBuilder();
+        for (char strChar : strChars) {
+            builder.append(strChar);
+        }
+        return builder.toString();
+    }
+    
+    /**
+     * Returns the position of the given letter (A-Z) in the alphabet.
+     * This works case-independently. If the given character is not a
+     * common letter, 0 is returned.
+     * @param ch a character
+     * @return a value from range [1..26], or 0 on error
+     */
+    public static int getCharIndex(char ch) {
+        int index = Character.getNumericValue(ch) - 9;
+        if (index < 1 || index > 26) {
+            index = 0;
+        }
+        return index;
+    }
+    
 }

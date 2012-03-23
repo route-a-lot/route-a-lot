@@ -24,28 +24,30 @@ public class TrieAddressOperator implements AddressOperator {
             return null;
         }
         ArrayList<String> completions = new ArrayList<String>();
-       
-        for (Integer id : mapElements.search(expression)) {
-            String name = State.getInstance().getMapInfo().getMapElement(id).getName();
-            if (name != null && name.length() != 0) {
-                completions.add(name);
-            }       
+        MapInfo mapInfo = State.getInstance().getMapInfo();
+        for (int id : mapElements.search(expression)) {
+            completions.add(mapInfo.getMapElement(id).getName());     
         }
         return completions;
     }
 
     @Override
     public Selection select(String address) {
-        ArrayList<Integer> targets = mapElements.search(address);
-        if (targets == null || targets.size() == 0) {
-            return null;
+        MapInfo mapInfo = State.getInstance().getMapInfo();
+        for (int id : mapElements.search(address)) {
+            MapElement element = mapInfo.getMapElement(id);
+            if (element.getName().equals(address)) {
+                return element.getSelection();
+            }
         }
-        return State.getInstance().getMapInfo().getMapElement(targets.remove(0)).getSelection();
+        return null;
     }
 
     @Override
     public void add(MapElement element) {
-        mapElements.insert(element.getName(), element.getID());
+        if (element.getName().length() > 0 && element.getID() >= 0) {
+            mapElements.insert(element.getName(), element.getID());
+        }
     }
 
     @Override
