@@ -37,11 +37,15 @@ public class Bounds implements Cloneable {
     }
     
     public Bounds(Coordinates topLeft, Coordinates bottomRight) {
+        this(topLeft, bottomRight, false);
+    }
+    
+    public Bounds(Coordinates topLeft, Coordinates bottomRight, boolean allowNegativeDimensions) {
         this.left = topLeft.getLongitude();
         this.right = bottomRight.getLongitude();
         this.top = topLeft.getLatitude();
         this.bottom = bottomRight.getLatitude();
-        if (left > right || top > bottom) {
+        if (!allowNegativeDimensions && (left > right || top > bottom)) {
             throw new IllegalArgumentException();
         }
     }

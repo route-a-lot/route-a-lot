@@ -5,7 +5,7 @@ import java.lang.Math;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.projection.Projection;
 import kit.ral.controller.State;
-import kit.ral.heightinfo.IHeightmap;
+import kit.ral.heightinfo.Heightmap;
 
 public class WeightCalculator {
 
@@ -63,7 +63,7 @@ public class WeightCalculator {
     protected int calcWeightWithHeight(int fromID, int toID) {
         Coordinates from = projection.getGeoCoordinates(state.getMapInfo().getNodePosition(fromID));
         Coordinates to = projection.getGeoCoordinates(state.getMapInfo().getNodePosition(toID));
-        IHeightmap heightmap = state.getLoadedHeightmap();
+        Heightmap heightmap = state.getLoadedHeightmap();
 
         int flatWeight = calcWeight(fromID, toID);
         float fromHeight = heightmap.getHeight(from) * 100;

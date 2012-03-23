@@ -9,7 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import kit.ral.common.Coordinates;
-import kit.ral.heightinfo.Heightmap;
+import kit.ral.heightinfo.ListHeightmap;
 import kit.ral.heightinfo.HeightTile;
 import kit.ral.heightinfo.RAMHeightTile;
 
@@ -24,14 +24,14 @@ public class SRTMLoaderProto {
      * @return
      **/
     /*zum testen*/
-    private Heightmap heightmap;
+    private ListHeightmap heightmap;
     private int width;
     private int height;
 
     public SRTMLoaderProto(){
         this.width = 1201;
         this.height = 1201;
-        this.heightmap = new Heightmap();
+        this.heightmap = new ListHeightmap();
     }
     
     //--------------laod-----------------------------------------------
@@ -113,7 +113,7 @@ public class SRTMLoaderProto {
     }//end test
     
     /*-----------TestHeighMap---------------------------------*/
-    public Heightmap getHeightMap(){
+    public ListHeightmap getHeightMap(){
         return heightmap;
     }
     

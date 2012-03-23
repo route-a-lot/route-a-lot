@@ -15,6 +15,7 @@ import static javax.media.opengl.GL.*;
 
 import com.sun.opengl.util.BufferUtil;
 
+import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Frustum;
 import kit.ral.common.description.OSMType;
@@ -22,7 +23,7 @@ import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
-import kit.ral.heightinfo.IHeightmap;
+import kit.ral.heightinfo.Heightmap;
 import kit.ral.map.MapElement;
 import kit.ral.map.POINode;
 
@@ -56,7 +57,7 @@ public class Tile3D extends Tile {
     
     // Temporary variables (only guaranteed to be valid when rendering):
     Projection projection;
-    IHeightmap heightmap;
+    Heightmap heightmap;
     
     
     /**
@@ -87,10 +88,11 @@ public class Tile3D extends Tile {
     public void prerender() {
         super.prerender();
         projection = ProjectionFactory.getCurrentProjection();
-        State.getInstance().getLoadedHeightmap().reduceSection(
+        Bounds geoBounds = new Bounds(
                 projection.getGeoCoordinates(bounds.getTopLeft()),
-                projection.getGeoCoordinates(bounds.getBottomRight()),
-                getHeights(), HEIGHT_BORDER);
+                projection.getGeoCoordinates(bounds.getBottomRight()), true);
+        State.getInstance().getLoadedHeightmap().reduceSection(
+                geoBounds, getHeights(), HEIGHT_BORDER);
         minHeight = heights[0][0];
         maxHeight = heights[0][0];
         for (int x = 0; x < heights.length; x++) {

@@ -1,63 +1,33 @@
 package kit.ral.heightinfo;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 
-public class Heightmap implements IHeightmap {
+public abstract class Heightmap {
 
-    private static final float UNDEFINED_HEIGHT = 0;
-    private List<HeightTile> map;
-
-    /* Konstruktor */
-    public Heightmap() {
-        this.map = new LinkedList<HeightTile>();
-    }
+    protected static final float UNDEFINED_HEIGHT = 0;
     
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof Heightmap)) {
-            return false;
-        }
-        Heightmap comparee = (Heightmap) other;
-        return map.equals(comparee.map);
-    }
+    public abstract float getHeight(Coordinates pos);
 
-    @Override
-    public float getHeight(Coordinates pos) {
-        int lat = (int) pos.getLatitude();
-        int lon = (int) pos.getLongitude();
-        Coordinates origin = new Coordinates((float) lat, (float) lon);
-        HeightTile tmpTile = new RAMHeightTile(0, 0, origin);
-        for (HeightTile tile : map) {
-            if (tile.equals(tmpTile)) {
-                return tile.getHeight(pos);
-            }// end if
-        }// end while
-        return UNDEFINED_HEIGHT;
-    }// end getHeight
+    public abstract void addHeightTile(HeightTile tile);
 
-    @Override
-    public void addHeightTile(HeightTile tile) {
-        if (tile != null) {
-            map.add(tile);
-        }
-    }
-
-    @Override
-    public void reduceSection(Coordinates topLeft, Coordinates bottomRight, float[][] heightdata, int heightBorder) {
-        Coordinates dimensions = bottomRight.clone().subtract(topLeft);
-        float stepSizeX = dimensions.getLongitude() / (heightdata.length - 2*heightBorder - 1);
-        float stepSizeY = dimensions.getLatitude() / (heightdata[0].length - 2*heightBorder - 1);
+    /**
+     * Interpolates the height field between the given coordinates and fits it into the target array.
+     * @param topLeft the north western corner of the section
+     * @param bottomRight the south western corner of the section
+     * @param heightdata the target array (Dimension: [lon][lat])
+     */
+    public void reduceSection(Bounds bounds, float[][] heightdata, int heightBorder) {
+        float stepSizeX = bounds.getWidth() / (heightdata.length - 2 * heightBorder - 1);
+        float stepSizeY = bounds.getHeight() / (heightdata[0].length - 2 * heightBorder - 1);
+        Coordinates pos = new Coordinates();
         for (int x = 0; x < heightdata.length; x++) {
             for (int y = 0; y < heightdata[x].length; y++) {
-                dimensions.setLatitude(topLeft.getLatitude() + (y - heightBorder) * stepSizeY);
-                dimensions.setLongitude(topLeft.getLongitude() + (x - heightBorder) * stepSizeX);
-                heightdata[x][y] = getHeight(dimensions);
+                pos.setLatitude(bounds.getTop() + (y - heightBorder) * stepSizeY);
+                pos.setLongitude(bounds.getLeft() + (x - heightBorder) * stepSizeX);
+                heightdata[x][y] = getHeight(pos);
             }
         }
     }
-}// end class
+}
+
