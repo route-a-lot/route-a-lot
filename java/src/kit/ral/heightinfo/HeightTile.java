@@ -55,21 +55,21 @@ public abstract class HeightTile {
 
     // MISCELLANEAOUS
     
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof HeightTile)) {
-            return false;
-        }
-        HeightTile comparee = (HeightTile) other;
-        return tileWidth == comparee.tileWidth
-                && tileHeight== comparee.tileHeight
-                && origin.equals(comparee.origin);
+    public boolean equals(Object other) {        
+        return (other == this) || ((other instanceof HeightTile)
+                && origin.equals(((HeightTile) other).origin));
     }
     
     @Override
     public String toString(){
         return "HeightTile: " + origin;
+    }
+    
+    public static long getSpecifier(float lat, float lon) {
+        return (long) Math.floor(lon + lat * 10000);
+    }
+    
+    public long getSpecifier() {
+        return getSpecifier(origin.getLatitude(), origin.getLongitude());
     }
 }

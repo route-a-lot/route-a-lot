@@ -5,7 +5,6 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
-
 import org.apache.log4j.Logger;
 
 import kit.ral.common.Bounds;
@@ -20,10 +19,10 @@ import kit.ral.map.info.ElementDB;
 public class FileQTGeoOperator extends QTGeographicalOperator {
 
     private static Logger logger = Logger.getLogger(FileQTGeoOperator.class);
-
+    
     private RandomWriteStream target = null;
     private ElementDB elementDB = null;
-
+    
     // BASIC OPERATIONS
 
     @Override

@@ -7,7 +7,7 @@ import java.util.List;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.RouteDescription;
-import kit.ral.heightinfo.ListHeightmap;
+import kit.ral.heightinfo.HashHeightmap;
 import kit.ral.heightinfo.Heightmap;
 import kit.ral.map.info.MapInfo;
 import kit.ral.map.rendering.Renderer;
@@ -20,7 +20,7 @@ public class State {
     private File loadedMapFile;
     private MapInfo loadedMapInfo;
     private RoutingGraph loadedGraph;
-    private Heightmap loadedHeightmap = new ListHeightmap();
+    private Heightmap loadedHeightmap = new HashHeightmap();
     private Renderer activeRenderer = new Renderer();
     private List<Selection> navigationNodes;
     private List<Integer> currentRoute;

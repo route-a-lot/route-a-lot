@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -170,6 +171,7 @@ public class FileQuadTree extends QuadTree {
                     element.registerUse();
                     elements.add(element);
                 }
+                FileQuadTreeCache.registerLeaf(this);
             } else {
                 // initialize children
                 children = new FileQuadTree[4];
@@ -360,4 +362,20 @@ public class FileQuadTree extends QuadTree {
         }
     }
 
+}
+
+final class FileQuadTreeCache {
+    
+    private static final int QUADTREE_LEAF_CACHE = 64;
+    
+    private static final LinkedList<FileQuadTree> loadedLeaves = new LinkedList<FileQuadTree>();
+   
+    private FileQuadTreeCache() {}
+    
+    static void registerLeaf(FileQuadTree tree) {
+        loadedLeaves.offer(tree);
+        if (loadedLeaves.size() > QUADTREE_LEAF_CACHE ) {
+            loadedLeaves.poll().unload();
+        }
+    };   
 }
