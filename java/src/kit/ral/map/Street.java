@@ -99,14 +99,19 @@ public class Street extends MapElement implements Comparable<Street> {
         if (detail == 0) {
             return this;
         }
-        // determine bounding box, discard too small streets
-        Bounds bounds = new Bounds(nodes[0].getPos(), 0);
+        
+        if (getStreetDrawingSize(wayInfo) / 2 < detail) {
+            return null;
+        }
+        
+        // determine bounding box, discard too small streets TODO
+        /*Bounds bounds = new Bounds(nodes[0].getPos(), 0);
         for (Node node : nodes) {
             bounds.extend(node.getLatitude(), node.getLongitude());
         }
         if (bounds.getWidth() + bounds.getHeight() < range) {
             return null;
-        }
+        }*/
         // return simplified street
         Street result = new Street(name, wayInfo);
         result.setNodes(simplifyNodes(nodes, range / 2));

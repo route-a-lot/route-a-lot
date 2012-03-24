@@ -66,7 +66,7 @@ public abstract class HeightTile {
     }
     
     public static long getSpecifier(float lat, float lon) {
-        return (long) Math.floor(lon + lat * 10000);
+        return (long) (lon * 1000 + lat * 1000000);
     }
     
     public long getSpecifier() {

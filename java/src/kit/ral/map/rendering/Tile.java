@@ -35,8 +35,13 @@ public class Tile {
 
     private static Logger logger = Logger.getLogger(Tile.class);
     private static final int POI_SIZE = 8;
+    private static final int MAX_STREET_DETAIL_LEVEL = 3;
+    private static final int MAX_MINOR_STREET_SHADOW_LEVEL = 4;
     private static final Color POI_BORDER_COLOR = new Color(196, 161, 80);
     private static final Color POI_COLOR = new Color(229, 189, 100);
+    private static final Color FOREST_COLOR = new Color(126, 159, 107);
+    private static final Color WATER_COLOR = new Color(135, 168, 198);
+    
 
     protected Bounds bounds;
     protected int detailLevel, tileSize;
@@ -48,6 +53,7 @@ public class Tile {
 
     /** Temporary variable (only guaranteed to be valid when rendering) */
     private Graphics2D graphics;
+    
 
     /**
      * Creates an new (empty) tile using a calculated resolution
@@ -79,9 +85,8 @@ public class Tile {
      */
     protected BufferedImage getImage() {
         if (image == null) {
-            image =
-                    new BufferedImage(tileSize / Projection.getZoomFactor(detailLevel), tileSize
-                            / Projection.getZoomFactor(detailLevel), BufferedImage.TYPE_INT_ARGB);
+            int dim = tileSize / Projection.getZoomFactor(detailLevel);
+            image = new BufferedImage(dim, dim, BufferedImage.TYPE_INT_ARGB);
         }
         return image;
     }
@@ -115,7 +120,6 @@ public class Tile {
 //         graphics.fillRect(0, 0, tileSize / Projection.getZoomFactor(detailLevel), tileSize /
 //         Projection.getZoomFactor(detailLevel));
 
-        // draw base layer elements
 
         for (MapElement element : map) {
             if ((element instanceof Area) && (!((Area) element).getWayInfo().isBuilding())) {
@@ -123,10 +127,15 @@ public class Tile {
             }
         }
   
+        if (detailLevel < MAX_MINOR_STREET_SHADOW_LEVEL) {
+            for (MapElement element : map) {
+                if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
+                    draw((Street) element, false);
+                }
+            }
+        }
         for (MapElement element : map) {
-            if (element instanceof Node && !(element instanceof POINode)) {
-                draw((Node) element);
-            } else if (element instanceof Street) {
+            if ((element instanceof Street) && (((Street) element).getDrawingSize() >= 20)) {
                 draw((Street) element, false);
             }
         }
@@ -148,14 +157,16 @@ public class Tile {
             }
         }
 
-        for (MapElement element : map) {
-            if (element instanceof Street) {
-                drawStreetArrows((Street) element);
+        if (detailLevel <= MAX_STREET_DETAIL_LEVEL) {
+            for (MapElement element : map) {
+                if (element instanceof Street) {
+                    drawStreetArrows((Street) element);
+                }
             }
-        }
-        for (MapElement element : map) {
-            if (element instanceof Street) {
-                drawStreetNames((Street) element);
+            for (MapElement element : map) {
+                if (element instanceof Street) {
+                    drawStreetNames((Street) element);
+                }
             }
         }
 
@@ -189,18 +200,6 @@ public class Tile {
         graphics.dispose();
     }
 
-
-    /**
-     * Draws a regular node on the tile.
-     * 
-     * @param poi
-     *            the node to be drawn
-     */
-    private void draw(Node node) {
-        graphics.setColor(Color.LIGHT_GRAY);
-        drawPoint(node.getPos(), 3);
-    }
-
     /**
      * Draws an area on the tile.
      * 
@@ -225,28 +224,27 @@ public class Tile {
 
         // TODO would be nice not to have that hardcoded here
 
+        
         if (wayInfo.isBuilding()) {
+            graphics.setStroke(new BasicStroke(1));
             graphics.setColor(Color.GRAY);
         } else if (wayInfo.isArea()) {
             switch (wayInfo.getType()) {
+                case OSMType.LANDUSE_FOREST:
                 case OSMType.NATURAL_WOOD:
-                    graphics.setColor(Color.GREEN);
+                    graphics.setColor(FOREST_COLOR);
                     break;
-                default:
-                    // System.out.println("Unknown area type in tile rendering: " + wayInfo.getType());
-                    return;
-                    // graphics.setColor(Color.WHITE);
+                case OSMType.NATURAL_WATER:
+                    graphics.setColor(WATER_COLOR);
+                    break;
+                default: return;
             }
-        } else {
-            return;
-            // graphics.setColor(Color.WHITE);
         }
-
         graphics.fillPolygon(xPoints, yPoints, nPoints);
-
-        graphics.setStroke(new BasicStroke(1));
-        graphics.setColor(Color.BLACK);
-        graphics.drawPolygon(xPoints, yPoints, nPoints);
+        if (wayInfo.isBuilding()) {
+            graphics.setColor(Color.DARK_GRAY);
+            graphics.drawPolygon(xPoints, yPoints, nPoints); 
+        } 
     }
 
     /**
@@ -534,7 +532,7 @@ public class Tile {
     }
 
     public static long getSpecifier(float lat, float lon, int tileSize, int detail) {
-        return (long) Math.floor((lon + lat * 10000) * 100000) + tileSize + detail;
+        return (long) (lon * 1000 + lat * 1000000) + tileSize + detail;
     }
 
     public long getSpecifier() {
