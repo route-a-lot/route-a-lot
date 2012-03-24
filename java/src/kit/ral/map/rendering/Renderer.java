@@ -40,7 +40,7 @@ public class Renderer {
     private static final Color BACKGROUND_COLOR = new Color(210, 230, 190);
     private static final boolean USE_GRADIENT = true;
     private static final RadialGradientPaint GRADIENT = new RadialGradientPaint(
-            0, 0, 2500, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
+            0, 0, 3000, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
     
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
     

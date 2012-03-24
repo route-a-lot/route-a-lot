@@ -26,7 +26,6 @@ public class Util {
         return StringUtil.formatNanoSeconds(System.nanoTime() - timers.pop());
     }
 
-
     public static int RGBToInt(float[] rgb) {
         byte[] argb = { (byte) 0xFF, (byte) (rgb[0] * 0xFF), (byte) (rgb[1] * 0xFF), (byte) (rgb[2] * 0xFF) };
         return (argb[0] << 24) + ((argb[1] & 0xFF) << 16) + ((argb[2] & 0xFF) << 8) + (argb[3] & 0xFF);

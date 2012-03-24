@@ -1,16 +1,23 @@
 package kit.ral.map.rendering;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.RenderingHints;
+import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
@@ -39,9 +46,24 @@ public class Tile {
     private static final int MAX_MINOR_STREET_SHADOW_LEVEL = 4;
     private static final Color POI_BORDER_COLOR = new Color(196, 161, 80);
     private static final Color POI_COLOR = new Color(229, 189, 100);
-    private static final Color FOREST_COLOR = new Color(126, 159, 107);
-    private static final Color WATER_COLOR = new Color(135, 168, 198);
-    
+    private static final boolean USE_PATTERNS = true;
+    private static final Paint FOREST_PATTERN, WATER_PATTERN;
+    static {
+        if (USE_PATTERNS) {
+            BufferedImage forestPattern, waterPattern;
+            try {
+                forestPattern = ImageIO.read(ClassLoader.getSystemResource("pattern_forest.png"));
+                waterPattern = ImageIO.read(ClassLoader.getSystemResource("pattern_water.png"));
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+            FOREST_PATTERN = new TexturePaint(forestPattern, new Rectangle2D.Float(0, 0, 62, 62));
+            WATER_PATTERN = new TexturePaint(waterPattern, new Rectangle2D.Float(0, 0, 64, 64));
+        } else {
+            FOREST_PATTERN = new Color(126, 159, 107);
+            WATER_PATTERN = new Color(135, 168, 198);
+        }     
+    }
 
     protected Bounds bounds;
     protected int detailLevel, tileSize;
@@ -121,12 +143,28 @@ public class Tile {
 //         Projection.getZoomFactor(detailLevel));
 
 
+        // draw areas, but no buildings or water
         for (MapElement element : map) {
-            if ((element instanceof Area) && (!((Area) element).getWayInfo().isBuilding())) {
+            if ((element instanceof Area) && (!((Area) element).getWayInfo().isBuilding())
+                && (((Area) element).getWayInfo().getType() != OSMType.NATURAL_WATER)) {
                 draw((Area) element);
             }
         }
-  
+
+        // set alpha for everything drawn previously
+        graphics.setComposite(AlphaComposite.DstIn);
+        graphics.setColor(new Color(0, 0, 0, 150));
+        graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+        graphics.setComposite(AlphaComposite.SrcOver);
+        
+        // draw water
+        for (MapElement element : map) {
+            if ((element instanceof Area)
+                    && (((Area) element).getWayInfo().getType() == OSMType.NATURAL_WATER)) {
+                draw((Area) element);
+            }
+        }
+        
         if (detailLevel < MAX_MINOR_STREET_SHADOW_LEVEL) {
             for (MapElement element : map) {
                 if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
@@ -232,10 +270,10 @@ public class Tile {
             switch (wayInfo.getType()) {
                 case OSMType.LANDUSE_FOREST:
                 case OSMType.NATURAL_WOOD:
-                    graphics.setColor(FOREST_COLOR);
+                    graphics.setPaint(FOREST_PATTERN);
                     break;
                 case OSMType.NATURAL_WATER:
-                    graphics.setColor(WATER_COLOR);
+                    graphics.setPaint(WATER_PATTERN);
                     break;
                 default: return;
             }

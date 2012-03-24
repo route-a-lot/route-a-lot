@@ -100,7 +100,7 @@ public class Street extends MapElement implements Comparable<Street> {
             return this;
         }
         
-        if (getStreetDrawingSize(wayInfo) / 2 < detail) {
+        if (getStreetDrawingSize(wayInfo) / 3 < detail) {
             return null;
         }
         
