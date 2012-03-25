@@ -208,7 +208,8 @@ public class Tile {
             }
         }
 
-        if (State.getInstance().getActiveRenderer().drawAreas) {
+        State.getInstance().getActiveRenderer();
+        if (Renderer.drawAreas) {
             Precalculator.drawAreas(bounds, detailLevel, graphics);
         }
         
@@ -261,8 +262,6 @@ public class Tile {
         WayInfo wayInfo = area.getWayInfo();
 
         // TODO would be nice not to have that hardcoded here
-
-        
         if (wayInfo.isBuilding()) {
             graphics.setStroke(new BasicStroke(1));
             graphics.setColor(Color.GRAY);

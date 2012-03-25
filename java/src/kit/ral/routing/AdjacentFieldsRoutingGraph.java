@@ -36,7 +36,6 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
     
     @Override
     public void buildGraph(int[] startID, int[] endID, int[] weight, int maxNodeID) {
-        //IntList lst = new IntList(startID); TODO: use IntList?
         logger.info("Creating routing graph with " + (maxNodeID + 1) + " ID's and "  + startID.length + " edges");
         // assert same non-null array size
         if (startID.length == 0) {
@@ -330,7 +329,7 @@ public class AdjacentFieldsRoutingGraph implements RoutingGraph {
         }
         for (int i = edgesPos[startID]; i < edgesPos[startID+1]; i++) { // TOOD binary search instead of linear possible?
             if (endID == edges[i]) {
-                synchronized (monitors[i]) {       // TODO bei vielen Threads mit [i] besser?
+                synchronized (monitors[i]) {
                     arcFlags[i] |= 1 << area;   // TODO synchronised array?
                     return;
                 }

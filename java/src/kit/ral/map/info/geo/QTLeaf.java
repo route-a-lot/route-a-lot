@@ -65,7 +65,7 @@ public class QTLeaf extends QuadTree {
                         this.bounds, Color.blue);
             }
             for (int i = 0; i < Util.countNonNullElements(elements); i++) {
-                if (!exact || elements[i].isInBounds(area)) {   //TODO test what's faster
+                if (!exact || elements[i].isInBounds(area)) {
                     elememts.add(elements[i]);
                 }
             }

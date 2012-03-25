@@ -150,7 +150,7 @@ public class ArrayElementDB implements ElementDB {
         for (int i = 0; i < len; i++) {
             POINode favorite = (POINode) MapElement.loadFromInput(input);
             nodes.add(favorite);
-            favorite.setID(i); // TODO: necessary?
+            favorite.setID(i); // TODO: favorite IDs necessary?
         }
     }
 

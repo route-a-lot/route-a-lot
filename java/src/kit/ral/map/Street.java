@@ -100,11 +100,11 @@ public class Street extends MapElement implements Comparable<Street> {
             return this;
         }
         
-        if (getStreetDrawingSize(wayInfo) / 3 < detail) {
+        if (getStreetDrawingSize(wayInfo) / 2 < detail) {
             return null;
         }
         
-        // determine bounding box, discard too small streets TODO
+        // determine bounding box, discard too small streets
         /*Bounds bounds = new Bounds(nodes[0].getPos(), 0);
         for (Node node : nodes) {
             bounds.extend(node.getLatitude(), node.getLongitude());

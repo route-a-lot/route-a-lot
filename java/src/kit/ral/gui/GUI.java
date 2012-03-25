@@ -65,8 +65,6 @@ import kit.ral.common.event.TextEvent;
 import kit.ral.common.event.TextNumberEvent;
 import kit.ral.common.util.MathUtil;
 import kit.ral.common.util.StringUtil;
-import kit.ral.controller.State;
-import kit.ral.map.rendering.Renderer;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -185,17 +183,14 @@ public class GUI extends JFrame {
             }           
         });
         
-        JButton buttonDrawAreas = new JButton("Draw Areas");
-        buttonDrawAreas.addActionListener(new ActionListener() {
-            
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                Renderer renderer = State.getInstance().getActiveRenderer();
-                renderer.drawAreas = !renderer.drawAreas;
-                renderer.resetCache();
-                map.repaint();
-            }
-        });
+        // JButton buttonDrawAreas = new JButton("Draw Areas");
+        // buttonDrawAreas.addActionListener(new ActionListener() {
+        //     public void actionPerformed(ActionEvent arg0) {
+        //         Renderer.drawAreas = !Renderer.drawAreas;
+        //         State.getInstance().getActiveRenderer().resetCache();
+        //         map.repaint();
+        //     }
+        // });
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
         buttonPanel.setPreferredSize(new Dimension(this.getWidth() + 60, 80));
@@ -214,8 +209,8 @@ public class GUI extends JFrame {
         mapPanel.add(buttonSwitchMapMode);
         mapPanel.add(Box.createHorizontalStrut(10));
         mapPanel.add(zoomSlider);
-//        mapPanel.add(Box.createHorizontalStrut(10));
-//        mapPanel.add(buttonDrawAreas);
+        // mapPanel.add(Box.createHorizontalStrut(10));
+        // mapPanel.add(buttonDrawAreas);
         buttonPanel.add(routePanel, BorderLayout.WEST);
         buttonPanel.add(mapPanel, BorderLayout.EAST);
 

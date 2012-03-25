@@ -27,7 +27,6 @@ public class StringOperatorTester {
 
     
     public Selection select(String address) {
-        // TODO Auto-generated method stub
             ArrayList<MapElement> tree = mapElements.getTree();
             Street [] tmp = new Street[1];
             Street[] elements = tree.toArray(tmp);

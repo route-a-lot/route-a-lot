@@ -492,8 +492,8 @@ public class OSMLoader {
                     // // System.out.println("coordinates " + curNodeCoordinates);
                     curNodeId = idMap.size();
                     if (curNodeId >= Integer.MAX_VALUE) {
-                        logger.error("Tried to import more than " + curNodeId + " nodes!");
-                        // TODO throw exception
+                        throw new IllegalStateException("Tried to import more than "
+                                + curNodeId + " nodes!");
                     }
                     long osmId = Long.parseLong(attributes.getValue("id"));
                     idMap.put(osmId, curNodeId);

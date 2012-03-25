@@ -74,29 +74,27 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
     }
     @Override
     public Collection<Integer> getRelevantNeighbors(int node, byte[] areas) {
-        // TODO Auto-generated method stub
         return null;
     }
     @Override
     public RoutingGraph getInverted() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public byte getAreaID(int node) {
-        // TODO Auto-generated method stub
         return 0;
     }
+    
     @Override
     public void setAreaID(int node, byte id) {
-        // TODO Auto-generated method stub
     }
+    
     @Override
     public int getIDCount() {
-        // TODO Auto-generated method stub
         return 0;
     }
+    
     @Override
     public Collection<Integer> getAllNeighbors(int node) {
         if (node >= edgesPos.length - 1 || node < 0) {
@@ -110,24 +108,23 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
     }
     @Override
     public void setArcFlag(int node, int node2, byte area) {
-        // TODO Auto-generated method stub
-
     }
+    
     @Override
     public String getMetisRepresentation() {
-        // TODO Auto-generated method stub
         return null;
     }
+    
     @Override
     public void readAreas(String areas) {
-        // TODO Auto-generated method stub
     }
+    
     @Override
-    public void buildGraphWithUndirectedEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
-        // TODO Auto-generated method stub
+    public void buildGraphWithUndirectedEdges(int[] uniqueEdgeStartIDs,
+            int[] uniqueEdgeEndIDs, int maxWayNodeId) {
     }
 
-
+    
     @Override
     public int[] getStartIDArray() {
         return edgesPos.clone();
@@ -148,21 +145,15 @@ public class AdjacentFieldsRoutingGraphSimple implements RoutingGraph {
 
     @Override
     public void setAllArcFlags() {
-        // TODO Auto-generated method stub
-        
     }
 
 
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        // TODO Auto-generated method stub
-        
     }
 
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        // TODO Auto-generated method stub
-        
     }
 }

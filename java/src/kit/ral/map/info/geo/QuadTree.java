@@ -148,11 +148,5 @@ public abstract class QuadTree {
         return bounds.equals(comparee.bounds);
     }
 
-    /**
-     * Go ask someone else. TODO what is this for?
-     * @param offset some offset
-     * @param last a neat list
-     * @return the print output
-     */
     public abstract String toString(int offset, List<Integer> last);
 }

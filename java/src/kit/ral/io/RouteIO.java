@@ -104,7 +104,6 @@ public class RouteIO {
 
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
-            // TODO test here
             document.createProcessingInstruction("version", "1.0");
             document.createProcessingInstruction("encoding", "UTF-8");
 

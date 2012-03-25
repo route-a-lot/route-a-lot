@@ -124,7 +124,7 @@ public class Area extends MapElement {
     
     // I/O OPERATIONS
     
-    @Override //TODO: attribs, load() and save() are identical to methods of same name in Street
+    @Override
     protected void load(DataInput input) throws IOException {
         String name = input.readUTF();
         this.name = EMPTY.equals(name) ? null : name;

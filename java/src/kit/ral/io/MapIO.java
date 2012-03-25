@@ -81,7 +81,6 @@ public class MapIO {
         
         // Write data to stream, abort on error
         output.writeBytes(FORMAT);
-        // TODO: maybe add date or name
         p.addProgress(0.05);
         
         logger.info("save graph...");

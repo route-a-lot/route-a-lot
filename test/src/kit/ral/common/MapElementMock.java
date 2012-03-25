@@ -33,32 +33,25 @@ public class MapElementMock extends MapElement {
 
     @Override
     public boolean isInBounds(Bounds bounds) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public MapElement getReduced(int detail, float range) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Selection getSelection() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     protected void load(DataInput input) throws IOException {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     protected void save(DataOutput output) throws IOException {
-        // TODO Auto-generated method stub
-        
     }
 
 }

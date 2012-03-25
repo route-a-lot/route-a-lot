@@ -206,6 +206,6 @@ public class StringTrie {
         }
     }
 
-
+    // TODO write equals
 
 }

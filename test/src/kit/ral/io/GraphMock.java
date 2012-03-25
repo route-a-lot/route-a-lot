@@ -108,32 +108,25 @@ public class GraphMock implements RoutingGraph {
 
     @Override
     public void buildGraphWithUndirectedEdges(int[] uniqueEdgeStartIDs, int[] uniqueEdgeEndIDs, int maxWayNodeId) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public int[] getStartIDArray() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public int[] getEdgesArray() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public int[] getWeightsArray() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setAllArcFlags() {
-        // TODO Auto-generated method stub
-        
     }
     
 }

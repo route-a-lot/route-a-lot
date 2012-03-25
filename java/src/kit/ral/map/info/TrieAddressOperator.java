@@ -67,7 +67,7 @@ public class TrieAddressOperator implements AddressOperator {
 
 
     public boolean equals(Object other) {
-        // TODO: dummy
-        return true;
+        return (other != null) && (other instanceof TrieAddressOperator) 
+                 && (((TrieAddressOperator) other).mapElements.equals(mapElements));
     }
 }
