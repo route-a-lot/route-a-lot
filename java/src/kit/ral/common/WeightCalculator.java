@@ -69,7 +69,7 @@ public class WeightCalculator {
         float fromHeight = heightmap.getHeight(from) * 100;
         float toHeight = heightmap.getHeight(to) * 100;
 
-        double heightDifference = Math.pow(Math.abs(fromHeight - toHeight), 2)
+        double heightDifference = Math.pow(fromHeight - toHeight, 2)
                                     * getHeightMalusFactor(state.getHeightMalus());
         if (toHeight < fromHeight) {
             heightDifference = 0;
@@ -86,7 +86,7 @@ public class WeightCalculator {
         if (heightMalus == 0) {
             return 0;
         }
-        return Math.pow(2, state.getHeightMalus());
+        return Math.pow(2, heightMalus / 2);
     }
 
 

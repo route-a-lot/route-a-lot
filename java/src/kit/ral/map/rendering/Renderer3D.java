@@ -18,6 +18,7 @@ import kit.ral.common.Coordinates;
 import kit.ral.common.Context;
 import kit.ral.common.Frustum;
 import kit.ral.common.Selection;
+import kit.ral.common.event.Listener;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
@@ -30,7 +31,7 @@ public class Renderer3D extends Renderer {
 
     private static final Logger logger = Logger.getLogger(Renderer3D.class);
     
-    private static final boolean DRAW_BOXES = false;
+    private static final boolean DRAW_BOXES = false, THREADED = true;
     private static final float
         HEIGHT_SCALE_FACTOR = 4, // factor multiplied on all height values
         VIEW_HEIGHT_ADAPTION = 0.2f, // [0..1] how fast camera height adapts to ground height
@@ -147,25 +148,36 @@ public class Renderer3D extends Renderer {
      * @return
      */
     private boolean renderTile(int x, int y, int tileSize) {
-        // CHECK WHETHER TILE IS IN CACHE
+        // check whether tile is in cache
         Coordinates topLeft = new Coordinates(y * tileSize, x * tileSize);
-        Tile3D tile = (Tile3D) cache.queryCache(topLeft, tileSize, context.getDetailLevel());
-        // IF NOT, CREATE (EMPTY) TILE
+       Tile3D tile = (Tile3D) cache.queryCache(topLeft, tileSize, context.getDetailLevel());
+        // if not, create (empty) tile
         if (tile == null) {
-            tile = new Tile3D(topLeft, tileSize, context.getDetailLevel());
-            // PRERENDER AND CACHE TILE IF THERE'S A CHANCE THAT TILE IS IN FRUSTUM
-            if (tile.isInFrustum(frustum)) {
-                tile.prerender();
-                Tile3D deletedTile = (Tile3D) cache.addToCache(tile);
+            final Tile3D newTile = tile = new Tile3D(topLeft, tileSize, context.getDetailLevel());
+            // prerender and cache tile if there's a chance that tile is in frustum
+            if (newTile.isInFrustum(frustum)) {
+                Tile3D deletedTile = (Tile3D) cache.addToCache(newTile);
                 if (deletedTile != null) {
                     deletedTile.freeResources(context.getGL());
                 }
+                if (THREADED) {
+                    executorService.submit(new Runnable() {
+                        public void run() {
+                            newTile.prerender();
+                            newTile.markAsFinished();
+                            Listener.fireEvent(Listener.TILE_RENDERED, null);
+                        }   
+                    });
+                } else {
+                    newTile.prerender();
+                    newTile.markAsFinished();
+                }         
             } else {
                 return false;
             }
         }
-        // RENDER TILE IF IT'S IN THE FRUSTUM
-        if (tile.isInFrustum(frustum)) {
+        // render tile if it's in frustum
+        if (tile.isFinished() && tile.isInFrustum(frustum)) {
             tile.render(context.getGL());  
             return true;
         }

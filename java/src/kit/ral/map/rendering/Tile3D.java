@@ -285,7 +285,7 @@ public class Tile3D extends Tile {
         int tex = tmp[0];
         gl.glBindTexture(GL_TEXTURE_2D, tex);
         int[] data = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        ByteBuffer dest = ByteBuffer.allocateDirect(data.length * BufferUtil.SIZEOF_INT);
+        ByteBuffer dest = ByteBuffer.allocate(data.length * BufferUtil.SIZEOF_INT); // TODO direct?
         dest.order(ByteOrder.nativeOrder());
         dest.asIntBuffer().put(data, 0, data.length);
         gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

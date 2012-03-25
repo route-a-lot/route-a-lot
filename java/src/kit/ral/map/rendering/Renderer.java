@@ -30,10 +30,7 @@ import kit.ral.map.info.MapInfo;
 
 public class Renderer {
     
-    private static final boolean
-        THREADED = true,
-        USE_GRADIENT = true;
-
+    private static final boolean THREADED = true, USE_GRADIENT = true;
     protected static final int BASE_TILE_SIZE = 256;
     private static final int ROUTE_IMAGE_BORDER_BUFFER = 200;
     private static final float ROUTE_WIDTH = 10;
@@ -51,7 +48,7 @@ public class Renderer {
         WAYNODE = createNavNodeImage(new Color(179, 186, 62), 12),
         ENDNODE = createNavNodeImage(new Color(151, 50, 55), 14);
     
-    private static final ExecutorService executorService = Executors.newCachedThreadPool();
+    protected static final ExecutorService executorService = Executors.newCachedThreadPool();
     
     public static boolean drawAreas = false;
     

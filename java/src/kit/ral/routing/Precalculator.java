@@ -25,6 +25,7 @@ import kit.ral.common.PairingHeap;
 import kit.ral.common.Progress;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.StringUtil;
+import kit.ral.common.util.Util;
 import kit.ral.controller.State;
 import kit.ral.map.Node;
 import kit.ral.map.info.MapInfo;
@@ -72,12 +73,11 @@ public class Precalculator {
         Collection<Future<?>> futures = new ArrayList<Future<?>>(graph.getIDCount());
         if (doAreas(p.createSubProgress(0.01))) {
             logger.info("Starting calculation of ArcFlags  with " + procNum + " threads...");
-            startTime = System.currentTimeMillis();
-            startPeriod = startTime;
+            Util.startTimer();
+            startPeriod = System.currentTimeMillis();
             for (int i = 0; i < graph.getIDCount(); i++) {
                 final int currentI = i;
                 futures.add(executorService.submit(new Runnable() {
-                    @Override
                     public void run() {
                         createFlags(currentI, p.createSubProgress(0.99f / graph.getIDCount()), mod);
                     }
@@ -93,8 +93,7 @@ public class Precalculator {
                     e.printStackTrace();
                 }
             }
-            logger.info("Succesfully created ArcFlags in "
-                    + StringUtil.formatSeconds((System.currentTimeMillis() - startTime) / 1000, true));
+            logger.info("Successfully created ArcFlags in " + Util.stopTimer());
         } else {
             graph.setAllArcFlags();
             logger.error("Failed to do precalculation");

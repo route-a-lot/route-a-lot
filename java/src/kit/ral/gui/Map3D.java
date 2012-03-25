@@ -47,7 +47,8 @@ public class Map3D extends Map implements GLEventListener {
     @Override
     public void init(GLAutoDrawable g) {
         GL gl = g.getGL();
-        gl.glClearColor(0, 0, 0, 1);
+        //gl.glClearColor(0.824f, 0.902f, 0.745f, 1);
+        gl.glClearColor(0,0,0,1);
         gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         gl.glEnable(GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
