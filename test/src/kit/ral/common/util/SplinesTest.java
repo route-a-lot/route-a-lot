@@ -51,7 +51,10 @@ public class SplinesTest {
                 System.out.println("deltaY"+i+": "+ deltaY[i]);
                 System.out.println("moments"+i+": "+ moments[i]);
         }
-
+        //Funktionswerte in den einzelnen Intevallen an der Stelle x-xi = 0.5
+        System.out.println(spline.calculateValue(0.5f,0));
+        System.out.println(spline.calculateValue(0.5f,1));
+        System.out.println(spline.calculateValue(0.5f,2));
 
     }
 
