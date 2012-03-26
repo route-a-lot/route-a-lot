@@ -75,7 +75,12 @@ public class Splines {
             }
         
         }
-        
+        /*----------------------------------------------------------------------*/
+        public double calculateValue(float x, int i){
+            return d[i] + c[i] * x + b[i] * Math.pow(x,2) + a[i] * Math.pow(x,3);
+    }
+
+        /*----------------------------------------------------------------------*/
         public void setX(float[] x){
             this.x = x;
         }
