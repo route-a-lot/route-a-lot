@@ -24,8 +24,8 @@ public class Map3D extends Map implements GLEventListener {
             ROTATION_SPEED = 0.5f, // factor for the rotation caused by a mouse movement
             VIEW_ANGLE = 85, // horizontal camera opening angle
             UNIT_DISTANCE = 1, // (unscaled) average camera - model distance
-            VIEW_MIN_DISTANCE = 0.01f, VIEW_MAX_DISTANCE = 2,
-            FOG_START_DISTANCE = 1.4f, FOG_END_DISTANCE = 2,
+            VIEW_MIN_DISTANCE = 0.01f, VIEW_MAX_DISTANCE = 3,
+            FOG_START_DISTANCE = 1.4f, FOG_END_DISTANCE = 3,
             MAX_VERTICAL_ROTATION = 50;
             
         

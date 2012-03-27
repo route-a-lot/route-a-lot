@@ -44,10 +44,12 @@ public class Tile {
     private static final int POI_SIZE = 8;
     private static final int MAX_STREET_DETAIL_LEVEL = 3;
     private static final int MAX_MINOR_STREET_SHADOW_LEVEL = 4;
+    private static final int AREA_ALPHA_VALUE = 140;
     private static final Color POI_BORDER_COLOR = new Color(196, 161, 80);
     private static final Color POI_COLOR = new Color(229, 189, 100);
     private static final boolean USE_PATTERNS = true;
     private static final Paint FOREST_PATTERN, WATER_PATTERN;
+    
     static {
         if (USE_PATTERNS) {
             BufferedImage forestPattern, waterPattern;
@@ -153,7 +155,7 @@ public class Tile {
 
         // set alpha for everything drawn previously
         graphics.setComposite(AlphaComposite.DstIn);
-        graphics.setColor(new Color(0, 0, 0, 150));
+        graphics.setColor(new Color(0, 0, 0, AREA_ALPHA_VALUE));
         graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
         graphics.setComposite(AlphaComposite.SrcOver);
         
@@ -564,7 +566,7 @@ public class Tile {
         return relevantNodes.toArray(new Node[relevantNodes.size()]);
     }
 
-    private Coordinates getLocalCoordinates(Coordinates coordinates) {
+    protected Coordinates getLocalCoordinates(Coordinates coordinates) {
         return Renderer.getLocalCoordinates(coordinates, bounds.getTop(), bounds.getLeft(), detailLevel);
     }
 

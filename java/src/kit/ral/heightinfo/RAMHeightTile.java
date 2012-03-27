@@ -16,9 +16,6 @@ public class RAMHeightTile extends HeightTile {
 
     @Override
     public int getHeight(int x, int y) {
-        if (!( (x >= 0) && (x < tileWidth) && (y >= 0) && (y < tileHeight) )) {
-            return 0;
-        }
         return data[MathUtil.clip(y, 0, tileWidth - 1)][MathUtil.clip(x, 0, tileHeight - 1)];
     }
 
