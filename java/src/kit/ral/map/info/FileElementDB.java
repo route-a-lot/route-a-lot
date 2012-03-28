@@ -30,8 +30,7 @@ public class FileElementDB extends ArrayElementDB {
     private int currentAction = -1;
     private static final int INITIALIZED_FOR_FILLING = 0;
     private static final int SAVING_NODES = 1;
-    private static final int SWAPPING_IDS = 2;
-    private static final int SAVING_ELEMENTS = 3;
+    private static final int SWAPPING_IDS = 3;
 
     private long basePointer = 0;
     private int nodesCount = 0;
@@ -47,6 +46,8 @@ public class FileElementDB extends ArrayElementDB {
     private DataOutputStream elementPositionStream;
     private File elementPositionFile;
     private RandomAccessFile nodePositionRAF;
+    private File elementsFile;
+    private RandomAccessFile elementsRAF;
     
     private RandomReadStream readStream;
     
@@ -65,6 +66,9 @@ public class FileElementDB extends ArrayElementDB {
             elementPositionFile = File.createTempFile("elementPositions", ".bin");
             elementPositionFile.deleteOnExit();
             elementPositionStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(elementPositionFile)));
+            elementsFile = File.createTempFile("elements", ".tmp");
+            elementsFile.deleteOnExit();
+            elementsRAF = new RandomAccessFile(elementsFile, "rw");
             currentAction = INITIALIZED_FOR_FILLING;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -107,9 +111,13 @@ public class FileElementDB extends ArrayElementDB {
                 nodesCountPointer = randAccessFile.getFilePointer();
                 randAccessFile.writeInt(0);
             }
-            nodePositionStream.writeLong(randAccessFile.getFilePointer() - basePointer);
-            MapElement.saveToOutput(randAccessFile, node, false);
-            nodesCount++;
+            if (currentAction == SAVING_NODES) {
+                nodePositionStream.writeLong(randAccessFile.getFilePointer() - basePointer);
+                MapElement.saveToOutput(randAccessFile, node, false);
+                nodesCount++;
+            } else {
+                logger.warn("Not in saving nodes state");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,27 +125,15 @@ public class FileElementDB extends ArrayElementDB {
     
     @Override
     public void addMapElement(MapElement element) {
-        if (currentAction == SWAPPING_IDS) {
-            currentAction = SAVING_ELEMENTS;
-            try {
-                randAccessFile.seek(elementsCountPointer);
-                randAccessFile.skipBytes(8);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (currentAction == SAVING_ELEMENTS) {
-            try {
-                elementPositionStream.writeLong(randAccessFile.getFilePointer() - basePointer);
-                MapElement.saveToOutput(randAccessFile, element, false);
-                elementsCount++;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            elementPositionStream.writeLong(elementsRAF.getFilePointer());
+            MapElement.saveToOutput(elementsRAF, element, false);
+            elementsCount++;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-    
+
     @Override
     public void addFavorite(POINode favorite) {
         throw new UnsupportedOperationException();
@@ -161,7 +157,11 @@ public class FileElementDB extends ArrayElementDB {
             readStream.setPosition(pointerToPointer);
             long pointer = readStream.readLong() + basePointer;
             readStream.setPosition(pointer);
-            return (Node) Node.loadFromInput(readStream);
+            Node node = (Node) Node.loadFromInput(readStream); 
+            if (nodeId != node.getID()) {
+                logger.error("Node hasn't the expected id.");
+            }
+            return node;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -178,7 +178,11 @@ public class FileElementDB extends ArrayElementDB {
             readStream.setPosition(pointerToPointer);
             long pointer = readStream.readLong() + basePointer;
             readStream.setPosition(pointer);
-            return MapElement.loadFromInput(readStream);
+            MapElement element = MapElement.loadFromInput(readStream);
+            if (elementId != element.getID()) {
+                logger.error("Element hasn't the expected id.");
+            }
+            return element;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -187,7 +191,8 @@ public class FileElementDB extends ArrayElementDB {
         
     @Override
     public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
-        throw new UnsupportedOperationException();
+//        throw new UnsupportedOperationException();
+        return new POIDescription("", 0, "");
     }
     
      
@@ -197,17 +202,18 @@ public class FileElementDB extends ArrayElementDB {
         try {
             elementPositionStream.close();
             nodePositionRAF.close();
-            long endPointer = randAccessFile.getFilePointer();
+            copyElementsToDBFile();
+            elementsRAF.close();
+            elementsFile.delete();
             createIndexTable();
             System.out.println("Node positions file length: " + nodePositionFile.length());
             nodePositionFile.delete();
+            elementPositionFile.delete();
 
-            randAccessFile.seek(endPointer);
-            randAccessFile.writeInt(0);         // 0 favorites
+//            randAccessFile.seek(randAccessFile.length());
+//            randAccessFile.writeInt(0);         // 0 favorites
             randAccessFile.seek(nodesCountPointer);
             randAccessFile.writeInt(nodesCount);
-            randAccessFile.seek(elementsCountPointer);
-            randAccessFile.writeInt(elementsCount);
             randAccessFile.close();
             
             RandomReadStream randomReadStream = new RandomReadStream(elementDBFile, new FileInputStream(elementDBFile));
@@ -217,26 +223,52 @@ public class FileElementDB extends ArrayElementDB {
         }
     }
     
+    private void copyElementsToDBFile() {
+        try {
+            elementsCountPointer = randAccessFile.getFilePointer();
+            randAccessFile.writeInt(elementsCount);
+            byte[] buf = new byte[2048];
+            elementsRAF.seek(0);
+            int len = elementsRAF.read(buf);
+            while (len > 0) {
+                randAccessFile.write(buf, 0, len);
+                len = elementsRAF.read(buf);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
+    
     private void createIndexTable() {
         try {
             DataInputStream nodePositionInput = new DataInputStream(new BufferedInputStream(new FileInputStream(nodePositionFile)));
             DataInputStream elementPositionInput = new DataInputStream(new BufferedInputStream(new FileInputStream(elementPositionFile)));
             indexTablePointer = randAccessFile.getFilePointer();
-            for (int i = 0; i < nodesCount; i++) {  // TODO could be done without random access, too
-                randAccessFile.writeLong(nodePositionInput.readLong());
-            }
-            for (int i = 0; i < elementsCount; i++) {  // TODO could be done without random access, too
-                randAccessFile.writeLong(elementPositionInput.readLong());
-            }
+            copyPositionsToFile(nodePositionInput, elementPositionInput);
             randAccessFile.seek(basePointer);
             randAccessFile.writeLong(indexTablePointer - basePointer);
             randAccessFile.writeLong(nodesCountPointer - basePointer);
             randAccessFile.writeLong(elementsCountPointer - basePointer);
             nodePositionInput.close();
+            elementPositionInput.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
         
+    }
+
+    private void copyPositionsToFile(DataInputStream nodePositionInput, DataInputStream elementPositionInput)
+            throws IOException {
+        byte[] buf = new byte[2048];
+        int len = nodePositionInput.read(buf);
+        while (len > 0) {
+            randAccessFile.write(buf, 0, len);
+            len = nodePositionInput.read(buf);
+        }
+        for (int i = 0; i < elementsCount; i++) {
+            randAccessFile.writeLong(elementPositionInput.readLong() + elementsCountPointer + 4);
+        }
     }
 
     @Override
@@ -246,8 +278,6 @@ public class FileElementDB extends ArrayElementDB {
             try {
                 nodePositionStream.close();
                 nodePositionRAF = new RandomAccessFile(nodePositionFile, "rw");
-                elementsCountPointer = randAccessFile.getFilePointer();
-                randAccessFile.writeInt(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -255,21 +285,25 @@ public class FileElementDB extends ArrayElementDB {
 
         if (currentAction == SWAPPING_IDS) {
             try {
+                long savedPointer = randAccessFile.getFilePointer();
                 nodePositionRAF.seek(id1 * 8); // 8 == length of long
                 long posNode1 = nodePositionRAF.readLong() + basePointer;
-                randAccessFile.seek(posNode1 + 1);
+                randAccessFile.seek(posNode1 + 2);
                 randAccessFile.writeInt(id2);
                 nodePositionRAF.seek(id2 * 8);
                 long posNode2 = nodePositionRAF.readLong() + basePointer;
                 nodePositionRAF.seek(id2 * 8);
-                nodePositionRAF.writeLong(posNode1);
+                nodePositionRAF.writeLong(posNode1 - basePointer);
                 nodePositionRAF.seek(id1 * 8);
-                nodePositionRAF.writeLong(posNode2);
-                randAccessFile.seek(posNode2 + 1);
+                nodePositionRAF.writeLong(posNode2 - basePointer);
+                randAccessFile.seek(posNode2 + 2);
                 randAccessFile.writeInt(id1);
+                randAccessFile.seek(savedPointer);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            logger.warn("Not in swapping id state");
         }
     }
 

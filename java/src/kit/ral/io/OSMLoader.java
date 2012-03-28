@@ -52,6 +52,8 @@ public class OSMLoader {
     private State state;
     private WeightCalculator weightCalculator;
     private Projection projection;
+    
+    boolean loadAreas = false;
 
     int nodeCount;
     private long[] osmIds;
@@ -514,8 +516,6 @@ public class OSMLoader {
                     curAddress = new Address();
                     curType = 0;
                 } else if (qName.equals("relation")) {
-                    // TODO should not be ignored because for Autobahn and Bundestrassen they should be
-                    // rendered
                     logger.debug("Ignored relation.");
                 } else if (qName.equals("osm")) {
                     String version = attributes.getValue("version");
