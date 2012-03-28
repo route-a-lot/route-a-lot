@@ -44,13 +44,13 @@ public class MapInfo {
     protected ElementDB elementDB = new ArrayElementDB();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
-    private GeographicalOperator geoOperator = new FileQTGeoOperator();
-    //private GeographicalOperator geoOperator = new QTGeographicalOperator();
+//    private FileQTGeoOperator geoOperator = new FileQTGeoOperator();
+    private GeographicalOperator geoOperator = new QTGeographicalOperator();
     
     private Bounds geoBounds = new Bounds();
 
-    private static boolean useDirectFile = false;
-    private File outputFile;
+    private static boolean useDirectFile = true;
+    private File elementsFile;
 
     Map<String, Collection<Street>> streetsForAddress = new HashMap<String, Collection<Street>>();
 
@@ -60,12 +60,12 @@ public class MapInfo {
     public MapInfo() {
         if (useDirectFile) {
             try {
-                outputFile = File.createTempFile("elements", null);
-                outputFile.deleteOnExit();         
+                elementsFile = File.createTempFile("elements", null);
+                elementsFile.deleteOnExit();         
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            elementDB = new FileElementDB(outputFile);
+            elementDB = new FileElementDB(elementsFile);
         }
     }
 
@@ -236,15 +236,15 @@ public class MapInfo {
             }
         } else {
             ((FileElementDB) elementDB).lastElementAdded();
-            elementDB = new ArrayElementDB();
-            try {
-                elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(
-                        new FileInputStream(outputFile))));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            elementDB = new ArrayElementDB();
+//            try {
+//                elementDB.loadFromInput(new DataInputStream(new BufferedInputStream(
+//                        new FileInputStream(elementsFile))));
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             streetsForAddress = null;
         }
         geoOperator.fill(elementDB);

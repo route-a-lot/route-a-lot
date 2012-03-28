@@ -88,6 +88,9 @@ public class ArrayElementDB implements ElementDB {
     
     @Override
     public Node getNode(int id) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Get node " + id);
+        }
         if (id < 0 || id >= nodes.size()) { 
             throw new IllegalArgumentException("Illegal Node ID: " + id);
         }
@@ -96,6 +99,9 @@ public class ArrayElementDB implements ElementDB {
     
     @Override
     public MapElement getMapElement(int id) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Get element " + id);
+        }
         if (id < 0 || id >= mapElements.size()) { 
             throw new IllegalArgumentException("Illegal Map Element ID: " + id);
         }

@@ -15,7 +15,7 @@ import kit.ral.map.info.ElementDB;
 public interface GeographicalOperator {
 
     public static final int NUM_LEVELS = 10;
-    public static final float LAYER_MULTIPLIER = 6;
+    public static final float LAYER_MULTIPLIER = 4;
     
     
     // GETTERS & SETTERS

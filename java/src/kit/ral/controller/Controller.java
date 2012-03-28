@@ -414,6 +414,8 @@ public class Controller {
                 MapIO.saveMap(state.getLoadedMapFile(), p.createSubProgress(0.0001));
             } catch (IOException e) {
                 logger.error("Could not save imported map to file.");
+                logger.debug(e.toString());
+                e.printStackTrace();
             }
             setViewToMapCenter();
             updateImportedMapsList();

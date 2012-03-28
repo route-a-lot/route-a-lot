@@ -17,20 +17,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import kit.ral.common.Bounds;
-import kit.ral.common.Coordinates;
 import kit.ral.common.Context;
 import kit.ral.common.Context2D;
+import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.event.Listener;
 import kit.ral.common.projection.Projection;
 import kit.ral.controller.State;
-import kit.ral.map.*;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
+import kit.ral.map.POINode;
+import kit.ral.map.Street;
 import kit.ral.map.info.MapInfo;
 
 public class Renderer {
     
-    private static final boolean THREADED = true, USE_GRADIENT = true;
+    private static final boolean THREADED = true;
     protected static final int BASE_TILE_SIZE = 256;
     private static final int ROUTE_IMAGE_BORDER_BUFFER = 200;
     private static final float ROUTE_WIDTH = 10;
@@ -41,7 +44,7 @@ public class Renderer {
         BACKGROUND_COLOR = new Color(210, 230, 190);
     
     private static final Paint BACKGROUND_GRADIENT = new RadialGradientPaint(
-        0, 0, 3000, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
+        0, 0, 7500, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
 
     private static final BufferedImage
         STARTNODE = createNavNodeImage(new Color(52, 151, 50), 14),
@@ -91,7 +94,7 @@ public class Renderer {
         
         // FILL BACKGROUND
         Graphics2D graphics = (Graphics2D) context.getGraphics(); 
-        graphics.setPaint((USE_GRADIENT) ? BACKGROUND_GRADIENT : BACKGROUND_COLOR);
+        graphics.setPaint(BACKGROUND_GRADIENT);
         graphics.fillRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());    
         
         // DRAW TILES
