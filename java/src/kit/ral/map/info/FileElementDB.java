@@ -27,7 +27,6 @@ import kit.ral.controller.Controller;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
-import kit.ral.routing.Precalculator;
 
 import org.apache.log4j.Logger;
 

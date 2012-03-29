@@ -107,12 +107,12 @@ public class Controller {
     }
     
     private Controller(String[] cmdArgs) {
+        state = State.getInstance();
+
         if (!interpretArguments(cmdArgs)) {
             return;
         }
         
-        state = State.getInstance();
-
         final Progress p = new Progress();
 
         if (gui) {
