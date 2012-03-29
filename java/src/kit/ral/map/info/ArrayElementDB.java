@@ -135,33 +135,38 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public void loadFromInput(DataInput input) throws IOException {
         logger.debug("load node array...");
-        int len = input.readInt();
-        Node[] nodesArray = new Node[len];
-        for (int i = 0; i < len; i++) {
+        input.skipBytes(24); // pointer to index table, nodesCount, elementsCount
+        int nodesCount = input.readInt();
+        Node[] nodesArray = new Node[nodesCount];
+        for (int i = 0; i < nodesCount; i++) {
             Node node = (Node) MapElement.loadFromInput(input);
             nodesArray[node.getID()] = node;
         }
         nodes = new ArrayList<Node>(Arrays.asList(nodesArray));
         logger.debug("load map element array...");
-        len = input.readInt();
-        mapElements = new ArrayList<MapElement>(len);
-        for (int i = 0; i < len; i++) {
+        int elementsCount = input.readInt();
+        mapElements = new ArrayList<MapElement>(elementsCount);
+        for (int i = 0; i < elementsCount; i++) {
             MapElement element = MapElement.loadFromInput(input);
             mapElements.add(element);
             element.setID(i);
         }
         logger.debug("load favorite array...");
-        len = input.readInt();
-        favorites = new ArrayList<POINode>(len);
-        for (int i = 0; i < len; i++) {
+        int favoritesCount = input.readInt();
+        favorites = new ArrayList<POINode>(favoritesCount);
+        for (int i = 0; i < favoritesCount; i++) {
             POINode favorite = (POINode) MapElement.loadFromInput(input);
             nodes.add(favorite);
             favorite.setID(i); // TODO: favorite IDs necessary?
         }
+        input.skipBytes(nodesCount * 8 + elementsCount * 8);
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {  
+        output.writeLong(0);
+        output.writeLong(0);
+        output.writeLong(0);
         logger.info("save node array...");
         output.writeInt(nodes.size());
         for (Node node: nodes) {
@@ -176,6 +181,9 @@ public class ArrayElementDB implements ElementDB {
         output.writeInt(favorites.size());
         for (POINode favorite: favorites) {
             MapElement.saveToOutput(output, favorite, false);
+        }
+        for (int i = 0; i < nodes.size() + mapElements.size(); i++) {
+            output.writeLong(0);
         }
     }
 

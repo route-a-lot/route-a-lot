@@ -290,6 +290,7 @@ public class FileElementDB extends ArrayElementDB {
             elementPositionStream.close();
             nodePositionRAF.close();
             copyElementsToDBFile();
+            randAccessFile.writeInt(0); // 0 favorites
             elementsRAF.close();
             elementsFile.delete();
             createIndexTable();
@@ -297,8 +298,6 @@ public class FileElementDB extends ArrayElementDB {
             nodePositionFile.delete();
             elementPositionFile.delete();
 
-            // randAccessFile.seek(randAccessFile.length());
-            // randAccessFile.writeInt(0); // 0 favorites
             randAccessFile.seek(nodesCountPointer);
             randAccessFile.writeInt(nodesCount);
             randAccessFile.close();
@@ -415,6 +414,10 @@ public class FileElementDB extends ArrayElementDB {
         input.skipBytes((int) (elementsCountPointer - nodesCountPointer - 4));  // nodes
         elementsCount = input.readInt();
         input.skipBytes((int) (indexTablePointer - elementsCountPointer - 4));  // elements
+        int favoritesCount = input.readInt();
+        for (int i = 0; i < favoritesCount; i++) {
+            MapElement.loadFromInput(input);
+        }
         input.skipBytes(nodesCount * 8 + elementsCount * 8);                    // index table
 
         readStream = randomReadStreamInput.openForReading();
