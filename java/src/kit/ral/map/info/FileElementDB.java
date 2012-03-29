@@ -13,7 +13,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import kit.ral.common.Coordinates;
 import kit.ral.common.RandomReadStream;
@@ -51,12 +54,25 @@ public class FileElementDB extends ArrayElementDB {
     
     private RandomReadStream readStream;
     
+    private static int NODE_CACHE_SIZE = 10000;
+    private Map<Integer, Integer> nodeCache = new HashMap<Integer, Integer>(NODE_CACHE_SIZE);
+    private boolean[] nodeChances = new boolean[NODE_CACHE_SIZE];
+    private Node[] nodes = new Node[NODE_CACHE_SIZE];
+    private int curNodePos = 0;
+    
+    private static int ELEMENT_CACHE_SIZE = 256;
+    private Map<Integer, Integer> elementCache = new HashMap<Integer, Integer>(ELEMENT_CACHE_SIZE);
+    private boolean[] elementChances = new boolean[ELEMENT_CACHE_SIZE];
+    private MapElement[] elements = new MapElement[ELEMENT_CACHE_SIZE];
+    private int curElementPos = 0;
+    
     private static Logger logger = Logger.getLogger(FileElementDB.class);
 
     
     // CONSTRUCTOR
     
     public FileElementDB(File outputFile) {
+        this();
         try {
             this.elementDBFile = outputFile;
             randAccessFile = new RandomAccessFile(outputFile, "rw");
@@ -78,6 +94,7 @@ public class FileElementDB extends ArrayElementDB {
     }
     
     public FileElementDB() {
+        Arrays.fill(nodeChances, true);
     }
     
     // GETTERS
@@ -150,45 +167,99 @@ public class FileElementDB extends ArrayElementDB {
     
     @Override
     public Node getNode(int nodeId) {
-//        System.out.println("get node: " + nodeId);
-        if (nodeId >= nodesCount) {
-            throw new IllegalArgumentException("Node id is too big");
-        }
-        try {
-            long pointerToPointer = indexTablePointer + nodeId * 8;
-            readStream.setPosition(pointerToPointer);
-            long pointer = readStream.readLong() + basePointer;
-            readStream.setPosition(pointer);
-            Node node = (Node) Node.loadFromInput(readStream); 
-            if (nodeId != node.getID()) {
-                logger.error("Node hasn't the expected id.");
+        if (nodeCache.containsKey(nodeId)) {
+            int pos = nodeCache.get(nodeId);
+            nodeChances[pos] = true;
+            return nodes[pos];
+        } else {
+            if (nodeId >= nodesCount) {
+                throw new IllegalArgumentException("Node id is too high");
             }
-            return node;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            try {
+                long pointerToPointer = indexTablePointer + nodeId * 8;
+                readStream.setPosition(pointerToPointer);
+                long pointer = readStream.readLong() + basePointer;
+                readStream.setPosition(pointer);
+                Node node = (Node) Node.loadFromInput(readStream); 
+                if (nodeId != node.getID()) {
+                    logger.error("Node hasn't the expected id.");
+                }
+                if (nodes[curNodePos] != null) {
+                    while (nodeChances[curNodePos]) {
+                        nodeChances[curNodePos] = false;
+                        if (nodes[curNodePos].getUsesCount() == 0) {
+                            break;
+                        }
+                        nextNodePos();
+                    }
+                    nodeCache.remove(nodes[curNodePos].getID());
+                }
+                nodes[curNodePos] = node;
+                nodeChances[curNodePos] = true;
+                nodeCache.put(nodeId, curNodePos);
+                nextNodePos();
+                System.out.println("Node loaded from disk: " + nodeId);
+                return node;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+    
+    private void nextNodePos() {
+        curNodePos++;
+        if (curNodePos == NODE_CACHE_SIZE) {
+            curNodePos = 0;
+        }
+    }
+    
+    private void nextElementPos() {
+        curElementPos++;
+        if (curElementPos == ELEMENT_CACHE_SIZE) {
+            curElementPos = 0;
         }
     }
     
     @Override
     public MapElement getMapElement(int elementId) {
-//        System.out.println("get element: " + elementId);
-        if (elementId >= elementsCount) {
-            throw new IllegalArgumentException("Element id is too big");
-        }
-        try {
-            long pointerToPointer = indexTablePointer + nodesCount * 8 + elementId * 8;
-            readStream.setPosition(pointerToPointer);
-            long pointer = readStream.readLong() + basePointer;
-            readStream.setPosition(pointer);
-            MapElement element = MapElement.loadFromInput(readStream);
-            if (elementId != element.getID()) {
-                logger.error("Element hasn't the expected id.");
+        if (elementCache.containsKey(elementId)) {
+            int pos = elementCache.get(elementId);
+            elementChances[pos] = true;
+            return elements[pos];
+        } else {
+            if (elementId >= elementsCount) {
+                throw new IllegalArgumentException("Element id is too big");
             }
-            return element;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            try {
+                long pointerToPointer = indexTablePointer + nodesCount * 8 + elementId * 8;
+                readStream.setPosition(pointerToPointer);
+                long pointer = readStream.readLong() + basePointer;
+                readStream.setPosition(pointer);
+                MapElement element = MapElement.loadFromInput(readStream);
+                if (elementId != element.getID()) {
+                    logger.error("Element hasn't the expected id.");
+                }
+                if (elements[curElementPos] != null) {
+                    while (elementChances[curElementPos]) {
+                        elementChances[curElementPos] = false;
+                        if (elements[curElementPos].getUsesCount() == 0) {
+                            break;
+                        }
+                        nextNodePos();
+                    }
+                    elementCache.remove(elements[curElementPos].getID());
+                }
+                elements[curElementPos] = element;
+                elementChances[curElementPos] = true;
+                elementCache.put(elementId, curElementPos);
+                nextElementPos();
+                System.out.println("Element loaded from disk: " + elementId);
+                return element;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
         
