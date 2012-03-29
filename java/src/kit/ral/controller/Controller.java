@@ -157,7 +157,6 @@ public class Controller {
                 logger.info("State loaded: " + Util.stopTimer());
             }
         } else {
-            state.setHighwayMalus(1);
             if (graphOnly) {
                 state.setMapInfo(new kit.ral.io.MapInfoMock());
             }
@@ -167,6 +166,7 @@ public class Controller {
     }
     
     private boolean interpretArguments(String[] args) {
+        boolean error = false;
         for (int i = 0; i < args.length; i++) {
             if (args[i].startsWith("--")) {
                 if (args[i].equals("--nogui")) {
@@ -181,16 +181,48 @@ public class Controller {
                     graphOnly = false;
                 } else if (args[i].equals("--graphOnly")) {
                     graphOnly = true;
+                } else if (args[i].equals("--height")) {
+                    i++;
+                    if (i == args.length) {
+                        error = true;
+                        break;
+                    }
+                    try {
+                        state.setHeightMalus(Integer.parseInt(args[i]));
+                    } catch (NumberFormatException e) {
+                        System.out.println(e.getMessage());
+                        error = true;
+                    }
+                } else if (args[i].equals("--highway")) {
+                    i++;
+                    if (i == args.length) {
+                        error = true;
+                        break;
+                    }
+                    try {
+                        state.setHighwayMalus(Integer.parseInt(args[i]));
+                    } catch (NumberFormatException e) {
+                        System.out.println(e.getMessage());
+                        return false;
+                    }
                 }
             } else {
                 file = new File(args[i]);
                 if (!file.exists()) {
                     System.out.println("Given file does not exist.");
-                    return false;
+                    error = true;
                 }
             }
         }
-        return true;
+        if (error) {
+            System.out.println("Possible paramters:");
+            System.out.println("--gui        or     --nogui");
+            System.out.println("--mod        or     --nomod");
+            System.out.println("--graphOnly  or     --nographOnly");
+            System.out.println("--height <heightMalus>");
+            System.out.println("--highway <highwayMalus>");
+        }
+        return !error;
     }
     
     private void addListeners() {
