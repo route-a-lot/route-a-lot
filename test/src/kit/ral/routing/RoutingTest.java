@@ -46,7 +46,6 @@ public class RoutingTest {
         configureLogger();
         loader = new OSMLoader(state, new WeightCalculator(state));
         loader.importMap(new File("./test/resources/karlsruhe_big_current.osm"), new Progress());
-        Precalculator.mod = false;
         Precalculator.precalculate(new Progress());
         try {
             RoutingGraph graph = state.getLoadedGraph();

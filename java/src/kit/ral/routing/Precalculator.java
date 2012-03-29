@@ -3,10 +3,14 @@ package kit.ral.routing;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -49,21 +53,9 @@ public class Precalculator {
     private static long startTime, startPeriod, currentTime;
 
     private static final int AREAS = 64;
-    @SuppressWarnings("unused")
     private static String GRAPH_FILE = "sral/graph";
     
-    public static boolean mod = true;
-    
     public static void precalculate(final Progress p) {
-        if (mod) {
-            GRAPH_FILE = "sral/graph3";
-        } else {
-            GRAPH_FILE = "sral/graph1";
-        }
-        precalculate(p, mod);
-    }
-    
-    public static void precalculate(final Progress p, final boolean mod) {
         finishedIds = 0;
         graph = State.getInstance().getLoadedGraph();
         inverted = graph.getInverted();
@@ -79,7 +71,7 @@ public class Precalculator {
                 final int currentI = i;
                 futures.add(executorService.submit(new Runnable() {
                     public void run() {
-                        createFlags(currentI, p.createSubProgress(0.99f / graph.getIDCount()), mod);
+                        createFlags(currentI, p.createSubProgress(0.99f / graph.getIDCount()));
                     }
                 }));       
             }
@@ -98,23 +90,24 @@ public class Precalculator {
             graph.setAllArcFlags();
             logger.error("Failed to do precalculation");
         }
-        saveGraph();
+//        saveGraph();
         p.finish();
         logger.info("Precalculation finished. " + new Date());
         return;
     }
     
+    @SuppressWarnings("unused")
     private static void saveGraph() {
-//        File file = new File(GRAPH_FILE);
-//        try {
-//            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
-//            graph.saveToOutput(outputStream);
-//            outputStream.close();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        File file = new File(GRAPH_FILE);
+        try {
+            DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
+            graph.saveToOutput(outputStream);
+            outputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     private static synchronized void incrementFinishedIds() {
@@ -132,24 +125,22 @@ public class Precalculator {
         }
     }
     
-    private static void createFlags(int node, Progress progress, boolean mod) {
+    private static void createFlags(int node, Progress progress) {
         logger.trace("Calculating ArcFlags for ID " + String.valueOf(node));
         byte area = graph.getAreaID(node);
         Collection<Integer> neighbors = inverted.getAllNeighbors(node);
-        if (mod) {
-            boolean hasNeighborInOtherArea = false;
-            for (Integer neighbor : neighbors) {
-                if (graph.getAreaID(neighbor) == area) {
-                    graph.setArcFlag(neighbor, node, area);
-                } else {
-                    hasNeighborInOtherArea = true;
-                }
+        boolean hasNeighborInOtherArea = false;
+        for (Integer neighbor : neighbors) {
+            if (graph.getAreaID(neighbor) == area) {
+                graph.setArcFlag(neighbor, node, area);
+            } else {
+                hasNeighborInOtherArea = true;
             }
-            if (!hasNeighborInOtherArea) {
-                progress.finish();
-                incrementFinishedIds();
-                return;
-            }
+        }
+        if (!hasNeighborInOtherArea) {
+            progress.finish();
+            incrementFinishedIds();
+            return;
         }
         // On further comments, see Router.fromAToB()
         boolean[] seen = new boolean[graph.getIDCount()];
@@ -172,7 +163,7 @@ public class Precalculator {
                 graph.setArcFlag(currentNode, currentPath.getRoute().getNode(), area);
             }
             for (Integer from: inverted.getAllNeighbors(currentNode)) {
-                if (mod && area == graph.getAreaID(currentNode) && area == graph.getAreaID(from)) {
+                if (area == graph.getAreaID(currentNode) && area == graph.getAreaID(from)) {
                     continue;
                 }
                 weight = graph.getWeight(from, currentNode);

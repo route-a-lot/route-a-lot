@@ -78,8 +78,9 @@ public class Controller {
     // command arguments
     private File file;
     private boolean gui = true;
-    private boolean mod = true;
     private boolean graphOnly = false;
+    
+    public static boolean mod = true;
     
     public static void main(String[] args) {
         // ENVIRONMENT SETUP
@@ -149,12 +150,14 @@ public class Controller {
                     } catch (ExecutionException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    logger.error("Default map does not exist.");
                 }
             } else {
                 logger.info("State loaded: " + Util.stopTimer());
             }
         } else {
-            Precalculator.mod = mod;
+            state.setHighwayMalus(1);
             if (graphOnly) {
                 state.setMapInfo(new kit.ral.io.MapInfoMock());
             }
