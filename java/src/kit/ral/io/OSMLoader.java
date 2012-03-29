@@ -53,10 +53,12 @@ public class OSMLoader {
     private WeightCalculator weightCalculator;
     private Projection projection;
     
-    boolean loadAreas = false;
-
     int nodeCount;
     private long[] osmIds;
+    
+    boolean importOnlyNodesAndRoutable = true;
+    // key is an OSM-id and value is the new id
+    Map<Long, Integer> idMap = new HashMap<Long, Integer>();
 
     public OSMLoader(State state, WeightCalculator weightCalculator) {
         this.state = state;
@@ -141,7 +143,7 @@ public class OSMLoader {
             }
         }
         progress.addProgress(0.001);
-
+        
         Coordinates topLeft = new Coordinates(maxLat, minLon);
         Coordinates bottomRight = new Coordinates(minLat, maxLon);
         projection = ProjectionFactory.getNewProjection(topLeft, bottomRight);
@@ -155,8 +157,6 @@ public class OSMLoader {
         osmIds = new long[nodeCount];
 
         DefaultHandler handler = new DefaultHandler() {
-            // key is an OSM-id and value is the new id
-            Map<Long, Integer> idMap = new HashMap<Long, Integer>();
             
             boolean inWay, inPolyline, inNode;
             Integer curPolylineNode;
@@ -485,6 +485,10 @@ public class OSMLoader {
                 }
 
                 if (qName.equals("node")) {
+                    if (!importOnlyNodesAndRoutable) {
+                        inNode = true;
+                        return;
+                    }
                     Coordinates geoCoordinates = new Coordinates();
 
                     geoCoordinates.setLatitude(Float.parseFloat(attributes.getValue("lat")));
@@ -537,7 +541,7 @@ public class OSMLoader {
                         curAddress.setStreet(curWayName);
                     }
 
-                    if (curWayInfo.isRoutable()) {
+                    if (curWayInfo.isRoutable() && importOnlyNodesAndRoutable) {
 
                         int tempSwap = -1;
 
@@ -592,7 +596,8 @@ public class OSMLoader {
                         
                     }
                     
-                    if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
+                    if (!importOnlyNodesAndRoutable
+                            && (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding())) {
                         mapInfo.addWay(curWayIds, curWayName, curWayInfo);
                     }
 
@@ -602,10 +607,13 @@ public class OSMLoader {
                     curWayOSMIds = null;
                     curWayName = "";
                 } else if (inNode && qName.equalsIgnoreCase("node")) {
-                    mapInfo.addNode(curNodeCoordinates, curNodeId, curAddress);
-                    if (curType != 0) {
-                        curNodePOIDescription.setCategory(curType);
-                        mapInfo.addPOI(curNodeCoordinates, curNodePOIDescription, curAddress);
+                    if (importOnlyNodesAndRoutable) {
+                        mapInfo.addNode(curNodeCoordinates, curNodeId, curAddress);
+                    } else {
+                        if (curType != 0) {
+                            curNodePOIDescription.setCategory(curType);
+                            mapInfo.addPOI(curNodeCoordinates, curNodePOIDescription, curAddress);
+                        }
                     }
 
                     inNode = false;
@@ -613,11 +621,36 @@ public class OSMLoader {
             }
 
         };
+        
+        importOnlyNodesAndRoutable = true;
 
         try {
             inputStream.close();
             inputStream = new BufferedInputStream(new ProgressInputStream(
-                    new FileInputStream(file), progress.createSubProgress(0.899), file.length()));
+                    new FileInputStream(file), progress.createSubProgress(0.400), file.length()));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            parser.parse(inputStream, handler);
+        } catch (SAXParseException e) {
+            // not XML 1.0
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        importOnlyNodesAndRoutable = false;
+        
+        try {
+            inputStream.close();
+            inputStream = new BufferedInputStream(new ProgressInputStream(
+                    new FileInputStream(file), progress.createSubProgress(0.399), file.length()));
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         } catch (IOException e) {

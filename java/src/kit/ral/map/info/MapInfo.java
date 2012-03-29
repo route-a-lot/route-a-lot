@@ -44,8 +44,8 @@ public class MapInfo {
     protected ElementDB elementDB = new ArrayElementDB();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
-//    private FileQTGeoOperator geoOperator = new FileQTGeoOperator();
-    private GeographicalOperator geoOperator = new QTGeographicalOperator();
+    private FileQTGeoOperator geoOperator = new FileQTGeoOperator();
+//    private GeographicalOperator geoOperator = new QTGeographicalOperator();
     
     private Bounds geoBounds = new Bounds();
 

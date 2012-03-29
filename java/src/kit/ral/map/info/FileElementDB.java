@@ -126,6 +126,7 @@ public class FileElementDB extends ArrayElementDB {
     @Override
     public void addMapElement(MapElement element) {
         try {
+            element.setID(elementsCount);
             elementPositionStream.writeLong(elementsRAF.getFilePointer());
             MapElement.saveToOutput(elementsRAF, element, false);
             elementsCount++;
@@ -149,6 +150,7 @@ public class FileElementDB extends ArrayElementDB {
     
     @Override
     public Node getNode(int nodeId) {
+//        System.out.println("get node: " + nodeId);
         if (nodeId >= nodesCount) {
             throw new IllegalArgumentException("Node id is too big");
         }
@@ -170,6 +172,7 @@ public class FileElementDB extends ArrayElementDB {
     
     @Override
     public MapElement getMapElement(int elementId) {
+//        System.out.println("get element: " + elementId);
         if (elementId >= elementsCount) {
             throw new IllegalArgumentException("Element id is too big");
         }
@@ -192,7 +195,7 @@ public class FileElementDB extends ArrayElementDB {
     @Override
     public POIDescription getFavoriteDescription(Coordinates pos, int detailLevel, float radius) {
 //        throw new UnsupportedOperationException();
-        return new POIDescription("", 0, "");
+        return null;
     }
     
      
@@ -325,7 +328,7 @@ public class FileElementDB extends ArrayElementDB {
         input.skipBytes((int) (elementsCountPointer - nodesCountPointer - 4));  // nodes
         elementsCount = input.readInt();
         input.skipBytes((int) (indexTablePointer - elementsCountPointer - 4));  // elements
-        input.skipBytes(nodesCount * 8);                                        // index table
+        input.skipBytes(nodesCount * 8 + elementsCount * 8);                    // index table
         
         readStream = ((RandomReadStream) input).openForReading();
     }
