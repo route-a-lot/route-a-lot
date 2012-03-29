@@ -199,7 +199,7 @@ public class Precalculator {
         }
         file.deleteOnExit();
         //final String FILE = "graph.txt";
-        String BINARY = "lib/gpmetis";
+        String BINARY = "gpmetis";
         logger.info("Creating areas with Metis...");
         // Write graph file
         try {

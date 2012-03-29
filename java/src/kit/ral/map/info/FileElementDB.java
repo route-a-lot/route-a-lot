@@ -60,6 +60,8 @@ public class FileElementDB extends ArrayElementDB {
     private Node[] nodes = new Node[NODE_CACHE_SIZE];
     private int curNodePos = 0;
     
+//    private static long loadedCounter = 0;
+    
     private static int ELEMENT_CACHE_SIZE = 256;
     private Map<Integer, Integer> elementCache = new HashMap<Integer, Integer>(ELEMENT_CACHE_SIZE);
     private boolean[] elementChances = new boolean[ELEMENT_CACHE_SIZE];
@@ -185,12 +187,13 @@ public class FileElementDB extends ArrayElementDB {
                     logger.error("Node hasn't the expected id.");
                 }
                 if (nodes[curNodePos] != null) {
+                    int steps = 0;
                     while (nodeChances[curNodePos]) {
-                        nodeChances[curNodePos] = false;
-                        if (nodes[curNodePos].getUsesCount() == 0) {
-                            break;
+                        if (steps >= NODE_CACHE_SIZE || nodes[curNodePos].getUsesCount() == 0) {
+                            nodeChances[curNodePos] = false;
                         }
                         nextNodePos();
+                        steps++;
                     }
                     nodeCache.remove(nodes[curNodePos].getID());
                 }
@@ -198,7 +201,8 @@ public class FileElementDB extends ArrayElementDB {
                 nodeChances[curNodePos] = true;
                 nodeCache.put(nodeId, curNodePos);
                 nextNodePos();
-                System.out.println("Node loaded from disk: " + nodeId);
+//                loadedCounter++;
+//                System.out.println("Node loaded from disk: " + loadedCounter);
                 return node;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -243,9 +247,6 @@ public class FileElementDB extends ArrayElementDB {
                 if (elements[curElementPos] != null) {
                     while (elementChances[curElementPos]) {
                         elementChances[curElementPos] = false;
-                        if (elements[curElementPos].getUsesCount() == 0) {
-                            break;
-                        }
                         nextNodePos();
                     }
                     elementCache.remove(elements[curElementPos].getID());

@@ -2,13 +2,9 @@ package kit.ral.map.info;
 
 import static kit.ral.common.util.Util.getSharedElementAtEnd;
 
-import java.io.BufferedInputStream;
 import java.io.DataInput;
-import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +27,6 @@ import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
 import kit.ral.map.info.geo.FileQTGeoOperator;
-import kit.ral.map.info.geo.GeographicalOperator;
 import kit.ral.map.info.geo.QTGeographicalOperator;
 
 import org.apache.log4j.Logger;

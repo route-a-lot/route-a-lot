@@ -128,7 +128,6 @@ public class Controller {
             // LOAD STATE
             Util.startTimer();
             loadState(p.createSubProgress(0.94));
-            logger.info("State loaded: " + Util.stopTimer());
                  
             // IMPORT DEFAULT OSM MAP
             if (state.getLoadedMapFile() == null) {
@@ -151,6 +150,8 @@ public class Controller {
                         e.printStackTrace();
                     }
                 }
+            } else {
+                logger.info("State loaded: " + Util.stopTimer());
             }
         } else {
             Precalculator.mod = mod;
