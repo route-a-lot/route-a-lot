@@ -18,7 +18,7 @@ import kit.ral.map.MapElement;
  */
 public class FileQuadTreeDivider {
 
-    private static final int MAX_LEAF_SIZE = 64000;//16384;
+    private static final int MAX_LEAF_SIZE = 256000;//16384;
     
     private DividerTree root = null;
     private boolean refillNeeded = false;

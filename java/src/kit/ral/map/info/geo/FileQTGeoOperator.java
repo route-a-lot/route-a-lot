@@ -13,6 +13,7 @@ import kit.ral.common.RandomWriteStream;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.Util;
 import kit.ral.map.MapElement;
+import kit.ral.map.Node;
 import kit.ral.map.info.ElementDB;
 
 
@@ -37,14 +38,16 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
 
         // << DIVIDE SECTION >>
         // get a subtree division (one is enough as all trees are similar)
+        Util.startTimer();
         FileQuadTreeDivider divider = new FileQuadTreeDivider(bounds);
         // divider cannot store nodes, so we have to add them several times
         do {
-            Iterator<MapElement> elements = elementDB.getAllMapElements();
+            Iterator<Node> elements = elementDB.getAllNodes();
             while (elements.hasNext()) {
                 divider.add(elements.next());
             }
         } while (divider.startRefill());
+        logger.info("QT Divider building took " + Util.stopTimer());
         
         // << FILL AND SAVE SECTION >>
         try {
@@ -58,51 +61,65 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
             for (int detail = 0; detail < NUM_LEVELS; detail++) {
                 target.writeLong(0);
             }
+
             
             // build tree for each detail level
+            Util.startTimer();
             FileQuadTree[] trunks = new FileQuadTree[NUM_LEVELS];
+            FileQuadTree[][] branches = new FileQuadTree[NUM_LEVELS][];
+            float[] ranges = new float[NUM_LEVELS];
             for (int detail = 0; detail < NUM_LEVELS; detail++) {
-                Util.startTimer();
-                float range = Projection.getZoomFactor(detail) * LAYER_MULTIPLIER; // for reducing
-                
                 // get current tree branches (same division for all), prepare arrays
                 HashSet<FileQuadTree> branchSet = new HashSet<FileQuadTree>();
                 trunks[detail] = divider.buildTrunk(branchSet);
-                FileQuadTree[] branchRoots = branchSet.toArray(new FileQuadTree[branchSet.size()]);
+                branches[detail] = branchSet.toArray(new FileQuadTree[branchSet.size()]);
+                ranges[detail] = Projection.getZoomFactor(detail) * LAYER_MULTIPLIER;
+            }
+            logger.info("QT structures building took " + Util.stopTimer());
                 
-                // pick each tree branch of the current tree      
-                for (int i = 0; i < branchRoots.length; i++) {
-                    logger.info("QT " + (detail + 1) + "/" + NUM_LEVELS
-                            + ": branch " + (i + 1) + "/" + branchRoots.length);
-                    // add all relevant elements
-                    Iterator<MapElement> elements = elementDB.getAllMapElements();
-                    while (elements.hasNext()) {
-                        MapElement element = elements.next();
-                        if (getMaximumZoomlevel(element) >= detail) {
-                            element = element.getReduced(detail, range);
-                            if (element != null) {
-                                branchRoots[i].addElement(element);
-                            }
+            // pick each tree branch 
+            for (int b = 0; b < branches[0].length; b++) {
+                Util.startTimer();
+                logger.info("QT branch " + (b + 1) + "/" + branches[0].length);
+                // add all relevant elements
+                Iterator<MapElement> elements = elementDB.getAllMapElements();
+                while (elements.hasNext()) {
+                    MapElement element = elements.next();
+                    int maxZoom = getMaximumZoomlevel(element) + 1;
+                    for (int d = 0; d < maxZoom; d++) {
+                        MapElement reduced = element.getReduced(d, ranges[d]);
+                        if (reduced != null) {
+                            branches[d][b].addElement(element);
                         }
                     }
-                    // save tree branch and remove it from RAM
-                    branchRoots[i].saveTree(target);
-                    branchRoots[i].unload();
                 }
-                logger.info("QT " + (detail+1) + " filling took " + Util.stopTimer());
-                Util.startTimer();
-                // save tree trunk (branches will be linked)
-                trunks[detail].saveTree(target); 
-                trunks[detail].unload();
-                logger.info("QT " + (detail+1) + " saving took " + Util.stopTimer());
+                logger.info("QT branch " + b + " filling took " + Util.stopTimer());
+                Util.startTimer(); 
+                // save tree branches and remove them from RAM
+                for (int d = 0; d < NUM_LEVELS; d++) {
+                    branches[d][b].saveTree(target);
+                    branches[d][b].unload();
+                }
+                logger.info("QT branch " + b + " saving took " + Util.stopTimer());
+                
             }
             
+            // save tree trunks (branches will be linked)
+            Util.startTimer();
+            for (int d = 0; d < NUM_LEVELS; d++) {       
+                
+                trunks[d].saveTree(target); 
+                trunks[d].unload();                
+            }
+            logger.info("QT saving took " + Util.stopTimer());
             
+            Util.startTimer();
             // fill tree location table
             for (int detail = 0; detail < NUM_LEVELS; detail++) {
                 target.writeLongToPosition(trunks[detail].getFileOffset(),
                         treeTableOffset + detail * 8);
             }
+            logger.info("Tree location table saving took " + Util.stopTimer());
                 
             // start reading mode
             RandomReadStream source = target.openForReading();

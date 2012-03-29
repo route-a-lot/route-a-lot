@@ -211,7 +211,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
     // MISCELLANEOUS
     
     protected int getMaximumZoomlevel(MapElement element) {
-        int result = NUM_LEVELS;
+        int result = NUM_LEVELS - 1;
         if (element instanceof Area) {
             if (((Area) element).getWayInfo().isBuilding()) {
                 result = 4;
@@ -239,7 +239,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
                     result = 6;
             }
         }
-        return MathUtil.clip(result, 0, NUM_LEVELS);
+        return MathUtil.clip(result, 0, NUM_LEVELS - 1);
     }
     
     public boolean equals(Object other) {
