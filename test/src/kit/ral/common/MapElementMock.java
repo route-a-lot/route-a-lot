@@ -3,6 +3,7 @@ package kit.ral.common;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 import kit.ral.map.MapElement;
 
@@ -52,6 +53,10 @@ public class MapElementMock extends MapElement {
 
     @Override
     protected void save(DataOutput output) throws IOException {
+    }
+
+    @Override
+    protected void load(MappedByteBuffer mmap) throws IOException {
     }
 
 }

@@ -3,6 +3,7 @@ package kit.ral.map;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
@@ -88,6 +89,13 @@ public class Node extends MapElement {
         this.id = input.readInt();
         this.lat = input.readFloat();
         this.lon = input.readFloat();
+    }
+    
+    @Override
+    protected void load(MappedByteBuffer mmap) throws IOException {
+        this.id = mmap.getInt();
+        this.lat = mmap.getFloat();
+        this.lon = mmap.getFloat();
     }
 
     @Override

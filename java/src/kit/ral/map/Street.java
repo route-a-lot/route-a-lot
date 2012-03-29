@@ -1,8 +1,10 @@
 package kit.ral.map;
+import static kit.ral.common.util.Util.readUTFString;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,10 +12,10 @@ import java.util.List;
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
+import kit.ral.common.description.OSMType;
 import kit.ral.common.description.WayInfo;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
-import kit.ral.common.description.OSMType;
 import kit.ral.controller.State;
 import kit.ral.map.info.MapInfo;
 
@@ -147,6 +149,18 @@ public class Street extends MapElement implements Comparable<Street> {
             nodes[i] = mapInfo.getNode(input.readInt());
         }
         wayInfo = WayInfo.loadFromInput(input);
+    }
+    
+    @Override
+    protected void load(MappedByteBuffer mmap) throws IOException {
+        setName(readUTFString(mmap));
+        int len = mmap.getInt();
+        nodes = new Node[len];
+        MapInfo mapInfo = State.getInstance().getMapInfo();
+        for (int i = 0; i < len; i++) {
+            nodes[i] = mapInfo.getNode(mmap.getInt());
+        }
+        wayInfo = WayInfo.loadFromInput(mmap);
     }
 
     @Override

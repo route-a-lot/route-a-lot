@@ -3,6 +3,7 @@ package kit.ral.common.description;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 
 
@@ -239,6 +240,14 @@ public class WayInfo {
         result.type = input.readInt();
         result.address = Address.loadFromInput(input);
         input.readFully(result.data);
+        return result;
+    }
+    
+    public static WayInfo loadFromInput(MappedByteBuffer mmap) throws IOException {
+        WayInfo result = new WayInfo();
+        result.type = mmap.getInt();
+        result.address = Address.loadFromInput(mmap);
+        mmap.get(result.data);
         return result;
     }
     

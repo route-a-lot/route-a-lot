@@ -1,8 +1,11 @@
 package kit.ral.common.description;
 
+import static kit.ral.common.util.Util.readUTFString;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 
 public class Address {
@@ -108,6 +111,19 @@ public class Address {
         result.setCountry(input.readUTF());
         result.setFullAddress(input.readUTF());
         result.setInterpolation(input.readUTF());
+        return result;
+    }
+    
+    public static Address loadFromInput(MappedByteBuffer mmap) throws IOException {
+        Address result = new Address();
+        result.setStreet(readUTFString(mmap));
+        result.setHousenumber(readUTFString(mmap));
+        result.setState(readUTFString(mmap));
+        result.setPostcode(readUTFString(mmap));
+        result.setCity(readUTFString(mmap));
+        result.setCountry(readUTFString(mmap));
+        result.setFullAddress(readUTFString(mmap));
+        result.setInterpolation(readUTFString(mmap));
         return result;
     }
 

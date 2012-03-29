@@ -5,11 +5,13 @@ import java.awt.geom.Rectangle2D;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.WayInfo;
+import kit.ral.common.util.Util;
 import kit.ral.controller.State;
 import kit.ral.map.info.MapInfo;
 
@@ -135,6 +137,19 @@ public class Area extends MapElement {
             this.nodes[i] = mapInfo.getNode(input.readInt());
         }
         this.wayInfo = WayInfo.loadFromInput(input);
+    }
+    
+    @Override
+    protected void load(MappedByteBuffer mmap) throws IOException {
+        String name = Util.readUTFString(mmap);
+        this.name = EMPTY.equals(name) ? null : name;
+        int len = mmap.getInt();
+        this.nodes = new Node[len];
+        MapInfo mapInfo = State.getInstance().getMapInfo();
+        for (int i = 0; i < len; i++) {        
+            this.nodes[i] = mapInfo.getNode(mmap.getInt());
+        }
+        this.wayInfo = WayInfo.loadFromInput(mmap);
     }
 
     @Override

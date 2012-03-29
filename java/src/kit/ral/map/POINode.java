@@ -1,8 +1,10 @@
 package kit.ral.map;
+import static kit.ral.common.util.Util.readUTFString;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.POIDescription;
@@ -52,6 +54,12 @@ public class POINode extends Node {
     protected void load(DataInput input) throws IOException {
         super.load(input);
         this.info = new POIDescription(input.readUTF(), input.readInt(), input.readUTF());
+    }
+    
+    @Override
+    protected void load(MappedByteBuffer mmap) throws IOException {
+        super.load(mmap);
+        this.info = new POIDescription(readUTFString(mmap), mmap.getInt(), readUTFString(mmap));
     }
 
     @Override

@@ -3,6 +3,7 @@ package kit.ral.map;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
@@ -119,6 +120,32 @@ public abstract class MapElement {
         }
         return result;
     }
+    
+    public static MapElement loadFromInput(MappedByteBuffer mmap) throws IOException {
+        if (mmap == null) {
+            throw new IllegalArgumentException("Data source is null.");
+        }
+        byte descriptor = mmap.get();
+        if (descriptor < DESCRIPTOR_NODE || descriptor > DESCRIPTOR_POI) {
+            throw new IllegalArgumentException("Tried loading undefined map element.");
+        }
+        MapElement result;      
+        if (mmap.get() != 0) {
+            MapInfo mapInfo = State.getInstance().getMapInfo();
+            int id = mmap.getInt();
+            result = (descriptor == DESCRIPTOR_NODE)
+                    ? mapInfo.getNode(id) : mapInfo.getMapElement(id);
+        } else {
+            switch (descriptor) {
+                case DESCRIPTOR_NODE: result = new Node(); break;
+                case DESCRIPTOR_POI: result = new POINode(); break;
+                case DESCRIPTOR_STREET: result = new Street(); break;
+                default: result = new Area();
+            }
+            result.load(mmap);
+        }
+        return result;
+    }
 
     /**
      * Saves a map element (or if possible its ID if <code>allowAsID</code> is set) to the output.
@@ -167,6 +194,8 @@ public abstract class MapElement {
      * @throws IOException element could not be loaded from the input  
      */
     protected abstract void load(DataInput input) throws IOException;
+    
+    protected abstract void load(MappedByteBuffer mmap) throws IOException;
 
     /**
      * Saves a map element to the output.

@@ -19,9 +19,13 @@ public class RandomReadStream extends DataInputStream {
         this.file = file;
     }
     
-    public File getFileDescriptor() {
+    public File getFile() {
         return file;
     }   
+    
+    public FileChannel getChannel() {
+        return channel;
+    }
     
     @Override
     public void close() throws IOException {      

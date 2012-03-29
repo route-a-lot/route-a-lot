@@ -1,6 +1,8 @@
 package kit.ral.common.util;
 
 import java.awt.GraphicsEnvironment;
+import java.nio.MappedByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.List;
 
@@ -69,5 +71,11 @@ public class Util {
                     .getDefaultScreenDevice().getAvailableAcceleratedMemory();
         System.out.println("Available graphics memory (including accessible RAM): "
                 + StringUtil.humanReadableByteCount(mem, false));
+    }
+    
+    public static String readUTFString(MappedByteBuffer mmap) {
+        byte[] encodedString = new byte[mmap.getShort()];
+        mmap.get(encodedString);
+        return new String(encodedString, Charset.forName("UTF-8"));
     }
 }
