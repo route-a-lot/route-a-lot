@@ -163,6 +163,7 @@ public class FileQuadTree extends QuadTree {
             }
 
             if (source.readBoolean()) {
+                //System.out.println("load leaf " + fileOffset);
                 // load all elements
                 int size = source.readByte();  
                 elements = new ArrayList<MapElement>(size); 
@@ -173,6 +174,7 @@ public class FileQuadTree extends QuadTree {
                 }
                 FileQuadTreeCache.registerLeaf(this);
             } else {
+                //System.out.println("load node " + fileOffset);
                 // initialize children
                 children = new FileQuadTree[4];
                 float width = bounds.getWidth() / 2;
@@ -366,7 +368,7 @@ public class FileQuadTree extends QuadTree {
 
 final class FileQuadTreeCache {
     
-    private static final int QUADTREE_LEAF_CACHE = 64;
+    private static final int QUADTREE_LEAF_CACHE = 256;
     
     private static final LinkedList<FileQuadTree> loadedLeaves = new LinkedList<FileQuadTree>();
    
@@ -375,7 +377,9 @@ final class FileQuadTreeCache {
     static void registerLeaf(FileQuadTree tree) {
         loadedLeaves.offer(tree);
         if (loadedLeaves.size() > QUADTREE_LEAF_CACHE ) {
-            loadedLeaves.poll().unload();
+            FileQuadTree leaf = loadedLeaves.poll();
+            //System.out.println("drop leaf " + leaf.getFileOffset());
+            leaf.unload();          
         }
     };   
 }

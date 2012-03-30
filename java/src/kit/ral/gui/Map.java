@@ -58,7 +58,7 @@ public abstract class Map extends JPanel implements MouseMotionListener, MouseWh
     
     private static final int MAX_ZOOMLEVEL = 20;
     
-    protected int oldMousePosX, oldMousePosY, zoomlevel = 3;
+    protected int oldMousePosX, oldMousePosY, zoomlevel = 0;
     protected Coordinates center = new Coordinates();
     
     protected GUI gui;

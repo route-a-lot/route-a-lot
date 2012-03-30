@@ -25,7 +25,7 @@ public class State {
     private List<Selection> navigationNodes;
     private List<Integer> currentRoute;
     private Coordinates centerCoordinates = new Coordinates(0, 0);
-    private int detailLevel = 2;
+    private int detailLevel = 4;
     private int clickRadius = 10;
     private RouteDescription routeDescription;
     private int speed = 15;

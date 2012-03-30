@@ -122,22 +122,21 @@ public class Controller {
         
         // IMPORT HEIGHT DATA    
         Util.startTimer();
-        importHeightmaps(SRTM_DIRECTORY, p.createSubProgress(0.04));
+        importHeightmaps(SRTM_DIRECTORY, p.createSubProgress(0.05));
         logger.info("Heightmaps loaded: " + Util.stopTimer());
         
         if (gui) {
             // LOAD STATE
             Util.startTimer();
-            loadState(p.createSubProgress(0.94));
+            loadState(p.createSubProgress(0.6));
                  
             // IMPORT DEFAULT OSM MAP
             if (state.getLoadedMapFile() == null) {
                 if ((DEFAULT_OSM_MAP != null) && DEFAULT_OSM_MAP.exists()) {
                     Util.startTimer();
-                    p.addProgress(-0.3);
                     currentTask = executorService.submit(new Runnable() {
                         public void run() {
-                            importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.3));
+                            importMap(DEFAULT_OSM_MAP, p.createSubProgress(0.4));
                         }   
                     });
                     try {
@@ -160,7 +159,7 @@ public class Controller {
             if (graphOnly) {
                 state.setMapInfo(new kit.ral.io.MapInfoMock());
             }
-            importMap(file, p.createSubProgress(0.8));
+            importMap(file, p.createSubProgress(0.95));
         }
         p.finish();
     }
@@ -412,6 +411,7 @@ public class Controller {
     
     private void loadState(Progress p) {
         State state = State.getInstance(); 
+        p.addProgress(0.01);
         if (STATE_FILE.exists()) {   
             try {
                 StateIO.loadState(STATE_FILE); 
@@ -420,16 +420,16 @@ public class Controller {
                 logger.error("State loading: Read error occurred.");
                 e.printStackTrace();
             } 
-            p.addProgress(0.05);
+            p.addProgress(0.1);
             // LOAD SRAL MAP FROM STATE
             if ((state.getLoadedMapFile() != null) && state.getLoadedMapFile().exists()) {
                 logger.info("Loading map file from state");
-                loadMap(state.getLoadedMapFile(), p.createSubProgress(0.95));
-            }
-            p.finish();
+                loadMap(state.getLoadedMapFile(), p.createSubProgress(0.89));
+            }   
         }
         guiHandler.setSpeed(state.getSpeed());  
-        guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());   
+        guiHandler.setView(state.getCenterCoordinates(), state.getDetailLevel());
+        p.finish();
     }
     
     private void importMap(File osmFile, Progress p) {

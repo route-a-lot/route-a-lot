@@ -163,7 +163,7 @@ public class GUI extends JFrame {
             }
         });
 
-        zoomSlider = new JSlider(0, 9, 3);
+        zoomSlider = new JSlider(0, 9, 0);
         zoomSlider.setMajorTickSpacing(1);
         zoomSlider.setPaintTicks(true);
         zoomSlider.setPaintLabels(true);
