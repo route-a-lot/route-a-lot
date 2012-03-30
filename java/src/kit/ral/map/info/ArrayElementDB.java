@@ -73,6 +73,8 @@ public class ArrayElementDB implements ElementDB {
         
         if (mapElements.add(element)) {
             element.setID(mapElements.size() - 1);
+        } else {
+            logger.error("MapElement could not be added.");
         }
     }
     
@@ -114,7 +116,11 @@ public class ArrayElementDB implements ElementDB {
         if (id < 0 || id >= mapElements.size()) { 
             throw new IllegalArgumentException("Illegal Map Element ID: " + id);
         }
-        return mapElements.get(id);
+        MapElement element = mapElements.get(id);
+        if (element.getID() != id) {
+            logger.error("Not expected id of map element.");
+        }
+        return element;
     }
    
     @Override

@@ -486,6 +486,9 @@ public class OSMLoader {
 
                 if (qName.equals("node")) {
                     if (!importOnlyNodesAndRoutable) {
+                        curAddress = new Address();
+                        curNodePOIDescription = new POIDescription("", 0, "");
+                        curType = 0;
                         inNode = true;
                         return;
                     }
