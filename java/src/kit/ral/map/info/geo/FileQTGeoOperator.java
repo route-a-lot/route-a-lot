@@ -85,7 +85,7 @@ public class FileQTGeoOperator extends QTGeographicalOperator {
                     for (int d = 0; d < maxZoom; d++) {
                         MapElement reduced = element.getReduced(d, ranges[d]);
                         if (reduced != null) {
-                            branches[d][b].addElement(element);
+                            branches[d][b].addElement(reduced);
                         }
                     }
                 }
