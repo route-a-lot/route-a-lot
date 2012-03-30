@@ -25,9 +25,12 @@ public class TrieAddressOperator implements AddressOperator {
         }
         ArrayList<String> completions = new ArrayList<String>();
         MapInfo mapInfo = State.getInstance().getMapInfo();
+        System.out.println("-------------");
         for (int id : mapElements.search(expression)) {
+            System.out.println("searched ID " + id);
             completions.add(mapInfo.getMapElement(id).getName());     
         }
+        System.out.println("-------------");
         return completions;
     }
 
