@@ -67,6 +67,7 @@ public class Precalculator {
             logger.info("Starting calculation of ArcFlags  with " + procNum + " threads...");
             Util.startTimer();
             startPeriod = System.currentTimeMillis();
+            startTime = startPeriod;
             for (int i = 0; i < graph.getIDCount(); i++) {
                 final int currentI = i;
                 futures.add(executorService.submit(new Runnable() {
