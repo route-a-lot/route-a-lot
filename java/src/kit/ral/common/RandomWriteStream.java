@@ -41,6 +41,11 @@ public class RandomWriteStream extends DataOutputStream {
         channel.position(pos);
     }
     
+    public void skipBytes(long n) throws IOException {
+        flush();
+        channel.position(channel.position() + n);
+    }
+    
     public void writeLongToPosition(long value, long pos) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocateDirect(8).putLong(value);
         buffer.rewind();

@@ -1,7 +1,14 @@
 package kit.ral.map.info;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +19,8 @@ import org.apache.log4j.Logger;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
+import kit.ral.common.RandomReadStream;
+import kit.ral.common.RandomWriteStream;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.projection.Projection;
 import kit.ral.map.info.ElementDB;
@@ -135,7 +144,7 @@ public class ArrayElementDB implements ElementDB {
     @Override
     public void loadFromInput(DataInput input) throws IOException {
         logger.debug("load node array...");
-        input.skipBytes(24); // pointer to index table, nodesCount, elementsCount
+        input.skipBytes(32); // pointer to index table, nodesCount, elementsCount, favoritesCount
         int nodesCount = input.readInt();
         Node[] nodesArray = new Node[nodesCount];
         for (int i = 0; i < nodesCount; i++) {
@@ -160,31 +169,73 @@ public class ArrayElementDB implements ElementDB {
             favorite.setID(i); // TODO: favorite IDs necessary?
         }
         input.skipBytes(nodesCount * 8 + elementsCount * 8);
+//        System.out.println(((RandomReadStream) input).getPosition());
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {  
+        if (!(output instanceof RandomWriteStream)) {
+            throw new IllegalArgumentException("Output has to be a RandomWriteStream.");
+        }
+        RandomWriteStream randomWriteStream = (RandomWriteStream) output;
+        
+        File nodePosFile = File.createTempFile("nodePositions", ".tmp");
+        DataOutputStream nodePosStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(nodePosFile)));
+        File elementPosFile = File.createTempFile("elementPositions", ".tmp");
+        DataOutputStream elementPosStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(elementPosFile)));
+        
+        long basePointer = randomWriteStream.getPosition();
+        output.writeLong(0);
         output.writeLong(0);
         output.writeLong(0);
         output.writeLong(0);
         logger.info("save node array...");
+        long nodesCountPointer = randomWriteStream.getPosition();
         output.writeInt(nodes.size());
         for (Node node: nodes) {
+            nodePosStream.writeLong(randomWriteStream.getPosition() - basePointer);
             MapElement.saveToOutput(output, node, false);
         }
+        nodePosStream.close();
         logger.info("save map element array...");
+        long elementsCountPointer = randomWriteStream.getPosition();
         output.writeInt(mapElements.size());
         for (MapElement element: mapElements) {
+            elementPosStream.writeLong(randomWriteStream.getPosition());
             MapElement.saveToOutput(output, element, false);
         }
+        elementPosStream.close();
         logger.info("save favorite array...");
+        long favoritesCountPointer = randomWriteStream.getPosition();
         output.writeInt(favorites.size());
         for (POINode favorite: favorites) {
             MapElement.saveToOutput(output, favorite, false);
         }
-        for (int i = 0; i < nodes.size() + mapElements.size(); i++) {
-            output.writeLong(0);
+        long indexTablePointer = randomWriteStream.getPosition();
+        DataInputStream inputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(nodePosFile)));
+        byte[] buf = new byte[2048];
+        int len = inputStream.read(buf);
+        while (len > 0) {
+            output.write(buf, 0, len);
+            len = inputStream.read(buf);
         }
+        inputStream.close();
+        inputStream = new DataInputStream(new BufferedInputStream(new FileInputStream(elementPosFile)));
+        len = inputStream.read(buf);
+        while (len > 0) {
+            output.write(buf, 0, len);
+            len = inputStream.read(buf);
+        }
+        inputStream.close();
+        nodePosFile.delete();
+        elementPosFile.delete();
+        long endPos = randomWriteStream.getPosition();
+        randomWriteStream.setPosition(basePointer);
+        output.writeLong(indexTablePointer - basePointer);
+        output.writeLong(nodesCountPointer - basePointer);
+        output.writeLong(elementsCountPointer - basePointer);
+        output.writeLong(favoritesCountPointer - basePointer);
+        randomWriteStream.setPosition(endPos);
     }
 
 

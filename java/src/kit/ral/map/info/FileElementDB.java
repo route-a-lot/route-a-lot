@@ -44,6 +44,7 @@ public class FileElementDB extends ArrayElementDB {
     private int elementsCount = 0;
     private long elementsCountPointer = 0;
     private long indexTablePointer = 0;
+    private long favoritesCountPointer = 0;
     private File elementDBFile;
     private RandomAccessFile randAccessFile;
 
@@ -59,7 +60,7 @@ public class FileElementDB extends ArrayElementDB {
 
     private MappedByteBuffer elementsMMap;
 
-    private static int NODE_CACHE_SIZE = 10000;
+    private static int NODE_CACHE_SIZE = 1000000;
     private Map<Integer, Integer> nodeCache = new HashMap<Integer, Integer>(NODE_CACHE_SIZE);
     private boolean[] nodeChances = new boolean[NODE_CACHE_SIZE];
     private Node[] nodes = new Node[NODE_CACHE_SIZE];
@@ -131,7 +132,7 @@ public class FileElementDB extends ArrayElementDB {
     // CONSTRUCTIVE OPERATIONS (FAVORITES UNSUPPORTED)
 
     @Override
-    public void addNode(int nodeID, Node node) {
+    public synchronized void addNode(int nodeID, Node node) {
         try {
             if (currentAction == INITIALIZED_FOR_FILLING) {
                 currentAction = SAVING_NODES;
@@ -139,6 +140,7 @@ public class FileElementDB extends ArrayElementDB {
                 randAccessFile.writeLong(0); // indexTablePointer
                 randAccessFile.writeLong(0); // nodesCountPointer
                 randAccessFile.writeLong(0); // elementsCountPointer
+                randAccessFile.writeLong(0); // favoritesCountPointer
                 nodesCountPointer = randAccessFile.getFilePointer();
                 randAccessFile.writeInt(0);
             }
@@ -155,7 +157,7 @@ public class FileElementDB extends ArrayElementDB {
     }
 
     @Override
-    public void addMapElement(MapElement element) {
+    public synchronized void addMapElement(MapElement element) {
         try {
             element.setID(elementsCount);
             elementPositionStream.writeLong(elementsRAF.getFilePointer());
@@ -180,7 +182,7 @@ public class FileElementDB extends ArrayElementDB {
     // QUERY OPERATIONS
 
     @Override
-    public Node getNode(int nodeId) {
+    public synchronized Node getNode(int nodeId) {
         if (nodeCache.containsKey(nodeId)) {
             int pos = nodeCache.get(nodeId);
             nodeChances[pos] = true;
@@ -238,7 +240,7 @@ public class FileElementDB extends ArrayElementDB {
     }
 
     @Override
-    public MapElement getMapElement(int elementId) {
+    public synchronized MapElement getMapElement(int elementId) {
         if (elementCache.containsKey(elementId)) {
             int pos = elementCache.get(elementId);
             elementChances[pos] = true;
@@ -250,7 +252,7 @@ public class FileElementDB extends ArrayElementDB {
             try {
                 long pointerToPointer = indexTablePointer + nodesCount * 8 + elementId * 8;
                 readStream.setPosition(pointerToPointer);
-                long pointer = readStream.readLong() + basePointer;
+                long pointer = readStream.readLong();
                 readStream.setPosition(pointer);
                 MapElement element = MapElement.loadFromInput(readStream);
                 if (elementId != element.getID()) {
@@ -290,6 +292,7 @@ public class FileElementDB extends ArrayElementDB {
             elementPositionStream.close();
             nodePositionRAF.close();
             copyElementsToDBFile();
+            favoritesCountPointer = randAccessFile.getFilePointer();
             randAccessFile.writeInt(0); // 0 favorites
             elementsRAF.close();
             elementsFile.delete();
@@ -338,6 +341,7 @@ public class FileElementDB extends ArrayElementDB {
             randAccessFile.writeLong(indexTablePointer - basePointer);
             randAccessFile.writeLong(nodesCountPointer - basePointer);
             randAccessFile.writeLong(elementsCountPointer - basePointer);
+            randAccessFile.writeLong(favoritesCountPointer - basePointer);
             nodePositionInput.close();
             elementPositionInput.close();
         } catch (IOException e) {
@@ -410,19 +414,21 @@ public class FileElementDB extends ArrayElementDB {
         indexTablePointer = input.readLong() + basePointer;
         nodesCountPointer = input.readLong() + basePointer;
         elementsCountPointer = input.readLong() + basePointer;
+        favoritesCountPointer = input.readLong() + basePointer;
         nodesCount = input.readInt();
         input.skipBytes((int) (elementsCountPointer - nodesCountPointer - 4));  // nodes
         elementsCount = input.readInt();
-        input.skipBytes((int) (indexTablePointer - elementsCountPointer - 4));  // elements
+        input.skipBytes((int) (favoritesCountPointer - elementsCountPointer - 4));  // elements
         int favoritesCount = input.readInt();
         for (int i = 0; i < favoritesCount; i++) {
             MapElement.loadFromInput(input);
         }
         input.skipBytes(nodesCount * 8 + elementsCount * 8);                    // index table
+//        System.out.println(((RandomReadStream) input).getPosition());
 
         readStream = randomReadStreamInput.openForReading();
         elementsMMap = readStream.getChannel().map(MapMode.READ_ONLY, 
-                elementsCountPointer + 4, indexTablePointer - (elementsCountPointer + 4));
+                elementsCountPointer + 4, favoritesCountPointer - (elementsCountPointer + 4));
     }
 
     @Override

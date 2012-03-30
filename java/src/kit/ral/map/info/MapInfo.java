@@ -27,6 +27,7 @@ import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
 import kit.ral.map.info.geo.FileQTGeoOperator;
+import kit.ral.map.info.geo.GeographicalOperator;
 import kit.ral.map.info.geo.QTGeographicalOperator;
 
 import org.apache.log4j.Logger;
@@ -39,7 +40,7 @@ public class MapInfo {
     protected ElementDB elementDB = new ArrayElementDB();
     private AddressOperator addressOperator = new TrieAddressOperator();
 
-    private FileQTGeoOperator geoOperator = new FileQTGeoOperator();
+    private GeographicalOperator geoOperator = new FileQTGeoOperator();
 //    private GeographicalOperator geoOperator = new QTGeographicalOperator();
     
     private Bounds geoBounds = new Bounds();
