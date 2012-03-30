@@ -41,11 +41,11 @@ public class MapInfo {
     private AddressOperator addressOperator = new TrieAddressOperator();
 
     private GeographicalOperator geoOperator = new FileQTGeoOperator();
-//    private GeographicalOperator geoOperator = new QTGeographicalOperator();
+    //private GeographicalOperator geoOperator = new QTGeographicalOperator();
     
     private Bounds geoBounds = new Bounds();
 
-    private static boolean useDirectFile = true;
+    private static boolean useDirectFile = false;
     private File elementsFile;
 
     Map<String, Collection<Street>> streetsForAddress = new HashMap<String, Collection<Street>>();

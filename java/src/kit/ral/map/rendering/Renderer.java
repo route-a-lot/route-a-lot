@@ -33,7 +33,7 @@ import kit.ral.map.info.MapInfo;
 
 public class Renderer {
     
-    private static final boolean THREADED = true;
+    private static final boolean THREADED = false;
     protected static final int BASE_TILE_SIZE = 256;
     private static final int ROUTE_IMAGE_BORDER_BUFFER = 200;
     private static final float ROUTE_WIDTH = 10;

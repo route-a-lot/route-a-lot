@@ -78,8 +78,8 @@ public class Renderer3D extends Renderer {
         }
         
         // FINAL CAMERA TRANSFORMATIONS
-        //gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (context.getDetailLevel() + 1));
-        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR);
+        gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR * (context.getDetailLevel() + 1));
+        //gl.glScalef(1, 1, HEIGHT_SCALE_FACTOR);
         float centerHeight = heightmap.getHeight(projection.getGeoCoordinates(center));
         viewHeight = (viewHeight == Float.NEGATIVE_INFINITY) ? centerHeight
                 : MathUtil.interpolate(viewHeight, centerHeight, VIEW_HEIGHT_ADAPTION);
