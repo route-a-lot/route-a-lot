@@ -13,6 +13,8 @@ import java.util.Set;
 import kit.ral.common.Coordinates;
 import static kit.ral.common.description.OSMType.*;
 import kit.ral.common.Bounds;
+import kit.ral.common.RandomReadStream;
+import kit.ral.common.RandomWriteStream;
 import kit.ral.common.Selection;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
@@ -184,17 +186,53 @@ public class QTGeographicalOperator implements GeographicalOperator {
      
     @Override
     public void loadFromInput(DataInput input) throws IOException {
-        for(int i = 0; i < NUM_LEVELS; i++) {
-            logger.trace("load zoom level " + i + "...");
-            trees[i] = QuadTree.loadFromInput(input);
+        logger.info("load QT");
+        if (!(input instanceof RandomReadStream)) {
+            throw new IllegalArgumentException();
+        }
+        RandomReadStream source = (RandomReadStream) input;
+        bounds = Bounds.loadFromInput(source);
+        
+        // load location table
+        long[] table = new long[NUM_LEVELS];
+        for (int d = 0; d < NUM_LEVELS; d++) {
+            table[d] = source.readLong();
+        }
+        
+        // load trees
+        for(int d = 0; d < NUM_LEVELS; d++) {
+            logger.info("QT level "+ d + "/" + NUM_LEVELS);
+            source.setPosition(table[d]);
+            trees[d] = QuadTree.loadFromInput(source);
         }
     }
 
     @Override
     public void saveToOutput(DataOutput output) throws IOException {
-        for(int i = 0; i < NUM_LEVELS; i++) {
-            logger.info("save zoom level " + i + "...");
-            QuadTree.saveToOutput(output, trees[i]);
+        logger.info("save QT");
+        if (!(output instanceof RandomWriteStream)) {
+            throw new IllegalArgumentException();
+        }
+        RandomWriteStream target = (RandomWriteStream) output;
+        bounds.saveToOutput(target);
+        
+        // tree location table reservation
+        long[] table = new long[NUM_LEVELS];
+        long treeTableOffset = target.getPosition();
+        for (int d = 0; d < NUM_LEVELS; d++) {
+            target.writeLong(0);
+        }
+        
+        // save trees
+        for (int d = 0; d < NUM_LEVELS; d++) {
+            logger.info("QT level "+ d + "/" + NUM_LEVELS);
+            table[d] = target.getPosition();          
+            QuadTree.saveToOutput(target, trees[d]);               
+        }
+        
+        // fill tree location table
+        for (int d = 0; d < NUM_LEVELS; d++) {
+            target.writeLongToPosition(table[d], treeTableOffset + d * 8);
         }
     }
     
@@ -216,8 +254,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
             if (((Area) element).getWayInfo().isBuilding()) {
                 result = 4;
             }
-        }
-        if (element instanceof Street) {
+        } else if (element instanceof Street) {
             WayInfo wayInfo = ((Street) element).getWayInfo();
             switch (wayInfo.getType()) {
                 case HIGHWAY_MOTORWAY:
@@ -238,6 +275,8 @@ public class QTGeographicalOperator implements GeographicalOperator {
                 default:
                     result = 6;
             }
+        } else if (element instanceof POINode) {
+            result = 2;
         }
         return MathUtil.clip(result, 0, NUM_LEVELS - 1);
     }

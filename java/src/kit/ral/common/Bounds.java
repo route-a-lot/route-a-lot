@@ -93,7 +93,12 @@ public class Bounds implements Cloneable {
     
     
     public static Bounds loadFromInput(DataInput input) throws IOException {
-        return new Bounds(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
+        Bounds result = new Bounds();
+        result.left = input.readFloat();
+        result.right = input.readFloat();
+        result.top = input.readFloat();
+        result.bottom = input.readFloat();
+        return result;
     }
     
     public void saveToOutput(DataOutput output) throws IOException {
@@ -153,7 +158,10 @@ public class Bounds implements Cloneable {
     
     @Override
     public Bounds clone() {
-        return new Bounds(left, right, top, bottom);
+        Bounds result = new Bounds(left, left, top, top);
+        result.right = right;
+        result.bottom = bottom;
+        return result;
     }
     
     @Override

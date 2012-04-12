@@ -33,7 +33,7 @@ public class Renderer3D extends Renderer {
     
     private static final boolean DRAW_BOXES = false, THREADED = true;
     private static final float
-        HEIGHT_SCALE_FACTOR = 4, // factor multiplied on all height values
+        HEIGHT_SCALE_FACTOR = 0.8f, // factor multiplied on all height values
         VIEW_HEIGHT_ADAPTION = 0.2f, // [0..1] how fast camera height adapts to ground height
         ROUTE_HEIGHT_OFFSET = 0, // [meters] height value added to route display
         ROUTE_WIDTH = 10; // [pixels] width of the line that is used for route display

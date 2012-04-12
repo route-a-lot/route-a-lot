@@ -61,7 +61,6 @@ public class QTNode extends QuadTree {
             }
             for(QuadTree qt : children) {
                 qt.queryElements(area, elements, exact);
-          
             }    
         }
     }

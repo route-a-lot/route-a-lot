@@ -14,9 +14,6 @@ public abstract class QuadTree {
 
     protected static final int SIZE_LIMIT = 64;
     
-    private static final byte DESCRIPTOR_QUADTREE_NODE = 1;
-    private static final byte DESCRIPTOR_QUADTREE_LEAF = 2;
-
     protected Bounds bounds;
 
     // CONSTRUCTOR
@@ -61,21 +58,11 @@ public abstract class QuadTree {
      */
     public static QuadTree loadFromInput(DataInput input) throws IOException {
         Bounds newBounds = Bounds.loadFromInput(input);
-        QuadTree tree;
-        byte descriptor = input.readByte();
-        switch (descriptor) {
-            case DESCRIPTOR_QUADTREE_NODE:
-                tree = new QTNode(newBounds);
-                break;
-            case DESCRIPTOR_QUADTREE_LEAF:
-                tree = new QTLeaf(newBounds);
-                break;
-            default:
-                throw new IOException();
-        }
+        QuadTree tree = (input.readBoolean()) ?
+                new QTLeaf(newBounds) : new QTNode(newBounds);
         tree.load(input);
         return tree;
-    };
+    }
 
     /**
      * Saves the given quad tree to the given stream.
@@ -87,13 +74,7 @@ public abstract class QuadTree {
      */
     public static void saveToOutput(DataOutput output, QuadTree tree) throws IOException {
         tree.bounds.saveToOutput(output);
-        if (tree instanceof QTNode) {
-            output.writeByte(DESCRIPTOR_QUADTREE_NODE);
-        } else if (tree instanceof QTLeaf) {
-            output.writeByte(DESCRIPTOR_QUADTREE_LEAF);
-        } else {
-            throw new IllegalStateException();
-        }
+        output.writeBoolean(tree instanceof QTLeaf);
         tree.save(output);
     }
 
