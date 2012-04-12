@@ -25,7 +25,8 @@ public class NodeTest {
     @Before
     public void setUp() throws Exception {
         node = new Node(new Coordinates(5.0f, 5.0f));
-        poiNode = new POINode(new Coordinates(3.0f, 7.0f), new POIDescription("homer", 0, "simpson"));
+        poiNode = new POINode(new Coordinates(3.0f, 7.0f),
+                new POIDescription("homer", 0, "simpson"), null);
         node.setID(-1);
         poiNode.setID(-2);
     }
@@ -58,7 +59,8 @@ public class NodeTest {
         assertFalse(node.equals(new Node(new Coordinates(0.3f, 0.4f))));
         assertFalse(node.equals("Hi"));
         assertTrue(poiNode.equals(poiNode));
-        assertTrue(poiNode.equals(new POINode(new Coordinates(3.0f,7.0f), new POIDescription("homer", 0, "simpson"))));
+        assertTrue(poiNode.equals(new POINode(new Coordinates(3.0f,7.0f),
+                new POIDescription("homer", 0, "simpson"), null)));
         assertFalse(poiNode.equals(new Node(new Coordinates(10.3f, 10.4f))));
         assertFalse(poiNode.equals("boo"));
     }

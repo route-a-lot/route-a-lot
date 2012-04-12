@@ -50,6 +50,16 @@ public class Street extends MapElement implements Comparable<Street> {
         this.name = EMPTY.equals(name) ? null : name;
     }
 
+    @Override
+    public String getFullName() { 
+        if ((wayInfo.getAddress() == null
+                || wayInfo.getAddress().getCity().length() == 0)) {
+            return getName();
+        } else {
+            return getName() + ", " + wayInfo.getAddress().getCity();
+        }
+    }
+    
     public Node[] getNodes() {
         return nodes;
     }
@@ -91,7 +101,7 @@ public class Street extends MapElement implements Comparable<Street> {
                        Coordinates.interpolate(nodes[nodes.length / 2].getPos(),
                                nodes[nodes.length / 2 + 1].getPos(), 0.5f).toString());*/
         Selection sel = State.getInstance().getMapInfo().select(nodes[nodes.length / 2 - 1].getPos());
-        sel.setName(name);
+        sel.setName(getFullName());
         return sel;
     }
           

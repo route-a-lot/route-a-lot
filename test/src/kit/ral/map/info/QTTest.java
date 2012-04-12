@@ -42,7 +42,8 @@ public class QTTest {
             areaNode[3] = new Node(new Coordinates(4.0f + 4*i + 1, 4.0f + 4*i + 1));
             area.setNodes(areaNode);
             String s = "" + i;
-            POINode favorite = new POINode(new Coordinates(0.0f+i, 0.0f+i), new POIDescription(s, 0, s));
+            POINode favorite = new POINode(new Coordinates(0.0f+i, 0.0f+i),
+                    new POIDescription(s, 0, s), null);
             elementDB.addMapElement(area);
             elementDB.addMapElement(favorite);
         }

@@ -7,20 +7,18 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 
 import kit.ral.common.Coordinates;
+import kit.ral.common.description.Address;
 import kit.ral.common.description.POIDescription;
 
 public class POINode extends Node {
 
     private POIDescription info = null;
-
-    public POINode(Coordinates position, POIDescription description, int id){
-        super(position, id);
-        this.info = description;
-    }
+    private Address address;
     
-    public POINode(Coordinates position, POIDescription description){
+    public POINode(Coordinates position, POIDescription description, Address address){
         super(position);
         this.info = description;
+        this.address = address;
     }
     
     public POINode(int id) {
@@ -30,18 +28,21 @@ public class POINode extends Node {
     public POINode() {
         super();
     }
-
+    
+    
     @Override
-    public boolean equals(Object other) {
-        if(other == this) {
-            return true;
-        }
-        if(!(other instanceof POINode)) {
-            return false;
-        }
-        POINode poinode = (POINode) other;
-        return super.equals(other) && info.equals(poinode.info);
+    public String getName() {
+        return getInfo().getName();
     }
+    
+    @Override
+    public String getFullName() {  
+        if ((address == null || address.getCity().length() == 0)) {
+            return getName();
+        } else {
+            return getName() + ", " + address.getCity();
+        }
+    }   
     
     public POIDescription getInfo() {
         if (this.info == null) {
@@ -70,8 +71,15 @@ public class POINode extends Node {
         output.writeUTF(getInfo().getDescription());
     }
     
-    public String getName() {
-        return getInfo().getName();
+    @Override
+    public boolean equals(Object other) {
+        if(other == this) {
+            return true;
+        }
+        if(!(other instanceof POINode)) {
+            return false;
+        }
+        POINode poinode = (POINode) other;
+        return super.equals(other) && info.equals(poinode.info);
     }
-    
 }

@@ -64,6 +64,11 @@ public class Node extends MapElement {
     public String getName() {
         return null;
     }
+    
+    @Override
+    public String getFullName() {
+        return getName();
+    }
 
     @Override
     public boolean isInBounds(Bounds bounds) {
@@ -74,7 +79,7 @@ public class Node extends MapElement {
     @Override
     public Selection getSelection() {
         Selection sel = State.getInstance().getMapInfo().select(getPos());
-        sel.setName(getName());
+        sel.setName(getFullName());
         return sel;
     }
 

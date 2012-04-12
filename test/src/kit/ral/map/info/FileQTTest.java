@@ -54,7 +54,7 @@ public class FileQTTest {
             */
             String s = "poi " + i;
             POINode poi = new POINode(gen.generateNodeInBounds(bounds).getPos(),
-                                        new POIDescription(s, OSMType.AMENITY_COLLEGE, s));           
+                                        new POIDescription(s, OSMType.AMENITY_COLLEGE, s), null);           
             mapInfo.elementDB.addMapElement(poi);
         }
         

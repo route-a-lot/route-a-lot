@@ -25,12 +25,9 @@ public class TrieAddressOperator implements AddressOperator {
         }
         ArrayList<String> completions = new ArrayList<String>();
         MapInfo mapInfo = State.getInstance().getMapInfo();
-        System.out.println("-------------");
         for (int id : mapElements.search(expression)) {
-            System.out.println("searched ID " + id);
-            completions.add(mapInfo.getMapElement(id).getName());     
+            completions.add(mapInfo.getMapElement(id).getFullName());     
         }
-        System.out.println("-------------");
         return completions;
     }
 
@@ -39,7 +36,7 @@ public class TrieAddressOperator implements AddressOperator {
         MapInfo mapInfo = State.getInstance().getMapInfo();
         for (int id : mapElements.search(address)) {
             MapElement element = mapInfo.getMapElement(id);
-            if (element.getName().equals(address)) {
+            if (element.getFullName().equals(address)) {
                 return element.getSelection();
             }
         }
@@ -49,7 +46,7 @@ public class TrieAddressOperator implements AddressOperator {
     @Override
     public void add(MapElement element) {
         if (element.getName().length() > 0 && element.getID() >= 0) {
-            mapElements.insert(element.getName(), element.getID());
+            mapElements.insert(element.getFullName(), element.getID());
         }
     }
 

@@ -183,7 +183,7 @@ public class MapInfo {
      *            the description of the POI
      */
     public void addPOI(Coordinates position, POIDescription description, Address address) {
-        POINode newPOI = new POINode(position, description);
+        POINode newPOI = new POINode(position, description, address);
         elementDB.addMapElement(newPOI);
         addressOperator.add(newPOI);
     }
@@ -198,7 +198,7 @@ public class MapInfo {
      *            a description of the favorite
      */
     public void addFavorite(Coordinates pos, POIDescription description) {
-        POINode newFav = new POINode(pos, description);
+        POINode newFav = new POINode(pos, description, null);
         elementDB.addFavorite(newFav);
     }
 

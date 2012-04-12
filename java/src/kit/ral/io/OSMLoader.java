@@ -162,15 +162,14 @@ public class OSMLoader {
             boolean isInWay, isInNode;
             List<Integer> curWayIds;
             List<Long> curWayOSMIds;
-            String curWayName;
+            String curName;
             WayInfo curWayInfo;
 
             Address curAddress;
             int curType;
 
             Coordinates curNodeCoordinates;
-            int curNodeId;
-            POIDescription curNodePOIDescription;           
+            int curNodeId;        
 
             long ignoredKeys = 0;
 
@@ -179,7 +178,7 @@ public class OSMLoader {
 
                 qName = qName.toLowerCase();
                 // parse node/way inner tags
-                if ((isInWay || isInNode) && qName.equals("tag")) {
+                if (qName.equals("tag")) {
 					String key = attributes.getValue("k").toLowerCase();
 					String value = attributes.getValue("v");
 					
@@ -216,6 +215,10 @@ public class OSMLoader {
 					if (key.equals("postal_code")) {
 						curAddress.setPostcode(value);
 						return;
+					}
+					if (key.equals("name")) {
+                        curName = value;
+                        return;
 					}
 					
 					// parse other node keys
@@ -258,9 +261,7 @@ public class OSMLoader {
 					} else if (qName.equals("tag")) {
                         String key = attributes.getValue("k").toLowerCase();
                         String value = attributes.getValue("v").toLowerCase();
-                        if (key.equals("name")) {
-                            curWayName = attributes.getValue("v");
-                        } else if (key.equals("highway")) {
+                        if (key.equals("highway")) {
                             curWayInfo.setStreet(true);
                             curType = getHighwayType(value);
                             if (curType == HIGHWAY_IGNORED) {
@@ -392,9 +393,7 @@ public class OSMLoader {
 					String key = attributes.getValue("k").toLowerCase();
 					String value = attributes.getValue("v").toLowerCase();
 
-					if (key.equals("name")) {
-						curNodePOIDescription.setName(attributes.getValue("v"));
-					} else if (key.equals("barrier")) {
+					if (key.equals("barrier")) {
 						if (value.equals("gate") || value.equals("bollard")
 								|| value.equals("cycle_barrier") || value.equals("entrance")
 								|| value.equals("lift_gate")) {
@@ -436,9 +435,9 @@ public class OSMLoader {
 				// parse node tag
                 else if (qName.equals("node")) {
 					isInNode = true;
-					curType = 0;
-					curAddress = new Address();
-					curNodePOIDescription = new POIDescription("", 0, "");					
+					curType = UNKNOWN_TYPE;
+					curName = "";
+					curAddress = new Address();				
 					curNodeCoordinates = projection.getLocalCoordinates(
 							new Coordinates(Float.parseFloat(attributes.getValue("lat")),
 											Float.parseFloat(attributes.getValue("lon"))));
@@ -456,10 +455,10 @@ public class OSMLoader {
 				// parse way tag
                 else if (qName.equals("way")) {
                     isInWay = true;
-					curType = 0;
+					curType = UNKNOWN_TYPE;
+					curName = "";
 					curAddress = new Address();
 					curWayInfo = new WayInfo();  
-					curWayName = "";
 					curWayIds = new ArrayList<Integer>();
                     curWayOSMIds = new ArrayList<Long>();    
                 }
@@ -471,15 +470,27 @@ public class OSMLoader {
 
             public void endElement(String uri, String localName, String qName) throws SAXException {
                 
+                // finish node import
+                if (isInNode && qName.equalsIgnoreCase("node")) {
+                    isInNode = false;
+                    // add node to map info
+                    mapInfo.addNode(curNodeCoordinates, curNodeId, curAddress);
+                    // if appropriate also add node as POI
+                    if ((curType != UNKNOWN_TYPE) && (curName.length() > 0)) {
+                        mapInfo.addPOI(curNodeCoordinates,
+                                new POIDescription(curName, curType, ""), curAddress);
+                    }                 
+                }
+                
 				// finish way import
-				if (isInWay && qName.equalsIgnoreCase("way")) {
+                else if (isInWay && qName.equalsIgnoreCase("way")) {
 					isInWay = false;
 					
 					// combine way info
                     curWayInfo.setType(curType);
 					curWayInfo.setAddress(curAddress);
 					if (curWayInfo.isStreet()) {
-                        curAddress.setStreet(curWayName);
+                        curAddress.setStreet(curName);
                     }
 
                     if (curWayInfo.isRoutable()) {
@@ -540,19 +551,8 @@ public class OSMLoader {
                     
 					// add way to map info
                     if (curWayInfo.isStreet() || curWayInfo.isArea() || curWayInfo.isBuilding()) {
-                        mapInfo.addWay(curWayIds, curWayName, curWayInfo);
+                        mapInfo.addWay(curWayIds, curName, curWayInfo);
                     }
-
-                } else if (isInNode && qName.equalsIgnoreCase("node")) {
-                    isInNode = false;
-                    // add node to map info
-                    mapInfo.addNode(curNodeCoordinates, curNodeId, curAddress);
-                    // if appropriate also add node as POI
-                    if (curType != UNKNOWN_TYPE) {
-                        curNodePOIDescription.setCategory(curType);
-                        mapInfo.addPOI(curNodeCoordinates, curNodePOIDescription, curAddress);
-                    }
-                    
                 }
             }
 

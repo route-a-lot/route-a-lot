@@ -36,7 +36,8 @@ public class TestElementDB {
             MapElement element1 = new MapElementGenerator().generateStreet();
             MapElement element2 = new MapElementGenerator().generateArea();
             String s = "" + i;
-            POINode favorite = new POINode(new Coordinates(0.0f + i, 0.0f + i), new POIDescription(s, 0 ,s));
+            POINode favorite = new POINode(new Coordinates(0.0f + i, 0.0f + i),
+                    new POIDescription(s, 0 ,s), null);
             elements.addFavorite(favorite);
             elements.addMapElement(element1);
             elements.addMapElement(element2);

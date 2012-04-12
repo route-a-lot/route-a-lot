@@ -15,14 +15,10 @@ public abstract class MapElement {
 
     protected static final String EMPTY = "";
     
-    /** constant used in a stream for announcing {@link Node} element data following */
-    public static final byte DESCRIPTOR_NODE = 1;
-    /** constant used in a stream for announcing {@link Street} element data following */
-    public static final byte DESCRIPTOR_STREET = 2;
-    /** constant used in a stream for announcing {@link Area} element data following */
-    public static final byte DESCRIPTOR_AREA = 3;
-    /** constant used in a stream for announcing {@link POI} element data following */
-    public static final byte DESCRIPTOR_POI = 4;  
+    /** constants used in a stream for announcing certain element data following */
+    public static final byte
+        DESCRIPTOR_NODE = 1, DESCRIPTOR_STREET = 2,
+        DESCRIPTOR_AREA = 3, DESCRIPTOR_POI = 4;  
     
     /** the map element identifier */
     protected int id = -1;
@@ -35,6 +31,8 @@ public abstract class MapElement {
      */
     public abstract String getName();
 
+    public abstract String getFullName();
+    
     /**
      * Returns the MapElement ID.
      * @return the MapElement ID

@@ -45,6 +45,16 @@ public class Area extends MapElement {
         return (this.name != null) ? this.name : "";
     }
     
+    @Override
+    public String getFullName() {
+        if ((wayInfo.getAddress() == null
+                || wayInfo.getAddress().getCity().length() == 0)) {
+            return getName();
+        } else {
+            return getName() + ", " + wayInfo.getAddress().getCity();
+        }
+    }   
+    
     public Node[] getNodes() {
         return nodes;
     }
@@ -194,9 +204,9 @@ public class Area extends MapElement {
             }               
         }
 
-        /*wenn PrÃ¤fix gleich aber dieser String kÃ¼rzer 
+        /*wenn Präfix gleich aber dieser String kürzer 
                   steht er lexikographisch weiter vorne*/
         return name.length() - otherName.length();
-    }   
+    }
 
 }

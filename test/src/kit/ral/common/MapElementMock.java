@@ -59,4 +59,9 @@ public class MapElementMock extends MapElement {
     protected void load(MappedByteBuffer mmap) throws IOException {
     }
 
+    @Override
+    public String getFullName() {
+        return null;
+    }
+
 }
