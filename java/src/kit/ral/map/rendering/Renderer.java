@@ -44,7 +44,7 @@ public class Renderer {
         BACKGROUND_COLOR = new Color(210, 230, 190);
     
     private static final Paint BACKGROUND_GRADIENT = new RadialGradientPaint(
-        0, 0, 7500, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
+        0, 0, 10000, new float[]{0, 1}, new Color[]{BACKGROUND_COLOR, Color.BLACK});
 
     private static final BufferedImage
         STARTNODE = createNavNodeImage(new Color(52, 151, 50), 14),
@@ -93,9 +93,9 @@ public class Renderer {
         Bounds bounds = context.getBounds();
         
         // FILL BACKGROUND
-        Graphics2D graphics = (Graphics2D) context.getGraphics(); 
-        graphics.setPaint(BACKGROUND_GRADIENT);
-        graphics.fillRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());    
+        Graphics2D g = (Graphics2D) context.getGraphics(); 
+        g.setPaint(BACKGROUND_GRADIENT);
+        g.fillRect(0, 0, (int) bounds.getWidth(), (int) bounds.getHeight());    
         
         // DRAW TILES
         int minLat = (int) Math.floor(bounds.getTop() / tileSize);
@@ -422,16 +422,15 @@ public class Renderer {
     
     private static BufferedImage createNavNodeImage(Color color, int size) {
         BufferedImage image = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = image.createGraphics();
-        graphics.setComposite(AlphaComposite.Src);
-        graphics.setColor(new Color(0, true));
-        graphics.fillRect(0, 0, size, size);
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        Graphics2D g = image.createGraphics();
+        g.setColor(new Color(0, true));
+        g.fillRect(0, 0, size, size);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        graphics.setColor(Color.BLACK);
-        graphics.fillOval(0, 0, size, size);
-        graphics.setColor(color);
-        graphics.fillOval(1, 1, size-2, size-2);
+        g.setColor(Color.BLACK);
+        g.fillOval(0, 0, size, size);
+        g.setColor(color);
+        g.fillOval(1, 1, size-2, size-2);
         return image;
     }
     
@@ -443,16 +442,16 @@ public class Renderer {
         context.getGraphics().drawImage(image, x, y, null);
     }
     
-    private void drawRect(Context2D context, Coordinates topLeft, int width, int height, Color c) {
+    private void drawRect(Coordinates topLeft, int width, int height, Color c) {
         int size = 10 / zoomFactor;
         int x = (int) ((topLeft.getLongitude() - context.getBounds().getLeft()) / zoomFactor) - size/2;
         int y = (int) ((topLeft.getLatitude() - context.getBounds().getTop()) / zoomFactor) - size/2;
         int newWidth = width / zoomFactor - size;
         int newHeight = height / zoomFactor - size;
-        Graphics2D graphics = (Graphics2D) ((Context2D) context).getGraphics();
-        graphics.setStroke(new BasicStroke(size));
-        graphics.setColor(c);
-        graphics.drawRect(x, y, newWidth, newHeight);
+        Graphics2D g = (Graphics2D) context.getGraphics();
+        g.setStroke(new BasicStroke(size));
+        g.setColor(c);
+        g.drawRect(x, y, newWidth, newHeight);
     }
     
     private Collection<Object[]> framesToDraw = new HashSet<Object[]>();
@@ -478,7 +477,7 @@ public class Renderer {
         if (width < 0 || height < 0) {
             return;
         }
-        drawRect(context, topLeft, width, height, c);
+        drawRect(topLeft, width, height, c);
     }
     
     public void resetCache() {

@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.RandomReadStream;
 import kit.ral.common.RandomWriteStream;
 import kit.ral.map.MapElement;
+import kit.ral.map.MapElementComparator;
 
 
 public class FileQuadTree extends QuadTree {
@@ -22,7 +24,7 @@ public class FileQuadTree extends QuadTree {
     private long fileOffset = 0;
 
     private FileQuadTree[] children = null;
-    private ArrayList<MapElement> elements = null;
+    private TreeSet<MapElement> elements = null;
     
 
     // CONSTRUCTORS
@@ -52,7 +54,7 @@ public class FileQuadTree extends QuadTree {
      */
     public FileQuadTree(Bounds bounds) {
         super(bounds);
-        elements = new ArrayList<MapElement>(64);
+        elements = new TreeSet<MapElement>(new MapElementComparator());
     }
 
 
@@ -166,7 +168,7 @@ public class FileQuadTree extends QuadTree {
                 //System.out.println("load leaf " + fileOffset);
                 // load all elements
                 int size = source.readByte();  
-                elements = new ArrayList<MapElement>(size); 
+                elements = new TreeSet<MapElement>(new MapElementComparator());
                 for (int i = 0; i < size; i++) {
                     MapElement element = MapElement.loadFromInput(source);
                     element.registerUse();
@@ -268,21 +270,6 @@ public class FileQuadTree extends QuadTree {
             }
         }
         children = null;
-    }
-
-    /**
-     * Reduces memory footprint by cutting all arrays to actual content size.
-     */
-    @Override
-    public void compactify() {
-        if (elements != null) {
-            elements.trimToSize();
-        }
-        if (children != null) {
-            for (FileQuadTree child : children) {
-                child.compactify();
-            }
-        }
     }
 
 

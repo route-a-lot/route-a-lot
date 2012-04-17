@@ -43,7 +43,7 @@ public abstract class QuadTree {
      */
     public abstract boolean addElement(MapElement element);
 
-    public abstract void queryElements(Bounds area, Set<MapElement> elements, boolean exact);
+    public abstract void queryElements(Bounds area, Set<MapElement> target, boolean exact);
  
     
     // I/O OPERATIONS
@@ -102,9 +102,6 @@ public abstract class QuadTree {
     protected abstract void save(DataOutput output) throws IOException;
     
     public abstract void unload();
-    
-    public abstract void compactify();
-    
     
     // MISCELLANEOUS
     

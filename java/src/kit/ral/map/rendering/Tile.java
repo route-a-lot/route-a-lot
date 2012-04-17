@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.imageio.ImageIO;
 
@@ -29,6 +30,7 @@ import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.map.Area;
 import kit.ral.map.MapElement;
+import kit.ral.map.MapElementComparator;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
@@ -41,12 +43,15 @@ import org.apache.log4j.Logger;
 public class Tile {
 
     private static Logger logger = Logger.getLogger(Tile.class);
-    private static final int POI_SIZE = 8;
+    private static final int POI_SIZE = 5;
     private static final int MAX_STREET_DETAIL_LEVEL = 3;
     private static final int MAX_MINOR_STREET_SHADOW_LEVEL = 4;
-    private static final int AREA_ALPHA_VALUE = 140;
-    private static final Color POI_BORDER_COLOR = new Color(196, 161, 80);
-    private static final Color POI_COLOR = new Color(229, 189, 100);
+    private static final int AREA_ALPHA_VALUE = 100; //140
+    private static final Color
+        POI_BORDER_COLOR = new Color(196, 161, 80),
+        POI_COLOR = new Color(229, 189, 100),
+        BUILDING_COLOR = new Color(200, 200, 200),
+        BUILDING_BORDER_COLOR = new Color(150, 150, 150);
     private static final boolean USE_PATTERNS = true;
     private static final Paint FOREST_PATTERN, WATER_PATTERN;
     
@@ -76,7 +81,7 @@ public class Tile {
     private MapInfo mapInfo;
 
     /** Temporary variable (only guaranteed to be valid when rendering) */
-    private Graphics2D graphics;
+    private Graphics2D g;
     
 
     /**
@@ -126,17 +131,17 @@ public class Tile {
     public void prerender() {
         // query quadtree elements, exact=true is generally faster (by more than 30%)
         Set<MapElement> map = mapInfo.queryElements(detailLevel, bounds, true);
-        
+
         if (map.size() == 0) {
             return;
         }
 
         // prepare image
         image = null;
-        graphics = getImage().createGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
+        g = getImage().createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        
         // color tile background
 //         int c1 = Math.abs(this.hashCode()) % 256;
 //         int c2 = Math.abs(getImage().hashCode()) % 256;
@@ -154,46 +159,20 @@ public class Tile {
         }
 
         // set alpha for everything drawn previously
-        graphics.setComposite(AlphaComposite.DstIn);
-        graphics.setColor(new Color(0, 0, 0, AREA_ALPHA_VALUE));
-        graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
-        graphics.setComposite(AlphaComposite.SrcOver);
+        g.setComposite(AlphaComposite.DstIn);
+        g.setColor(new Color(0, 0, 0, AREA_ALPHA_VALUE));
+        g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g.setComposite(AlphaComposite.SrcOver);
+  
+        //Style style = new Style(this);
         
-        // draw water
         for (MapElement element : map) {
-            if ((element instanceof Area)
-                    && (((Area) element).getWayInfo().getType() == OSMType.NATURAL_WATER)) {
-                draw((Area) element);
-            }
-        }
-        
-        if (detailLevel < MAX_MINOR_STREET_SHADOW_LEVEL) {
-            for (MapElement element : map) {
-                if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
-                    draw((Street) element, false);
-                }
-            }
-        }
-        for (MapElement element : map) {
-            if ((element instanceof Street) && (((Street) element).getDrawingSize() >= 20)) {
-                draw((Street) element, false);
-            }
-        }
-
-        for (MapElement element : map) {
-            if ((element instanceof Street) && (((Street) element).getDrawingSize() < 20)) {
+            if (element instanceof Street) {                
                 draw((Street) element, true);
-            }
-        }
-        for (MapElement element : map) {
-            if ((element instanceof Street) && (((Street) element).getDrawingSize() >= 20)) {
-                draw((Street) element, true);
-            }
-        }
-        
-        for (MapElement element : map) {
-            if ((element instanceof Area) && (((Area) element).getWayInfo().isBuilding())) {
+                //style.drawElement(element, Style.STREET_SECONDARY + 16 * Style.BRIDGE);
+            } else if ((element instanceof Area) && (((Area) element).getWayInfo().isBuilding())) {
                 draw((Area) element);
+                //style.drawElement(element, Style.BUILDING);
             }
         }
 
@@ -201,21 +180,17 @@ public class Tile {
             for (MapElement element : map) {
                 if (element instanceof Street) {
                     drawStreetArrows((Street) element);
-                }
-            }
-            for (MapElement element : map) {
-                if (element instanceof Street) {
                     drawStreetNames((Street) element);
                 }
             }
-        }
-
+        }   
+        
         State.getInstance().getActiveRenderer();
         if (Renderer.drawAreas) {
-            Precalculator.drawAreas(bounds, detailLevel, graphics);
+            Precalculator.drawAreas(bounds, detailLevel, g);
         }
         
-        graphics.dispose();
+        g.dispose();
 
     }
 
@@ -224,21 +199,22 @@ public class Tile {
         if (elements.size() == 0) {
             return;
         }
-        graphics = getImage().createGraphics();
+        g = getImage().createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         for (MapElement element : elements) {
             if (element instanceof POINode) {
                 POINode poi = (POINode) element;
                 if ((poi.getInfo().getName() != null) && (poi.getInfo().getName().length() > 0)
                         && poi.getInfo().getCategory() != OSMType.FAVOURITE) {
-                    graphics.setColor(POI_BORDER_COLOR);
+                    g.setColor(POI_BORDER_COLOR);
                     drawPoint(poi.getPos(), POI_SIZE + 2);
-                    graphics.setColor(POI_COLOR);
+                    g.setColor(POI_COLOR);
                     drawPoint(poi.getPos(), POI_SIZE); 
                 }
                       
             } 
         }
-        graphics.dispose();
+        g.dispose();
     }
 
     /**
@@ -265,24 +241,24 @@ public class Tile {
 
         // TODO would be nice not to have that hardcoded here
         if (wayInfo.isBuilding()) {
-            graphics.setStroke(new BasicStroke(1));
-            graphics.setColor(Color.GRAY);
+            g.setStroke(new BasicStroke(1));
+            g.setColor(BUILDING_COLOR);
         } else if (wayInfo.isArea()) {
             switch (wayInfo.getType()) {
                 case OSMType.LANDUSE_FOREST:
                 case OSMType.NATURAL_WOOD:
-                    graphics.setPaint(FOREST_PATTERN);
+                    g.setPaint(FOREST_PATTERN);
                     break;
                 case OSMType.NATURAL_WATER:
-                    graphics.setPaint(WATER_PATTERN);
+                    g.setPaint(WATER_PATTERN);
                     break;
                 default: return;
             }
         }
-        graphics.fillPolygon(xPoints, yPoints, nPoints);
+        g.fillPolygon(xPoints, yPoints, nPoints);
         if (wayInfo.isBuilding()) {
-            graphics.setColor(Color.DARK_GRAY);
-            graphics.drawPolygon(xPoints, yPoints, nPoints); 
+            g.setColor(BUILDING_BORDER_COLOR);
+            g.drawPolygon(xPoints, yPoints, nPoints); 
         } 
     }
 
@@ -294,53 +270,47 @@ public class Tile {
      */
     private void draw(Street street, boolean top) {
         Node[] nodes = getRelevantNodesForStreet(street.getNodes(), street.getDrawingSize());
-        int nPoints = nodes.length;
-        int[] xPoints = new int[nPoints];
-        int[] yPoints = new int[nPoints];
+        int[] xPoints = new int[nodes.length];
+        int[] yPoints = new int[nodes.length];
         WayInfo wayInfo = street.getWayInfo();
 
         // set colors
         if (top) {
-            graphics.setColor(Color.WHITE);
+            g.setColor(Color.WHITE);
             if (!wayInfo.isRoutable()) {
-                graphics.setColor(Color.LIGHT_GRAY);
+                g.setColor(Color.LIGHT_GRAY);
             }
             switch (wayInfo.getType()) {
                 case OSMType.HIGHWAY_MOTORWAY:
                 case OSMType.HIGHWAY_MOTORWAY_JUNCTION:
                 case OSMType.HIGHWAY_MOTORWAY_LINK:
-                    graphics.setColor(new Color(0, 51, 153));
+                    g.setColor(new Color(0, 51, 153));
                     break;
                 case OSMType.HIGHWAY_PRIMARY:
                 case OSMType.HIGHWAY_PRIMARY_LINK:
-                    graphics.setColor(new Color(255, 204, 51));
+                    g.setColor(new Color(255, 204, 51));
                     break;
             }
         } else {
-            graphics.setColor(Color.DARK_GRAY);
+            g.setColor(Color.DARK_GRAY);
         }
         
         // set size
         float size = street.getDrawingSize() / (float) Projection.getZoomFactor(detailLevel);
-        if (!top) {
-            graphics.setStroke(new BasicStroke(size + 2 /*/ (float) Math.pow(detailLevel + 1, 0.8)*/,
-                    BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        } else {
-            graphics.setStroke(new BasicStroke(size, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        }
-
-        for (int i = 0; i < nPoints; i++) {
+        g.setStroke(new BasicStroke(size + ((top) ? 0
+                : 1f / (float) Math.pow(detailLevel + 1, 0.8)),
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        for (int i = 0; i < nodes.length; i++) {
             Coordinates curCoordinates = getLocalCoordinates(nodes[i].getPos());
             xPoints[i] = (int) curCoordinates.getLongitude();
             yPoints[i] = (int) curCoordinates.getLatitude();
         }
-        
-        graphics.drawPolyline(xPoints, yPoints, nPoints);
+        g.drawPolyline(xPoints, yPoints, nodes.length);
     }
 
     private void drawPoint(Coordinates globalCoordinates, int size) {
         Coordinates localCoordinates = getLocalCoordinates(globalCoordinates).add(-size/2, -size/2);
-        graphics.fillOval((int) localCoordinates.getLongitude(), (int) localCoordinates.getLatitude(), size, size);
+        g.fillOval((int) localCoordinates.getLongitude(), (int) localCoordinates.getLatitude(), size, size);
     }
 
     private void drawStreetArrows(Street street) {
@@ -356,8 +326,8 @@ public class Tile {
         double arrowDistance = 12 * arrowLength;
         double currentDistance = 0;
 
-        graphics.setColor(new Color(217, 192, 129));
-        graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+        g.setColor(new Color(217, 192, 129));
+        g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
         for (int i = 1; i < nPoints; i++) {
             Coordinates from = getLocalCoordinates(nodes[i - 1].getPos());
@@ -379,11 +349,11 @@ public class Tile {
                 Coordinates headLeft = vector.clone().rotate(210).normalize().scale(headLength).add(arrowEnd);
                 Coordinates headRight = vector.clone().rotate(150).normalize().scale(headLength).add(arrowEnd);
 
-                graphics.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(),
+                g.drawLine((int) arrowStart.getLongitude(), (int) arrowStart.getLatitude(),
                         (int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude());
-                graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
+                g.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
                         (int) headLeft.getLongitude(), (int) headLeft.getLatitude());
-                graphics.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
+                g.drawLine((int) arrowEnd.getLongitude(), (int) arrowEnd.getLatitude(),
                         (int) headRight.getLongitude(), (int) headRight.getLatitude());
             }
         }
@@ -394,8 +364,11 @@ public class Tile {
         if (detailLevel > 3 || curAddress == null) {
             return;
         }
-
         String curStreetName = curAddress.getStreet();
+        
+        // Test code for sorting
+        //MapElementComparator com = new MapElementComparator();
+        //curStreetName = "" + street.getWayInfo().getType() + " / " +  com.getLayer(street);
         
         if (curStreetName == null || curStreetName.equals("")) {
             return;
@@ -425,11 +398,11 @@ public class Tile {
         Node[] nodes = street.getNodes();
         int nPoints = nodes.length;
 
-        float streetNameLength = graphics.getFontMetrics().stringWidth(curStreetName);
+        float streetNameLength = g.getFontMetrics().stringWidth(curStreetName);
         double streetNameDistance = 512;
 
-        graphics.setColor(Color.DARK_GRAY);
-        graphics.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+        g.setColor(Color.DARK_GRAY);
+        g.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
 
         int i = 1;
         double distanceToFrom = -streetNameDistance / 1.3;
@@ -460,10 +433,10 @@ public class Tile {
                     angle = -angle;
                 }
 
-                Font oldFont = graphics.getFont();
+                Font oldFont = g.getFont();
                 Font newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(drawBackwards ? angle + Math.PI : angle));
-                graphics.setFont(newFont);
-                FontMetrics fontMetrics = graphics.getFontMetrics();
+                g.setFont(newFont);
+                FontMetrics fontMetrics = g.getFontMetrics();
                 float descent = fontMetrics.getDescent();
                 float ascent = fontMetrics.getAscent();
                 Coordinates normal = vector.clone().rotate(drawBackwards ? 270 : 90).normalize().scale((descent + ascent) / descent);
@@ -475,7 +448,7 @@ public class Tile {
                     if (!drawBackwards) {
                         drawCharacterToCoordinates(arrowStart, newFont, character);
                     }
-                    int charWidth = graphics.getFontMetrics(oldFont).stringWidth(character);
+                    int charWidth = g.getFontMetrics(oldFont).stringWidth(character);
                     Coordinates lineVector = new Coordinates(0, 1).rotate(angle).normalize().scale(charWidth);
                     arrowStart.add(lineVector);
                     distanceToFrom += charWidth;
@@ -503,15 +476,15 @@ public class Tile {
                         }
 
                         newFont = oldFont.deriveFont(AffineTransform.getRotateInstance(drawBackwards ? angle + Math.PI : angle));
-                        graphics.setFont(newFont);
-                        fontMetrics = graphics.getFontMetrics();
+                        g.setFont(newFont);
+                        fontMetrics = g.getFontMetrics();
                         descent = fontMetrics.getDescent();
                         ascent = fontMetrics.getAscent();
                         normal = vector.clone().rotate(drawBackwards ? 270 : 90).normalize().scale((descent + ascent) / descent);
                         arrowStart.add(normal);
                     }
                 }
-                graphics.setFont(oldFont);
+                g.setFont(oldFont);
             } else {
                 while (distanceToFrom + streetNameDistance > currentLength) {
                     distanceToFrom -= currentLength;
@@ -530,7 +503,7 @@ public class Tile {
     }
 
     private void drawCharacterToCoordinates(Coordinates arrowStart, Font newFont, String character) {
-        graphics.drawGlyphVector(newFont.createGlyphVector(graphics.getFontRenderContext(), character),
+        g.drawGlyphVector(newFont.createGlyphVector(g.getFontRenderContext(), character),
                 arrowStart.getLongitude(), arrowStart.getLatitude());
     }
 

@@ -24,6 +24,7 @@ import kit.ral.common.Progress;
 import kit.ral.common.WeightCalculator;
 import kit.ral.common.description.Address;
 import static kit.ral.common.description.OSMType.*;
+import kit.ral.common.description.OSMType;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
 import kit.ral.common.projection.Projection;
@@ -317,6 +318,7 @@ public class OSMLoader {
                                 logger.debug("Unknown value for " + key + " key in tags: " + value);
                             }
                         } else if (key.equals("building")) {
+                            curType = OSMType.BUILDING;
                             curWayInfo.setBuilding(true);
                             // TODO here and with the following:
                             // check if value == yes or something more specific

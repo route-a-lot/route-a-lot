@@ -6,9 +6,9 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
 import kit.ral.common.Coordinates;
 import static kit.ral.common.description.OSMType.*;
@@ -23,6 +23,7 @@ import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.map.Area;
 import kit.ral.map.MapElement;
+import kit.ral.map.MapElementComparator;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
 import kit.ral.map.info.ElementDB;
@@ -105,7 +106,7 @@ public class QTGeographicalOperator implements GeographicalOperator {
         if (drawFrames) {
             State.getInstance().getActiveRenderer().addFrameToDraw(area, Color.red);
         }
-        HashSet<MapElement> elements = new HashSet<MapElement>();
+        TreeSet<MapElement> elements = new TreeSet<MapElement>(new MapElementComparator());
         QuadTree tree = trees[MathUtil.clip(zoomlevel, 0, NUM_LEVELS -1)];
         if (tree != null) {
             tree.queryElements(area, elements, exact);
@@ -238,11 +239,6 @@ public class QTGeographicalOperator implements GeographicalOperator {
     
     @Override
     public void compactify() {
-        for (QuadTree tree : trees) {
-            if(tree != null) {
-                tree.compactify();
-            }
-        }
     } 
     
     

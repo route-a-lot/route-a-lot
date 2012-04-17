@@ -100,6 +100,7 @@ public class Controller {
             logger.error("Could not load library path for " + arch + ".");
             return;
         }
+        //System.setProperty("sun.java2d.opengl","True"); TODO make 3D mode compatible
         if (!SRAL_DIRECTORY.exists()) {
             SRAL_DIRECTORY.mkdir();
         }        

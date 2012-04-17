@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 import kit.ral.common.Bounds;
 import kit.ral.controller.State;
 import kit.ral.map.MapElement;
@@ -54,13 +53,13 @@ public class QTNode extends QuadTree {
     }
      
     @Override
-    public void queryElements(Bounds area, Set<MapElement> elements, boolean exact) {
+    public void queryElements(Bounds area, Set<MapElement> target, boolean exact) {
         if (isInBounds(area)) {
             if (QTGeographicalOperator.drawFrames) {
                 State.getInstance().getActiveRenderer().addFrameToDraw(bounds, Color.black);
             }
             for(QuadTree qt : children) {
-                qt.queryElements(area, elements, exact);
+                qt.queryElements(area, target, exact);
             }    
         }
     }
@@ -96,13 +95,6 @@ public class QTNode extends QuadTree {
             Coordinates topLeft = bounds.getTopLeft().add(height * (i % 2), width * (i / 2));  
             children[i] = new QTLeaf(new Bounds(topLeft, topLeft.clone().add(height, width)));
         }*/
-    }
-    
-    @Override
-    public void compactify() {
-        for(QuadTree qt : children) {
-            qt.compactify();
-        }
     }
     
     
