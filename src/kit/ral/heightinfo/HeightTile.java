@@ -103,9 +103,12 @@ public abstract class HeightTile {
     public String toString(){
         return "HeightTile: " + origin;
     }
-    
+
+    // specifier encodes the tiles lower left corner
     public static long getSpecifier(float lat, float lon) {
-        return (long) (lon * 1000 + lat * 1000000);
+        double cornerLatitude = Math.floor(lat) * 100;
+        double cornerLongitude = Math.floor(lon) * 100;
+        return (long) (cornerLongitude + cornerLatitude * 10000);
     }
     
     public long getSpecifier() {

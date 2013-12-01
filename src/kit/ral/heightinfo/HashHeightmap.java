@@ -45,11 +45,11 @@ public class HashHeightmap extends Heightmap {
     }
     
     // RETRIEVAL FUNCTIONS
-    
+
     @Override
     public float getHeight(Coordinates pos) {
         HeightTile tile = map.get(HeightTile.getSpecifier(
-                (int) pos.getLatitude(), (int) pos.getLongitude()));
+                pos.getLatitude(), pos.getLongitude()));
         return (tile != null) ? tile.getHeight(pos) : UNDEFINED_HEIGHT;
     }
         
