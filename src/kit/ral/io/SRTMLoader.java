@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 
 public class SRTMLoader implements HeightLoader {
 
-    protected static final int WIDTH = 1201, HEIGHT = 1201, MAX_DEVIATION = 50;
+    public static final int WIDTH = 1201, HEIGHT = 1201;
     private static final String FILE_EXTENSION = "hgt";
     private static Logger logger = Logger.getLogger(SRTMLoader.class);
 

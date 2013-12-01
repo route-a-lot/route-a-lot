@@ -38,7 +38,7 @@ public class DeferredHeightTile extends RAMHeightTile {
     boolean initialized = false;
     
     public DeferredHeightTile(File file, Coordinates origin) {
-        super(1201, 1201, origin);
+        super(SRTMLoader.WIDTH, SRTMLoader.HEIGHT, origin);
         source = file;
     }
     
