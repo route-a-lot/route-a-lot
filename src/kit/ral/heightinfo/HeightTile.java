@@ -91,14 +91,6 @@ public abstract class HeightTile {
         return MathUtil.getSplineValue(new float[] {y1, y2, y3, y4, y5}, ratioY);
     }
 
-    public void setHeight(Coordinates pos, int height) {
-        // float latDiff = pos.getLatitude() - origin.getLatitude();
-        // float lonDiff = pos.getLongitude() - origin.getLongitude();
-        // int x = tileWidth * (int) lonDiff;
-        // int y = height * (int) latDiff;    
-        // setHeight(x, y, height);
-    }
-
 
     // MISCELLANEAOUS
     
