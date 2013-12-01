@@ -1,0 +1,8 @@
+srtm/
+maps/
+state
+*.iml
+*.ipr
+*.iws
+*.log
+bin/
