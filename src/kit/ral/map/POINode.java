@@ -26,16 +26,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
 package kit.ral.map;
-import static kit.ral.common.util.Util.readUTFString;
+
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.Address;
+import kit.ral.common.description.POIDescription;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 
-import kit.ral.common.Coordinates;
-import kit.ral.common.description.Address;
-import kit.ral.common.description.POIDescription;
+import static kit.ral.common.util.Util.readUTFString;
 
 public class POINode extends Node {
 

@@ -27,7 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common;
 
-import static org.junit.Assert.assertTrue;
+import kit.ral.common.util.StringUtil;
+import kit.ral.map.info.ArrayElementDB;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,11 +38,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import kit.ral.common.util.StringUtil;
-import kit.ral.map.info.ArrayElementDB;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 
 public class MapElementTrieTest {

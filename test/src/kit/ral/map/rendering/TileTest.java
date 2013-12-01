@@ -30,9 +30,9 @@ package kit.ral.map.rendering;
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.map.Node;
-
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertArrayEquals;
 
 
 public class TileTest {

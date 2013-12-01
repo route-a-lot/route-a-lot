@@ -27,15 +27,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.controller.State;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 public class Node extends MapElement {
 

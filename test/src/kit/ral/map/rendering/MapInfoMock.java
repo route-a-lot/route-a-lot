@@ -27,12 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import kit.ral.common.Bounds;
 import kit.ral.map.MapElement;
 import kit.ral.map.info.MapInfo;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class MapInfoMock extends MapInfo {

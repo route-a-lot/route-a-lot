@@ -27,9 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.routing;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import kit.ral.common.PairingHeap;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
@@ -37,6 +34,10 @@ import kit.ral.common.event.Listener;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class Router {

@@ -27,10 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.routing;
 
-import java.util.Random;
-
 import kit.ral.common.Selection;
 import kit.ral.controller.State;
+
+import java.util.Random;
 
 
 public class SelectMock {

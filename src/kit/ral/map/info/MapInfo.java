@@ -27,37 +27,25 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
-import static kit.ral.common.util.Util.getSharedElementAtEnd;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.Address;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
-import kit.ral.map.Area;
-import kit.ral.map.MapElement;
-import kit.ral.map.Node;
-import kit.ral.map.POINode;
-import kit.ral.map.Street;
+import kit.ral.map.*;
 import kit.ral.map.info.geo.FileQTGeoOperator;
 import kit.ral.map.info.geo.GeographicalOperator;
 import kit.ral.map.info.geo.QTGeographicalOperator;
-
 import org.apache.log4j.Logger;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+import static kit.ral.common.util.Util.getSharedElementAtEnd;
 
 
 public class MapInfo {

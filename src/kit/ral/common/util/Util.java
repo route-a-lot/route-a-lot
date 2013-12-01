@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common.util;
 
-import java.awt.GraphicsEnvironment;
+import java.awt.*;
 import java.nio.MappedByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;

@@ -27,22 +27,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.gui;
 
-import static javax.media.opengl.GL.*;
-import static kit.ral.common.event.Listener.*;
-
-import java.awt.Component;
-import java.awt.event.MouseEvent;
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.*;
-import javax.media.opengl.glu.GLU;
-
 import kit.ral.common.Context3D;
 import kit.ral.common.Coordinates;
 import kit.ral.common.event.Listener;
 import kit.ral.common.event.RenderEvent;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.MathUtil;
+
+import javax.media.opengl.*;
+import javax.media.opengl.glu.GLU;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.nio.FloatBuffer;
+
+import static javax.media.opengl.GL.*;
+import static kit.ral.common.event.Listener.MAP_RESIZED;
+import static kit.ral.common.event.Listener.RENDER;
 
 public class Map3D extends Map implements GLEventListener {
     

@@ -27,35 +27,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info.geo;
 
-import java.awt.Color;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
-import kit.ral.common.Coordinates;
-import static kit.ral.common.description.OSMType.*;
-import kit.ral.common.Bounds;
-import kit.ral.common.RandomReadStream;
-import kit.ral.common.RandomWriteStream;
-import kit.ral.common.Selection;
+import kit.ral.common.*;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
-import kit.ral.map.Area;
-import kit.ral.map.MapElement;
-import kit.ral.map.MapElementComparator;
-import kit.ral.map.POINode;
-import kit.ral.map.Street;
+import kit.ral.map.*;
 import kit.ral.map.info.ElementDB;
-
 import org.apache.log4j.Logger;
+
+import java.awt.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.*;
+
+import static kit.ral.common.description.OSMType.*;
 
 public class QTGeographicalOperator implements GeographicalOperator {
 

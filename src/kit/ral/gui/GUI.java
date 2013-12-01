@@ -27,22 +27,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.gui;
 
-import static kit.ral.common.event.Listener.*;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Selection;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.event.Event;
+import kit.ral.common.event.*;
+import kit.ral.common.event.TextEvent;
+import kit.ral.common.util.MathUtil;
+import kit.ral.common.util.StringUtil;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -51,47 +53,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.BevelBorder;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
-import kit.ral.common.Coordinates;
-import kit.ral.common.Selection;
-import kit.ral.common.description.POIDescription;
-import kit.ral.common.event.Event;
-import kit.ral.common.event.FloatEvent;
-import kit.ral.common.event.Listener;
-import kit.ral.common.event.NumberEvent;
-import kit.ral.common.event.PositionNumberEvent;
-import kit.ral.common.event.SwitchNavNodesEvent;
-import kit.ral.common.event.TextEvent;
-import kit.ral.common.event.TextNumberEvent;
-import kit.ral.common.util.MathUtil;
-import kit.ral.common.util.StringUtil;
+import static kit.ral.common.event.Listener.*;
 
 public class GUI extends JFrame {
     private static final long serialVersionUID = 1L;

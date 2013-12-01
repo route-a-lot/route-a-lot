@@ -27,8 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.heightinfo;
 
-import java.util.HashMap;
 import kit.ral.common.Coordinates;
+
+import java.util.HashMap;
 
 public class HashHeightmap extends Heightmap {
 

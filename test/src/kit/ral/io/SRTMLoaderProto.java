@@ -27,18 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import kit.ral.common.Coordinates;
 import kit.ral.heightinfo.HashHeightmap;
 import kit.ral.heightinfo.HeightTile;
 import kit.ral.heightinfo.RAMHeightTile;
+
+import java.io.*;
 
 
 public class SRTMLoaderProto {

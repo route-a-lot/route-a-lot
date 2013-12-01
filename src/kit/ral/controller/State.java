@@ -27,10 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.controller;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.RouteDescription;
@@ -40,6 +36,10 @@ import kit.ral.map.info.MapInfo;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.routing.AdjacentFieldsRoutingGraph;
 import kit.ral.routing.RoutingGraph;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class State {
     private static State singleton = new State();

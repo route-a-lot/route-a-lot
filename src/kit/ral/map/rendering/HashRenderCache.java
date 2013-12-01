@@ -27,12 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
+import kit.ral.common.Coordinates;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
-
-import kit.ral.common.Coordinates;
-import kit.ral.map.rendering.RenderCache;
 
 public class HashRenderCache implements RenderCache {
 

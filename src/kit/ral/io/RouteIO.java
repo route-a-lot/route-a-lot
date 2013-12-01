@@ -27,19 +27,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import java.io.FileWriter;
-import java.io.StringWriter;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Selection;
+import kit.ral.common.projection.Projection;
+import kit.ral.common.projection.ProjectionFactory;
+import kit.ral.controller.State;
+import kit.ral.map.info.MapInfo;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
@@ -47,16 +42,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
-import kit.ral.common.Coordinates;
-import kit.ral.common.Selection;
-import kit.ral.common.projection.Projection;
-import kit.ral.common.projection.ProjectionFactory;
-import kit.ral.controller.State;
-import kit.ral.map.info.MapInfo;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RouteIO {
 

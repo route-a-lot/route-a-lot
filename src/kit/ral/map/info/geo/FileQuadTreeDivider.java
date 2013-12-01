@@ -27,11 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info.geo;
 
-import java.util.HashSet;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.map.MapElement;
+
+import java.util.HashSet;
 
 /**
  * Creates a QuadTree with maximum leaf size 16384. Since elements are not saved,

@@ -28,14 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package kit.ral.map.info;
 
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.ArrayList;
 import kit.ral.common.Selection;
 import kit.ral.common.StringTrie;
 import kit.ral.controller.State;
 import kit.ral.map.MapElement;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class TrieAddressOperator implements AddressOperator {
 

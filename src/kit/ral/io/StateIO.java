@@ -27,20 +27,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.controller.State;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.map.rendering.Renderer3D;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class StateIO {

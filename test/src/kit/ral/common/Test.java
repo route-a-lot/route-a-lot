@@ -27,14 +27,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common;
 
+import kit.ral.common.util.StringUtil;
+import kit.ral.map.info.ArrayElementDB;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import kit.ral.common.util.StringUtil;
-import kit.ral.map.info.ArrayElementDB;
 
 class Test {
 

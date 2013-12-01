@@ -27,14 +27,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
-import java.util.List;
-
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.RouteDescription;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.controller.State;
+
+import java.util.List;
 
 public class ComplexInfoSupplier {
 

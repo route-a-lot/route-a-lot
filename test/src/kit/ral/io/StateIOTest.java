@@ -27,18 +27,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
 import kit.ral.common.Progress;
 import kit.ral.controller.State;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.assertTrue;
 
 public class StateIOTest extends StateIO {
     

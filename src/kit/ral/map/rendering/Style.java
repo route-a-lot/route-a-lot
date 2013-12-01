@@ -27,31 +27,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.awt.BasicStroke;
-import static java.awt.BasicStroke.*;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
-import java.awt.TexturePaint;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
-import kit.ral.common.description.WayInfo;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.MathUtil;
 import kit.ral.map.Area;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.Street;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.awt.BasicStroke.*;
 
 /* THIS CLASS IS WORK IN PROGRESS, THUS CURRENTLY NOT USED */
 public class Style {

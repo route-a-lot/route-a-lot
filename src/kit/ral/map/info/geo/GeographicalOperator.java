@@ -27,17 +27,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info.geo;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.Set;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.POIDescription;
 import kit.ral.map.MapElement;
 import kit.ral.map.info.ElementDB;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.Set;
 
 public interface GeographicalOperator {
 

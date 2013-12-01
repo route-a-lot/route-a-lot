@@ -27,23 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-import java.util.Collection;
-import java.util.Set;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUquadric;
-
-import static javax.media.opengl.GL.*;
-
 import com.sun.opengl.util.BufferUtil;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Frustum;
@@ -53,11 +37,21 @@ import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.heightinfo.Heightmap;
-import kit.ral.map.Area;
-import kit.ral.map.MapElement;
-import kit.ral.map.Node;
-import kit.ral.map.POINode;
-import kit.ral.map.Street;
+import kit.ral.map.*;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.util.Collection;
+import java.util.Set;
+
+import static javax.media.opengl.GL.*;
 
 
 public class Tile3D extends Tile {

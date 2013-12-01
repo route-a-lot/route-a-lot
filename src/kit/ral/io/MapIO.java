@@ -27,16 +27,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import org.apache.log4j.Logger;
-
 import kit.ral.common.Progress;
 import kit.ral.common.RandomReadStream;
 import kit.ral.common.RandomWriteStream;
 import kit.ral.controller.State;
+import org.apache.log4j.Logger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class MapIO {
     

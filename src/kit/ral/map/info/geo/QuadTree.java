@@ -27,15 +27,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info.geo;
 
+import kit.ral.common.Bounds;
+import kit.ral.map.MapElement;
+
+import java.awt.geom.Rectangle2D;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.awt.geom.Rectangle2D;
-
-import kit.ral.common.Bounds;
-import kit.ral.map.MapElement;
 
 public abstract class QuadTree {
 

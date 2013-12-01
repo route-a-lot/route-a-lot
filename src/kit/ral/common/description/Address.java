@@ -27,12 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common.description;
 
-import static kit.ral.common.util.Util.readUTFString;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
+
+import static kit.ral.common.util.Util.readUTFString;
 
 
 public class Address {

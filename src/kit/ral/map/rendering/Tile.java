@@ -27,26 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.RenderingHints;
-import java.awt.TexturePaint;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-
-import javax.imageio.ImageIO;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.Address;
@@ -55,16 +35,20 @@ import kit.ral.common.description.WayInfo;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
-import kit.ral.map.Area;
-import kit.ral.map.MapElement;
-import kit.ral.map.MapElementComparator;
-import kit.ral.map.Node;
-import kit.ral.map.POINode;
-import kit.ral.map.Street;
+import kit.ral.map.*;
 import kit.ral.map.info.MapInfo;
 import kit.ral.routing.Precalculator;
-
 import org.apache.log4j.Logger;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 public class Tile {

@@ -27,11 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import kit.ral.common.Selection;
 import kit.ral.controller.State;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class StateMock extends State {

@@ -27,17 +27,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
+import kit.ral.common.Coordinates;
+import kit.ral.common.description.POIDescription;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
+import kit.ral.map.POINode;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import kit.ral.common.Coordinates;
-import kit.ral.common.description.POIDescription;
-import kit.ral.map.Node;
-import kit.ral.map.MapElement;
-import kit.ral.map.POINode;
 
 public interface ElementDB {
 

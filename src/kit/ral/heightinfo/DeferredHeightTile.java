@@ -27,10 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.heightinfo;
 
-import java.io.File;
-
 import kit.ral.common.Coordinates;
 import kit.ral.io.SRTMLoader;
+
+import java.io.File;
 
 public class DeferredHeightTile extends RAMHeightTile {
 

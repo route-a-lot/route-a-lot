@@ -27,9 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.POIDescription;
@@ -38,14 +35,15 @@ import kit.ral.map.Area;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
-import kit.ral.map.info.ArrayElementDB;
 import kit.ral.map.info.geo.QTGeographicalOperator;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class QTTest {

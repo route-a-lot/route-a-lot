@@ -27,12 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.AddressOperatorTest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import kit.ral.common.Selection;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.Street;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class StringOperatorTester {
 

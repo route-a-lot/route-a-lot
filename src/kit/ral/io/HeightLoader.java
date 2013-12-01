@@ -27,9 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.File;
-
 import kit.ral.common.Progress;
+
+import java.io.File;
 
 
 

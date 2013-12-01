@@ -27,27 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Paint;
-import java.awt.RadialGradientPaint;
-import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import kit.ral.common.Bounds;
-import kit.ral.common.Context;
-import kit.ral.common.Context2D;
-import kit.ral.common.Coordinates;
-import kit.ral.common.Selection;
+import kit.ral.common.*;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.event.Listener;
 import kit.ral.common.projection.Projection;
@@ -57,6 +37,15 @@ import kit.ral.map.Node;
 import kit.ral.map.POINode;
 import kit.ral.map.Street;
 import kit.ral.map.info.MapInfo;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Renderer {
     

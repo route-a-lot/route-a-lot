@@ -26,15 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
 package kit.ral.map;
-import static kit.ral.common.util.Util.readUTFString;
-
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
@@ -45,6 +36,16 @@ import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.map.info.MapInfo;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static kit.ral.common.util.Util.readUTFString;
 
 public class Street extends MapElement implements Comparable<Street> {
     

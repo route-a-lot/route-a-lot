@@ -27,44 +27,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.gui;
 
-import static kit.ral.common.event.Listener.*;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.net.URL;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.POIDescription;
-import kit.ral.common.event.AddFavoriteEvent;
+import kit.ral.common.event.*;
 import kit.ral.common.event.Event;
-import kit.ral.common.event.Listener;
-import kit.ral.common.event.PositionEvent;
-import kit.ral.common.event.PositionNumberEvent;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.MathUtil;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.URL;
+
+import static kit.ral.common.event.Listener.*;
 
 
 public abstract class Map extends JPanel implements MouseMotionListener, MouseWheelListener, ActionListener {

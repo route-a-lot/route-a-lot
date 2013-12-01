@@ -28,20 +28,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package kit.ral.gui;
 
 
-import static kit.ral.common.event.Listener.*;
-
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JPanel;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Context2D;
 import kit.ral.common.Coordinates;
 import kit.ral.common.event.Listener;
 import kit.ral.common.event.RenderEvent;
 import kit.ral.common.projection.Projection;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+
+import static kit.ral.common.event.Listener.RENDER;
 
 public class Map2D extends Map  {
     

@@ -27,18 +27,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import static org.junit.Assert.*;
+import kit.ral.common.Progress;
+import org.apache.log4j.PropertyConfigurator;
+import org.junit.*;
 
 import java.io.File;
 
-import kit.ral.common.Progress;
-
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class OSMLoaderTest {

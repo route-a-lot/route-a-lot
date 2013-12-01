@@ -27,13 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map;
 
-import java.awt.Polygon;
-import java.awt.geom.Rectangle2D;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.nio.MappedByteBuffer;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
@@ -41,6 +34,13 @@ import kit.ral.common.description.WayInfo;
 import kit.ral.common.util.Util;
 import kit.ral.controller.State;
 import kit.ral.map.info.MapInfo;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
 
 
 

@@ -29,8 +29,6 @@ package kit.ral.routing;
 
 import java.util.Comparator;
 
-import kit.ral.routing.Route;
-
 
 class RouteComparator<T> implements Comparator<T> {
 

@@ -27,9 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.util.Collection;
-
 import kit.ral.common.Coordinates;
+
+import java.util.Collection;
 
 public interface RenderCache {
     

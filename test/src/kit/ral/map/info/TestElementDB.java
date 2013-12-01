@@ -27,22 +27,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
-import static org.junit.Assert.*;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.POIDescription;
 import kit.ral.controller.State;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.POINode;
-import kit.ral.map.info.ArrayElementDB;
-import kit.ral.map.info.ElementDB;
 import kit.ral.map.rendering.MapElementGenerator;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class TestElementDB {

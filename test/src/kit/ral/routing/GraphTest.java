@@ -27,20 +27,17 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.routing;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-
 import kit.ral.common.Progress;
 import kit.ral.common.WeightCalculator;
 import kit.ral.controller.State;
 import kit.ral.io.OSMLoader;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+
+import static org.junit.Assert.*;
 
 
 public class GraphTest {

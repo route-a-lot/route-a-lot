@@ -27,16 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.routing;
 
-import java.awt.BasicStroke;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.projection.Projection;
@@ -45,8 +35,15 @@ import kit.ral.controller.State;
 import kit.ral.map.Node;
 import kit.ral.map.info.MapInfo;
 import kit.ral.map.rendering.Renderer;
-
 import org.apache.log4j.Logger;
+
+import java.awt.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 
 public class AdjacentFieldsRoutingGraph implements RoutingGraph {

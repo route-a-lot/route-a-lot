@@ -27,7 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 public class Context2D extends Context {
  

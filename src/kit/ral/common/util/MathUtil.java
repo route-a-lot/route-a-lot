@@ -27,12 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common.util;
 
-import java.awt.geom.Rectangle2D;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
-
 import org.apache.log4j.Logger;
+
+import java.awt.geom.Rectangle2D;
 
 
 public class MathUtil {

@@ -27,9 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.gui;
 
-import kit.ral.gui.GUI;
-
-
 public class ShellGUI {
     static GUI gui;
     

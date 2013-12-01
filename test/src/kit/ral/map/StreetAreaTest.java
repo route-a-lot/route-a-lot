@@ -27,20 +27,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.WayInfo;
 import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 
 public class StreetAreaTest {

@@ -27,21 +27,20 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import static kit.ral.common.util.Util.printMemoryInformation;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.Address;
 import kit.ral.common.description.WayInfo;
 import kit.ral.map.info.MapInfo;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static kit.ral.common.util.Util.printMemoryInformation;
 
 public class PerformanceTest {
     

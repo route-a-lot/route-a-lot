@@ -27,33 +27,21 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import kit.ral.common.Bounds;
+import kit.ral.common.Coordinates;
+import kit.ral.common.RandomWriteStream;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.projection.Projection;
+import kit.ral.map.MapElement;
+import kit.ral.map.Node;
+import kit.ral.map.POINode;
+import org.apache.log4j.Logger;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-
-import org.apache.log4j.Logger;
-
-import kit.ral.common.Bounds;
-import kit.ral.common.Coordinates;
-import kit.ral.common.RandomReadStream;
-import kit.ral.common.RandomWriteStream;
-import kit.ral.common.description.POIDescription;
-import kit.ral.common.projection.Projection;
-import kit.ral.map.info.ElementDB;
-import kit.ral.map.MapElement;
-import kit.ral.map.Node;
-import kit.ral.map.POINode;
 
 public class ArrayElementDB implements ElementDB {
 

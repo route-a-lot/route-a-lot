@@ -27,24 +27,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import static javax.media.opengl.GL.*;
-
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
-import javax.media.opengl.glu.GLUquadric;
-
-import org.apache.log4j.Logger;
-
-import kit.ral.common.Context3D;
-import kit.ral.common.Coordinates;
-import kit.ral.common.Context;
-import kit.ral.common.Frustum;
-import kit.ral.common.Selection;
+import kit.ral.common.*;
 import kit.ral.common.event.Listener;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
@@ -52,7 +35,18 @@ import kit.ral.common.util.MathUtil;
 import kit.ral.controller.State;
 import kit.ral.heightinfo.Heightmap;
 import kit.ral.map.info.MapInfo;
-import kit.ral.map.rendering.Renderer;
+import org.apache.log4j.Logger;
+
+import javax.media.opengl.GL;
+import javax.media.opengl.glu.GLU;
+import javax.media.opengl.glu.GLUquadric;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static javax.media.opengl.GL.*;
 
 public class Renderer3D extends Renderer {
 

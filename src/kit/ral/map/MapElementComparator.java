@@ -27,9 +27,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map;
 
-import java.util.Comparator;
-
 import kit.ral.common.description.WayInfo;
+
+import java.util.Comparator;
 
 
 public class MapElementComparator implements Comparator<MapElement> {

@@ -27,13 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info.geo;
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import org.apache.log4j.Logger;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.RandomReadStream;
 import kit.ral.common.RandomWriteStream;
@@ -42,6 +35,13 @@ import kit.ral.common.util.Util;
 import kit.ral.map.MapElement;
 import kit.ral.map.Node;
 import kit.ral.map.info.ElementDB;
+import org.apache.log4j.Logger;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
 
 
 public class FileQTGeoOperator extends QTGeographicalOperator {

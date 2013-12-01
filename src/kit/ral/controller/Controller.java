@@ -27,59 +27,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import kit.ral.common.Bounds;
-import kit.ral.common.Context;
-import kit.ral.common.Coordinates;
-import kit.ral.common.Progress;
-import kit.ral.common.Selection;
-import kit.ral.common.WeightCalculator;
+import kit.ral.common.*;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.description.POIDescription;
-import kit.ral.common.event.AddFavoriteEvent;
-import kit.ral.common.event.Event;
-import kit.ral.common.event.FloatEvent;
-import kit.ral.common.event.Listener;
-import kit.ral.common.event.NumberEvent;
-import kit.ral.common.event.PositionEvent;
-import kit.ral.common.event.PositionNumberEvent;
-import kit.ral.common.event.RenderEvent;
-import kit.ral.common.event.SwitchNavNodesEvent;
-import kit.ral.common.event.TextEvent;
-import kit.ral.common.event.TextNumberEvent;
+import kit.ral.common.event.*;
 import kit.ral.common.projection.Projection;
 import kit.ral.common.util.StringUtil;
 import kit.ral.common.util.Util;
 import kit.ral.gui.GUIHandler;
-import kit.ral.io.HeightLoader;
-import kit.ral.io.MapIO;
-import kit.ral.io.OSMLoader;
-import kit.ral.io.RouteIO;
-import kit.ral.io.SRTMLoaderDeferred;
-import kit.ral.io.StateIO;
+import kit.ral.io.*;
 import kit.ral.map.Node;
 import kit.ral.map.info.ComplexInfoSupplier;
 import kit.ral.map.rendering.Renderer;
 import kit.ral.map.rendering.Renderer3D;
 import kit.ral.routing.Precalculator;
 import kit.ral.routing.Router;
-import static kit.ral.common.event.Listener.*;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.concurrent.*;
+
+import static kit.ral.common.event.Listener.*;
 
 public class Controller {
     // Same definition as in Map:

@@ -27,12 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.description.Address;
@@ -40,6 +34,11 @@ import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
 import kit.ral.map.Node;
 import kit.ral.map.info.MapInfo;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class MapInfoMock extends MapInfo {

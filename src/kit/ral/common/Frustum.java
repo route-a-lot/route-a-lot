@@ -27,9 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common;
 
-import java.nio.FloatBuffer;
-
 import javax.media.opengl.GL;
+import java.nio.FloatBuffer;
 
 
 public class Frustum {

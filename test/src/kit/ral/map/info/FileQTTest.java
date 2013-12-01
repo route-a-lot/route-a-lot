@@ -27,26 +27,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.info;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import kit.ral.common.Bounds;
 import kit.ral.common.RandomWriteStream;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.description.POIDescription;
 import kit.ral.controller.State;
 import kit.ral.map.POINode;
-import kit.ral.map.info.ArrayElementDB;
-import kit.ral.map.info.MapInfo;
 import kit.ral.map.info.geo.FileQTGeoOperator;
 import kit.ral.map.info.geo.GeographicalOperator;
 import kit.ral.map.info.geo.QTGeographicalOperator;
 import kit.ral.map.rendering.MapElementGenerator;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 
 public class FileQTTest {

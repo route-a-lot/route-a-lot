@@ -27,24 +27,22 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map;
 
+import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
-import kit.ral.map.MapElement;
-import kit.ral.map.info.*;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
+import kit.ral.common.description.Address;
+import kit.ral.common.description.POIDescription;
+import kit.ral.common.description.WayInfo;
+import kit.ral.map.info.MapInfo;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import kit.ral.common.Bounds;
-import kit.ral.common.description.Address;
-import kit.ral.common.description.POIDescription;
-import kit.ral.common.description.WayInfo;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MapInfoTest {
 

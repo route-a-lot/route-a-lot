@@ -27,13 +27,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common.projection;
 
-import static org.junit.Assert.*;
 import kit.ral.common.Coordinates;
-import kit.ral.common.projection.MercatorProjection;
-import kit.ral.common.projection.Projection;
-import kit.ral.common.projection.SimpleProjection;
-
 import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 
 public class ProjectionTest {

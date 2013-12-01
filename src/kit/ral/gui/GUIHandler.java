@@ -27,12 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.gui;
 
-import java.util.List;
-
 import kit.ral.common.Coordinates;
 import kit.ral.common.Selection;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.RouteDescription;
+
+import java.util.List;
 
 
 public class GUIHandler {

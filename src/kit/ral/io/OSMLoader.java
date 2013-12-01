@@ -27,30 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Progress;
 import kit.ral.common.WeightCalculator;
 import kit.ral.common.description.Address;
-import static kit.ral.common.description.OSMType.*;
 import kit.ral.common.description.OSMType;
 import kit.ral.common.description.POIDescription;
 import kit.ral.common.description.WayInfo;
@@ -59,11 +40,18 @@ import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.common.util.Util;
 import kit.ral.controller.State;
 import kit.ral.map.info.MapInfo;
-
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.*;
+import java.util.*;
+
+import static kit.ral.common.description.OSMType.*;
 
 public class OSMLoader {
 

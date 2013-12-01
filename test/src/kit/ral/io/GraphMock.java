@@ -27,12 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
+import kit.ral.routing.RoutingGraph;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Collection;
-
-import kit.ral.routing.RoutingGraph;
 
 
 public class GraphMock implements RoutingGraph {

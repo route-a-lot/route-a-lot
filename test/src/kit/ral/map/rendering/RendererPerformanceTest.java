@@ -27,18 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import static org.junit.Assert.*;
-
-import org.junit.Ignore;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Context2D;
 import kit.ral.common.Coordinates;
@@ -46,6 +34,13 @@ import kit.ral.common.description.OSMType;
 import kit.ral.common.description.WayInfo;
 import kit.ral.map.Node;
 import kit.ral.map.Street;
+import org.junit.Ignore;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static org.junit.Assert.assertTrue;
 
 public class RendererPerformanceTest {
 

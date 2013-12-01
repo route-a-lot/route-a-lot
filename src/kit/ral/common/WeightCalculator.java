@@ -27,8 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common;
 
-import java.lang.Math;
-
 import kit.ral.common.description.OSMType;
 import kit.ral.common.projection.Projection;
 import kit.ral.controller.State;

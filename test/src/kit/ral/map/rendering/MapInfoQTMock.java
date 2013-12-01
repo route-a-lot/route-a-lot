@@ -27,12 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.map.rendering;
 
-import java.util.Set;
-
 import kit.ral.common.Bounds;
 import kit.ral.map.MapElement;
 import kit.ral.map.info.ArrayElementDB;
 import kit.ral.map.info.geo.QTGeographicalOperator;
+
+import java.util.Set;
 
 
 public class MapInfoQTMock extends MapInfoMock {

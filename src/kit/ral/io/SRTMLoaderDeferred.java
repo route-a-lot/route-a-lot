@@ -27,11 +27,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import java.io.File;
-
 import kit.ral.common.Coordinates;
-import kit.ral.heightinfo.HeightTile;
 import kit.ral.heightinfo.DeferredHeightTile;
+import kit.ral.heightinfo.HeightTile;
+
+import java.io.File;
 
 
 public class SRTMLoaderDeferred extends SRTMLoader {

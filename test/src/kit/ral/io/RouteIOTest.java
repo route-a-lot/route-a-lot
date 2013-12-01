@@ -27,24 +27,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import static org.junit.Assert.*;
+import kit.ral.common.Coordinates;
+import kit.ral.common.Progress;
+import kit.ral.common.Selection;
+import kit.ral.controller.State;
+import kit.ral.map.info.MapInfo;
+import org.apache.log4j.PropertyConfigurator;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import kit.ral.common.Coordinates;
-import kit.ral.common.Progress;
-import kit.ral.common.Selection;
-import kit.ral.controller.State;
-import kit.ral.map.info.MapInfo;
-
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 
 public class RouteIOTest extends RouteIO {

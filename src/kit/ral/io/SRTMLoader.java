@@ -27,19 +27,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.io;
 
-import kit.ral.heightinfo.HeightTile;
-import kit.ral.heightinfo.RAMHeightTile;
 import kit.ral.common.Coordinates;
 import kit.ral.common.Progress;
 import kit.ral.controller.State;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-
+import kit.ral.heightinfo.HeightTile;
+import kit.ral.heightinfo.RAMHeightTile;
 import org.apache.log4j.Logger;
+
+import java.io.*;
 
 
 public class SRTMLoader implements HeightLoader {

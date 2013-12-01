@@ -27,12 +27,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.common;
 
+import kit.ral.map.MapElement;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
-
-import kit.ral.map.MapElement;
 
 
 public class MapElementMock extends MapElement {

@@ -27,11 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package kit.ral.routing;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import kit.ral.common.Coordinates;
 import kit.ral.common.Progress;
 import kit.ral.common.Selection;
@@ -40,11 +35,15 @@ import kit.ral.common.projection.Projection;
 import kit.ral.common.projection.ProjectionFactory;
 import kit.ral.controller.State;
 import kit.ral.io.OSMLoader;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class RoutingScalTest {

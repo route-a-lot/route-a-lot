@@ -28,15 +28,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package kit.ral.map.rendering;
 
 
-import java.awt.Image;
-
 import kit.ral.common.Bounds;
 import kit.ral.common.Context2D;
 import kit.ral.common.Coordinates;
 import kit.ral.common.projection.Projection;
-
-
 import org.apache.log4j.Logger;
+
+import java.awt.*;
 
 
 public class RendererMock {
